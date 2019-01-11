@@ -57,7 +57,7 @@ test{
 
 task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     useJUnit{
-        // Runs all tests with dependency to a db server
+        // Runs all tests with dependency to a db server (pg, oracle, ..)
         includeCategories 'ch.so.agi.gretl.testutil.DbTest'
     }
 }
