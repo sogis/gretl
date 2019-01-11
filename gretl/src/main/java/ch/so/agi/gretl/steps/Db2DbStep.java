@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The Db2DbStep Class is used as a step for transfer of tabulated data from one to anoter database.
+ * The Db2DbStep Class is used as a step for transfer of tabulated data from one to another database.
  * It needs a sourceDb (Connector), a targetDb (Connector) and a list of transferSet, containing 1. a
  * boolean paramterer concerning the emptying of the Targettable, 2. a SQL-file containing a SELECT-statement and
  * 3. a qualified target schema and table name (schema.table).
@@ -30,7 +30,6 @@ public class Db2DbStep {
     private String taskName;
     private int batchSize=5000;
     private int fetchSize=5000;
-
 
     public Db2DbStep() {
         this(null);

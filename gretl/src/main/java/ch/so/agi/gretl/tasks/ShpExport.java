@@ -14,7 +14,6 @@ import org.gradle.api.tasks.TaskAction;
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.Db2Shp;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
-import ch.interlis.ioxwkf.dbtools.Shp2db;
 import ch.interlis.ioxwkf.shp.ShapeReader;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
@@ -76,7 +75,7 @@ public class ShpExport extends DefaultTask {
             log.error("failed to run ShpExport", e);
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
-        }finally {
+        } finally {
             if(conn!=null) {
                 try {
                     conn.rollback();

@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tasks.impl;
 
 import java.io.File;
 
+import ch.interlis.iox_j.PipelinePool;
 import org.interlis2.validator.Validator;
 
 import ch.ehi.basics.settings.Settings;
@@ -15,7 +16,7 @@ import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 public class CsvValidatorImpl extends Validator {
 
     @Override
-    protected IoxReader createReader(String filename, TransferDescription td, LogEventFactory errFactory,Settings settings)
+    protected IoxReader createReader(String filename, TransferDescription td, LogEventFactory errFactory, Settings settings, PipelinePool pool)
             throws IoxException {
         CsvReader reader=new CsvReader(new File(filename),settings);
         reader.setModel(td);

@@ -6,31 +6,35 @@ plugins {
 }
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8 
 
 apply from: '../dependencies.gradle'
 
+configurations.all {
+    resolutionStrategy { 
+        force 'ch.interlis:ili2pg:3.11.3-SNAPSHOT'
+    }
+}
+
 dependencies {
-    testCompile junitDependency
-
-    compile postgresqlDependency
-
-    compile ilivalidatorDependency
-    compile (ili2pgDependency){
+    testImplementation junitDependency
+    
+    api ilivalidatorDependency
+    api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
-    compile ioxWkfDependency
-    compile ioxIliDependency
+    api ioxWkfDependency
+    api ioxIliDependency
+    api ehiSqlgenDependency
 
-    compile sqliteJdbcDependency
-    compile derbyDependency
-    compile oracleDependency
+    api apacheCommonsIoDependency
+
+    runtimeOnly postgresqlDependency
+    runtimeOnly sqliteJdbcDependency
+    runtimeOnly derbyDependency
+    //runtimeOnly oracleDependency
 	
-    compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
-    	
-    // Additional driver possibilities when the need arises:
-    // - oracle jdbc driver
-    // - sqlserver jdbc driver (Microsoft)
-    compile gradleApi()
+    api gradleApi()
 }
 
 // 'gradle publishToMavenLocal' publishes
@@ -48,7 +52,7 @@ publishing {
 }
 */
 
-test{
+test {
     useJUnit{
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
         excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
@@ -56,7 +60,7 @@ test{
 }
 
 task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
-    useJUnit{
+    useJUnit {
         // Runs all tests with dependency to a db server (pg, oracle, ..)
         includeCategories 'ch.so.agi.gretl.testutil.DbTest'
     }

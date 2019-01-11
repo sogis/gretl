@@ -33,7 +33,6 @@ public class SqlExecutor extends DefaultTask {
     @Input
     public Connector database;
 
-
     @Input
     public List<String> sqlFiles;
 
@@ -49,7 +48,6 @@ public class SqlExecutor extends DefaultTask {
         if (sqlFiles==null) {
             throw new GradleException("sqlFiles is null");
         }
-
 
         List<File> files = convertToFileList(sqlFiles);
 

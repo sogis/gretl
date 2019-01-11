@@ -11,17 +11,17 @@ allprojects {
         jcenter()
 		
         // 3rd party jars that are not available in public maven repos, e.g. oracle jdbc.
-        flatDir(dirs: './lib')
-    }
+        //flatDir(dirs: './lib')
+    }    
 }
 
 def env(environmentVariableName){
     return env(environmentVariableName, 'UNDEFINED')
 }
 
-def env(environmentVariableName, defaultValue){
+def env(environmentVariableName, defaultValue) {
     def var = System.getenv(environmentVariableName)
-    if (var == null || var.length() == 0){
+    if (var == null || var.length() == 0) {
         var = defaultValue
     }
     return var;

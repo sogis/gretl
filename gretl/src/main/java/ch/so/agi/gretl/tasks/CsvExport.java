@@ -14,7 +14,6 @@ import org.gradle.api.tasks.TaskAction;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.iom_j.csv.CsvReader;
-import ch.interlis.ioxwkf.dbtools.Csv2db;
 import ch.interlis.ioxwkf.dbtools.Db2Csv;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.api.Connector;
