@@ -1,0 +1,19 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+def GRETLTEST_DBURI = 'gretltest_dburi_ora'
+def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:oracle:thin:@localhost:1521:xe'
+
+def db_user = 'system'
+def db_pass = 'oracle'
+
+defaultTasks 'queryOracleVersion'
+
+task queryOracleVersion(type: SqlExecutor) {
+    doFirst {
+        println db_uri
+    }
+    database = [db_uri, db_user, db_pass]
+    sqlFiles = ['queryOracleVersion.sql']
+}

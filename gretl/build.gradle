@@ -1,0 +1,98 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+sourceCompatibility = 1.8
+
+apply from: '../dependencies.gradle'
+
+dependencies {
+    testCompile junitDependency
+
+    compile postgresqlDependency
+
+    compile ilivalidatorDependency
+    compile (ili2pgDependency){
+        exclude group: 'ch.ehi', module: 'ehisqlgen'
+    }
+    compile ioxWkfDependency
+    compile ioxIliDependency
+
+    compile sqliteJdbcDependency
+    compile derbyDependency
+    compile oracleDependency
+	
+    compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
+    	
+    // Additional driver possibilities when the need arises:
+    // - oracle jdbc driver
+    // - sqlserver jdbc driver (Microsoft)
+    compile gradleApi()
+}
+
+// 'gradle publishToMavenLocal' publishes
+// oracle jdbc to local maven repo.
+/*
+publishing {
+	publications {
+		maven(MavenPublication) {
+			artifactId "ojdbc7"
+			version "12.1.0.1"
+			groupId "com.oracle"
+			artifact file('./lib/ojdbc7-12.1.0.1.jar')
+		}
+	}
+}
+*/
+
+test{
+    useJUnit{
+        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
+        excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    }
+}
+
+task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+    useJUnit{
+        // Runs all tests with dependency to a db server
+        includeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    }
+}
+
+task jardist(type: Copy){
+	delete fileTree('jardist')
+	destinationDir = file('jardist')
+	from jar
+	from configurations.runtimeClasspath
+	// version = '1.0.6'
+
+}
+
+// Transfer the required configuration variables to the unit test code.
+// (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+tasks.withType(Test) {
+    def GRETLTEST_DBURI = 'gretltest_dburi_pg'
+    systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
+}
+
+publishing{
+    publications{
+        mavenJava(MavenPublication){
+            from components.java
+        }
+    }
+    repositories{
+        maven{
+            name 'Public'
+            url System.getProperty('repos_url')
+            credentials {
+                username System.getProperty('repos_usr')
+                password System.getProperty('repos_pwd')
+            }
+        }
+    }
+}
+

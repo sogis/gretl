@@ -1,0 +1,28 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.api.*
+apply plugin: 'ch.so.agi.gretl'
+
+def GRETLTEST_DBURI = 'gretltest_dburi_pg'
+def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl'
+
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+defaultTasks 'bToA'
+
+task aToB(type: Db2Db) {
+    sourceDb =  [db_uri,db_user,db_pass]
+    targetDb = [db_uri,db_user,db_pass]
+    sqlParameters = [srcTable:'albums_src']
+    transferSets = [
+            new TransferSet('statementChain_AToB.sql', 'db2dbtaskchain.albums_intermediate', true)
+    ];
+}
+
+task bToA(type: Db2Db, dependsOn: 'aToB'){
+    sourceDb =  [db_uri,db_user,db_pass]
+    targetDb = [db_uri,db_user,db_pass]
+    transferSets = [
+            new TransferSet('statementChain_BToA.sql', 'db2dbtaskchain.albums_dest', true)
+    ];
+}

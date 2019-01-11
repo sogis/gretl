@@ -1,0 +1,27 @@
+ext {
+    //dependency versions
+    ioxIliVersion = '1.20.3-SNAPSHOT'
+    ilivalidatorVersion = '1.6.0'
+    ili2pgVersion = '3.11.3-SNAPSHOT'
+    ioxWkfVersion = '1.0.1-SNAPSHOT'
+
+    postgresqlVersion = '42.1.4'
+    sqliteJdbcVersion = '3.8.11.2'
+    derbyVersion = '10.13.1.1'
+    oracleVersion = '12.1.0.1'
+	
+    junitVersion = '4.12'
+
+    // dependencies
+    ioxIliDependency = [ group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion ]
+    ilivalidatorDependency = [ group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion ]
+    ili2pgDependency = [ group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion ]
+    ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
+
+    postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
+    sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
+    derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
+    oracleDependency = [ group: 'com.oracle', name: 'ojdbc7', version: oracleVersion]
+	
+    junitDependency = [ group: 'junit', name: 'junit', version: junitVersion ]
+}
