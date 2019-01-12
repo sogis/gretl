@@ -34,7 +34,7 @@ public class IntegrationTestUtil {
     }
 
     public static void runJob(String jobPath, GradleVariable[] variables) throws Exception {
-        int ret=runJob(jobPath,variables,new StringBuffer(),new StringBuffer());
+        int ret = runJob(jobPath ,variables, new StringBuffer(), new StringBuffer());
         assertThat(ret, is(0));
     }
 
@@ -63,7 +63,6 @@ public class IntegrationTestUtil {
         String jobDirOption = buildJobDirOption(jobPath);
         String varsString = buildOptionString(variables);
 
-
         String command = String.format("%s %s %s", runtimeCommand, jobDirOption, varsString);
 
         System.out.println("command:" + command);
@@ -80,7 +79,7 @@ public class IntegrationTestUtil {
 
         return p.exitValue();
     }
-
+    
     private static void appendProcessOutputToStdStreams(Process p, StringBuffer stderr, StringBuffer stdout){
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
