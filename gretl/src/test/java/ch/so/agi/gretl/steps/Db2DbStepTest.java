@@ -12,6 +12,9 @@ import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,10 +32,18 @@ import static org.gradle.internal.impldep.org.testng.AssertJUnit.assertEquals;
 import static org.junit.Assert.fail;
 
 public class Db2DbStepTest {
+    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
+        
+    @ClassRule
+    public static PostgreSQLContainer postgres = 
+        (PostgreSQLContainer) new PostgisContainerProvider()
+        .newInstance().withDatabaseName("gretl")
+        .withUsername("ddluser")
+        .withInitScript("init_postgresql.sql")
+        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
 
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
-    // Konstruktor//
     public Db2DbStepTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
@@ -40,7 +51,6 @@ public class Db2DbStepTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-    private String e;
     private GretlLogger log;
 
     @After
@@ -168,7 +178,7 @@ public class Db2DbStepTest {
         }
     }
 
-    // todo was tested diese methode? Fehler bei leerer sql datei oder Fehler bei
+    // TODO: was tested diese methode? Fehler bei leerer sql datei oder Fehler bei
     // falschem sql?
     // --> Bitte aufräumen und methode besser benennen
     @Test
@@ -198,7 +208,6 @@ public class Db2DbStepTest {
 
     @Test
     public void columnNumberTest() throws Exception {
-        // unittest
         DbConnector dbConn = new DbConnector();
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
@@ -239,7 +248,6 @@ public class Db2DbStepTest {
 
     @Test
     public void incompatibleDataTypeTest() throws Exception {
-        // unittest
         DbConnector dbConn = new DbConnector();
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
@@ -276,7 +284,6 @@ public class Db2DbStepTest {
 
     @Test
     public void copyEmptyTableToOtherTableTest() throws Exception {
-
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
@@ -297,7 +304,6 @@ public class Db2DbStepTest {
 
     @Test
     public void deleteTest() throws Exception {
-        // Datenbank für Test vorbereiten
         Connection con = null;
         try {
             Connector connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -312,7 +318,6 @@ public class Db2DbStepTest {
             stmt.execute("INSERT INTO colors_copy  VALUES (251,45,23,'rotototo')");
             stmt.execute("INSERT INTO colors_copy  VALUES (67,3,255,'blauwederenzian')");
             con.commit();
-            // Vorbereitungsverbindung schliessen
         } finally {
             con.close();
         }
@@ -346,7 +351,6 @@ public class Db2DbStepTest {
 
     @Test
     public void closeConnectionsTest() throws Exception {
-
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
@@ -371,7 +375,6 @@ public class Db2DbStepTest {
 
     @Test
     public void closeConnectionsAfterFailedTest() throws Exception {
-
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
@@ -414,9 +417,9 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder,
                     String.format("select ST_AsBinary(geom) as geom from %s.source", schemaName), "select.sql");
 
-            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR,
+            Connector src = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
                     TestUtil.PG_READERUSR_PWD);
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
+            Connector sink = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(queryFile.getAbsolutePath(), schemaName + ".SINK", true,
                     new String[] { "geom:wkb:2056" });
 
@@ -446,9 +449,9 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder,
                     String.format("select ST_AsText(geom) as geom from %s.source", schemaName), "select.sql");
 
-            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR,
+            Connector src = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
                     TestUtil.PG_READERUSR_PWD);
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
+            Connector sink = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(queryFile.getAbsolutePath(), schemaName + ".SINK", true,
                     new String[] { "geom:wkt:2056" });
 
@@ -478,9 +481,9 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder,
                     String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName), "select.sql");
 
-            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR,
+            Connector src = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
                     TestUtil.PG_READERUSR_PWD);
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
+            Connector sink = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(queryFile.getAbsolutePath(), schemaName + ".SINK", true,
                     new String[] { "geom:geojson:2056" });
 
@@ -521,7 +524,7 @@ public class Db2DbStepTest {
                     "select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
+            Connector sink = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(queryFile.getAbsolutePath(), schemaName + ".DTYPES", true,
                     new String[] { "mygeom:wkt:2056" });
 
@@ -572,7 +575,7 @@ public class Db2DbStepTest {
                     "select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
+            Connector sink = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(queryFile.getAbsolutePath(), schemaName + ".DTYPES", true,
                     new String[] { "mygeom:wkt:2056" });
 
@@ -692,7 +695,7 @@ public class Db2DbStepTest {
                     schemaName);
             File queryFile = TestUtil.createFile(folder, select, "select.sql");
 
-            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR,
+            Connector src = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
                     TestUtil.PG_READERUSR_PWD);
             Connector sink = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
             TransferSet tSet = new TransferSet(queryFile.getAbsolutePath(), "dtypes", true);
@@ -781,11 +784,11 @@ public class Db2DbStepTest {
     }
 
     private static Connection connectToPreparedPgDb(String schemaName) throws Exception {
-        Driver pgDriver = (Driver) Class.forName("org.postgresql.Driver").newInstance();
-        DriverManager.registerDriver(pgDriver);
-
-        Connection con = DriverManager.getConnection(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DDLUSR_USR,
-                TestUtil.PG_DDLUSR_PWD);
+        String url = postgres.getJdbcUrl();
+        String user = postgres.getUsername();
+        String password = postgres.getPassword();
+                
+        Connection con = DriverManager.getConnection(url, user, password);
 
         con.setAutoCommit(false);
 

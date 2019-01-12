@@ -18,7 +18,6 @@ ext {
     mockFtpServerVersion = '2.7.1'   
     testContainersVersion = '1.10.5'
      
-
     // dependencies
     ioxIliDependency = [ group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion ]
     ilivalidatorDependency = [ group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion ]
@@ -36,7 +35,7 @@ ext {
     
     junitDependency = [ group: 'junit', name: 'junit', version: junitVersion ]
     mockFtpServerDependency = [ group: 'org.mockftpserver', name: 'MockFtpServer', version: mockFtpServerVersion ]
-    testContainersDependency = [ group: 'org.testconainers', name: 'testcontainers', version: testContainersVersion]
-    testContainersPostgresDependency = [ group: 'org.testconainers', name: 'postgresql', version: testContainersVersion]
+    testContainersDependency = [ group: 'org.testcontainers', name: 'testcontainers', version: testContainersVersion]
+    testContainersPostgresDependency = [ group: 'org.testcontainers', name: 'postgresql', version: testContainersVersion]
 }
 

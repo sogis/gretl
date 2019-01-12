@@ -12,6 +12,9 @@ import static org.hamcrest.CoreMatchers.containsString;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,6 +30,16 @@ import java.util.List;
  */
 public class SqlExecutorStepTest {
     private GretlLogger log;
+    
+    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
+    
+    @ClassRule
+    public static PostgreSQLContainer postgres = 
+        (PostgreSQLContainer) new PostgisContainerProvider()
+        .newInstance().withDatabaseName("gretl")
+        .withUsername("ddluser")
+        .withInitScript("init_postgresql.sql")
+        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
 
     public SqlExecutorStepTest() {
         LogEnvironment.initStandalone();
@@ -166,8 +179,8 @@ public class SqlExecutorStepTest {
     @Test
     public void executePostgisVersionTest() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        System.err.println(TestUtil.PG_CONNECTION_URI);
-        Connector sourceDb = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR,
+        System.err.println(postgres.getJdbcUrl());
+        Connector sourceDb = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
                 TestUtil.PG_READERUSR_PWD);
 
         File sqlFile = folder.newFile("postgisversion.sql");
