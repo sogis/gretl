@@ -1,6 +1,7 @@
 allprojects {
     group 'ch.so.agi'
-    version '1.0.5'+System.getProperty('release','-SNAPSHOT')
+    //version '1.0.5'+System.getProperty('release','-SNAPSHOT')
+    version '1.LOCALBUILD'
     version env('GRETL_VERSION', "$project.version")
 	
     repositories {

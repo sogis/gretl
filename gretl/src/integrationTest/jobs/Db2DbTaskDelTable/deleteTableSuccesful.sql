@@ -1,0 +1,1 @@
+select * from deletedesttablecontent.albums_src

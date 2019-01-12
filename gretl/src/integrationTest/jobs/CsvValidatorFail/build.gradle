@@ -1,0 +1,11 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+defaultTasks 'validate'
+
+task validate(type: CsvValidator){
+	models = "CsvModel"
+	firstLineIsHeader=false
+    dataFiles = ["dataFail.csv"]
+}

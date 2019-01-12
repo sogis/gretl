@@ -1,0 +1,20 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.api.*
+apply plugin: 'ch.so.agi.gretl'
+
+def GRETLTEST_DBURI = 'gretltest_dburi_pg'
+def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl'
+
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+defaultTasks 'fetchSizeTask'
+
+task fetchSizeTask(type: Db2Db) {
+    sourceDb =  [db_uri, db_user, db_pass]
+    targetDb = [db_uri, db_user, db_pass]
+    fetchSize = 10
+    transferSets = [
+            new TransferSet('sql/fetchSize.sql', 'db2dbtaskfetchsize.target_data', true)
+    ];
+}

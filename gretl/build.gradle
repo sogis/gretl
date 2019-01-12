@@ -10,6 +10,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8 
 
 apply from: '../dependencies.gradle'
+apply from: 'integration-test.gradle'
 
 configurations.all {
     resolutionStrategy { 
@@ -38,6 +39,28 @@ dependencies {
     testImplementation junitDependency
     testImplementation testContainersDependency
     testImplementation testContainersPostgresDependency
+    
+    /**
+     * Provides, at compile-time, the classes produced by the _main_ and _test_ SourceSets, 
+     * allowing the integration tests to access the production code in _main_ and allowing 
+     * them to reuse any unit test helper methods in _test_.
+     */
+    integrationTestImplementation sourceSets.main.output
+    integrationTestImplementation sourceSets.test.output
+    
+    /**
+     * Provides, at compile-time, the dependencies that both _main_ and _test_ require in order
+     * to successfully compile.
+     */
+    integrationTestImplementation configurations.implementation
+    integrationTestImplementation configurations.testImplementation
+    
+    /**
+     * Provides, at run-time, the dependencies that both _main_ and _test_ require to run.
+     */
+    integrationTestImplementation configurations.runtime
+    integrationTestImplementation configurations.testRuntime
+    
 }
 
 gradlePlugin {
@@ -85,8 +108,9 @@ test {
 }
 
 task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = 'Runs all unit tests with dependency to a db server (pg, oracle, ...).'
     useJUnit {
-        // Runs all tests with dependency to a db server (pg, oracle, ..)
         includeCategories 'ch.so.agi.gretl.testutil.DbTest'
     }
 }
@@ -102,11 +126,14 @@ task jardist(type: Copy){
 }
 */
 
-// Transfer the required configuration variables to the unit test code.
+// Transfer the required configuration variables to the test code.
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
     def GRETLTEST_DBURI = 'gretltest_dburi_pg'
     systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
+    
+    systemProperty('GRETL_PROJECT_ABS_PATH', project(':gretl').getProjectDir().getAbsolutePath())
+    systemProperty('ROOT_PROJECT_ABS_PATH', project.getRootProject().getProjectDir().getAbsolutePath())
 }
 
 /*
