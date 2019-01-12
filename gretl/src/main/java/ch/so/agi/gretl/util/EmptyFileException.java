@@ -12,6 +12,4 @@ public class EmptyFileException extends GretlException {
     public EmptyFileException(String message, Throwable cause) {
         super(message, cause);
     }
-
-
 }

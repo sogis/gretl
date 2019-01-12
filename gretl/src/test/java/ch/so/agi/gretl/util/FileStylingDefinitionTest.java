@@ -14,9 +14,7 @@ public class FileStylingDefinitionTest {
         try {
             FileStylingDefinition.checkForUtf8(inputfile);
             Assert.fail();
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) {}
     }
 
     @Test
@@ -24,11 +22,10 @@ public class FileStylingDefinitionTest {
         ClassLoader classLoader = getClass().getClassLoader();
         File inputfile = new File(classLoader.getResource("test_utf8.txt").getFile());
         FileStylingDefinition.checkForUtf8(inputfile);
-
     }
 
     @Test
-    public void FileWithBOMThrowsException() throws Exception {
+    public void fileWithBOMThrowsException() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File inputfile = new File(classLoader.getResource("query_with_bom.sql").getFile());
         try {

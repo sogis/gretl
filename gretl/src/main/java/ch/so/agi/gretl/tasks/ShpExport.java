@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.tasks;
 
-
 import java.io.File;
 import java.sql.SQLException;
 
@@ -20,73 +19,69 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
-
 public class ShpExport extends DefaultTask {
     protected GretlLogger log;
     @Input
     public Connector database;
     @InputFile
-    public Object dataFile=null;
+    public Object dataFile = null;
     @Input
-    String tableName=null;
-    @Input
-    @Optional
-    public String schemaName=null;
+    String tableName = null;
     @Input
     @Optional
-    public String encoding=null;
-    
+    public String schemaName = null;
+    @Input
+    @Optional
+    public String encoding = null;
+
     @TaskAction
-    public void exportData()
-    {
+    public void exportData() {
         log = LogEnvironment.getLogger(ShpExport.class);
-        if (database==null) {
+        if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
-        if (tableName==null) {
+        if (tableName == null) {
             throw new IllegalArgumentException("tableName must not be null");
         }
-        if (dataFile==null) {
+        if (dataFile == null) {
             return;
         }
-        Settings settings=new Settings();
+        Settings settings = new Settings();
         settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
         // set optional parameters
-        if(schemaName!=null) {
-            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA,schemaName);
+        if (schemaName != null) {
+            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
         }
-        if(encoding!=null) {
+        if (encoding != null) {
             settings.setValue(ShapeReader.ENCODING, encoding);
         }
-        
-        File data=this.getProject().file(dataFile);
-        java.sql.Connection conn=null;
+
+        File data = this.getProject().file(dataFile);
+        java.sql.Connection conn = null;
         try {
-            conn=database.connect();
-            if(conn==null) {
+            conn = database.connect();
+            if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
-            Db2Shp db2shp=new Db2Shp();
+            Db2Shp db2shp = new Db2Shp();
             db2shp.exportData(data, conn, settings);
             conn.commit();
             conn.close();
-            conn=null;
+            conn = null;
         } catch (Exception e) {
             log.error("failed to run ShpExport", e);
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         } finally {
-            if(conn!=null) {
+            if (conn != null) {
                 try {
                     conn.rollback();
                     conn.close();
                 } catch (SQLException e) {
                     log.error("failed to rollback/close", e);
                 }
-                conn=null;
+                conn = null;
             }
         }
     }
-
 }
-

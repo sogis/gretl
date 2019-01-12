@@ -17,8 +17,9 @@ import java.sql.ResultSetMetaData;
 import java.util.Map;
 
 /**
- * Exports raster data from a PostgreSQL database into a raster file by executing a sql query.
- * The sql query must return only one record. Use e.g. ST_Union().
+ * Exports raster data from a PostgreSQL database into a raster file by
+ * executing a sql query. The sql query must return only one record. Use e.g.
+ * ST_Union().
  *
  * @author Stefan Ziegler
  */
@@ -30,17 +31,18 @@ public class PostgisRasterExportStep {
     }
 
     /**
-     * Executes the sql query from a file in the specified database. It will use the first found _bytea_ column as
-     * raster data column.
+     * Executes the sql query from a file in the specified database. It will use the
+     * first found _bytea_ column as raster data column.
      *
-     * @param database      Database properties to generate database connection.
-     * @param sqlFile       File which contain query.
-     * @param dataFile      File where raster data is written to.
-     * @param params        Map with key/value pairs. Will be used to replace parameters in the sql query.
-     * @throws Exception    If file is missing, no connection to database, could not read file or
-     *                      problems while executing sql query.
+     * @param database Database properties to generate database connection.
+     * @param sqlFile  File which contain query.
+     * @param dataFile File where raster data is written to.
+     * @param params   Map with key/value pairs. Will be used to replace parameters
+     *                 in the sql query.
+     * @throws Exception If file is missing, no connection to database, could not
+     *                   read file or problems while executing sql query.
      */
-    public void execute(Connector database, File sqlFile, File dataFile, Map<String,String> params) throws Exception {
+    public void execute(Connector database, File sqlFile, File dataFile, Map<String, String> params) throws Exception {
         Connection conn = null;
 
         log.lifecycle("Database string: " + database.toString());
@@ -72,13 +74,13 @@ public class PostgisRasterExportStep {
             }
             rs.close();
             pstmt.close();
-        } catch (Exception e){
+        } catch (Exception e) {
             if (conn != null) {
                 conn.rollback();
             }
             throw e;
         } finally {
-            if (conn != null){
+            if (conn != null) {
                 conn.close();
             }
         }

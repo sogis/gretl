@@ -1,8 +1,6 @@
 package ch.so.agi.gretl.api;
 
-
 import ch.so.agi.gretl.util.DbConnector;
-
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
@@ -43,18 +41,18 @@ public class Connector {
             dbConnection.setAutoCommit(false);
         }
         return dbConnection;
-
     }
 
     public String toString() {
         int passLength = 0;
-        if(dbPassword != null)
+        if (dbPassword != null)
             passLength = dbPassword.length();
 
         char[] starArray = new char[passLength];
         Arrays.fill(starArray, "*".toCharArray()[0]);
 
-        String res = String.format("Connection( DbUri: %s, DbUser: %s DbPass: %s)", dbUri, dbUser, new String(starArray));
+        String res = String.format("Connection( DbUri: %s, DbUser: %s DbPass: %s)", dbUri, dbUser,
+                new String(starArray));
         return res;
     }
 }

@@ -20,7 +20,7 @@ import java.io.StringReader;
 public class SqlReaderTest {
     private static GretlLogger log;
 
-    static{
+    static {
         LogEnvironment.initStandalone();
         log = LogEnvironment.getLogger(SqlReaderTest.class);
     }
@@ -40,6 +40,7 @@ public class SqlReaderTest {
 
         String parsedStatement = new SqlReader().readSqlStmt(sqlFile);
 
-        Assert.assertEquals("Line comment must be removed without changing the statement itself", statement, parsedStatement);
-    }    
+        Assert.assertEquals("Line comment must be removed without changing the statement itself", statement,
+                parsedStatement);
+    }
 }

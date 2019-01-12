@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.tasks;
 
-
 import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
@@ -11,11 +10,10 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-
 public class Ili2pgImportSchema extends Ili2pgAbstractTask {
-    @InputFile 
+    @InputFile
     @Optional
-    public Object iliFile=null;
+    public Object iliFile = null;
     @Input
     @Optional
     public boolean oneGeomPerTable = false;
@@ -133,25 +131,26 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @Input
     @Optional
     public boolean createMetaInfo = false;
-    
+
     @TaskAction
-    public void importSchema()
-    {
-        Config settings=createConfig();
-        int function=Config.FC_SCHEMAIMPORT;
-        String iliFilename=null;
-        if(iliFile==null) {
-        }else {
-            if(iliFile instanceof String && ch.ehi.basics.view.GenericFileFilter.getFileExtension((String) iliFile)==null) {
-                iliFilename=(String)iliFile;
-            }else {
-                iliFilename=this.getProject().file(iliFile).getPath();
+    public void importSchema() {
+        Config settings = createConfig();
+        int function = Config.FC_SCHEMAIMPORT;
+        String iliFilename = null;
+        if (iliFile == null) {
+        } else {
+            if (iliFile instanceof String
+                    && ch.ehi.basics.view.GenericFileFilter.getFileExtension((String) iliFile) == null) {
+                iliFilename = (String) iliFile;
+            } else {
+                iliFilename = this.getProject().file(iliFile).getPath();
             }
         }
         settings.setXtffile(iliFilename);
         init(settings);
         run(function, settings);
     }
+
     private void init(Config settings) {
         if (oneGeomPerTable) {
             settings.setOneGeomPerTable(true);
@@ -274,7 +273,5 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         if (createMetaInfo) {
             settings.setCreateMetaInfo(true);
         }
-
     }
 }
-

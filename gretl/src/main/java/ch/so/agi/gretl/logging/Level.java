@@ -1,11 +1,10 @@
 package ch.so.agi.gretl.logging;
 
 /**
- * Utility class defining the logging levels when
- * using the gretl logging in a standalone environment.
- * The mapping to the standalone logging framework does
- * not include renaming the outputs to the gretl names.
- * A gretl info message will be logged as fine etc.
+ * Utility class defining the logging levels when using the gretl logging in a
+ * standalone environment. The mapping to the standalone logging framework does
+ * not include renaming the outputs to the gretl names. A gretl info message
+ * will be logged as fine etc.
  */
 public class Level {
 
@@ -16,15 +15,14 @@ public class Level {
 
     private java.util.logging.Level innerLevel;
 
-    private Level(java.util.logging.Level innerLevel){
-        if(innerLevel == null)
+    private Level(java.util.logging.Level innerLevel) {
+        if (innerLevel == null)
             throw new IllegalArgumentException("innerLevel must not be null");
 
         this.innerLevel = innerLevel;
     }
 
-    java.util.logging.Level getInnerLevel(){
+    java.util.logging.Level getInnerLevel() {
         return innerLevel;
     }
 }
-

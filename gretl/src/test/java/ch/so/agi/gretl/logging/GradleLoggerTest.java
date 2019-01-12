@@ -14,29 +14,27 @@ import java.io.PrintStream;
 
 import java.util.logging.Logger;
 
-
-
-
 /**
  * Test-Class for Logger-Class
  */
 public class GradleLoggerTest {
 
     private GretlLogger log;
-    private GradleCollector collector=new GradleCollector();
-
+    private GradleCollector collector = new GradleCollector();
 
     public GradleLoggerTest() {
         // make sure we use the gradle logger, as this is the gradle logger test
         LogEnvironment.setLogFactory(new GradleLogFactory());
         log = LogEnvironment.getLogger(this.getClass());
-        OutputEventListenerBackedLoggerContext context = (OutputEventListenerBackedLoggerContext) LoggerFactory.getILoggerFactory();
+        OutputEventListenerBackedLoggerContext context = (OutputEventListenerBackedLoggerContext) LoggerFactory
+                .getILoggerFactory();
         context.setLevel(LogLevel.DEBUG);
         context.setOutputEventListener(collector);
     }
+
     private void resetSystemOutAndErr() {
         collector.clear();
-        
+
     }
 
     @Test
@@ -46,14 +44,13 @@ public class GradleLoggerTest {
 
             log.info("$Info-Logger-Test$");
 
-            LogEvent event=(LogEvent) collector.getEvent(0);
-            Assert.assertEquals(LogLevel.INFO,event.getLogLevel());
-              Assert.assertEquals(event.getMessage(),"$Info-Logger-Test$");
+            LogEvent event = (LogEvent) collector.getEvent(0);
+            Assert.assertEquals(LogLevel.INFO, event.getLogLevel());
+            Assert.assertEquals(event.getMessage(), "$Info-Logger-Test$");
 
         } finally {
             resetSystemOutAndErr();
         }
-
     }
 
     @Test
@@ -62,33 +59,27 @@ public class GradleLoggerTest {
         try {
             log.error("$Error-Logger-Test$", new RuntimeException("Test Exception"));
 
-            LogEvent event=(LogEvent) collector.getEvent(0);
-            Assert.assertEquals(LogLevel.ERROR,event.getLogLevel());
-              Assert.assertEquals(event.getMessage(),"$Error-Logger-Test$");
+            LogEvent event = (LogEvent) collector.getEvent(0);
+            Assert.assertEquals(LogLevel.ERROR, event.getLogLevel());
+            Assert.assertEquals(event.getMessage(), "$Error-Logger-Test$");
 
         } finally {
             resetSystemOutAndErr();
         }
-
     }
-
 
     @Test
     public void logDebugTest() throws Exception {
 
-        try{
+        try {
             log.debug("$Debug-Logger-Test$");
 
-            LogEvent event=(LogEvent) collector.getEvent(0);
-            Assert.assertEquals(LogLevel.DEBUG,event.getLogLevel());
-              Assert.assertEquals(event.getMessage(),"$Debug-Logger-Test$");
+            LogEvent event = (LogEvent) collector.getEvent(0);
+            Assert.assertEquals(LogLevel.DEBUG, event.getLogLevel());
+            Assert.assertEquals(event.getMessage(), "$Debug-Logger-Test$");
 
         } finally {
             resetSystemOutAndErr();
         }
-
     }
-
-
 }
-

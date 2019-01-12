@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.tasks.impl;
 
-
 import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.api.Connector;
@@ -17,7 +16,6 @@ import org.gradle.api.tasks.OutputFile;
 import java.io.File;
 import java.sql.SQLException;
 
-
 public abstract class Ili2pgAbstractTask extends DefaultTask {
     protected GretlLogger log;
 
@@ -32,7 +30,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @Input
     @Optional
     public Integer proxyPort = null;
-    
+
     @Input
     @Optional
     public String modeldir = null;
@@ -85,16 +83,16 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @Optional
     public boolean iligml20 = false;
 
-    protected void run(int function,Config settings) {
+    protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
 
-        if (database==null) {
+        if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
-        
+
         settings.setFunction(function);
-        
-        String xtfFilename=settings.getXtffile();
+
+        String xtfFilename = settings.getXtffile();
         if (proxy != null) {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_HOST, proxy);
         }
@@ -156,11 +154,11 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (iligml20) {
             settings.setTransferFileFormat(Config.ILIGML20);
         }
-            
-        java.sql.Connection conn=null;
+
+        java.sql.Connection conn = null;
         try {
-            conn=database.connect();
-            if(conn==null) {
+            conn = database.connect();
+            if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
             settings.setJdbcConnection(conn);
@@ -168,28 +166,28 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             Ili2db.run(settings, null);
             conn.commit();
             conn.close();
-            conn=null;
+            conn = null;
         } catch (Exception e) {
             log.error("failed to run ili2pg", e);
 
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
-        }finally {
-            if(conn!=null) {
+        } finally {
+            if (conn != null) {
                 try {
                     conn.rollback();
                     conn.close();
                 } catch (SQLException e) {
                     log.error("failed to rollback/close", e);
                 }
-                conn=null;
+                conn = null;
             }
         }
     }
+
     protected Config createConfig() {
-        Config settings=new Config();
+        Config settings = new Config();
         new ch.ehi.ili2pg.PgMain().initConfig(settings);
         return settings;
     }
 }
-

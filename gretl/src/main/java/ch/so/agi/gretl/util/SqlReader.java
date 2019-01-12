@@ -12,25 +12,23 @@ import java.util.Map;
  * Class which reads the given sql-statements
  */
 public class SqlReader {
-    private PushbackReader reader=null;
-    private Map<String,String> params=null;
+    private PushbackReader reader = null;
+    private Map<String, String> params = null;
     private GretlLogger log = LogEnvironment.getLogger(SqlReader.class);
 
-
-    public String readSqlStmt(File sqlfile)
-            throws IOException {
+    public String readSqlStmt(File sqlfile) throws IOException {
         return readSqlStmt(sqlfile, null);
     }
-    public String readSqlStmt(File sqlfile,Map<String,String> params)
-            throws IOException {
 
-        if(reader!=null) {
+    public String readSqlStmt(File sqlfile, Map<String, String> params) throws IOException {
+
+        if (reader != null) {
             throw new IllegalStateException("readSqlStmt() must only be called for the first statement");
         }
-        this.params=params;
+        this.params = params;
         createPushbackReader(sqlfile);
         String ret = ch.ehi.sqlgen.SqlReader.readSqlStmt(reader, params);
-        if(ret==null) {
+        if (ret == null) {
             close();
         }
         return ret;
@@ -43,25 +41,21 @@ public class SqlReader {
         reader = new PushbackReader(sqlFileReader);
     }
 
-
-    public String nextSqlStmt() throws IOException{
-        if(reader==null) {
+    public String nextSqlStmt() throws IOException {
+        if (reader == null) {
             return null;
         }
         String ret = ch.ehi.sqlgen.SqlReader.readSqlStmt(reader, params);
-        if(ret==null) {
+        if (ret == null) {
             close();
         }
         return ret;
     }
 
-
-    public void close()
-            throws IOException {
-        if(reader!=null) {
+    public void close() throws IOException {
+        if (reader != null) {
             reader.close();
-            reader=null;
+            reader = null;
         }
     }
 }
-

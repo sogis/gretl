@@ -1,22 +1,20 @@
 package ch.so.agi.gretl.steps;
 
-
-import ch.so.agi.gretl.util.GretlException;
 import org.gradle.api.GradleException;
 
 public class GeometryTransformWkt extends GeometryTransform {
 
     private int epsgCode;
 
-    GeometryTransformWkt(String[] definitionParts){
+    GeometryTransformWkt(String[] definitionParts) {
         super(definitionParts[0]);
 
-        if(definitionParts.length != 3)
-            throw new GradleException(String.format("Configuration error. Expecting format string %s for wkt", this.formatInfo()));
+        if (definitionParts.length != 3)
+            throw new GradleException(
+                    String.format("Configuration error. Expecting format string %s for wkt", this.formatInfo()));
 
         this.epsgCode = parseEpsgCode(definitionParts[2]);
     }
-
 
     @Override
     public String wrapWithGeoTransformFunction(String valuePlaceHolder) {
@@ -24,7 +22,6 @@ public class GeometryTransformWkt extends GeometryTransform {
 
         return res;
     }
-
 
     @Override
     public String formatInfo() {

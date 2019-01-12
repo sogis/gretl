@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.tasks;
 
-
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.shp.ShapeReader;
 import ch.so.agi.gretl.logging.GretlLogger;
@@ -15,37 +14,34 @@ import org.gradle.api.tasks.TaskExecutionException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ShpValidator extends AbstractValidatorTask {
     private GretlLogger log;
     @Input
     @Optional
-    public String encoding=null;
+    public String encoding = null;
 
     @TaskAction
     public void validate() {
         log = LogEnvironment.getLogger(ShpValidator.class);
 
-        if (dataFiles==null || dataFiles.size()==0) {
+        if (dataFiles == null || dataFiles.size() == 0) {
             return;
         }
-        List<String> files=new ArrayList<String>();
-        for(Object fileObj:dataFiles) {
-            String fileName=this.getProject().file(fileObj).getPath();
+        List<String> files = new ArrayList<String>();
+        for (Object fileObj : dataFiles) {
+            String fileName = this.getProject().file(fileObj).getPath();
             files.add(fileName);
         }
-        
-        Settings settings=new Settings();
+
+        Settings settings = new Settings();
         initSettings(settings);
-        if(encoding!=null) {
+        if (encoding != null) {
             settings.setValue(ShapeReader.ENCODING, encoding);
         }
-        
-        validationOk=new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        if(!validationOk && failOnError) {
-            throw new TaskExecutionException(this,new Exception("validation failed"));
+
+        validationOk = new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
+        if (!validationOk && failOnError) {
+            throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }
-
 }
-

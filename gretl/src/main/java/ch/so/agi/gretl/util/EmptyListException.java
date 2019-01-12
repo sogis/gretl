@@ -11,5 +11,4 @@ public class EmptyListException extends GretlException {
     public EmptyListException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

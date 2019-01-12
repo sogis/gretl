@@ -26,4 +26,3 @@ public class Ili2pgUpdate extends Ili2pgAbstractTask {
         run(function, settings);
     }
 }
-

@@ -15,5 +15,4 @@ public class GretlPlugin implements Plugin<Project> {
         Ehi2GretlAdapter.init();
         
     }
-
 }

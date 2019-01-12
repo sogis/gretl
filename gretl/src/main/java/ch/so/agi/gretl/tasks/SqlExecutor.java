@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.tasks;
 
-
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
@@ -17,15 +16,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * This Class represents the the Task which executes the SQLExecutorStep
- * Only this Class should execute the SQLExecutorStep. Users must use this Class to access SQLExecutorStep
+ * This Class represents the the Task which executes the SQLExecutorStep Only
+ * this Class should execute the SQLExecutorStep. Users must use this Class to
+ * access SQLExecutorStep
  */
 public class SqlExecutor extends DefaultTask {
     private static GretlLogger log;
 
-    static{
+    static {
         LogEnvironment.initGradleIntegrated();
         log = LogEnvironment.getLogger(SqlExecutor.class);
     }
@@ -38,14 +37,14 @@ public class SqlExecutor extends DefaultTask {
 
     @Input
     @Optional
-    public java.util.Map<String,String> sqlParameters=null;
+    public java.util.Map<String, String> sqlParameters = null;
 
     @TaskAction
     public void executeSQLExecutor() {
 
         String taskName = this.getName();
 
-        if (sqlFiles==null) {
+        if (sqlFiles == null) {
             throw new GradleException("sqlFiles is null");
         }
 
@@ -53,7 +52,7 @@ public class SqlExecutor extends DefaultTask {
 
         try {
             SqlExecutorStep step = new SqlExecutorStep(taskName);
-            step.execute(database, files,sqlParameters);
+            step.execute(database, files, sqlParameters);
             log.info("Task start");
         } catch (Exception e) {
             log.error("Exception in creating / invoking SqlExecutorStep.", e);
@@ -63,20 +62,18 @@ public class SqlExecutor extends DefaultTask {
         }
     }
 
-    private List<File> convertToFileList(List<String> filePaths){
+    private List<File> convertToFileList(List<String> filePaths) {
 
         List<File> files = new ArrayList<>();
 
-        for(String filePath : filePaths)
-        {
-            if(filePath == null || filePath.length() == 0)
+        for (String filePath : filePaths) {
+            if (filePath == null || filePath.length() == 0)
                 throw new IllegalArgumentException("Filepaths must not be null or empty");
 
-            File absolute = TaskUtil.createAbsolutePath(filePath, ((Task)this).getProject());
+            File absolute = TaskUtil.createAbsolutePath(filePath, ((Task) this).getProject());
             files.add(absolute);
         }
 
         return files;
     }
 }
-

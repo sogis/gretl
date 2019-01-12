@@ -2,10 +2,9 @@ package ch.so.agi.gretl.logging;
 
 public class GradleLogFactory implements LogFactory {
 
-    GradleLogFactory(){}
+    GradleLogFactory() {}
 
-    public GretlLogger getLogger(Class logSource){
+    public GretlLogger getLogger(Class logSource) {
         return new GradleLogAdaptor(logSource);
     }
-
 }
