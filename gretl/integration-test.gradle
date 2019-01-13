@@ -31,12 +31,11 @@ task jarTest(type: Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
     jvmArgs '-Xmx1g'
-
-    //mustRunAfter test
 }
 
 jarTest {
     filter {
-        includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"
+        //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"
+        includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"
     }
 }

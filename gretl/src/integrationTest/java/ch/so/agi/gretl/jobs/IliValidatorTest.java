@@ -16,7 +16,6 @@ public class IliValidatorTest {
     @Test
     public void validationFail() throws Exception {
         GradleVariable[] gvs = null;
-        assertEquals(1,
-                IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidatorFail", gvs, new StringBuffer(), new StringBuffer()));
+        assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidatorFail", gvs, new StringBuffer(), new StringBuffer()));
     }
 }
