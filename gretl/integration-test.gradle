@@ -35,7 +35,29 @@ task jarTest(type: Test) {
 
 jarTest {
     filter {
+        includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"
+        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"
+    }
+}
+
+task imageTest(type: Test){
+    description = 'Runs integration tests against the installed gretl docker image.'
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    systemProperty('GRETL_TESTTYPE', 'image')
+
+    // show standard out and standard error of the test JVM(s) on the console
+    //testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+    testLogging.showStandardStreams = true
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
+}
+
+imageTest {
+    filter {
         //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"
         includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"
     }
 }
+

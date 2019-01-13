@@ -1,0 +1,20 @@
+apply from: '../dependencies.gradle'
+apply plugin: 'java-library'
+
+// TODO: oracle jdbc jar?!
+dependencies {
+    // Add latest gretl jar. Since it's not added as plugin,
+    // it will not try to get it from plugins.gradle.org.
+    api 'ch.so.agi:gretl:latest.integration'
+
+    // Add 3rd party libs which will want in the docker image.
+    api 'de.undercouch:gradle-download-task:3.4.1'
+    api 'org.hidetake:gradle-ssh-plugin:2.9.0'
+}
+
+task stageJars(type: Copy) {
+    description = 'Copies all jars required by gretl to the temp folder __jars4image.'
+    from configurations.compileClasspath
+    from configurations.runtimeClasspath
+    into "gretl/__jars4image"
+}
