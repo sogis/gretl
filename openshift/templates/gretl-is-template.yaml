@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Template
+labels:
+  app: gretl-platform
+metadata:
+  creationTimestamp: null
+  name: gretl-platform
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      role: jenkins-slave
+    name: gretl
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: ${GRETL_RUNTIME_IMAGE}
+      name: latest
+parameters:
+- name: GRETL_RUNTIME_IMAGE
+  description: Docker image and version of GRETL runtime to be pulled from Dockerhub.
+  displayName: Docker image of GRETL runtime
+  value: sogis/gretl-runtime:latest
