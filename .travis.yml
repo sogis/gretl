@@ -15,3 +15,4 @@ install: true
 script:
   - ./gradlew --no-daemon clean gretl:classes
   - ./gradlew --no-daemon gretl:test gretl:dbTest
+  - cd runtimeImage/
