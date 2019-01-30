@@ -31,13 +31,12 @@ The _GRETL_ repository is organized as Gradle multi-project:
 ## Testing
 
 ```
-./gradlew clean gretl:classes -x test
-./gradlew clean gretl:test gretl:dbTest
-./gradlew clean gretl:build
-./gradlew clean gretl:build gretl:publishPluginMavenPublicationToMavenLocal
+./gradlew clean gretl:classes 
+./gradlew gretl:test gretl:dbTest
+./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
 ./runtimeImage/build-gretl.sh
-./gradlew clean gretl:jarTest
-./gradlew clean gretl:imageTest
+./gradlew gretl:jarTest
+./gradlew gretl:imageTest
 ```
 
 ### Unit tests
