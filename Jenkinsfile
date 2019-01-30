@@ -22,7 +22,7 @@ pipeline {
                 sh './gradlew --no-daemon gretl:test gretl:dbTest'
                 publishHTML target: [
                     reportName : 'Gradle Tests',
-                    reportDir:   'build/reports/tests/test', 
+                    reportDir:   'gretl/build/reports/tests/test', 
                     reportFiles: 'index.html',
                     keepAll: true,
                     alwaysLinkToLastBuild: true,
