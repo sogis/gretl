@@ -5,6 +5,9 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 import org.junit.Test;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import static org.junit.Assert.*;
 
@@ -14,14 +17,25 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 
 public class ShpImportTest {
+    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
+    
+    @ClassRule
+    public static PostgreSQLContainer postgres = 
+        (PostgreSQLContainer) new PostgisContainerProvider()
+        .newInstance().withDatabaseName("gretl")
+        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+        .withInitScript("init_postgresql.sql")
+        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+    
     @Test
     public void importOk() throws Exception {
         String schemaName = "shpimport".toLowerCase();
         Connection con = null;
         try{
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
             s1.execute("CREATE TABLE "+schemaName+".importdata_batchsize(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, geometrie geometry(POINT,2056), aextra varchar(40))");
@@ -31,11 +45,11 @@ public class ShpImportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, IntegrationTestUtilSql.PG_CON_URI)};
-            IntegrationTestUtil.runJob("jobs/ShpImportBatchSize", gvs);
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/ShpImportBatchSize", gvs);
 
             //reconnect to check results
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
 
             Statement s2 = con.createStatement();
             ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1"); 

@@ -10,7 +10,7 @@ def db_pass = "dmluser"
 
 defaultTasks 'csvimport'
 
-task csvimport(type: CsvImport){
+task csvimport(type: CsvImport) {
     database = [db_uri, db_user, db_pass]
 	schemaName = "csvimport"
 	tableName = "importdata"

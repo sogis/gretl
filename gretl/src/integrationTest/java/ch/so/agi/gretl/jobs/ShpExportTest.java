@@ -7,6 +7,9 @@ import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
@@ -25,14 +28,25 @@ import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.junit.Assert;
+import org.junit.ClassRule;
 
 public class ShpExportTest {
+    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
+    
+    @ClassRule
+    public static PostgreSQLContainer postgres = 
+        (PostgreSQLContainer) new PostgisContainerProvider()
+        .newInstance().withDatabaseName("gretl")
+        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+        .withInitScript("init_postgresql.sql")
+        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+
     @Test
     public void exportOk() throws Exception {
         String schemaName = "shpexport".toLowerCase();
         Connection con = null;
         try{
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
             s1.execute("CREATE TABLE "+schemaName+".exportdata(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, atimestamp timestamp, aboolean boolean,geom_so geometry(POINT,2056))");
@@ -44,14 +58,14 @@ public class ShpExportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, IntegrationTestUtilSql.PG_CON_URI)};
-            IntegrationTestUtil.runJob("jobs/ShpExport", gvs);
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/ShpExport", gvs);
 
             //check results
             {
                 System.out.println("cwd "+new File(".").getAbsolutePath());
                 //Open the file for reading
-                FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File("jobs/ShpExport/data.shp"));
+                FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File("src/integrationTest/jobs/ShpExport/data.shp"));
                 SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
                 SimpleFeatureIterator featureCollectionIter=featuresSource.getFeatures().features();
                 // feature object

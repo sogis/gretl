@@ -19,7 +19,7 @@ task jarTest(type: Test) {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
     useJUnit {
-        //excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
+        excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
@@ -35,14 +35,25 @@ task jarTest(type: Test) {
 
 jarTest {
     filter {
-        includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"
-        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"
+        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvImportTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvValidatorTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.Db2DbTaskTest"   
+        //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"        
+        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpExportTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpImportTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.SqlExecutorTaskTest"    
     }
 }
 
 task imageTest(type: Test){
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
+    
+    useJUnit {
+        excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
+    }    
 
     systemProperty('GRETL_TESTTYPE', 'image')
 
@@ -56,8 +67,15 @@ task imageTest(type: Test){
 
 imageTest {
     filter {
-        //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"
-        includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"
+        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvImportTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvValidatorTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.Db2DbTaskTest"   
+        //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"        
+        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpExportTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpImportTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.SqlExecutorTaskTest"    
     }
 }
 

@@ -10,7 +10,7 @@ def db_pass = "dmluser"
 
 defaultTasks 'csvexport'
 
-task csvexport(type: CsvExport){
+task csvexport(type: CsvExport) {
     database = [db_uri, db_user, db_pass]
 	schemaName = "csvexport"
 	tableName = "exportdata"

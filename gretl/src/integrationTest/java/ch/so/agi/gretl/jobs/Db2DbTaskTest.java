@@ -4,7 +4,11 @@ import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +18,16 @@ import java.sql.Statement;
 
 
 public class Db2DbTaskTest {
+    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
+    
+    @ClassRule
+    public static PostgreSQLContainer postgres = 
+        (PostgreSQLContainer) new PostgisContainerProvider()
+        .newInstance().withDatabaseName("gretl")
+        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+        .withInitScript("init_postgresql.sql")
+        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+    
 	/*
 	 * Tests if fetchSize parameter is working.
 	 * Gradle throws an error if a parameter is being
@@ -24,7 +38,7 @@ public class Db2DbTaskTest {
 		String schemaName = "db2dbTaskFetchSize".toLowerCase();
 		Connection con = null;
 		try {
-			con = IntegrationTestUtilSql.connectPG();
+			con = IntegrationTestUtilSql.connectPG(postgres);
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
 
             Statement stmt = con.createStatement();
@@ -40,10 +54,10 @@ public class Db2DbTaskTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-		    GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, IntegrationTestUtilSql.PG_CON_URI)};
-		    IntegrationTestUtil.runJob("jobs/db2dbTaskFetchSize", gvs);
+		    GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+		    IntegrationTestUtil.runJob("src/integrationTest/jobs/db2dbTaskFetchSize", gvs);
             
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             String countDestSql = String.format("select count(*) from %s.target_data", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
@@ -71,17 +85,17 @@ number of inserts (corresponding to the last statement)
         String schemaName = "db2dbTaskChain".toLowerCase();
         Connection con = null;
         try{
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
             int countSrc = IntegrationTestUtilSql.prepareDb2DbChainTables(con, schemaName);
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, IntegrationTestUtilSql.PG_CON_URI)};
-            IntegrationTestUtil.runJob("jobs/db2dbTaskChain", gvs);
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/db2dbTaskChain", gvs);
 
             //reconnect to check results
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             String countDestSql = String.format("select count(*) from %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
@@ -106,18 +120,18 @@ number of inserts (corresponding to the last statement)
         String schemaName = "relativePath".toLowerCase();
         Connection con = null;
         try{
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
 
             int countSrc = IntegrationTestUtilSql.prepareDb2DbChainTables(con, schemaName);
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, IntegrationTestUtilSql.PG_CON_URI)};
-            IntegrationTestUtil.runJob("jobs/db2dbTaskRelPath", gvs);
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/db2dbTaskRelPath", gvs);
 
             //reconnect to check results
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             String countDestSql = String.format("select count(*) from %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
@@ -139,7 +153,7 @@ number of inserts (corresponding to the last statement)
         String schemaName = "deleteDestTableContent".toLowerCase();
         Connection con = null;
         try{
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
 
             int countSrc = IntegrationTestUtilSql.prepareDb2DbChainTables(con, schemaName);
@@ -148,11 +162,11 @@ number of inserts (corresponding to the last statement)
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, IntegrationTestUtilSql.PG_CON_URI)};
-            IntegrationTestUtil.runJob("jobs/db2dbTaskDelTable", gvs);
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/db2dbTaskDelTable", gvs);
 
             //reconnect to check results
-            con = IntegrationTestUtilSql.connectPG();
+            con = IntegrationTestUtilSql.connectPG(postgres);
             String countDestSql = String.format("select count(*) from %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
