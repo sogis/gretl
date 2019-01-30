@@ -19,15 +19,3 @@ Script execution:
 ```start-gretl.sh --job_directory /home/gretl --task_name gradleTaskName -Pparam1=1 -Pparam2=2```
 
 The *n* parameter are passed directly to the gradle task execution.
-
-### test
-The script ```test-gretl.sh``` holds job name and parameter to test the runtime with the *afu_altlasten_pub* job.
-
-Be sure to change the path of the job files according to the location on your machine.
-
-Further test scripts use GRETL jobs from the *gretl/inttest/jobs* directory.
-
-## Build pipeline
-The build automation is done by [Travis CI](https://www.travis-ci.org/) on GitHub.
-
-The pipeline is configured with the [travis.yml](../.travis.yml) file inside the root directory.

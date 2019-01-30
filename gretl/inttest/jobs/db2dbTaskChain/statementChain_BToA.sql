@@ -1,1 +1,0 @@
-select * from db2dbtaskchain.albums_intermediate
