@@ -12,10 +12,6 @@ branches:
 
 install: true
 
-jobs:  
-  include:
-    - stage: "Compile"               
-      script: ./gradlew --no-daemon clean gretl:classes 
-    - stage: "Tests"
-      name: "Unit Tests"
-      script: ./gradlew --no-daemon gretl:test gretl:dbTest
+script:
+  - ./gradlew --no-daemon clean gretl:classes
+  - ./gradlew --no-daemon gretl:test gretl:dbTest

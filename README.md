@@ -34,7 +34,8 @@ The _GRETL_ repository is organized as Gradle multi-project:
 ./gradlew clean gretl:classes 
 ./gradlew gretl:test gretl:dbTest
 ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
-./runtimeImage/build-gretl.sh
+cd runtimeImage/
+./build-gretl.sh
 ./gradlew gretl:jarTest
 ./gradlew gretl:imageTest
 ```
