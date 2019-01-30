@@ -37,7 +37,7 @@ public class SqlExecutorStepTest {
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
         .newInstance().withDatabaseName("gretl")
-        .withUsername("ddluser")
+        .withUsername(TestUtil.PG_DDLUSR_USR)
         .withInitScript("init_postgresql.sql")
         .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
 

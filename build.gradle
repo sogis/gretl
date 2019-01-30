@@ -1,6 +1,7 @@
 allprojects {
     group 'ch.so.agi'
-    version '1.0.5'+System.getProperty('release','-SNAPSHOT')
+    //version '1.0.5'+System.getProperty('release','-SNAPSHOT')
+    version '1.LOCALBUILD'
     version env('GRETL_VERSION', "$project.version")
 	
     repositories {
@@ -13,6 +14,16 @@ allprojects {
         // 3rd party jars that are not available in public maven repos, e.g. oracle jdbc.
         //flatDir(dirs: './lib')
     }    
+}
+
+// Disable very strict javadoc generation, e.g. handling of ">" in comments.
+// https://stackoverflow.com/questions/34874175/disable-all-javadoc-in-gradle
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
 }
 
 def env(environmentVariableName){

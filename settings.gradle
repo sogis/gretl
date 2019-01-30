@@ -1,2 +1,3 @@
 rootProject.name = 'gretl'
 include 'gretl'
+include 'runtimeImage'

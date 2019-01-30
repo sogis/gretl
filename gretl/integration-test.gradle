@@ -1,0 +1,63 @@
+/**
+ * SourceSets are only responsible for compiling source code,
+ * but do not deal with executing the byte code (= the tests).
+ * We need to create a 'functionalTest(type: Test)' task.
+ */
+sourceSets {
+    integrationTest {
+        java.srcDir 'src/integrationTest/java'
+        resources.srcDir 'src/integrationTest/resources'
+    }
+}
+
+/**
+ * Task for executing the integration tests. It references the 
+ * classes and runtime classpath of the integration test source set.
+ */
+task jarTest(type: Test) {
+    description = 'Runs integration tests against the installed gretl jar.'
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    useJUnit {
+        //excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
+    }
+
+    systemProperty('GRETL_TESTTYPE', 'jar')
+
+    // show standard out and standard error of the test JVM(s) on the console
+    //testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+    testLogging.showStandardStreams = true
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
+    jvmArgs '-Xmx1g'
+}
+
+jarTest {
+    filter {
+        includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"
+        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"
+    }
+}
+
+task imageTest(type: Test){
+    description = 'Runs integration tests against the installed gretl docker image.'
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    systemProperty('GRETL_TESTTYPE', 'image')
+
+    // show standard out and standard error of the test JVM(s) on the console
+    //testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+    testLogging.showStandardStreams = true
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
+}
+
+imageTest {
+    filter {
+        //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"
+        includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"
+    }
+}
+

@@ -1,0 +1,16 @@
+allprojects {
+    buildscript {
+        repositories {
+        	mavenLocal()
+            maven { url "http://jars.interlis.ch" }
+            maven { url "http://download.osgeo.org/webdav/geotools/" }
+            mavenCentral()
+            jcenter()
+        }
+        
+        dependencies {
+            // will match the latest anything - snapshot or release, whatever it finds newer
+            classpath 'ch.so.agi:gretl:latest.integration' 
+        }
+    }
+}
