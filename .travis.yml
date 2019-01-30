@@ -16,3 +16,6 @@ jobs:
   include:
     - stage: "Compile"               
       script: ./gradlew --no-daemon clean classes
+    - stage: "Tests"
+      name: "Unit Tests"
+      script: ./gradlew --no-daemon clean gretl:test gretl:dbTest

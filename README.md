@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/edigonzales/gretl-ng.svg?branch=master)](https://travis-ci.org/edigonzales/gretl-ng)
+
 # gretl
 
 The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql-centric (geo)data etl. gretl = gradle etl.
