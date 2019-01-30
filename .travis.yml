@@ -1,0 +1,18 @@
+sudo: required
+
+language: java
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+    - stable
+
+install: true
+
+jobs:  
+  include:
+    - stage: "Compile"               
+      script: ./gradlew --no-daemon clean classes

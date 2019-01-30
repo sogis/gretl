@@ -28,6 +28,16 @@ The _GRETL_ repository is organized as Gradle multi-project:
 
 ## Testing
 
+```
+./gradlew clean gretl:classes -x test
+./gradlew clean gretl:test gretl:dbTest
+./gradlew clean gretl:build
+./gradlew clean gretl:build gretl:publishPluginMavenPublicationToMavenLocal
+./runtimeImage/build-gretl.sh
+./gradlew clean gretl:jarTest
+./gradlew clean gretl:imageTest
+```
+
 ### Unit tests
 Unit tests with "heavy" dependencies like PostgreSQL are categorized (`ch.so.agi.gretl.testutil.DbTest`) and can be run with `./gradlew gretl:dbTest`. This will manage the PostgreSQL database with the [https://www.testcontainers.org/](Testcontainers framework). Testcontainers start a docker container before every test method or every test class.
 
