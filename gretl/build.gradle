@@ -34,8 +34,8 @@ dependencies {
     runtimeOnly postgresqlDependency
     runtimeOnly sqliteJdbcDependency
     runtimeOnly derbyDependency
-    //runtimeOnly oracleDependency
-	    
+    //compile group: 'com.oracle.jdbc', name: 'ojdbc8', version: '12.2.0.1'
+    
     testImplementation junitDependency
     testImplementation testContainersDependency
     testImplementation testContainersPostgresDependency
@@ -61,6 +61,13 @@ dependencies {
     integrationTestImplementation configurations.runtime
     integrationTestImplementation configurations.testRuntime
     
+    // Oracle JDBC would be a runtime dependency but since it's kinda hard to obtain the jar 
+    // file, we just make it a integration test dependency. It will not appear in the pom.xml 
+    // of the gretl plugin (jar).
+    // We copy the jdbc jar into the docker image for our gretl-runtime. Login and password
+    // is needed.
+    // Those who want to run the integration tests need the jdbc jar too.
+    integrationTestImplementation oracleDependency
 }
 
 gradlePlugin {

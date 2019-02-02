@@ -9,9 +9,13 @@ allprojects {
         maven { url "http://download.osgeo.org/webdav/geotools/" }
         mavenCentral()
         jcenter()
-		
-        // 3rd party jars that are not available in public maven repos, e.g. oracle jdbc.
-        //flatDir(dirs: './lib')
+        maven {
+        url "https://www.oracle.com/content/secure/maven/content"
+            credentials {
+                username "${oracleUsername}"
+                password "${oraclePassword}"
+            }
+        }
     }    
 }
 

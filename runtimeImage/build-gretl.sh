@@ -8,7 +8,6 @@ echo "======================================================================="
 
 
 ../gradlew stageJars #copy all jar dependencies to __jars4image
-cp ../gretl/lib/ojdbc7-*.jar gretl/__jars4image
 
 # Set the image labels to the given shell params or sensitive defaults
 

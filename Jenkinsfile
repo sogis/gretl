@@ -2,6 +2,11 @@
 
 pipeline {
     agent any
+    
+    environment {
+        oracleUsername = credentials('oracleUsername')
+        oraclePassword = credentials('oraclePassword')
+    }    
 
     stages {
         stage('Prepare') {
