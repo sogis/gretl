@@ -12,8 +12,8 @@ allprojects {
         maven {
         url "https://www.oracle.com/content/secure/maven/content"
             credentials {
-                username "${oracleUsername}"
-                password "${oraclePassword}"
+                username System.env.oracleUsername
+                password System.env.oraclePassword
             }
         }
     }    
