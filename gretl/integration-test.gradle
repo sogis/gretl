@@ -75,4 +75,3 @@ imageTest {
         //includeTestsMatching "ch.so.agi.gretl.jobs.DbDriverContainedTest"    
     }
 }
-

@@ -93,21 +93,6 @@ pluginBundle {
     }
 }
 
-// 'gradle publishToMavenLocal' publishes
-// oracle jdbc to local maven repo.
-/*
-publishing {
-	publications {
-		maven(MavenPublication) {
-			artifactId "ojdbc7"
-			version "12.1.0.1"
-			groupId "com.oracle"
-			artifact file('./lib/ojdbc7-12.1.0.1.jar')
-		}
-	}
-}
-*/
-
 test {
     useJUnit{
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
@@ -123,17 +108,6 @@ task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     }
 }
 
-/*
-task jardist(type: Copy){
-	delete fileTree('jardist')
-	destinationDir = file('jardist')
-	from jar
-	from configurations.runtimeClasspath
-	// version = '1.0.6'
-
-}
-*/
-
 // Transfer the required configuration variables to the test code.
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
@@ -143,23 +117,3 @@ tasks.withType(Test) {
     systemProperty('GRETL_PROJECT_ABS_PATH', project(':gretl').getProjectDir().getAbsolutePath())
     systemProperty('ROOT_PROJECT_ABS_PATH', project.getRootProject().getProjectDir().getAbsolutePath())
 }
-
-/*
-publishing{
-    publications{
-        mavenJava(MavenPublication){
-            from components.java
-        }
-    }
-    repositories{
-        maven{
-            name 'Public'
-            url System.getProperty('repos_url')
-            credentials {
-                username System.getProperty('repos_usr')
-                password System.getProperty('repos_pwd')
-            }
-        }
-    }
-}
-*/

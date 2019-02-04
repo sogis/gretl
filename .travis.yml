@@ -15,4 +15,10 @@ install: true
 script:
   - ./gradlew --no-daemon clean gretl:classes
   - ./gradlew --no-daemon gretl:test gretl:dbTest
+  - ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
   - cd runtimeImage/
+  - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
+  - cd ..
+  #- ./gradlew gretl:jarTest
+  #- ./gradlew gretl:imageTest
+

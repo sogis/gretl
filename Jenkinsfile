@@ -11,7 +11,6 @@ pipeline {
     stages {
         stage('Prepare') {
             steps {
-                echo "Checkout sources"
                 git "https://github.com/edigonzales/gretl-ng.git/"
             }
         }
@@ -36,7 +35,7 @@ pipeline {
             }
         }    
         
-        stage('Publish (locally)') {
+        stage('Publish locally') {
             steps {
                 sh './gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test'
             }
@@ -46,8 +45,6 @@ pipeline {
             steps {
                 dir("runtimeImage") {
                     sh "pwd"
-                    echo "${env.BUILD_NUMBER}"
-                    echo "${env.GIT_COMMIT}" 
                     sh "./build-gretl.sh ${env.GIT_COMMIT} 1.0.${env.BUILD_NUMBER}"
                 }
             }
