@@ -41,6 +41,14 @@ pipeline {
                 sh './gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test'
             }
         }
+        
+        stage('Publish (locally)') {
+            steps {
+                dir("runtimeImage") {
+                    sh "pwd"
+                }
+            }
+        }        
     }
     post {
         always {
