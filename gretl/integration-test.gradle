@@ -50,12 +50,6 @@ jarTest {
 task imageTest(type: Test){
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    
-    /*
-    useJUnit {
-        excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
-    } 
-    */   
 
     systemProperty('GRETL_TESTTYPE', 'image')
 
@@ -78,7 +72,7 @@ imageTest {
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpImportTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.SqlExecutorTaskTest"    
-        includeTestsMatching "ch.so.agi.gretl.jobs.DbDriverContainedTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.DbDriverContainedTest"    
     }
 }
 

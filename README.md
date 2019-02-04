@@ -28,6 +28,11 @@ The _GRETL_ repository is organized as Gradle multi-project:
 * `gretl`: _GRETL_ source code with unit tests _and_ integration tests.
 * `runtimeImage`: Subproject for building the _GRETL_ runtime (docker) image. The docker image is tested against the integration tests, too.
 
+## Oracle JDBC
+If you want to access an oracle database you need the Oracle JDBC library which can be found in a closed maven repository from Oracle. The login credentials must be set as environment variables.
+
+Building the docker image and testing the image need access to the Oracle JDBC library but not the _GRETL_ plugin that is deployed on plugins.gradle.org. 
+
 ## Testing
 
 ```

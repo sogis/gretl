@@ -37,5 +37,6 @@ ext {
     mockFtpServerDependency = [ group: 'org.mockftpserver', name: 'MockFtpServer', version: mockFtpServerVersion ]
     testContainersDependency = [ group: 'org.testcontainers', name: 'testcontainers', version: testContainersVersion]
     testContainersPostgresDependency = [ group: 'org.testcontainers', name: 'postgresql', version: testContainersVersion]
+    testContainersOracleDependency = [ group: 'org.testcontainers', name: 'oracle-xe', version: testContainersVersion]
 }
 

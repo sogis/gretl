@@ -40,6 +40,15 @@ dependencies {
     testImplementation testContainersDependency
     testImplementation testContainersPostgresDependency
     
+    // Oracle JDBC would be a runtime dependency but since it's kinda hard to obtain the jar 
+    // file, we just make it a integration test dependency. It will not appear in the pom.xml 
+    // of the gretl plugin (jar).
+    // We copy the jdbc jar into the docker image for our gretl-runtime. Login and password
+    // is needed.
+    // Those who want to run the integration tests need the jdbc jar too.
+    integrationTestImplementation oracleDependency
+    testImplementation testContainersOracleDependency    
+    
     /**
      * Provides, at compile-time, the classes produced by the _main_ and _test_ SourceSets, 
      * allowing the integration tests to access the production code in _main_ and allowing 
@@ -60,14 +69,6 @@ dependencies {
      */
     integrationTestImplementation configurations.runtime
     integrationTestImplementation configurations.testRuntime
-    
-    // Oracle JDBC would be a runtime dependency but since it's kinda hard to obtain the jar 
-    // file, we just make it a integration test dependency. It will not appear in the pom.xml 
-    // of the gretl plugin (jar).
-    // We copy the jdbc jar into the docker image for our gretl-runtime. Login and password
-    // is needed.
-    // Those who want to run the integration tests need the jdbc jar too.
-    integrationTestImplementation oracleDependency
 }
 
 gradlePlugin {

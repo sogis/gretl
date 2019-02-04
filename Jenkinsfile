@@ -34,7 +34,13 @@ pipeline {
                     allowMissing: false
                 ]                
             }
-        }              
+        }    
+        
+        stage('Publish (locally)') {
+            steps {
+                sh './gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test'
+            }
+        }
     }
     post {
         always {
