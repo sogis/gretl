@@ -42,7 +42,7 @@ pipeline {
             }
         }
         
-        stage('Publish (locally)') {
+        stage('Build docker image') {
             steps {
                 dir("runtimeImage") {
                     sh "pwd"
