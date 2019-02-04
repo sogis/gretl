@@ -46,6 +46,7 @@ pipeline {
             steps {
                 dir("runtimeImage") {
                     sh "pwd"
+                    echo ${env.BUILD_NUMBER}
                     sh './build-gretl.sh'
                 }
             }
