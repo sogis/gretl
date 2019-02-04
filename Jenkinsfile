@@ -46,9 +46,17 @@ pipeline {
             steps {
                 dir("runtimeImage") {
                     sh "pwd"
+                    sh './build-gretl.sh'
                 }
             }
+        }  
+        
+        stage('Integration Tests') {
+            steps {
+                sh "pwd"
+            }
         }        
+              
     }
     post {
         always {
