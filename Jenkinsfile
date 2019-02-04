@@ -48,7 +48,7 @@ pipeline {
                     sh "pwd"
                     echo "${env.BUILD_NUMBER}"
                     echo "${env.GIT_COMMIT}" 
-                    sh './build-gretl.sh'
+                    sh './build-gretl.sh' "${env.GIT_COMMIT}" "1.0.${env.BUILD_NUMBER}"
                 }
             }
         }  
