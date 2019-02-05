@@ -14,13 +14,11 @@ pipeline {
                 git "https://github.com/edigonzales/gretl-ng.git/"
             }
         }
-        
         stage('Build') {
             steps {
                 sh './gradlew --no-daemon clean gretl:classes'
             }
         }
-
         stage('Unit Tests') {
             steps {
                 sh './gradlew --no-daemon gretl:test gretl:dbTest'
@@ -34,13 +32,11 @@ pipeline {
                 ]                
             }
         }    
-        
         stage('Publish locally') {
             steps {
                 sh './gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test'
             }
         }
-        
         stage('Build docker image') {
             steps {
                 dir("runtimeImage") {
@@ -49,13 +45,12 @@ pipeline {
                 }
             }
         }  
-        
         stage('Integration Tests') {
             steps {
                 sh "pwd"
+                sh './gradlew gretl:jarTest'
             }
-        }        
-              
+        }            
     }
     post {
         always {
