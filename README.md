@@ -58,9 +58,12 @@ Since the integration tests are not done with the Gradle TestKit framework, the 
 
 The Docker image tests are done very similar. First the Docker image will be build with a shell script (TODO: with Gradle?). This build process will copy everything _GRETL_ needs into the image. This includes all the dependencies of _GRETL_, the _GRETL_ jar itself and any 3rd party plugin you want. The Docker image should be as offline capable as possible. The `start-gretl.sh` that will be used to start the Docker container is slightly different to the `start-gretl.sh` from `sogis/gretljobs` repository. The `sogis/gretljobs` one is more sophisticated.
 
+If you use a Jenkins-Docker-Image for your CI/CD pipeline you will probably run into the "Docker-in-Docker" issue when doing the Docker image integration tests. It will not find the job directory you try to mount with the docker run command. Therefor you can simple create a symbolic link on the host machine, e.g. `ln -s /opt/jenkins_home /var/jenkins_home`.
+
 ## Release management / Versioning
 
 It uses a simple release management and versioning mechanism: Local builds are tagged as `1.0.LOCALBUILD`. Builds on Travis or Jenkins will append the build number, e.g. `1.0.48`. Major version will be increased after "major" changes. After every commit to the repository a docker image will be build and pushed to `hub.docker.com`. It will be tagged as `latest` and with the build number (`1.0.48`).
 
 ## Jenkins (CI/CD)
 For a working github webhook one have to choose the content type `application/x-www-form-urlencoded` and not `application/json`. And do not forget the trailing `/`.
+

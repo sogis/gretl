@@ -39,7 +39,7 @@ pipeline {
                 //sh './gradlew gretl:jarTest'
                 sh './gradlew gretl:imageTest'
                 publishHTML target: [
-                    reportName : 'Image Tests',
+                    reportName : 'Gradle Tests (Docker Image)',
                     reportDir:   'gretl/build/reports/tests/imageTest', 
                     reportFiles: 'index.html',
                     keepAll: true,
