@@ -23,7 +23,7 @@ pipeline {
             steps {
                 sh './gradlew --no-daemon gretl:test gretl:dbTest'
                 publishHTML target: [
-                    reportName : 'Gradle Tests',
+                    reportName : 'Unit Tests',
                     reportDir:   'gretl/build/reports/tests/test', 
                     reportFiles: 'index.html',
                     keepAll: true,
@@ -50,6 +50,14 @@ pipeline {
                 sh "pwd"
                 //sh './gradlew gretl:jarTest'
                 sh './gradlew gretl:imageTest'
+                publishHTML target: [
+                    reportName : 'Image Tests',
+                    reportDir:   'gretl/build/reports/tests/imageTest', 
+                    reportFiles: 'index.html',
+                    keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: false
+                ]                                
             }
         }            
     }

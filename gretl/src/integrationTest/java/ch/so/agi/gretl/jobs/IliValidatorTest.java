@@ -10,6 +10,8 @@ public class IliValidatorTest {
     @Test
     public void validationOk() throws Exception {
         GradleVariable[] gvs = null;
+        System.out.println("**********");
+        System.err.println("**********");
         IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidator", gvs);
     }
 
