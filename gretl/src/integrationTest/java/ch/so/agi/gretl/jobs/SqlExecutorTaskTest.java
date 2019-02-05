@@ -45,7 +45,7 @@ public class SqlExecutorTaskTest {
             IntegrationTestUtilSql.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/sqlExecutorTaskChain", gvs);
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskChain", gvs);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -83,7 +83,7 @@ public class SqlExecutorTaskTest {
             IntegrationTestUtilSql.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/sqlExecutorTaskRelPath", gvs);
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskRelPath", gvs);
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
