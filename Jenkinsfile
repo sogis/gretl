@@ -65,7 +65,7 @@ pipeline {
                     alwaysLinkToLastBuild: true,
                     allowMissing: false
                 ]                                                
-                sh './gradlew gretl:imageTest'
+                sh './gradlew gretl:imageTest --fail-fast'
                 publishHTML target: [
                     reportName : 'Gradle Tests (Docker Image)',
                     reportDir:   'gretl/build/reports/tests/imageTest', 
