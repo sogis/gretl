@@ -49,9 +49,5 @@ pipeline {
             }
         }            
     }
-    post {
-        always {
-            deleteDir() 
-        }
-    }
+
 }
