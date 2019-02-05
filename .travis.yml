@@ -19,6 +19,6 @@ script:
   - cd runtimeImage/
   - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
   - cd ..
-  #- ./gradlew gretl:jarTest
+  - ./gradlew gretl:jarTest
   #- ./gradlew gretl:imageTest
 
