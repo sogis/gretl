@@ -21,7 +21,7 @@ pipeline {
         }
    
         stage('Publish locally') {
-            steps {
+            steps { 
                 sh './gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test'
             }
         }
