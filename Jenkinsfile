@@ -65,7 +65,7 @@ pipeline {
                     alwaysLinkToLastBuild: true,
                     allowMissing: false
                 ]                                                
-                sh './gradlew gretl:imageTest --fail-fast'
+                sh './gradlew gretl:imageTest -Dorg.gradle.jvmargs=-Xmx1536m --no-daemon --fail-fast'
                 publishHTML target: [
                     reportName : 'Gradle Tests (Docker Image)',
                     reportDir:   'gretl/build/reports/tests/imageTest', 
@@ -77,5 +77,9 @@ pipeline {
             }
         }            
     }
-
+    post {
+        always {
+            deleteDir() 
+        }
+    }
 }
