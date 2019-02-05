@@ -55,7 +55,7 @@ public class Db2DbTaskTest {
             IntegrationTestUtilSql.closeCon(con);
 
 		    GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-		    IntegrationTestUtil.runJob("src/integrationTest/jobs/db2dbTaskFetchSize", gvs);
+		    IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskFetchSize", gvs);
             
             con = IntegrationTestUtilSql.connectPG(postgres);
             String countDestSql = String.format("select count(*) from %s.target_data", schemaName);
@@ -92,7 +92,7 @@ number of inserts (corresponding to the last statement)
             IntegrationTestUtilSql.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/db2dbTaskChain", gvs);
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskChain", gvs);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -128,7 +128,7 @@ number of inserts (corresponding to the last statement)
             IntegrationTestUtilSql.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/db2dbTaskRelPath", gvs);
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskRelPath", gvs);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -163,7 +163,7 @@ number of inserts (corresponding to the last statement)
             IntegrationTestUtilSql.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/db2dbTaskDelTable", gvs);
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskDelTable", gvs);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);

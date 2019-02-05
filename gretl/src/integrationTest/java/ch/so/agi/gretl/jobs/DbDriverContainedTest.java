@@ -19,13 +19,13 @@ public class DbDriverContainedTest {
     @Category(DbDriversReachableTest.class)
     @Test
     public void SqliteDriverContainedTest() throws Exception {
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/dbTasks_SqliteLibsPresent");
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/DbTasks_SqliteLibsPresent");
     }
 
     @Category(DbDriversReachableTest.class)
     @Test
     public void OracleDriverContainedTest() throws Exception {
         GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_ORA_CON_URI, oracle.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/dbTasks_OracleLibsPresent", gvs);
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/DbTasks_OracleLibsPresent", gvs);
     }
 }
