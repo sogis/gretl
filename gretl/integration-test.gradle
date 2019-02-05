@@ -67,7 +67,7 @@ imageTest {
         //includeTestsMatching "ch.so.agi.gretl.jobs.CsvImportTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.CsvValidatorTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.Db2DbTaskTest"   
-        includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"        
+        //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"        
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpExportTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpImportTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
