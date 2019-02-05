@@ -48,7 +48,8 @@ pipeline {
         stage('Integration Tests') {
             steps {
                 sh "pwd"
-                sh './gradlew gretl:jarTest'
+                //sh './gradlew gretl:jarTest'
+                sh './gradlew gretl:imageTest'
             }
         }            
     }
