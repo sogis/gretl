@@ -45,8 +45,15 @@ cd runtimeImage/
 ./build-gretl.sh
 cd ..
 ./gradlew gretl:jarTest
-./gradlew gretl:imageTest
+./gradlew gretl:imageTest gretl:test
 ```
+
+```
+./gradlew clean gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:jarTest
+```
+
+If you write a new custom task and the integration test thinks it's not available, delete the artifacts in your local maven once. It seems that after this clean up, changes in the code will be deployed to the local maven repo. Not sure what the problem is. Maybe an deployed version with additional plugin meta data.
+
 
 ### Unit tests
 Unit tests with "heavy" dependencies like PostgreSQL are categorized (`ch.so.agi.gretl.testutil.DbTest`) and can be run with `./gradlew gretl:dbTest`. This will manage the PostgreSQL database with the [https://www.testcontainers.org/](Testcontainers framework). Testcontainers start a docker container before every test method or every test class.
