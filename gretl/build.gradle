@@ -30,11 +30,11 @@ dependencies {
     api ehiSqlgenDependency
 
     api apacheCommonsIoDependency
-
+    api apacheCommonsCodeDependency
+    
     runtimeOnly postgresqlDependency
     runtimeOnly sqliteJdbcDependency
     runtimeOnly derbyDependency
-    //compile group: 'com.oracle.jdbc', name: 'ojdbc8', version: '12.2.0.1'
     
     testImplementation junitDependency
     testImplementation testContainersDependency

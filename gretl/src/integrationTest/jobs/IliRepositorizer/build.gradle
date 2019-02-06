@@ -5,6 +5,6 @@ apply plugin: 'ch.so.agi.gretl'
 defaultTasks 'createIliModels'
 
 task createIliModels(type: IliRepositorizer) {
-    modelsDir = "models/"
+    modelsDir = file("models/")
     dataFile = "ilimodels.xml"
 }
