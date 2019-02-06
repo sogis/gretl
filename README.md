@@ -52,7 +52,7 @@ cd ..
 ./gradlew clean gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:jarTest -x test
 ```
 
-If you write a new custom task and the integration test thinks your new task type is not available, delete the artifacts in your local maven once. It seems that after this clean up, changes in the code will be deployed to the local maven repo. Not sure what the problem is. Maybe an deployed version with additional plugin meta data.
+If you write a new custom task and the integration test thinks your new task type is not available, delete the artifacts in your local maven repository once. It seems that after this clean up, changes in the code will be deployed to the local maven repo. Not sure what the problem is. Maybe an deployed version with additional plugin meta data.
 
 
 ### Unit tests
