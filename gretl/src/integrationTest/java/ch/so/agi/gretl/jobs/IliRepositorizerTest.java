@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,9 +18,10 @@ public class IliRepositorizerTest {
         GradleVariable[] gvs = null;
         IntegrationTestUtil.runJob("src/integrationTest/jobs/IliRepositorizer", gvs);
         
-        String expectedString = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/IliRepositorizer/expected_ilimodels.xml")), StandardCharsets.UTF_8);
         String resultString = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/IliRepositorizer/ilimodels.xml")), StandardCharsets.UTF_8);
 
-        assertEquals("File content differs.", expectedString, resultString);
+        assertThat(resultString, containsString("<Name>SO_MOpublic_20180221</Name>"));
+        assertThat(resultString, containsString("<Name>DM01AVSO24LV95</Name>"));
+        assertThat(resultString, containsString("<Name>SO_Nutzungsplanung_20171118</Name>"));
     }
 }

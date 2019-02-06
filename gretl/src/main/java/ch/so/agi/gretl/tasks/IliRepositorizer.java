@@ -8,8 +8,6 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-import ch.interlis.ili2c.Ili2cException;
-import ch.interlis.iox.IoxException;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.IliRepositorizerStep;
