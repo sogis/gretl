@@ -8,6 +8,7 @@ ext {
 
     apacheCommonsIoVersion = '2.6'
     apacheCommonsNetVersion = '3.6'
+    apacheCommonsCodeVersion = '1.11'
 
     postgresqlVersion = '42.1.4'
     sqliteJdbcVersion = '3.8.11.2'
@@ -27,6 +28,7 @@ ext {
 
     apacheCommonsIoDependency = [ group: 'commons-io', name: 'commons-io', version: apacheCommonsIoVersion ]
     apacheCommonsNetDependency = [ group: 'commons-net', name: 'commons-net', version: apacheCommonsNetVersion ]
+    apacheCommonsCodeDependency = [ group: 'commons-codec', name: 'commons-codec', version: apacheCommonsCodeVersion ]
 
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]

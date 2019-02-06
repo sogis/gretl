@@ -44,6 +44,7 @@ jarTest {
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpImportTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.SqlExecutorTaskTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.IliRepositorizerTest"    
     }
 }
 
@@ -73,5 +74,6 @@ imageTest {
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.SqlExecutorTaskTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.DbDriverContainedTest"    
+        //includeTestsMatching "ch.so.agi.gretl.jobs.IliRepositorizerTest"            
     }
 }
