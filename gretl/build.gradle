@@ -93,6 +93,23 @@ pluginBundle {
     }
 }
 
+task setupPluginUpload() {
+    description = "Converts Gradle plugin publish key and secret from environment variable to system property. (Workaround)"
+    doLast {
+	    def key=System.env.gradlePublishKey
+	    def secret = System.env.gradlePublishSecret
+	
+	    if( !key || !secret)
+	    {
+	        throw new RuntimeException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
+	    }
+	
+	    System.properties.setProperty("gradle.publish.key", key)
+	    System.properties.setProperty("gradle.publish.secret", secret)
+    }
+}
+tasks.publishPlugins.dependsOn tasks.setupPluginUpload
+
 test {
     useJUnit{
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
