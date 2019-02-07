@@ -72,5 +72,5 @@ If you use a Jenkins-Docker-Image for your CI/CD pipeline you will probably run 
 It uses a simple release management and versioning mechanism: Local builds are tagged as `1.0.LOCALBUILD`. Builds on Travis or Jenkins will append the build number, e.g. `1.0.48`. Major version will be increased after "major" changes. After every commit to the repository a docker image will be build and pushed to `hub.docker.com`. It will be tagged as `latest` and with the build number (`1.0.48`).
 
 ## Jenkins (CI/CD)
-For a working github webhook one have to choose the content type `application/x-www-form-urlencoded` and not `application/json`. And do not forget the trailing `/`.
+For a working github webhook one have to choose the content type `application/x-www-form-urlencoded` and not `application/json`. And do not forget the trailing `/`.  
 
