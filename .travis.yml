@@ -14,19 +14,18 @@ install: true
 
 script:
   - ./gradlew --no-daemon clean gretl:classes
-  #- ./gradlew --no-daemon gretl:test gretl:dbTest
-  #- ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
-  #- cd runtimeImage/
-  #- ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
-  #- cd ..
-  #- ./gradlew --no-daemon gretl:jarTest
-  #- ./gradlew --no-daemon gretl:imageTest
-  ##- ./gradlew --no-daemon gretl:publishPlugins
+  - ./gradlew --no-daemon gretl:test gretl:dbTest
+  - ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
+  - cd runtimeImage/
+  - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
+  - cd ..
+  - ./gradlew --no-daemon gretl:jarTest
+  - ./gradlew --no-daemon gretl:imageTest
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script: ./gradlew --no-daemon tasks --all
+    script: ./gradlew --no-daemon gretl:publishPlugins
     on:
       branch: master
 
