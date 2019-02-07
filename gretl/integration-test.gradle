@@ -45,6 +45,7 @@ jarTest {
         //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.SqlExecutorTaskTest"    
         //includeTestsMatching "ch.so.agi.gretl.jobs.IliRepositorizerTest"    
+        includeTestsMatching "ch.so.agi.gretl.jobs.PostgisRasterExportTest"    
     }
 }
 
