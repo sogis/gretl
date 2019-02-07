@@ -51,10 +51,9 @@ public class PostgisRasterExportTest {
 
     // At the moment this is more a test if GDAL drivers are enabled
     // in PostGIS.
-    /*
     @Test
     public void exportGeoTiff() throws Exception {
-        String jobPath = "src/functionalTest/jobs/PostgisRasterGeotiffExport/";
+        String jobPath = "src/integrationTest/jobs/PostgisRasterGeotiffExport/";
         String exportFileName = "export.tif";
         String targetFileName = "target.tif";
 
@@ -62,19 +61,12 @@ public class PostgisRasterExportTest {
         File file = new File(jobPath, exportFileName);
         Files.deleteIfExists(file.toPath());
 
-        BuildResult result = GradleRunner.create()
-                .withProjectDir(new File(jobPath))
-                .withArguments("-i")
-                .withArguments("-Pdb_uri=" + postgres.getJdbcUrl())
-                .withPluginClasspath()
-                .build();
-
-        assertEquals(SUCCESS, result.task(":exportGeotiff").getOutcome());
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob(jobPath, gvs);
 
         long targetFileSize = new File(jobPath, targetFileName).length();
         long exportFileSize = new File(jobPath, exportFileName).length();
 
         assertEquals(targetFileSize, exportFileSize);
     }
-    */
 }

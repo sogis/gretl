@@ -744,3 +744,22 @@ Parameter | Beschreibung
 ----------|-------------------
 modelsDir | Verzeichnis mit den INTERLIS-Modelldateien.
 dataFile  | Name der `ilimodels.xml`-Datei. Wird im `modelsDir`-Verzeichnis gespeichert.
+
+### PostgisRasterExport
+
+Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert.
+
+```
+task exportTiff(type: PostgisRasterExport) {
+    database = [db_uri, db_user, db_pass]
+    sqlFile = "raster.sql"
+    dataFile = "export.tif"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank aus der exportiert werden soll.
+sqlFile  | Name der SQL-Datei aus das SQL-Statement gelesen und ausgeführt wird.
+dataFile | Name der Rasterdatei, die erstellt werden soll.
+
