@@ -88,10 +88,14 @@ public class IliRepositorizerStep {
             // TODO: we could use meta attributes for title and shortDescription
             // log.info(lastModel.getMetaValue("Title"));
             // log.info(lastModel.getMetaValue("shortDescription"));
-
-            iomObj.setattrvalue("Issuer", "https://geo.so.ch");
-            iomObj.setattrvalue("technicalContact", "mailto:agi@bd.so.ch");
-            iomObj.setattrvalue("furtherInformation", "https://geo.so.ch");
+            
+            try {
+                iomObj.setattrvalue("Issuer", lastModel.getIssuer());
+            } catch (IllegalArgumentException e) {
+                // do nothing
+            }
+//            iomObj.setattrvalue("technicalContact", "mailto:agi@bd.so.ch");
+//            iomObj.setattrvalue("furtherInformation", "https://geo.so.ch");
 
             try (InputStream is = Files.newInputStream(Paths.get(file.getAbsolutePath()))) {
                 String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
