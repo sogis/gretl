@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/edigonzales/gretl-ng.svg?branch=master)](https://travis-ci.org/edigonzales/gretl-ng)
+[![Build Status](https://travis-ci.org/sogis/gretl-ng.svg?branch=master)](https://travis-ci.org/sogis/gretl-ng)
 
 # gretl
 
