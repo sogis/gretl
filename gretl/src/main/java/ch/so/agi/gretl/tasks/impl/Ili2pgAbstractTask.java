@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.impl;
 
+import ch.ehi.basics.logging.EhiLogger;
 import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.api.Connector;
@@ -58,6 +59,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @OutputFile
     @Optional
     public Object logFile = null;
+    @Input
+    @Optional
+    public boolean trace = false;
     @InputFile
     @Optional
     public File validConfigFile = null;
@@ -130,6 +134,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (logFile != null) {
             settings.setLogfile(this.getProject().file(logFile).getPath());
         }
+        if (trace) {
+            EhiLogger.getInstance().setTraceFilter(false);
+        }
         if (validConfigFile != null) {
             settings.setValidConfigFile(this.getProject().file(validConfigFile).getPath());
         }
@@ -173,6 +180,8 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         } finally {
+            EhiLogger.getInstance().setTraceFilter(true);
+            
             if (conn != null) {
                 try {
                     conn.rollback();
