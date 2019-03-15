@@ -1,15 +1,28 @@
 package ch.so.agi.gretl.util;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
-public class FileStylingDefinitionTest {    
+public class FileStylingDefinitionTest {  
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     @Test 
     public void checkEncoding_Ok() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File inputfile = new File(classLoader.getResource("awjf_biotopbaeume_pub_biotopbaeume_biotopbaum_ok.sql").getFile());
+        FileStylingDefinition.checkForUtf8(inputfile);
+    }
+    
+    // Empty files are handled elsewhere. But empty files will
+    // let the encoding validation stall.
+    @Test 
+    public void checkEncoding_Ok_empty_File() throws Exception {
+        File inputfile = folder.newFile("query.sql");
         FileStylingDefinition.checkForUtf8(inputfile);
     }
     

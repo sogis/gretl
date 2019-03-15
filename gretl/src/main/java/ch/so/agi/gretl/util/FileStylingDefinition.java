@@ -28,24 +28,28 @@ public class FileStylingDefinition {
      */
     public static void checkForUtf8(File inputfile) throws Exception {
 //        byte[] buffer = new byte[256];
-        byte[] buffer = new byte[(int) inputfile.length()];
-        int fileEnd = -1;
+//        System.out.println("******");
+//        System.out.println(inputfile.length());
+        if (inputfile.length() > 0) {
+            byte[] buffer = new byte[(int) inputfile.length()];
+            int fileEnd = -1;
 
-        FileInputStream sqlFileInputStream = new FileInputStream(inputfile);
-        BufferedInputStream bufferedInputFileStream = new BufferedInputStream(sqlFileInputStream);
+            FileInputStream sqlFileInputStream = new FileInputStream(inputfile);
+            BufferedInputStream bufferedInputFileStream = new BufferedInputStream(sqlFileInputStream);
 
-        CharsetDecoder decoder = createCharsetDecoder();
+            CharsetDecoder decoder = createCharsetDecoder();
 
-        int lineBytes = bufferedInputFileStream.read(buffer);
-        while (lineBytes != fileEnd) {
-            try {
-                decoder.decode(ByteBuffer.wrap(buffer));
-                lineBytes = bufferedInputFileStream.read(buffer);
-            } catch (CharacterCodingException e) {
-                throw new GretlException("Wrong encoding (not UTF-8) detected in File " + inputfile.getAbsolutePath());
+            int lineBytes = bufferedInputFileStream.read(buffer);
+            while (lineBytes != fileEnd) {
+                try {
+                    decoder.decode(ByteBuffer.wrap(buffer));
+                    lineBytes = bufferedInputFileStream.read(buffer);
+                } catch (CharacterCodingException e) {
+                    throw new GretlException("Wrong encoding (not UTF-8) detected in File " + inputfile.getAbsolutePath());
+                }
             }
+            bufferedInputFileStream.close();
         }
-        bufferedInputFileStream.close();
     }
     
     /**
