@@ -27,8 +27,8 @@ public class FileStylingDefinition {
      *                   thrown
      */
     public static void checkForUtf8(File inputfile) throws Exception {
-
-        byte[] buffer = new byte[256];
+//        byte[] buffer = new byte[256];
+        byte[] buffer = new byte[(int) inputfile.length()];
         int fileEnd = -1;
 
         FileInputStream sqlFileInputStream = new FileInputStream(inputfile);
@@ -45,8 +45,9 @@ public class FileStylingDefinition {
                 throw new GretlException("Wrong encoding (not UTF-8) detected in File " + inputfile.getAbsolutePath());
             }
         }
+        bufferedInputFileStream.close();
     }
-
+    
     /**
      * Creates an CharsetDecoder which tests the encoding
      *

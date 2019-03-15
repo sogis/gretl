@@ -29,7 +29,7 @@ ext {
     apacheCommonsIoDependency = [ group: 'commons-io', name: 'commons-io', version: apacheCommonsIoVersion ]
     apacheCommonsNetDependency = [ group: 'commons-net', name: 'commons-net', version: apacheCommonsNetVersion ]
     apacheCommonsCodeDependency = [ group: 'commons-codec', name: 'commons-codec', version: apacheCommonsCodeVersion ]
-
+    
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
     derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
