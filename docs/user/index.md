@@ -763,3 +763,33 @@ database | Datenbank aus der exportiert werden soll.
 sqlFile  | Name der SQL-Datei aus das SQL-Statement gelesen und ausgeführt wird.
 dataFile | Name der Rasterdatei, die erstellt werden soll.
 
+### OerebIconizerQgis3
+
+Erstellt die Symbole anhand eines WMS-Layers für den ÖREB-Kataster indem er zuerst das SLD (GetStyles) ausliest und anschliessend einzelne GetLegendGraphic-Requests macht. Die Symbole werden dann in der Datenbank in der entsprechenden Tabelle nachgeführt (`update`). Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/openoereb/oereb-iconizer](https://github.com/openoereb/oereb-iconizer).
+
+Einschränkungen: 
+- Es dürfen nicht mehr Symbole in der Datenbank nachgeführt werden als wirklich bereits Records vorhanden sind.
+- Artcode-Wert muss eindeutig sein.
+
+```
+task updateSymbols(type: OerebIconizerQgis3) {
+    sldUrl = "http://localhost:32793/qgis/singlesymbol?&SERVICE=WMS&REQUEST=GetStyles&LAYERS=singlepolygon&SLD_VERSION=1.1.0"
+    legendGraphicUrl = "http://localhost:32793/qgis/singlesymbol?SERVICE=WMS&REQUEST=GetLegendGraphic&LAYER=singlepolygon&FORMAT=image/png&RULELABEL=false&LAYERTITLE=false&HEIGHT=35&WIDTH=70&SYMBOLHEIGHT=3&SYMBOLWIDTH=6&DPI=300"
+    database = [db_uri, db_user, db_pass]
+    dbQTable = "agi_oereb.transferstruktur_legendeeintrag"
+    typeCodeAttrName = "artcode"
+    symbolAttrName = "symbol"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+sldUrl   | GetStyles-Request
+legendGraphicUrl | GetLegendGraphic-Request mit QGIS-spezifischen Parametern, um einzelne Symbole anfordern zu können. Der `RULE`-Parameter wird automatisch hinzugefügt.
+database | Datenbank in die importiert werden soll.
+dbQTable  | Qualifizierter Tabellename.
+typeCodeAttrName | Name des Attributes, dem das Symbol zugeordnet werden kann.
+symbolAttrName | Name des Symbolattributes. Dieses Attribut wird upgedatet.
+
+
+
