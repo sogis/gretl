@@ -60,6 +60,8 @@ If you want to do some further testing with standalone jobs or use the plugin on
 ./gradlew gretl:publishGretlPluginPluginMarkerMavenPublicationToMavenLocal
 ```
 
+Debugging the Docker image tests can be harder than debugging unit and jar tests. The `docker run` / `start-gretl.sh` command is printed on the console when the test is running. Use this command to run the test in the console manually. Most probably you will get more information.
+
 ### Unit tests
 Unit tests with "heavy" dependencies like PostgreSQL are categorized (`ch.so.agi.gretl.testutil.DbTest`) and can be run with `./gradlew gretl:dbTest`. This will manage the PostgreSQL database with the [https://www.testcontainers.org/](Testcontainers framework). Testcontainers start a docker container before every test method or every test class.
 

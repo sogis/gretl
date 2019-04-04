@@ -29,6 +29,8 @@ dependencies {
     api ioxIliDependency
     api ehiSqlgenDependency
 
+    api oerebIconizerDependency
+    
     api apacheCommonsIoDependency
     api apacheCommonsCodeDependency
     

@@ -43,6 +43,30 @@ public class Connector {
         return dbConnection;
     }
 
+    public String getDbUri() {
+        return dbUri;
+    }
+
+    public void setDbUri(String dbUri) {
+        this.dbUri = dbUri;
+    }
+
+    public String getDbUser() {
+        return dbUser;
+    }
+
+    public void setDbUser(String dbUser) {
+        this.dbUser = dbUser;
+    }
+
+    public String getDbPassword() {
+        return dbPassword;
+    }
+
+    public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
+    }
+
     public String toString() {
         int passLength = 0;
         if (dbPassword != null)
@@ -55,4 +79,6 @@ public class Connector {
                 new String(starArray));
         return res;
     }
+    
+    
 }
