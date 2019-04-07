@@ -30,6 +30,7 @@ dependencies {
     api ehiSqlgenDependency
 
     api oerebIconizerDependency
+    api av2chDependency
     
     api apacheCommonsIoDependency
     api apacheCommonsCodeDependency

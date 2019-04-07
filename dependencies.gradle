@@ -7,6 +7,7 @@ ext {
     ehiSqlgenVersion = '1.13.3'
     
     oerebIconizerVersion = '1.0.14'
+    av2chVersion = '1.0.8'
 
     apacheCommonsIoVersion = '2.6'
     apacheCommonsNetVersion = '3.6'
@@ -29,6 +30,7 @@ ext {
     ehiSqlgenDependency = [ group: 'ch.ehi', name: 'ehisqlgen', version: ehiSqlgenVersion ]
 
     oerebIconizerDependency = [ group: 'ch.so.agi.oereb', name: 'oereb-iconizer', version: oerebIconizerVersion ]
+    av2chDependency = [ group: 'ch.so.agi.av', name: 'av2ch', version: av2chVersion ]
 
     apacheCommonsIoDependency = [ group: 'commons-io', name: 'commons-io', version: apacheCommonsIoVersion ]
     apacheCommonsNetDependency = [ group: 'commons-net', name: 'commons-net', version: apacheCommonsNetVersion ]
