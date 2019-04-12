@@ -28,7 +28,7 @@ docker build \
     --label gretl.created=$build_timestamp --label gretl.git_commit=$githash --label gretl.travis_build=2.0.$buildident \
     -f gretl/Dockerfile gretl
 
-docker tag sogis/gretl-runtime:2.0.$buildident sogis/gretl-runtime:2.latest
+docker tag sogis/gretl-runtime:2.0.$buildident sogis/gretl-runtime:latest
 
 rm gretl/__jars4image/*
 
