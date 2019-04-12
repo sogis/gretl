@@ -34,3 +34,8 @@ deploy:
     script: runtimeImage/push-gretl.sh $dockerhub_pwd
     on:
       branch: master
+  - provider: script
+    skip_cleanup: true
+    script: ./gradlew --no-daemon gretl:publishPlugins
+    on:
+      branch: ili2pg-v4
