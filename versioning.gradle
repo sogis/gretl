@@ -7,7 +7,7 @@ if (System.env.BUILD_NUMBER) {
     buildNumber = System.env.TRAVIS_BUILD_NUMBER
 }
 
-version = new ProjectVersion(1, 0, buildNumber)
+version = new ProjectVersion(2, 0, buildNumber)
 
 class ProjectVersion {
     Integer major

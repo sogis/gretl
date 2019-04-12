@@ -42,6 +42,8 @@ public class OerebIconizerQgis3Test {
     
     @ClassRule
     public static GenericContainer qgis = new GenericContainer("sogis/qgis-server-base:3.4")
+            .withEnv("QGIS_FCGI_MIN_PROCESSES", "0")
+            .withEnv("QGIS_FCGI_MAX_PROCESSES", "1")
             .withExposedPorts(80).withClasspathResourceMapping("oerebIconizer", "/data", BindMode.READ_WRITE).waitingFor(Wait.forHttp("/"));
 
     @Test
