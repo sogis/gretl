@@ -9,6 +9,7 @@ branches:
   only:
     - master
     - stable
+    - ili2pg-v4
 
 install: true
 
