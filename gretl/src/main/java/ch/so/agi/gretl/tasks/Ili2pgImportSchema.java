@@ -70,6 +70,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public boolean expandMultilingual = false;
     @Input
     @Optional
+    public boolean coalesceJson = false;    
+    @Input
+    @Optional
     public boolean createFk = false;
     @Input
     @Optional
@@ -122,9 +125,6 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @Input
     @Optional
     public boolean createDatasetCol = false;
-    @Input
-    @Optional
-    public boolean ver4_translation = false;
     @Input
     @Optional
     public String translation = null;
@@ -210,6 +210,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         if (expandMultilingual) {
             settings.setMultilingualTrafo(settings.MULTILINGUAL_TRAFO_EXPAND);
         }
+        if (coalesceJson) {
+            settings.setJsonTrafo(settings.JSON_TRAFO_COALESCE);
+        }
         if (createFk) {
             settings.setCreateFk(settings.CREATE_FK_YES);
         }
@@ -263,9 +266,6 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (createDatasetCol) {
             settings.setCreateDatasetCols(settings.CREATE_DATASET_COL);
-        }
-        if (ver4_translation) {
-            settings.setVer4_translation(true);
         }
         if (translation != null) {
             settings.setIli1Translation(translation);

@@ -480,6 +480,7 @@ coalesceCatalogueRef | Entspricht der ili2pg Option --coalesceCatalogueRef
 coalesceMultiSurface | Entspricht der ili2pg Option --coalesceMultiSurface
 coalesceMultiLine | Entspricht der ili2pg Option --coalesceMultiLine
 expandMultilingual | Entspricht der ili2pg Option --expandMultilingual
+coalesceJson | Entspricht der ili2pg Option --coalesceJson
 createFk | Entspricht der ili2pg Option --createFk
 createFkIdx | Entspricht der ili2pg Option --createFkIdx
 createUnique | Entspricht der ili2pg Option --createUnique
