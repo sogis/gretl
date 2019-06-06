@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Prepare') {
             steps {
-                git "https://github.com/edigonzales/gretl-ng.git/"
+                git "https://github.com/sogis/gretl.git/"
             }
         }
         stage('Build') {
