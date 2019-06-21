@@ -1,6 +1,6 @@
 ext.buildTimeStamp = new Date().format('yyyy-MM-dd HH:mm:ss')
 
-def buildNumber = 'LOCALBUILD'
+def buildNumber = '9999'
 if (System.env.BUILD_NUMBER) {
     buildNumber = System.env.BUILD_NUMBER
 } else if (System.env.TRAVIS_BUILD_NUMBER) {
