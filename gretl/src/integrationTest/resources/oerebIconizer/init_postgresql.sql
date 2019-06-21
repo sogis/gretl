@@ -29,4 +29,4 @@ GRANT ALL ON TABLE agi_oereb.transferstruktur_legendeeintrag TO ddluser;
 GRANT ALL ON TABLE agi_oereb.transferstruktur_legendeeintrag TO dmluser;
 
 INSERT INTO agi_oereb.transferstruktur_legendeeintrag (t_id,t_seq,symbol,legendetext,legendetext_de,legendetext_fr,legendetext_rm,legendetext_it,legendetext_en,artcode,artcodeliste,thema,subthema,weiteresthema,transfrstrkstllngsdnst_legende) VALUES 
-(844,0,NULL,NULL,'Grundnutzung',NULL,NULL,NULL,NULL,'N111','https://www.so.ch/fubar.xml','Nutzungsplanung',NULL,NULL,843);
+(844,0,NULL,NULL,'Fubar',NULL,NULL,NULL,NULL,'N111','https://www.so.ch/fubar.xml','Nutzungsplanung',NULL,NULL,843);

@@ -780,6 +780,7 @@ task updateSymbols(type: OerebIconizerQgis3) {
     dbQTable = "agi_oereb.transferstruktur_legendeeintrag"
     typeCodeAttrName = "artcode"
     symbolAttrName = "symbol"
+    legendTextAttrName = "legendetext"
 }
 ```
 
@@ -789,8 +790,9 @@ sldUrl   | GetStyles-Request
 legendGraphicUrl | GetLegendGraphic-Request mit QGIS-spezifischen Parametern, um einzelne Symbole anfordern zu können. Der `RULE`-Parameter wird automatisch hinzugefügt.
 database | Datenbank in die importiert werden soll.
 dbQTable  | Qualifizierter Tabellename.
-typeCodeAttrName | Name des Attributes, dem das Symbol zugeordnet werden kann.
-symbolAttrName | Name des Symbolattributes. Dieses Attribut wird upgedatet.
+typeCodeAttrName | Name des Attributes in der Tabelle, dem das Symbol zugeordnet werden kann.
+symbolAttrName | Name des Symbolattributes in der Tabelle. Dieses Attribut wird upgedatet.
+legendTextAttrName | Names des Legendentext-Attributes in der Tabelle. Dieses Attribut wird upgedatet.
 
 ### Av2ch
 

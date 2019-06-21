@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tasks;
 
 import java.awt.image.BufferedImage;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
@@ -13,6 +14,7 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
+import ch.so.agi.oereb.LegendEntry;
 import ch.so.agi.oereb.OerebIconizer;
 
 public class OerebIconizerQgis3 extends DefaultTask {
@@ -35,6 +37,9 @@ public class OerebIconizerQgis3 extends DefaultTask {
     
     @Input 
     public String symbolAttrName = null;
+    
+    @Input 
+    public String legendTextAttrName = null;
 
     @TaskAction
     public void createAndSaveSymbols() {
@@ -58,11 +63,14 @@ public class OerebIconizerQgis3 extends DefaultTask {
         if (symbolAttrName == null) {
             throw new IllegalArgumentException("symbolAttrName must not be null");
         }
+        if (legendTextAttrName == null) {
+            throw new IllegalArgumentException("legendTextAttrName must not be null");
+        }        
                
         try {
             OerebIconizer iconizer = new OerebIconizer();
-            Map<String,BufferedImage> typeCodeSymbols =  iconizer.getSymbolsQgis3(sldUrl, legendGraphicUrl);
-            int count = iconizer.updateSymbols(typeCodeSymbols, database.getDbUri(), database.getDbUser(), database.getDbPassword(), dbQTable, typeCodeAttrName, symbolAttrName);    
+            List<LegendEntry> legendEntries =  iconizer.getSymbolsQgis3(sldUrl, legendGraphicUrl);
+            int count = iconizer.updateSymbols(legendEntries, database.getDbUri(), database.getDbUser(), database.getDbPassword(), dbQTable, typeCodeAttrName, symbolAttrName, legendTextAttrName);    
             log.info("Updated " + String.valueOf(count) + " column(s).");
         } catch (Exception e) {
             log.error("Exception in OerebIconizerQgis3 task.", e);

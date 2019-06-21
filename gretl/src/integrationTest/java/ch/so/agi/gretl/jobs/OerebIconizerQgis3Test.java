@@ -64,13 +64,16 @@ public class OerebIconizerQgis3Test {
         IntegrationTestUtil.runJob("src/integrationTest/jobs/OerebIconizerQgis3", gvs);
         
         // check results
+        // TypeCode and legend text do not fit together in real life. 
+        // But legend text has some nasty umlaute.
         String typeCode = "N111";
         File symbolFile = new File("src/integrationTest/resources/oerebIconizer/gruen_und_freihaltezone_innerhalb_bauzone.png");
+        String legendText = "Grün- und Freihaltezone innerhalb Bauzone";
 
         Connection con = IntegrationTestUtilSql.connectPG(postgres);
 
         Statement s = con.createStatement();
-        ResultSet rs = s.executeQuery("SELECT artcode, symbol FROM agi_oereb.transferstruktur_legendeeintrag");
+        ResultSet rs = s.executeQuery("SELECT artcode, symbol, legendetext_de FROM agi_oereb.transferstruktur_legendeeintrag");
         
         if(!rs.next()) {
             fail();
@@ -83,6 +86,8 @@ public class OerebIconizerQgis3Test {
         assertEquals(ImageIO.read(symbolFile).getHeight(), bim.getHeight());
         assertEquals(ImageIO.read(symbolFile).getWidth(), bim.getWidth());
         assertEquals(ImageIO.read(symbolFile).isAlphaPremultiplied(), bim.isAlphaPremultiplied());
+                
+        assertEquals(legendText, rs.getString(3));
         
         if(rs.next()) {
             fail();

@@ -22,4 +22,5 @@ task updateSymbols(type: OerebIconizerQgis3) {
     dbQTable = "agi_oereb.transferstruktur_legendeeintrag"
     typeCodeAttrName = "artcode"
     symbolAttrName = "symbol"
+    legendTextAttrName = "legendetext_de"
 }
