@@ -34,8 +34,11 @@ deploy:
     script: runtimeImage/push-gretl.sh $dockerhub_pwd
     on:
       branch: master
-  - provider: script
-    skip_cleanup: true
-    script: ./gradlew --no-daemon gretl:publishPlugins
-    on:
-      branch: ili2pg-v4
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
