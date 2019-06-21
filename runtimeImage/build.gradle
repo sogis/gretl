@@ -6,6 +6,9 @@ configurations {
         exclude module: 'xmlparserv2'
         exclude module: 'ucp'
         exclude module: 'xdb6'
+        exclude module: 'oraclepki'
+        exclude module: 'osdt_core'
+        exclude module: 'osdt_cert'
     }
 }
 
