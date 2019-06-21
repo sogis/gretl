@@ -31,7 +31,7 @@ configurations {
         exclude module: 'oraclepki'
         exclude module: 'osdt_core'
         exclude module: 'osdt_cert'
-        exclude module: 'orai18n'
+        exclude module: 'orai18n' 
     }
 }
 
