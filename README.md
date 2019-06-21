@@ -35,6 +35,8 @@ Building the docker image and testing the image need access to the Oracle JDBC l
 
 If you use the _GRETL_ plugin from plugins.gradle.org you should be able to access an oracle database if the Oracle JDBC can be found in the Gradle buildscript classpath. 
 
+Rant: Since they want to make us all happy and wants us to bang our heads on the desk, sometimes some transitive dependencies are not found and even your account is not working. On travis-ci.org the old account is still working while on my local machine I need a new account. WTF. 
+
 ## Testing
 
 ```
