@@ -1,6 +1,14 @@
 apply from: '../dependencies.gradle'
 apply plugin: 'java-library'
 
+configurations {
+    api {
+        exclude module: 'xmlparserv2'
+        exclude module: 'ucp'
+        exclude module: 'xdb6'
+    }
+}
+
 dependencies {
     // Add latest gretl jar. Since it's not added as plugin,
     // it will not try to get it from plugins.gradle.org.

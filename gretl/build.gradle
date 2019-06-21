@@ -20,6 +20,17 @@ configurations.all {
     */
 }
 
+/*
+ * This is ridiculous.
+ */
+configurations {
+    integrationTestImplementation {
+        exclude module: 'xmlparserv2'
+        exclude module: 'ucp'
+        exclude module: 'xdb6'
+    }
+}
+
 dependencies {  
     api gradleApi()
   
