@@ -29,6 +29,11 @@ dependencies {
 }
 
 task stageJars(type: Copy) {
+
+    println "****"
+    println System.env.oracleUsername
+    println "****"
+
     description = 'Copies all jars required by gretl to the temp folder __jars4image.'
     from configurations.compileClasspath
     from configurations.runtimeClasspath
