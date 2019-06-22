@@ -10,9 +10,9 @@ allprojects {
         mavenCentral()
         jcenter()
         maven {
-            url "http://www.oracle.com/content/secure/maven/content"
+            url "https://www.oracle.com/content/secure/maven/content"
             credentials {
-                username "stefan.ziegler@outlook.com"
+                username System.env.oracleUsername
                 password System.env.oraclePassword
             }
             authentication {                            
