@@ -29,8 +29,8 @@ Parameter:
 * GRETL_JOB_REPO_URL: Repo containing the GRETL jobs.
 * GRETL_JOB_FILE_PATH: Base path to the GRETL job definitions (the Gradle build script) (Ant style).
 * GRETL_JOB_FILE_NAME: Name of the GRETL job file (the Gradle build script).
-* JENKINS_HOSTNAME: The public hostname for the Jenkins service.
 * VOLUME_CAPACITY: Persistent volume size for Jenkins configuration data, e.g. 512Mi, 2Gi.
+* JENKINS_HOSTNAME: The public hostname for the Jenkins service.
 
 ### GRETL runtime
 The GRETL runtime configuration with definition of which Docker image to pull from Docker Hub.
