@@ -13,7 +13,7 @@ oc new-project gretl-system
 ### GRETL-Jenkins
 Apply project template with the GRETL-Jenkins configuration.
 ```
-oc process -f serviceConfig/templates/jenkins-s2i-persistent-template.yaml \
+oc process -f openshift/templates/jenkins-s2i-persistent-template.yaml \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
   -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
   -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretljobs.git" \
@@ -37,7 +37,7 @@ The GRETL runtime configuration with definition of which Docker image to pull fr
 
 Add gretl imagestream to pull newest GRETL runtime image:
 ```
-oc process -f serviceConfig/templates/gretl-is-template.yaml \
+oc process -f openshift/templates/gretl-is-template.yaml \
   -p GRETL_RUNTIME_IMAGE="sogis/gretl-runtime:32" \
   | oc apply -f -
 ```
@@ -47,7 +47,7 @@ Parameter:
 If you need to configure more details of the GRETL pod, then apply the following 
 ConfigMap:
 ```
-oc apply -f serviceConfig/templates/gretl-pod-template-configmap.yaml
+oc apply -f openshift/templates/gretl-pod-template-configmap.yaml
 ```
 After the creation of the *gretl* ConfigMap, update the image URI field (`<image/>`) of 
 the ConfigMap manually with the information returned by the command 
