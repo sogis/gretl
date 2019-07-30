@@ -2,7 +2,7 @@ ext {
     //dependency versions
     ioxIliVersion = '1.20.11'
     ilivalidatorVersion = '1.11.0'
-    ili2pgVersion = '4.1.0'
+    ili2pgVersion = '4.1.1-SNAPSHOT'
     ioxWkfVersion = '1.0.1-SNAPSHOT'
     ehiSqlgenVersion = '1.13.7'
     
