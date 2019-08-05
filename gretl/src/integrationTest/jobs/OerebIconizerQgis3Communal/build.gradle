@@ -1,0 +1,26 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+def GRETLTEST_DBURI = 'gretltest_dburi_pg'
+def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+def GRETLTEST_SLDURL = 'sldUrl'
+def testSldUrl = findProperty(GRETLTEST_SLDURL) != null ? findProperty(GRETLTEST_SLDURL) : null
+
+def GRETLTEST_LEGENDGRAPHICURL = 'legendGraphicUrl'
+def testLegendGraphicUrl = findProperty(GRETLTEST_LEGENDGRAPHICURL) != null ? findProperty(GRETLTEST_LEGENDGRAPHICURL) : null
+
+defaultTasks 'updateSymbols'
+
+task updateSymbols(type: OerebIconizerQgis3) {
+    sldUrl = testSldUrl + "/qgis/singlesymbol?SERVICE=WMS&REQUEST=GetStyles&LAYERS=singlepolygon&SLD_VERSION=1.1.0"
+    legendGraphicUrl = testLegendGraphicUrl + "/qgis/singlesymbol?SERVICE=WMS&REQUEST=GetLegendGraphic&LAYER=singlepolygon&FORMAT=image/png&RULELABEL=false&LAYERTITLE=false&HEIGHT=35&WIDTH=70&SYMBOLHEIGHT=3&SYMBOLWIDTH=6&DPI=300";
+    database = [db_uri, db_user, db_pass]
+    dbQTable = "agi_oereb.transferstruktur_legendeeintrag_kommunal"
+    typeCodeAttrName = "artcode"
+    symbolAttrName = "symbol"
+    useCommunalTypeCodes = true
+}

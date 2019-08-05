@@ -780,7 +780,7 @@ task updateSymbols(type: OerebIconizerQgis3) {
     dbQTable = "agi_oereb.transferstruktur_legendeeintrag"
     typeCodeAttrName = "artcode"
     symbolAttrName = "symbol"
-    legendTextAttrName = "legendetext"
+    useCommunalTypeCodes = true
 }
 ```
 
@@ -792,7 +792,8 @@ database | Datenbank in die importiert werden soll.
 dbQTable  | Qualifizierter Tabellename.
 typeCodeAttrName | Name des Attributes in der Tabelle, dem das Symbol zugeordnet werden kann.
 symbolAttrName | Name des Symbolattributes in der Tabelle. Dieses Attribut wird upgedatet.
-legendTextAttrName | Names des Legendentext-Attributes in der Tabelle. Dieses Attribut wird upgedatet.
+useCommunalTypeCodes | Ob in der Update-Query Substrings verglichen werden, damit kommunale Codes mit (aggregierten) kantonalen Symbolen verwendet werden können.
+legendTextAttrName | Names des Legendentext-Attributes in der Tabelle. Dieses Attribut wird upgedatet. (Optional)
 
 ### Av2ch
 

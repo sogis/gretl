@@ -42,7 +42,7 @@ Rant: Since they want to make us all happy and wants us to bang our heads on the
 ```
 ./gradlew clean gretl:classes 
 ./gradlew gretl:test gretl:dbTest
-./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
+./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal  gretl:publishGretlPluginPluginMarkerMavenPublicationToMavenLocal -x test
 cd runtimeImage/
 ./build-gretl.sh
 cd ..

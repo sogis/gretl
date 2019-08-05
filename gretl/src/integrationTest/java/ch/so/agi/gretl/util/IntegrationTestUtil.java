@@ -46,6 +46,7 @@ public class IntegrationTestUtil {
                 buf.append(" ");
                 buf.append(var.buildOptionString());
             }
+            buf.append(" -i ");
             varText = buf.toString();
         }
         return varText;

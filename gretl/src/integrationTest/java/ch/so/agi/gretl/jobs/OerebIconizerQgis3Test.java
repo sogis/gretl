@@ -98,5 +98,60 @@ public class OerebIconizerQgis3Test {
 
         IntegrationTestUtilSql.closeCon(con);
     }
+    
+    @Test
+    public void createAndSaveSymbolsCommunal_Ok() throws Exception {
+        // Schema and table creation including data preparation is done
+        // in the oerebIconizer/init_postgresql.sql.
+
+        String ipAddress = qgis.getContainerIpAddress();
+        String port = String.valueOf(qgis.getFirstMappedPort());
+        
+        // I have problems with the url that are passed to the start-gretl.sh. It seems that they are not interpreted
+        // correctly in the shell script. So I pass only the url without any path and query string. The url needs to
+        // be passed because it is dynamic.
+        String sldUrl = "http://" + ipAddress + ":" + port;
+        String legendGraphicUrl = "http://" + ipAddress + ":" + port;
+
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()), GradleVariable.newGradleProperty("legendGraphicUrl", legendGraphicUrl), GradleVariable.newGradleProperty("sldUrl", sldUrl)};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/OerebIconizerQgis3Communal", gvs);
+        
+        // check results
+        // TypeCode and legend text do not fit together in real life. 
+        // But legend text has some nasty umlaute.
+        String typeCode = "N111";
+        String typeCodeCommunal = "1111";
+        File symbolFile = new File("src/integrationTest/resources/oerebIconizer/gruen_und_freihaltezone_innerhalb_bauzone.png");
+        String legendText = "Grün- und Freihaltezone innerhalb Bauzone";
+
+        Connection con = IntegrationTestUtilSql.connectPG(postgres);
+
+        Statement s = con.createStatement();
+        ResultSet rs = s.executeQuery("SELECT artcode, symbol, legendetext_de FROM agi_oereb.transferstruktur_legendeeintrag_kommunal");
+        
+        if(!rs.next()) {
+            fail();
+        }
+        
+        assertEquals(typeCodeCommunal, rs.getString(1));
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(rs.getBytes(2));
+        BufferedImage bim = ImageIO.read(bis);
+        assertEquals(ImageIO.read(symbolFile).getHeight(), bim.getHeight());
+        assertEquals(ImageIO.read(symbolFile).getWidth(), bim.getWidth());
+        assertEquals(ImageIO.read(symbolFile).isAlphaPremultiplied(), bim.isAlphaPremultiplied());
+                
+        //assertEquals(legendText, rs.getString(3));
+        
+        if(rs.next()) {
+            fail();
+        }
+
+        rs.close();
+        s.close();
+
+        IntegrationTestUtilSql.closeCon(con);
+    }
+    
 
 }
