@@ -68,16 +68,12 @@ public class OerebIconizerQgis3 extends DefaultTask {
         if (symbolAttrName == null) {
             throw new IllegalArgumentException("symbolAttrName must not be null");
         }
-        
-        
-        log.info("************************");
-        log.info(String.valueOf(useCommunalTypeCodes));
-                    
+                            
         try {
             OerebIconizer iconizer = new OerebIconizer();
             List<LegendEntry> legendEntries =  iconizer.getSymbolsQgis3(sldUrl, legendGraphicUrl);
             int count = iconizer.updateSymbols(legendEntries, database.getDbUri(), database.getDbUser(), database.getDbPassword(), dbQTable, typeCodeAttrName, symbolAttrName, legendTextAttrName, useCommunalTypeCodes);    
-            log.info("Updated " + String.valueOf(count) + " column(s).");
+            log.info("Updated " + String.valueOf(count) + " record(s).");
         } catch (Exception e) {
             log.error("Exception in OerebIconizerQgis3 task.", e);
             GradleException ge = TaskUtil.toGradleException(e);
