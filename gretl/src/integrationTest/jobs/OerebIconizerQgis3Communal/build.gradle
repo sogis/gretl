@@ -16,8 +16,8 @@ def testLegendGraphicUrl = findProperty(GRETLTEST_LEGENDGRAPHICURL) != null ? fi
 defaultTasks 'updateSymbols'
 
 task updateSymbols(type: OerebIconizerQgis3) {
-    sldUrl = testSldUrl + "/qgis/singlesymbol?SERVICE=WMS&REQUEST=GetStyles&LAYERS=singlepolygon&SLD_VERSION=1.1.0"
-    legendGraphicUrl = testLegendGraphicUrl + "/qgis/singlesymbol?SERVICE=WMS&REQUEST=GetLegendGraphic&LAYER=singlepolygon&FORMAT=image/png&RULELABEL=false&LAYERTITLE=false&HEIGHT=35&WIDTH=70&SYMBOLHEIGHT=3&SYMBOLWIDTH=6&DPI=300";
+    sldUrl = testSldUrl + "/qgis/oereb-dummy?SERVICE=WMS&REQUEST=GetStyles&LAYERS=ch.so.Nutzungsplanung.NutzungsplanungGrundnutzung&SLD_VERSION=1.1.0"
+    legendGraphicUrl = testLegendGraphicUrl + "/qgis/oereb-dummy?SERVICE=WMS&REQUEST=GetLegendGraphic&LAYER=ch.so.Nutzungsplanung.NutzungsplanungGrundnutzung&FORMAT=image/png&RULELABEL=false&LAYERTITLE=false&HEIGHT=35&WIDTH=70&SYMBOLHEIGHT=3&SYMBOLWIDTH=6&DPI=300";
     database = [db_uri, db_user, db_pass]
     dbQTable = "agi_oereb.transferstruktur_legendeeintrag_kommunal"
     typeCodeAttrName = "artcode"

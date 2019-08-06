@@ -1,0 +1,40 @@
+code_kantonal	bezeichnung_kantonal
+110	Wohnzone 1 G
+111	Wohnzone 2 G
+112	Wohnzone 3 G
+113	Wohnzone 4 G
+114	Wohnzone 5 G
+115	Wohnzone 6 G
+116	Wohnzone 7 G und grösser
+117	Zone für Terrassenhäuser / Terrassensiedlung
+120	Gewerbezone ohne Wohnen
+121	Industriezone
+122	Arbeitszone
+130	Gewerbezone mit Wohnen / Mischzone
+131	Gewerbezone mit Wohnen / Mischzone 2 G
+132	Gewerbezone mit Wohnen / Mischzone 3 G
+133	Gewerbezone mit Wohnen / Mischzone 4 G und grösser
+134	Zone für publikumsintensive Anlagen
+140	Kernzone 
+141	Zentrumszone
+142	Erhaltungszone
+150	Zone für öffentliche Bauten
+151	Zone für öffentliche Anlagen
+160	Grün- und Freihaltezone innerhalb Bauzone
+161	kommunale Uferschutzzone innerhalb Bauzone
+162	Landwirtschaftliche Kernzone
+163	Weilerzone
+169	weitere eingeschränkte Bauzonen
+170	Zone für Freizeit und Erholung
+190	Spezialzone
+220	Spezielle Landwirtschaftszone
+230	Rebbauzone
+290	weitere Landwirtschaftszonen
+310	kommunale Naturschutzzone
+311	Waldrandschutzzone
+319	weitere Schutzzonen für Lebensräume und Landschaften
+390	weitere Schutzzonen ausserhalb Bauzonen
+490	Golfzone
+491	Abbauzone
+492	Deponiezone
+499	weitere Bauzonen nach Art. 18 RPG ausserhalb Bauzonen

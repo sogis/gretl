@@ -71,7 +71,7 @@ public class OerebIconizerQgis3 extends DefaultTask {
                             
         try {
             OerebIconizer iconizer = new OerebIconizer();
-            List<LegendEntry> legendEntries =  iconizer.getSymbolsQgis3(sldUrl, legendGraphicUrl);
+            List<LegendEntry> legendEntries =  iconizer.getSymbolsQgis3Simple(sldUrl, legendGraphicUrl);
             int count = iconizer.updateSymbols(legendEntries, database.getDbUri(), database.getDbUser(), database.getDbPassword(), dbQTable, typeCodeAttrName, symbolAttrName, legendTextAttrName, useCommunalTypeCodes);    
             log.info("Updated " + String.valueOf(count) + " record(s).");
         } catch (Exception e) {
