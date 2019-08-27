@@ -16,7 +16,7 @@ Apply project template with the GRETL-Jenkins configuration.
 oc process -f serviceConfig/templates/jenkins-s2i-persistent-template.yaml \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
   -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
-  -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretljobs.git" \
+  -p GRETL_JOB_REPO_URL="https://github.com/sogis/gretljobs.git" \
   -p GRETL_JOB_FILE_PATH="**" \
   -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
   -p VOLUME_CAPACITY="2Gi" \
