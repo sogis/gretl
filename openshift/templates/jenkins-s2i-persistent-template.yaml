@@ -272,4 +272,4 @@ parameters:
 - description: GRETL Job configuration filename.
   displayName: GRETL Job pipeline file
   name: GRETL_JOB_FILE_NAME
-  value: gretl-job.groovy
+  value: build.gradle

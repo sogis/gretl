@@ -18,7 +18,7 @@ oc process -f openshift/templates/jenkins-s2i-persistent-template.yaml \
   -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
   -p GRETL_JOB_REPO_URL="https://github.com/sogis/gretljobs.git" \
   -p GRETL_JOB_FILE_PATH="**" \
-  -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
+  -p GRETL_JOB_FILE_NAME="build.gradle" \
   -p VOLUME_CAPACITY="2Gi" \
   -p JENKINS_HOSTNAME="gretl.example.org" \
   | oc apply -f -
