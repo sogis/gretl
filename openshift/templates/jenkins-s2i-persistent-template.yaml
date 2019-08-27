@@ -115,6 +115,8 @@ objects:
             value: https://kubernetes.default:443
           - name: KUBERNETES_TRUST_CERTIFICATES
             value: "true"
+          - name: OVERRIDE_PV_PLUGINS_WITH_IMAGE_PLUGINS
+            value: "true"
           - name: JENKINS_SERVICE_NAME
             value: ${JENKINS_SERVICE_NAME}
           - name: JNLP_SERVICE_NAME
