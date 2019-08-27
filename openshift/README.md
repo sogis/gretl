@@ -28,7 +28,7 @@ Parameter:
 * JENKINS_IMAGE_STREAM_TAG: Docker base image for the Jenkins. 
 * GRETL_JOB_REPO_URL: Repo containing the GRETL jobs.
 * GRETL_JOB_FILE_PATH: Base path to the GRETL job definitions (Ant style)
-* GRETL_JOB_FILE_NAME: Name of the GRETL job configuration file.
+* GRETL_JOB_FILE_NAME: Name of the GRETL job script file (usually build.gradle).
 * JENKINS_HOSTNAME: The public hostname for the Jenkins service.
 * VOLUME_CAPACITY: Persistent volume size for Jenkins configuration data, e.g. 512Mi, 2Gi.
 
