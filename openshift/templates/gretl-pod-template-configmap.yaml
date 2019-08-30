@@ -56,5 +56,7 @@ data:
           envFrom:
             - configMapRef:
                 name: gretl-resources
+            - secretRef:
+                name: gretl-secrets
       </yaml>
     </org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
