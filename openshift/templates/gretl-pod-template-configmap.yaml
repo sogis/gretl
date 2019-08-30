@@ -29,7 +29,7 @@ data:
           <!-- Minishift example: <image>172.30.1.1:5000/gretl-development/gretl</image> -->
           <!-- OpenShit example: <image>docker-registry.default.svc:5000/gretl-test/gretl</image> -->
           <!-- Pull directly from Docker Hub example: <image>sogis/gretl-runtime:latest</image> -->
-          <image>docker-registry.default.svc:5000/as-gretl-dev/gretl</image>
+          <image>docker-registry.default.svc:5000/as-gretl-dev/gretl:ili2pg4</image>
           <privileged>false</privileged>
           <alwaysPullImage>true</alwaysPullImage>
           <workingDir>/tmp</workingDir>
