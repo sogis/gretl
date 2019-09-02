@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: gretl
+  name: gretl-ili2pg4
   labels:
     app: gretl-platform
     role: jenkins-slave
@@ -9,10 +9,10 @@ data:
   template: |-
     <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
       <inheritFrom></inheritFrom>
-      <name>gretl</name>
+      <name>gretl-ili2pg4</name>
       <instanceCap>2</instanceCap>
       <idleMinutes>0</idleMinutes>
-      <label>gretl</label>
+      <label>gretl-ili2pg4</label>
       <serviceAccount>jenkins</serviceAccount>
       <nodeSelector></nodeSelector>
       <volumes>
@@ -29,7 +29,7 @@ data:
           <!-- Minishift example: <image>172.30.1.1:5000/gretl-development/gretl</image> -->
           <!-- OpenShit example: <image>docker-registry.default.svc:5000/gretl-test/gretl</image> -->
           <!-- Pull directly from Docker Hub example: <image>sogis/gretl-runtime:latest</image> -->
-          <image>docker-registry.default.svc:5000/agi-gretl-test/gretl:latest</image>
+          <image>docker-registry.default.svc:5000/agi-gretl-test/gretl:ili2pg4</image>
           <privileged>false</privileged>
           <alwaysPullImage>true</alwaysPullImage>
           <workingDir>/tmp</workingDir>
