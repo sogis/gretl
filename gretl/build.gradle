@@ -13,11 +13,12 @@ apply from: '../dependencies.gradle'
 apply from: 'integration-test.gradle'
 
 configurations.all {
-    /*
+    
     resolutionStrategy { 
-        force 'ch.interlis:ili2pg:3.11.3-SNAPSHOT'
+        force 'ch.interlis:iox-ili:1.20.13'
+        force 'ch.interlis:ili2c-tool:5.0.2'
+        force 'ch.interlis:ili2c-core:5.0.2'
     }
-    */
 }
 
 /*
