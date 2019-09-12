@@ -769,8 +769,7 @@ dataFile | Name der Rasterdatei, die erstellt werden soll.
 Erstellt die Symbole anhand eines WMS-Layers für den ÖREB-Kataster indem er zuerst das SLD (GetStyles) ausliest und anschliessend einzelne GetLegendGraphic-Requests macht. Die Symbole werden dann in der Datenbank in der entsprechenden Tabelle nachgeführt (`update`). Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/openoereb/oereb-iconizer](https://github.com/openoereb/oereb-iconizer).
 
 Einschränkungen: 
-- Es dürfen nicht mehr Symbole in der Datenbank nachgeführt werden als wirklich bereits Records vorhanden sind.
-- Artcode-Wert muss eindeutig sein.
+- Artcode-Wert muss zusammen mit der Artcodeliste eindeutig sein. Beim Updaten in der Datenbank wird die Artcodeliste mit `LIKE 'NameDerListe%'` gematcht.
 
 ```
 task updateSymbols(type: OerebIconizerQgis3) {
@@ -779,6 +778,8 @@ task updateSymbols(type: OerebIconizerQgis3) {
     database = [db_uri, db_user, db_pass]
     dbQTable = "agi_oereb.transferstruktur_legendeeintrag"
     typeCodeAttrName = "artcode"
+    typeCodeListAttrName = "artcodeliste"
+    typeCodeListValue = "Grundnutzung'
     symbolAttrName = "symbol"
     useCommunalTypeCodes = true
 }
@@ -791,6 +792,8 @@ legendGraphicUrl | GetLegendGraphic-Request mit QGIS-spezifischen Parametern, um
 database | Datenbank in die importiert werden soll.
 dbQTable  | Qualifizierter Tabellename.
 typeCodeAttrName | Name des Attributes in der Tabelle, dem das Symbol zugeordnet werden kann.
+typeCodeListAttrName | Name des Artcodeliste in der Tabelle, dem das Symbol zugeordnet werden kann.
+typeCodeListValue | Wert der Artcodeliste in der Tabelle, dem das Symbol zugeordnet werden kann.
 symbolAttrName | Name des Symbolattributes in der Tabelle. Dieses Attribut wird upgedatet.
 useCommunalTypeCodes | Ob in der Update-Query Substrings verglichen werden, damit kommunale Codes mit (aggregierten) kantonalen Symbolen verwendet werden können.
 legendTextAttrName | Names des Legendentext-Attributes in der Tabelle. Dieses Attribut wird upgedatet. (Optional)

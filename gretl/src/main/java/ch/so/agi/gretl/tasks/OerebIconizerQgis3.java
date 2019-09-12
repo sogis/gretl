@@ -36,6 +36,12 @@ public class OerebIconizerQgis3 extends DefaultTask {
     @Input
     public String typeCodeAttrName = null;
     
+    @Input
+    public String typeCodeListAttrName = null;
+
+    @Input
+    public String typeCodeListValue = null;
+
     @Input 
     public String symbolAttrName = null;
     
@@ -65,6 +71,12 @@ public class OerebIconizerQgis3 extends DefaultTask {
         if (typeCodeAttrName == null) {
             throw new IllegalArgumentException("typeCodeAttrName must not be null");
         }
+        if (typeCodeListAttrName == null) {
+            throw new IllegalArgumentException("typeCodeListAttrName must not be null");
+        }
+        if (typeCodeListValue == null) {
+            throw new IllegalArgumentException("typeCodeListValue must not be null");
+        }
         if (symbolAttrName == null) {
             throw new IllegalArgumentException("symbolAttrName must not be null");
         }
@@ -72,7 +84,7 @@ public class OerebIconizerQgis3 extends DefaultTask {
         try {
             OerebIconizer iconizer = new OerebIconizer();
             List<LegendEntry> legendEntries =  iconizer.getSymbolsQgis3Simple(sldUrl, legendGraphicUrl);
-            int count = iconizer.updateSymbols(legendEntries, database.getDbUri(), database.getDbUser(), database.getDbPassword(), dbQTable, typeCodeAttrName, symbolAttrName, legendTextAttrName, useCommunalTypeCodes);    
+            int count = iconizer.updateSymbols(legendEntries, database.getDbUri(), database.getDbUser(), database.getDbPassword(), dbQTable, typeCodeAttrName, typeCodeListAttrName, typeCodeListValue, symbolAttrName, legendTextAttrName, useCommunalTypeCodes);    
             log.info("Updated " + String.valueOf(count) + " record(s).");
         } catch (Exception e) {
             log.error("Exception in OerebIconizerQgis3 task.", e);

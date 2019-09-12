@@ -21,6 +21,8 @@ task updateSymbols(type: OerebIconizerQgis3) {
     database = [db_uri, db_user, db_pass]
     dbQTable = "agi_oereb.transferstruktur_legendeeintrag_kommunal"
     typeCodeAttrName = "artcode"
+    typeCodeListAttrName = "artcodeliste"
+    typeCodeListValue = "GrundnutzungListe"    
     symbolAttrName = "symbol"
     useCommunalTypeCodes = true
 }
