@@ -9,8 +9,6 @@ objects:
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    labels:
-      role: jenkins-slave
     name: gretl
   spec:
     lookupPolicy:
@@ -19,10 +17,15 @@ objects:
     - annotations: null
       from:
         kind: DockerImage
-        name: ${GRETL_RUNTIME_IMAGE}
+        name: sogis/gretl-runtime:${GRETL_RUNTIME_IMAGE_TAG}
       name: latest
+      importPolicy:
+        scheduled: ${{IMPORT_POLICY_SCHEDULED}}
 parameters:
-- name: GRETL_RUNTIME_IMAGE
-  description: Docker image and version of GRETL runtime to be pulled from Dockerhub.
-  displayName: Docker image of GRETL runtime
-  value: sogis/gretl-runtime:latest
+- name: GRETL_RUNTIME_IMAGE_TAG
+  description: Docker image tag of GRETL runtime to be pulled from Docker Hub.
+  displayName: Docker image tag of GRETL runtime
+  value: latest
+- name: IMPORT_POLICY_SCHEDULED
+  description: Regularly check for changed image
+  value: "false"

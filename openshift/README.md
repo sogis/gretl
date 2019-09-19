@@ -35,14 +35,27 @@ Parameter:
 ### GRETL runtime
 The GRETL runtime configuration with definition of which Docker image to pull from Docker Hub.
 
+#### Create the gretl Image Stream providing the GRETL runtime image
+
 Add gretl imagestream to pull newest GRETL runtime image:
 ```
 oc process -f openshift/templates/gretl-is-template.yaml \
-  -p GRETL_RUNTIME_IMAGE="sogis/gretl-runtime:32" \
+  -p GRETL_RUNTIME_IMAGE_TAG="latest" \
   | oc apply -f -
 ```
 Parameter:
-* GRETL_RUNTIME_IMAGE: Docker image reference of the GRETL runtime.
+* GRETL_RUNTIME_IMAGE_TAG: Docker image tag of GRETL runtime to be pulled from Docker Hub.
+* IMPORT_POLICY_SCHEDULED: Regularly check for changed image; defaults to "false"
+
+Basically you could add the label `role=jenkins-slave` to the image stream,
+so the OpenShift Sync plug-in, which is installed in our Jenkins,
+would automatically create the configuration
+for a Jenkins agent running the GRETL runtime image.
+Documentation: https://docs.openshift.com/container-platform/3.11/using_images/other_images/jenkins.html#configuring-the-jenkins-kubernetes-plug-in
+However, as we want to provide some further configuration
+of our Jenkins agent, we don't use this feature,
+but instead provide with the following steps a ConfigMap
+with the label `role=jenkins-slave`.
 
 #### Create a ConfigMap that configures the GRETL runtime Jenkins agent
 
@@ -56,8 +69,11 @@ Note: When editing the ConfigMap any further, pay close attention
 to the indentation of the lines inside the `<yaml>` XML tags.
 
 If you need an additional Jenkins agent running a different GRETL image tag,
-do the same with the ConfigMap
-`openshift/templates/gretl-ili2pg4-pod-template-configmap.yaml`.
+create an additional Image Stream tag, e.g.
+`oc tag --scheduled=true --source=docker sogis/gretl-runtime:latest gretl:ili2pg4`,
+then apply the additional ConfigMap
+`openshift/templates/gretl-ili2pg4-pod-template-configmap.yaml`
+the same way as the default ConfigMap.
 
 ### Configure a database connection
 Database connections are configured globally in the OpenShift project.
