@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: gretl
+  name: gretl-ili2pg4
   labels:
     app: gretl-platform
     role: jenkins-slave
@@ -9,10 +9,10 @@ data:
   template: |-
     <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
       <inheritFrom></inheritFrom>
-      <name>gretl</name>
+      <name>gretl-ili2pg4</name>
       <instanceCap>2</instanceCap>
       <idleMinutes>0</idleMinutes>
-      <label>gretl</label>
+      <label>gretl-ili2pg4</label>
       <serviceAccount>jenkins</serviceAccount>
       <nodeSelector></nodeSelector>
       <volumes>
@@ -26,7 +26,7 @@ data:
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
           <name>jnlp</name>
           <!-- Attention: Before creating this ConfigMap, please adapt the image URI below so it points to the right project -->
-          <image>docker-registry.default.svc:5000/PROJECT-NAME/gretl:latest</image>
+          <image>docker-registry.default.svc:5000/PROJECT-NAME/gretl:ili2pg4</image>
           <privileged>false</privileged>
           <alwaysPullImage>true</alwaysPullImage>
           <workingDir>/tmp</workingDir>
