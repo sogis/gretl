@@ -44,21 +44,20 @@ oc process -f openshift/templates/gretl-is-template.yaml \
 Parameter:
 * GRETL_RUNTIME_IMAGE: Docker image reference of the GRETL runtime.
 
-If you need to configure more details of the GRETL pod, then apply the following 
-ConfigMap:
+#### Create a ConfigMap that configures the GRETL runtime Jenkins agent
+
+Adapt the OpenShift project name (and maybe the image tag) in the ConfigMap
+`openshift/templates/gretl-pod-template-configmap.yaml`,
+then apply the ConfigMap:
 ```
 oc apply -f openshift/templates/gretl-pod-template-configmap.yaml
 ```
-After the creation of the *gretl* ConfigMap, update the image URI field (`<image/>`) of 
-the ConfigMap manually with the information returned by the command 
-`oc get is`, then save the ConfigMap.
+Note: When editing the ConfigMap any further, pay close attention
+to the indentation of the lines inside the `<yaml>` XML tags.
 
-Be aware that after tagging the image stream (e.g. after doing
-`oc tag --source=docker sogis/gretl-runtime:latest gretl:latest`) the configuration is
-kind of "lost" (the running Jenkins does not re-generate it correctly).
-To work around this, the Jenkins pod needs to be restarted;
-on restart of the pod the configuration is re-generated.
-
+If you need an additional Jenkins agent running a different GRETL image tag,
+do the same with the ConfigMap
+`openshift/templates/gretl-ili2pg4-pod-template-configmap.yaml`.
 
 ### Configure a database connection
 Database connections are configured globally in the OpenShift project.
