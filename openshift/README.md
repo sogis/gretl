@@ -164,7 +164,18 @@ Edit the version manually inside the web console of OpenShift
 1. select *Edit YAML* on the Actions button
 1. change the image tag name to the desired version and save it. 
 
-### Update Jenkins version
+### Update Jenkins
+Follow the steps below for updating Jenkins:
+
+1. In a test OpenShift project, manually start a build
+of *s2i-jenkins-build*: `oc start-build s2i-jenkins-build`
+1. When the build has finished and the newly built image has been deployed, log into Jenkins and go to the *Manage Plugins* section
+1. Go through the plugin list in https://github.com/sogis/openshift-jenkins/blob/master/plugins.txt, and locate these plugins in the *Manage Plugins* section of Jenkins; note down the versions that Jenkins would install, but do not start the update. Carefully read the warning messages in the plugin list; if there is any warning like *Warning: This plugin is built for Jenkins 2.150.3 or newer. Jenkins will refuse to load this plugin if installed.* then check in the online Jenkins plugin repository at https://plugins.jenkins.io/ which older plugin version works with your new Jenkins version.
+1. Update the *plugins.txt* file mentioned above with the plugin version numbers you noted down, and commit the changes.
+1. Start a manual build again and check if everything works fine. Jenkins may show you messages about unreadable configuration data; following the steps recommended by Jenkins to purge these parts of the configuration is usually safe.
+1. Now you can start a build in your production OpenShift project and have Jenkins purge the unreadable configuration data here as well.
+
+### Update Jenkins to a specific version
 To update the Jenkins version to 3.7, as example, use the following patch.
 This will update the build configuration to the desired version.
 ```
