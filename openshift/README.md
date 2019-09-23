@@ -176,8 +176,9 @@ of *s2i-jenkins-build*: `oc start-build s2i-jenkins-build`
 1. Now you can start a build in your production OpenShift project and have Jenkins purge the unreadable configuration data here as well.
 
 ### Update Jenkins to a specific version
-To update the Jenkins version to 3.7, as example, use the following patch.
-This will update the build configuration to the desired version.
+The deployment instructions above actually use the *Jenkins* ImageStream of the *openshift* namespace for getting the base image (see https://github.com/sogis/gretl/blob/119149e64c939eaadf9bf81764768848e9e63170/openshift/templates/jenkins-s2i-persistent-template.yaml#L76). So the Jenkins version that is going to be built depends on this ImageStream, which depends on the OpenShift version installed. The command `oc get is jenkins -n openshift -o yaml` shows you the details about the ImageStream. (By the way, the *openshift* namespace is the one that provides the Image Catalog at https://your-web-console-hostname/console/catalog.)
+
+The same applies to the update instructions above. They will update Jenkins to the version provided by the *Jenkins* ImageStream of the *openshift* namespace. Now, if you want to update Jenkins to a specific image version (3.7, as an example), use the following patch, which will update the build configuration to the desired version. The patch bypasses the *Jenkins* ImageStream of the *openshift* namespace and uses a Docker image from a remote image registry instead.
 ```
 oc patch bc s2i-jenkins-build -p $'spec:\n  strategy:\n    sourceStrategy:\n      from:\n        kind: DockerImage\n        name: registry.access.redhat.com/openshift3/jenkins-2-rhel7:v3.7'
 ```
