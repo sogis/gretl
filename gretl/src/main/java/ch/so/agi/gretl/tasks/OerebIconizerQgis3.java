@@ -54,7 +54,7 @@ public class OerebIconizerQgis3 extends DefaultTask {
 
     @TaskAction
     public void createAndSaveSymbols() {
-        log = LogEnvironment.getLogger(IliRepositorizer.class);
+        log = LogEnvironment.getLogger(OerebIconizerQgis3.class);
 
         if (sldUrl == null) {
             throw new IllegalArgumentException("sldUrl must not be null");
