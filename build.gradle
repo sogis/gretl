@@ -9,16 +9,6 @@ allprojects {
         maven { url "http://download.osgeo.org/webdav/geotools/" }
         mavenCentral()
         jcenter()
-        maven {
-            url "http://www.oracle.com/content/secure/maven/content"
-            credentials {
-                username System.env.oracleUsername
-                password System.env.oraclePassword
-            }
-            authentication {                            
-                basic(BasicAuthentication)
-            }
-        }
         maven { url "https://plugins.gradle.org/m2/" }
     }    
 }
