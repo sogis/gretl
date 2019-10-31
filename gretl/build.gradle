@@ -53,6 +53,9 @@ dependencies {
     api apacheCommonsIoDependency
     api apacheCommonsCodeDependency
     
+    api jacksonCoreDependency
+    api jacksonDatabindDependency
+    
     runtimeOnly postgresqlDependency
     runtimeOnly sqliteJdbcDependency
     runtimeOnly derbyDependency

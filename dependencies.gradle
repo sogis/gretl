@@ -12,6 +12,8 @@ ext {
     apacheCommonsIoVersion = '2.6'
     apacheCommonsNetVersion = '3.6'
     apacheCommonsCodeVersion = '1.11'
+    
+    jacksonVersion = '2.10.0'
 
     postgresqlVersion = '42.2.5'
     sqliteJdbcVersion = '3.8.11.2'
@@ -35,6 +37,9 @@ ext {
     apacheCommonsIoDependency = [ group: 'commons-io', name: 'commons-io', version: apacheCommonsIoVersion ]
     apacheCommonsNetDependency = [ group: 'commons-net', name: 'commons-net', version: apacheCommonsNetVersion ]
     apacheCommonsCodeDependency = [ group: 'commons-codec', name: 'commons-codec', version: apacheCommonsCodeVersion ]
+    
+    jacksonCoreDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion ]
+    jacksonDatabindDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion ]
     
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
