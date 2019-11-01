@@ -43,12 +43,16 @@ public class JsonImportStep {
      * @param qualifiedTableName The qualified table name
      * @param columnName  The name of the database text column where the json text will be stored
      * @param deleteAllRows Delete all records from the table before importing new data
-     * @throws Exception if File is missing, no correct extension, no connection to
+     * @throws Exception if file is missing, no correct extension, no connection to
      *                   database, could not read file or problems while executing
      *                   sql-queries
      */
     public void execute(Connector targetDb, File jsonFile, String qualifiedTableName, String columnName, boolean deleteAllRows) throws Exception {
+        log.lifecycle(String.format("Start JsonImportStep(Name: %s TargetDb: %s QualifiedTableName: %s ColumnName: %s)", taskName,
+                targetDb, qualifiedTableName, columnName));
+
         Connection connection = targetDb.connect();
+        connection.setAutoCommit(false);
   
         if (deleteAllRows) {
             String sqltruncate = "DELETE FROM " + qualifiedTableName;
@@ -59,7 +63,7 @@ public class JsonImportStep {
             } catch (SQLException e) {
                 log.error("DELETE FROM TABLE " + qualifiedTableName + " failed.", e);
                 throw e;
-            }
+            } 
         }
         
         String jsonString = new String(Files.readAllBytes(jsonFile.toPath()));
@@ -70,13 +74,18 @@ public class JsonImportStep {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootObj = mapper.readTree(jsonString);
         System.err.println(rootObj.toPrettyString());
+
+        PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + qualifiedTableName + " (" + columnName + ") VALUES (?);");
         
+        int rowcount = 0;
         if (rootObj.isArray()) {
             
         } else {
-            
+            stmt.setString(1, jsonString);
+            rowcount = stmt.executeUpdate();
         }
-  
+        connection.commit();
         
+        log.lifecycle("Inserted records: " + rowcount);
     }
 }
