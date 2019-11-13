@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,21 +68,22 @@ public class JsonImportStep {
         }
         
         String jsonString = new String(Files.readAllBytes(jsonFile.toPath()));
-        System.err.println(jsonString);
         
-        //jsonString = "[{\"foo\":\"bar\"}]";
-
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootObj = mapper.readTree(jsonString);
-        System.err.println(rootObj.toPrettyString());
 
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + qualifiedTableName + " (" + columnName + ") VALUES (?);");
         
         int rowcount = 0;
         if (rootObj.isArray()) {
-            
+            Iterator<JsonNode> it = rootObj.iterator();
+            while (it.hasNext()) {
+                JsonNode node = it.next();
+                stmt.setString(1, node.toString());
+                rowcount = stmt.executeUpdate();
+            }            
         } else {
-            stmt.setString(1, jsonString);
+            stmt.setString(1, rootObj.toString());
             rowcount = stmt.executeUpdate();
         }
         connection.commit();

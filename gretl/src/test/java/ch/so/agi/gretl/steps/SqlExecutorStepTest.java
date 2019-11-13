@@ -179,7 +179,6 @@ public class SqlExecutorStepTest {
     @Test
     public void executePostgisVersionTest() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        System.err.println(postgres.getJdbcUrl());
         Connector sourceDb = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
                 TestUtil.PG_READERUSR_PWD);
 

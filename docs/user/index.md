@@ -680,6 +680,28 @@ Im gegebenen Modell wird eine Klasse gesucht,
 die genau die Attributenamen wie in der Shp-Datei enthält (wobei die Gross-/Kleinschreibung ignoriert wird); 
 die Attributtypen werden ignoriert. Wird keine solche Klasse gefunden, gilt das als Validierungsfehler.
 
+### JsonImport
+
+Daten aus einer Json-Datei in eine Datenbanktabelle importieren. Die gesamte Json-Datei wird als Text in eine Spalte importiert. Ist das Json-Objekt in der Datei ein Top-Level-Array wird für jedes Element des Arrays ein Record in der Datenbanktabelle erzeugt.
+
+Beispiel:
+```
+task importJson(type: JsonImport){
+    database = [db_uri, db_user, db_pass]
+    jsonFile = "data.json"
+    qualifiedTableName = "jsonimport.jsonarray"
+    columnName = "json_text_col"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank in die importiert werden soll
+jsonFile | Json-Datei, die importiert werden soll
+qualifiedTableName | Qualifizierter Tabellennamen ("schema.tabelle") in die importiert werden soll
+columnName | Spaltenname der Tabelle in die importiert werden soll
+deleteAllRows | Inhalt der Tabelle vorgängig löschen?
+
 ### SqlExecutor
 
 Der SqlExecutor-Task dient dazu, Datenumbauten auszuführen. 

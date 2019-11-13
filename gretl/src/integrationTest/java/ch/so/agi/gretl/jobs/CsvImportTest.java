@@ -67,7 +67,7 @@ public class CsvImportTest {
                 fail();
             }
             rs.close();
-            s1.close();
+            s2.close();
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
