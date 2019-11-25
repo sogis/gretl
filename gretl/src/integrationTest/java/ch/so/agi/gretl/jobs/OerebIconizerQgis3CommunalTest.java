@@ -60,7 +60,7 @@ public class OerebIconizerQgis3CommunalTest {
         // be passed because it is dynamic.
         String sldUrl = "http://" + ipAddress + ":" + port;
         String legendGraphicUrl = "http://" + ipAddress + ":" + port;
-
+        
         GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()), GradleVariable.newGradleProperty("legendGraphicUrl", legendGraphicUrl), GradleVariable.newGradleProperty("sldUrl", sldUrl)};
         IntegrationTestUtil.runJob("src/integrationTest/jobs/OerebIconizerQgis3Communal", gvs);
         

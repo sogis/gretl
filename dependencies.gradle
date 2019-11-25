@@ -6,7 +6,7 @@ ext {
     ioxWkfVersion = '1.0.1-SNAPSHOT'
     ehiSqlgenVersion = '1.13.7'
     
-    oerebIconizerVersion = '1.0.33'
+    oerebIconizerVersion = '1.0.36'
     av2chVersion = '1.0.12'
 
     apacheCommonsIoVersion = '2.6'
