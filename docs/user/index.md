@@ -682,7 +682,7 @@ die Attributtypen werden ignoriert. Wird keine solche Klasse gefunden, gilt das 
 
 ### JsonImport
 
-Daten aus einer Json-Datei in eine Datenbanktabelle importieren. Die gesamte Json-Datei wird als Text in eine Spalte importiert. Ist das Json-Objekt in der Datei ein Top-Level-Array wird für jedes Element des Arrays ein Record in der Datenbanktabelle erzeugt.
+Daten aus einer Json-Datei in eine Datenbanktabelle importieren. Die gesamte Json-Datei (muss UTF-8 encoded sein) wird als Text in eine Spalte importiert. Ist das Json-Objekt in der Datei ein Top-Level-Array wird für jedes Element des Arrays ein Record in der Datenbanktabelle erzeugt.
 
 Beispiel:
 ```
