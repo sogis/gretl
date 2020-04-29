@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.steps;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -67,7 +68,7 @@ public class JsonImportStep {
             } 
         }
         
-        String jsonString = new String(Files.readAllBytes(jsonFile.toPath()));
+        String jsonString = new String(Files.readAllBytes(jsonFile.toPath()), Charset.forName("UTF-8"));
         
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootObj = mapper.readTree(jsonString);
