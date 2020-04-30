@@ -15,7 +15,7 @@ data:
       <label>gretl</label>
       <serviceAccount>jenkins</serviceAccount>
       <nodeSelector></nodeSelector>
-       <volumes>
+      <volumes>
         <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
           <mountPath>/tmp</mountPath>
           <!-- Attention: Before creating this ConfigMap, please adapt the persistent volume claim name below so it points to the right PVC -->
