@@ -84,10 +84,10 @@ Steps for adding a new secret:
 oc get secret gretl-secrets -o yaml > gretl-secrets-ENVIRONMENT.yaml
 vi gretl-secrets-ENVIRONMENT.yaml
 ```
-* Keep everything of the data section
-* Add a new stringData section
-* In the stringData section add the new entries, e.g. `ORG_GRADLE_PROJECT_dbPwdXy: xyxyxyxy`
-* Remove all entries of the metadata section, except the name:
+* Keep everything of the `data` section
+* Add a new `stringData` section
+* In the `stringData` section add the new entries, e.g. `ORG_GRADLE_PROJECT_dbPwdXy: xyxyxyxy`
+* Remove all entries of the `metadata` section, except the `name`
 ```
 oc apply -f gretl-secrets-ENVIRONMENT.yaml
 rm gretl-secrets-ENVIRONMENT.yaml
