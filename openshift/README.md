@@ -75,6 +75,25 @@ then apply the additional ConfigMap
 `openshift/templates/gretl-ili2pg4-pod-template-configmap.yaml`
 the same way as the default ConfigMap.
 
+### Create or update secrets to be used by GRETL
+
+TODO: Creation
+
+Steps for adding a new secret:
+```
+oc get secret gretl-secrets -o yaml > gretl-secrets-ENVIRONMENT.yaml
+vi gretl-secrets-ENVIRONMENT.yaml
+```
+* Keep everything of the `data` section
+* Add a new `stringData` section
+* In the `stringData` section add the new entries, e.g. `ORG_GRADLE_PROJECT_dbPwdXy: xyxyxyxy`
+* Remove all entries of the `metadata` section, except the `name`
+```
+oc apply -f gretl-secrets-ENVIRONMENT.yaml
+rm gretl-secrets-ENVIRONMENT.yaml
+```
+(Remove the secrets YAML file for security reasons.)
+
 ### Configure a database connection
 Database connections are configured globally in the OpenShift project.
 Such that the GRETL-Jobs can use the url and credentials.
