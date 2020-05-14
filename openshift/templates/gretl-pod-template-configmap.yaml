@@ -19,7 +19,7 @@ data:
         <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
           <mountPath>/tmp</mountPath>
           <!-- Attention: Before creating this ConfigMap, please adapt the persistent volume claim name below so it points to the right PVC -->
-          <claimName>agi-gretl-test-lowback</claimName>
+          <claimName>agi-gretl-ENVIRONMENT-lowback</claimName>
           <readOnly>false</readOnly>
         </org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
         <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
