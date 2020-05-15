@@ -26,7 +26,7 @@ public class GpkgValidator extends AbstractValidatorTask {
             throw new IllegalArgumentException("tableName must not be null");
         }        
         if (dataFiles == null || dataFiles.size() == 0) {
-            throw new IllegalArgumentException("dataFiles must not be null");
+            return;
         }
         List<String> files = new ArrayList<String>();
         for (Object fileObj : dataFiles) {

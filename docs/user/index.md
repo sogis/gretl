@@ -584,13 +584,98 @@ failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. D
 validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
 
 ### GpkgImport
-Achtung: Fetchsize nicht implementiert.
+**Achtung:** Fetch-Size ist nicht implementiert.
+
+Daten aus einer GeoPackage-Datei in eine bestehende Datenbanktabelle importieren.
+
+Beispiel:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task gpkgimport(type: GpkgImport){
+    database = [db_uri, db_user, db_pass]
+	schemaName = "gpkgimport"
+    srcTableName = "Point"
+    dstTableName = "importdata"
+    dataFile = "point.gpkg"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank in die importiert werden soll
+dataFile  | Name der GeoPackage-Datei, die gelesen werden soll
+srcTableName | Name der GeoPackage-Tabelle, die importiert werden soll
+schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
+dstTableName | Name der DB-Tabelle, in die importiert werden soll 
+encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
+
+Die Tabelle kann weitere Spalten enthalten, die in der GeoPackage-Datei nicht vorkommen. Sie müssen
+aber NULLable sein, oder einen Default-Wert definiert haben.
+
+Die Gross-/Kleinschreibung der GeoPckage-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
 
 ### GpkgExport
-Achtung: Fetchsize ggü PostgreSQL und Batchsize ggü GPKG nicht implementiert.
+**Achtung:** Fetch-Size und Batch-Size sind nicht implementiert.
+
+Daten aus einer bestehenden Datenbanktabelle werden in eine GeoPackage-Datei exportiert.
+
+Beispiel:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task gpkgexport(type: GpkgExport){
+    database = [db_uri, db_user, db_pass]
+	schemaName = "gpkgexport"
+	srcTableName = "exportdata"
+    dataFile = "data.gpkg"
+    dstTableName = "exportdata"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank aus der exportiert werden soll
+dataFile  | Name der GeoPackage-Datei, die erstellt werden soll
+srcTableName | Name der DB-Tabelle, die exportiert werden soll
+schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
+dstTableName | Name der Tabelle in der GeoPackage-Datei.
 
 ### GpkgValidator
-Work in Progress: Problem mit Boolean Validation. Geht das überhaupt?
+Prüft eine GeoPackage-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
+
+Beispiel:
+```
+task validate(type: GpkgValidator){
+	models = "GpkgModel"
+    dataFiles = ["attributes.gpkg"]
+    tableName = "Attributes"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dataFiles | Liste der GeoPackage-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
+tableName | Name der Tabelle in den GeoPackage-Dateien.
+models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der SHP-Datei.
+configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
+forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
+disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
+multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
+allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
+logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
+xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
+pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
+proxy | Proxy Server für den Zugriff auf Modell Repositories
+proxyPort | Proxy Port für den Zugriff auf Modell Repositories
+failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
+validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
 
 
 ### ShpExport
@@ -679,7 +764,7 @@ multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default
 allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
 logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
 xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
-pluginFolder | erzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
+pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
 proxy | Proxy Server für den Zugriff auf Modell Repositories
 proxyPort | Proxy Port für den Zugriff auf Modell Repositories
 failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
