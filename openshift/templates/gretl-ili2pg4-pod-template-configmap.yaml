@@ -17,6 +17,12 @@ data:
       <nodeSelector></nodeSelector>
       <volumes>
         <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
+          <mountPath>/tmp</mountPath>
+          <!-- Attention: Before creating this ConfigMap, please adapt the persistent volume claim name below so it points to the right PVC -->
+          <claimName>agi-gretl-ENVIRONMENT-lowback</claimName>
+          <readOnly>false</readOnly>
+        </org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
+        <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
           <mountPath>/opt/gretl-jenkins-share</mountPath>
           <claimName>jenkins-share</claimName>
           <readOnly>false</readOnly>
@@ -29,14 +35,14 @@ data:
           <image>docker-registry.default.svc:5000/PROJECT-NAME/gretl:ili2pg4</image>
           <privileged>false</privileged>
           <alwaysPullImage>true</alwaysPullImage>
-          <workingDir>/tmp</workingDir>
+          <workingDir>/workspace</workingDir>
           <command></command>
           <args>${computer.jnlpmac} ${computer.name}</args>
           <ttyEnabled>false</ttyEnabled>
-          <resourceRequestCpu></resourceRequestCpu>
-          <resourceRequestMemory></resourceRequestMemory>
-          <resourceLimitCpu></resourceLimitCpu>
-          <resourceLimitMemory></resourceLimitMemory>
+          <resourceRequestCpu>200m</resourceRequestCpu>
+          <resourceRequestMemory>1Gi</resourceRequestMemory>
+          <resourceLimitCpu>1</resourceLimitCpu>
+          <resourceLimitMemory>2.5Gi</resourceLimitMemory>
           <envVars/>
         </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
       </containers>

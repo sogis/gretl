@@ -146,7 +146,11 @@ objects:
             timeoutSeconds: 240
           resources:
             limits:
+              cpu: ${CPU_LIMIT}
               memory: ${MEMORY_LIMIT}
+            requests:
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
           securityContext:
             capabilities: {}
             privileged: false
@@ -236,10 +240,22 @@ parameters:
   displayName: Enable OAuth in Jenkins
   name: ENABLE_OAUTH
   value: "true"
+- description: The minimum amount of CPU the container is guaranteed.
+  displayName: CPU Request
+  name: CPU_REQUEST
+  value: 100m
+- description: The maximum amount of CPU the container is allowed to use when running.
+  displayName: CPU Limit
+  name: CPU_LIMIT
+  value: "1"
+- description: The minimum amount of memory the container is guaranteed.
+  displayName: Memory Request
+  name: MEMORY_REQUEST
+  value: 1.2Gi
 - description: Maximum amount of memory the container can use.
   displayName: Memory Limit
   name: MEMORY_LIMIT
-  value: 512Mi
+  value: 2Gi
 - description: Volume space available for data, e.g. 512Mi, 2Gi.
   displayName: Volume Capacity
   name: VOLUME_CAPACITY
