@@ -583,6 +583,16 @@ proxyPort | Proxy Port für den Zugriff auf Modell Repositories
 failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
 validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
 
+### GpkgImport
+Achtung: Fetchsize nicht implementiert.
+
+### GpkgExport
+Achtung: Fetchsize ggü PostgreSQL und Batchsize ggü GPKG nicht implementiert.
+
+### GpkgValidator
+Work in Progress: Problem mit Boolean Validation. Geht das überhaupt?
+
+
 ### ShpExport
 Daten aus einer bestehenden Datenbanktabelle werden in eine Shp-Datei exportiert.
 

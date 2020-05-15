@@ -11,13 +11,11 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import static org.junit.Assert.*;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
-import org.junit.Assert;
 import org.junit.ClassRule;
 
 public class GpkgImportTest {

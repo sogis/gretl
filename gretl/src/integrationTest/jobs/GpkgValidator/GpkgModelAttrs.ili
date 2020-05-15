@@ -1,0 +1,31 @@
+INTERLIS 2.4;
+
+MODEL GpkgModel (de) AT "mailto:edigonzales@localhost" VERSION "20180702" =
+
+    DOMAIN
+        Lkoord = COORD 2600000.000 .. 2650000.000 [INTERLIS.m],
+                  1220000.000 .. 1320000.000 [INTERLIS.m],
+                  ROTATION 2 -> 1;
+
+    TOPIC Topic1 =
+        CLASS Attributes =
+            fid : 0 .. 90000000;
+            geom : Lkoord;
+            t_id :  0 .. 90000000;
+            t_ili_tid : TEXT;
+            objektname : TEXT;
+            orientierung : 0.00 .. 399.99;
+            hali : TEXT;
+            vali : TEXT;
+            art : 0 .. 50;
+            art_txt : TEXT;
+            herkunft : TEXT;
+            bfs_nr : 0 .. 9999;
+            importdatum : INTERLIS.XMLDateTime;
+            nachfuehrung : INTERLIS.XMLDate;
+            status : TEXT;
+            aboolean : BOOLEAN;
+        END Attributes;
+    END Topic1;
+    
+END GpkgModel.

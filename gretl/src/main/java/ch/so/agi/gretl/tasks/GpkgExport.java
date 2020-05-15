@@ -11,54 +11,51 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.ehi.basics.settings.Settings;
-import ch.interlis.ioxwkf.dbtools.Gpkg2db;
+import ch.interlis.ioxwkf.dbtools.Db2Gpkg;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
-public class GpkgImport extends DefaultTask {
+public class GpkgExport extends DefaultTask {
     protected GretlLogger log;
     @Input
     public Connector database;
     @InputFile
     public Object dataFile = null;
     @Input
-    String srcTableName = null;
+    String dstTableName = null;    
     @Input
-    public String dstTableName = null;
+    String srcTableName = null;
     @Input
     @Optional
     public String schemaName = null;
     @Input
     @Optional
-    public Integer batchSize = null;
+    public String encoding = null;
 
     @TaskAction
-    public void importData() {
-        log = LogEnvironment.getLogger(GpkgImport.class);
+    public void exportData() {
+        log = LogEnvironment.getLogger(GpkgExport.class);
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
         if (srcTableName == null) {
             throw new IllegalArgumentException("srcTableName must not be null");
-        }
+        }        
         if (dstTableName == null) {
             throw new IllegalArgumentException("dstTableName must not be null");
-        }        
+        }
         if (dataFile == null) {
-            throw new IllegalArgumentException("dataFile must not be null");
+            return;
         }
         Settings settings = new Settings();
-        settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, srcTableName);
-        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, dstTableName);
+        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, srcTableName);
+        settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);        
         // set optional parameters
         if (schemaName != null) {
             settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
-        }
-        if (batchSize != null) {
-            settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
         }
 
         File data = this.getProject().file(dataFile);
@@ -68,14 +65,13 @@ public class GpkgImport extends DefaultTask {
             if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
-            
-            Gpkg2db gpkg2db=new Gpkg2db();
-            gpkg2db.importData(data, conn, settings);
+            Db2Gpkg db2shp = new Db2Gpkg();
+            db2shp.exportData(data, conn, settings);
             conn.commit();
             conn.close();
             conn = null;
         } catch (Exception e) {
-            log.error("failed to run GpkgImport", e);
+            log.error("failed to run GpkgExport", e);
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         } finally {
