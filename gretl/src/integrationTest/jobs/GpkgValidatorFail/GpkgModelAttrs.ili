@@ -17,7 +17,7 @@ MODEL GpkgModel (de) AT "mailto:edigonzales@localhost" VERSION "20180702" =
             orientierung : 0.00 .. 399.99;
             hali : TEXT;
             vali : TEXT;
-            art : 0 .. 50;
+            art : 10 .. 50;
             art_txt : TEXT;
             herkunft : TEXT;
             bfs_nr : 0 .. 9999;
