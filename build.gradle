@@ -7,7 +7,7 @@ allprojects {
         mavenLocal()
         maven { url "http://jars.interlis.ch" }
         maven { url "https://repo.osgeo.org/repository/release/" }
-        maven { url "http://download.osgeo.org/webdav/geotools/" }
+        //maven { url "http://download.osgeo.org/webdav/geotools/" }
         mavenCentral()
         jcenter()
         maven { url "https://plugins.gradle.org/m2/" }
