@@ -3,7 +3,8 @@ ext {
     ioxIliVersion = '1.20.13'
     ilivalidatorVersion = '1.11.0'
     ili2pgVersion = '4.3.2'
-    ioxWkfVersion = '1.0.1-SNAPSHOT'
+    //ioxWkfVersion = '1.0.1-SNAPSHOT'
+    ioxWkfVersion = '1.0.2-SNAPSHOT'
     ehiSqlgenVersion = '1.13.7'
     
     oerebIconizerVersion = '1.0.36'
