@@ -30,6 +30,9 @@ dependencies {
     api 'de.undercouch:gradle-download-task:3.4.1'
     api 'org.hidetake:gradle-ssh-plugin:2.9.0'
     api 'jp.classmethod.aws:gradle-aws-plugin:0.41'
+
+    // Add ilivalidator custom functions
+    api 'ch.so.agi.ilivalidator:ilivalidator-custom-functions:1.1.2'
     
     // Gretl has no oracle dependency: If someone wants to use
     // Gretl but does not have a oracle account, he cannot run
