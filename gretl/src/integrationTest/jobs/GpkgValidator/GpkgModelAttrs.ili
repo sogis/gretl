@@ -24,8 +24,8 @@ MODEL GpkgModel (de) AT "mailto:edigonzales@localhost" VERSION "20180702" =
             importdatum : INTERLIS.XMLDateTime;
             nachfuehrung : INTERLIS.XMLDate;
             status : TEXT;
-            !!aboolean : BOOLEAN;
-            aboolean : 0 .. 1;
+            aboolean : BOOLEAN;
+            !!aboolean : 0 .. 1;
         END Attributes;
     END Topic1;
     
