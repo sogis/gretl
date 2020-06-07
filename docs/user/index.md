@@ -577,13 +577,13 @@ allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff au
 skipPolygonBuilding | Schaltet die Bildung der Polygone aus (nur ITF). Default: false
 logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
 xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
-pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
+~~pluginFolder~~ | ~~Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten.~~ 
 proxy | Proxy Server für den Zugriff auf Modell Repositories
 proxyPort | Proxy Port für den Zugriff auf Modell Repositories
 failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
 validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
 
-TODO: Doku wegen Verwendung der Custom Functions (Plugins)
+Zusatzfunktionen (Custom Functions): Die `pluginFolder`-Option ist zum jetzigen Zeitpunkt ohne Wirkung. Die Zusatzfunktionen werden als normale Abhängigkeit definiert und in der ilivalidator-Task-Implementierung registriert. Das Laden der Klassen zur Laufzeit in _iox-ili_ hat nicht funktioniert (`NoClassDefFoundError`...). Der Plugin-Mechanismus von _ilivalidator_ wird momentan ohnehin geändert ("Ahead-Of-Time-tauglich" gemacht).
 
 ### GpkgImport
 **Achtung:** Fetch-Size ist nicht implementiert.
