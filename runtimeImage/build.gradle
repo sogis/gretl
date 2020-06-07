@@ -14,7 +14,6 @@ configurations {
 
 configurations.all {
     resolutionStrategy { 
-        //force 'ch.interlis:iox-ili:1.20.13'
         force 'ch.interlis:iox-ili:1.20.15'
         force 'ch.interlis:ili2c-tool:5.0.2'
         force 'ch.interlis:ili2c-core:5.0.2'
@@ -34,7 +33,13 @@ dependencies {
     api 'jp.classmethod.aws:gradle-aws-plugin:0.41'
 
     // Add ilivalidator custom functions
-    api 'ch.so.agi.ilivalidator:ilivalidator-custom-functions:1.1.7'
+    // Weil die Funktionen jetzt nicht mit dem Plugin-Mechanismus
+    // von ilivalidator geladen werden, sondern vom vom GRETL-Task
+    // (noch hardcodiert), braucht es dieses Deployment nicht mehr.
+    // Falls es funktionieren sollte, muss auch das Dockerfile 
+    // wieder angepasst werden, damit diese Abhängigkeit in das
+    // plugin-Verzeichnis beim Builden des Images kopiert wird.
+    // api 'ch.so.agi.ilivalidator:ilivalidator-custom-functions:1.1.7'
     
     // Gretl has no oracle dependency: If someone wants to use
     // Gretl but does not have a oracle account, he cannot run

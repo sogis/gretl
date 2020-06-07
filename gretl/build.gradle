@@ -14,7 +14,6 @@ apply from: 'integration-test.gradle'
 
 configurations.all {
     resolutionStrategy { 
-        //force 'ch.interlis:iox-ili:1.20.13'
         force 'ch.interlis:iox-ili:1.20.15'
         force 'ch.interlis:ili2c-tool:5.0.2'
         force 'ch.interlis:ili2c-core:5.0.2'
@@ -26,6 +25,10 @@ configurations.all {
 /*
  * This is ridiculous.
  */
+// TODO: Ist das noch notwendig, da jetzt die Treiber
+// in maven central frei verfügbar sind? Solange
+// es nicht schadet, ist es ja ok, wenn wir möglichst
+// wenig 'Müll' mitschleppen.
 configurations {
     integrationTestImplementation {
         exclude module: 'xmlparserv2'
@@ -38,10 +41,11 @@ configurations {
     }
 }
 
-dependencies {  
+dependencies {
     api gradleApi()
   
     api ilivalidatorDependency
+    api ilivalidatorCustomFunctionsDependency
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }

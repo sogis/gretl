@@ -1,9 +1,8 @@
 ext {
     //dependency versions
-    //ioxIliVersion = '1.20.13'
     ioxIliVersion = '1.20.15'
-    //ilivalidatorVersion = '1.11.0'
     ilivalidatorVersion = '1.11.3'
+    ilivalidatorCustomFunctions = '1.1.7'
     ili2pgVersion = '4.3.2'
     ioxWkfVersion = '1.0.2-SNAPSHOT'
     ehiSqlgenVersion = '1.13.7'
@@ -29,6 +28,7 @@ ext {
     // dependencies
     ioxIliDependency = [ group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion ]
     ilivalidatorDependency = [ group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion ]
+    ilivalidatorCustomFunctionsDependency = [ group: 'ch.so.agi.ilivalidator', name: 'ilivalidator-custom-functions', version: ilivalidatorCustomFunctions ]
     ili2pgDependency = [ group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion ]
     ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
     ehiSqlgenDependency = [ group: 'ch.ehi', name: 'ehisqlgen', version: ehiSqlgenVersion ]
