@@ -16,7 +16,6 @@ RUN mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.pro
     chmod -R g+rw /home/gradle && \
     ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
-    ls -la /home/gradle/libs && \
-    ls -la /home/gradle/plugins 
+    ls -la /home/gradle/libs
 
 USER 1001
