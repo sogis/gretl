@@ -81,7 +81,7 @@ TODO: Creation
 
 Steps for adding a new secret:
 ```
-oc get secret gretl-secrets -o yaml > gretl-secrets-ENVIRONMENT.yaml
+oc get --export -o yaml secret gretl-secrets > gretl-secrets-ENVIRONMENT.yaml
 vi gretl-secrets-ENVIRONMENT.yaml
 ```
 * Keep everything of the `data` section
