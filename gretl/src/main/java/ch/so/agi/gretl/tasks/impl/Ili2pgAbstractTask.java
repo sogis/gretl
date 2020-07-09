@@ -181,6 +181,13 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             conn.close();
             conn = null;
         } catch (Exception e) {
+            // Ili2pgDelete: If dataset does not exist, it will NOT throw an error.
+            if (settings.getFunction() == Config.FC_DELETE) {
+                String msg = e.getMessage();
+                if (msg.contains("dataset") && msg.contains("doesn") && msg.contains("exist")) {
+                    return;
+                }
+            }
             log.error("failed to run ili2pg", e);
 
             GradleException ge = TaskUtil.toGradleException(e);
