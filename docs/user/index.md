@@ -524,8 +524,26 @@ task replaceData(type: Ili2pgReplace){
     logFile = "ili2pg.log"
 }
 ```
-
 Die Parameter sind analog wie bei Ili2pgImport.
+
+### Ili2pgDelete
+
+Löscht einen Datensatz in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators. Diese Funktion bedingt, dass das Datenbankschema mit der 
+Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema).
+
+Beispiel:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task replaceData(type: Ili2pgDelete){
+    database = [db_uri, db_user, db_pass]
+    models = "DM01AVSO24LV95"
+    dbschema = "dm01"
+    dataset = "kammersrohr"
+}
+```
 
 ### Ili2pgUpdate
 

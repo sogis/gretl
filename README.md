@@ -36,7 +36,7 @@ There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC 
 ```
 ./gradlew clean gretl:classes 
 ./gradlew gretl:test gretl:dbTest
-./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal  gretl:publishGretlPluginPluginMarkerMavenPublicationToMavenLocal -x test
+./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:publishGretlPluginPluginMarkerMavenPublicationToMavenLocal -x test
 cd runtimeImage/
 ./build-gretl.sh
 cd ..

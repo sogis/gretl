@@ -1,0 +1,36 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+def GRETLTEST_DBURI = 'gretltest_dburi_pg'
+def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl'
+
+def db_user = "ddluser"
+def db_pass = "ddluser"
+
+defaultTasks 'ili2pgdelete'
+
+task ili2pgschemaimport(type: Ili2pgImportSchema){
+    database = [db_uri, db_user, db_pass]
+    models = "DM01AVSO24LV95"
+    dbschema = "dm01"
+    defaultSrsCode = "2056"
+    createBasketCol = true
+}
+
+
+task ili2pgreplace(type: Ili2pgReplace, dependsOn: 'ili2pgschemaimport') {
+    database = [db_uri, db_user, db_pass]
+    models = "DM01AVSO24LV95"
+    dbschema = "dm01"
+    disableValidation = true
+    dataset = "kammersrohr"
+    dataFile = file("254900.itf")
+} 
+
+task ili2pgdelete(type: Ili2pgDelete, dependsOn: 'ili2pgreplace') {
+    database = [db_uri, db_user, db_pass]
+    models = "DM01AVSO24LV95"
+    dbschema = "dm01"
+    dataset = "kammersrohr"
+}
