@@ -528,8 +528,7 @@ Die Parameter sind analog wie bei Ili2pgImport.
 
 ### Ili2pgDelete
 
-Löscht einen Datensatz in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators. Diese Funktion bedingt, dass das Datenbankschema mit der 
-Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema).
+Löscht einen Datensatz in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators. Diese Funktion bedingt, dass das Datenbankschema mit der Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema). Falls das Dataset nicht existiert, wird kein Fehler gemeldet und der Task läuft erfolgreich durch.
 
 Beispiel:
 ```
