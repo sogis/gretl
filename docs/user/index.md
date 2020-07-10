@@ -536,7 +536,7 @@ def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task replaceData(type: Ili2pgDelete){
+task deleteDataset(type: Ili2pgDelete){
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24LV95"
     dbschema = "dm01"
