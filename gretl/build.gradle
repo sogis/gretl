@@ -39,6 +39,9 @@ configurations {
         exclude module: 'osdt_cert'
         exclude module: 'orai18n' 
     }
+    
+    all*.exclude module: 'spring-boot-starter-logging'
+    
 }
 
 dependencies {
@@ -56,6 +59,8 @@ dependencies {
     api oerebIconizerDependency
     api av2chDependency
     
+    api awsSdkDependency
+    
     api apacheCommonsIoDependency
     api apacheCommonsCodeDependency
     
@@ -69,6 +74,9 @@ dependencies {
     testImplementation junitDependency
     testImplementation testContainersDependency
     testImplementation testContainersPostgresDependency
+    
+    //testImplementation s3MockDependency
+    //testImplementation s3MockJunitDependency
     
     // Oracle JDBC would be a runtime dependency but since it's kinda hard to obtain the jar 
     // file, we just make it a integration test dependency. It will not appear in the pom.xml 
@@ -144,6 +152,7 @@ test {
     useJUnit{
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
         excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
+        excludeCategories 'ch.so.agi.gretl.testutil.S3UnitTest'
     }
 }
 
@@ -152,6 +161,14 @@ task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     description = 'Runs all unit tests with dependency to a db server (pg, oracle, ...).'
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    }
+}
+
+task s3Test(type: Test, dependsOn: [compileJava, compileTestJava]) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = 'Runs all unit tests with dependency to AWS S3.'
+    useJUnit {
+        includeCategories 'ch.so.agi.gretl.testutil.S3UnitTest'
     }
 }
 

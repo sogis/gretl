@@ -9,6 +9,8 @@ ext {
     
     oerebIconizerVersion = '1.0.36'
     av2chVersion = '1.0.12'
+    
+    awsSdkVersion = '1.11.795'
 
     apacheCommonsIoVersion = '2.6'
     apacheCommonsNetVersion = '3.6'
@@ -24,6 +26,8 @@ ext {
     junitVersion = '4.12'
     mockFtpServerVersion = '2.7.1'   
     testContainersVersion = '1.10.5'
+    //s3MockVersion = '2.1.22'
+    //s3MockJunitVersion = '2.1.22'
      
     // dependencies
     ioxIliDependency = [ group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion ]
@@ -35,7 +39,9 @@ ext {
 
     oerebIconizerDependency = [ group: 'ch.so.agi.oereb', name: 'oereb-iconizer', version: oerebIconizerVersion ]
     av2chDependency = [ group: 'ch.so.agi.av', name: 'av2ch', version: av2chVersion ]
-
+    
+    awsSdkDependency = [ group: 'com.amazonaws', name: 'aws-java-sdk', version: awsSdkVersion ]
+    
     apacheCommonsIoDependency = [ group: 'commons-io', name: 'commons-io', version: apacheCommonsIoVersion ]
     apacheCommonsNetDependency = [ group: 'commons-net', name: 'commons-net', version: apacheCommonsNetVersion ]
     apacheCommonsCodeDependency = [ group: 'commons-codec', name: 'commons-codec', version: apacheCommonsCodeVersion ]
@@ -53,5 +59,7 @@ ext {
     testContainersDependency = [ group: 'org.testcontainers', name: 'testcontainers', version: testContainersVersion]
     testContainersPostgresDependency = [ group: 'org.testcontainers', name: 'postgresql', version: testContainersVersion]
     testContainersOracleDependency = [ group: 'org.testcontainers', name: 'oracle-xe', version: testContainersVersion]
+    //s3MockDependency = [ group: 'com.adobe.testing', name: 's3mock', version: s3MockVersion]
+    //s3MockJunitDependency = [ group: 'com.adobe.testing', name: 's3mock-junit4', version: s3MockVersion]  
 }
 

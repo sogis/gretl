@@ -35,7 +35,7 @@ There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC 
 
 ```
 ./gradlew clean gretl:classes 
-./gradlew gretl:test gretl:dbTest
+./gradlew gretl:test gretl:dbTest gretl:s3Test
 ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:publishGretlPluginPluginMarkerMavenPublicationToMavenLocal -x test
 cd runtimeImage/
 ./build-gretl.sh
@@ -69,6 +69,9 @@ Since the integration tests are not done with the Gradle TestKit framework, the 
 The Docker image tests are done very similar. First the Docker image will be build with a shell script (TODO: with Gradle?). This build process will copy everything _GRETL_ needs into the image. This includes all the dependencies of _GRETL_, the _GRETL_ jar itself and any 3rd party plugin you want. The Docker image should be as offline capable as possible. The `start-gretl.sh` that will be used to start the Docker container is slightly different to the `start-gretl.sh` from `sogis/gretljobs` repository. The `sogis/gretljobs` one is more sophisticated.
 
 If you use a Jenkins-Docker-Image for your CI/CD pipeline you will probably run into the "Docker-in-Docker" issue when doing the Docker image integration tests. It will not find the job directory you try to mount with the docker run command. Therefor you can simple create a symbolic link on the host machine, e.g. `ln -s /opt/jenkins_home /var/jenkins_home`.
+
+### S3 tests
+TODO...
 
 ## Release management / Versioning
 

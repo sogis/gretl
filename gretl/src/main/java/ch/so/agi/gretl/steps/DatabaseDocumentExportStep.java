@@ -1,7 +1,5 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.util.*;
-
 import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
