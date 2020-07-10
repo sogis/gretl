@@ -74,6 +74,7 @@ public class DatabaseDocumentExportStepTest {
             databaseDocumentExport.execute(connector, schemaName+"."+tableName, columnName, targetDir.getAbsolutePath(), "ada_", "pdf");
 
             File resultFile = Paths.get(targetDir.getAbsolutePath(), "ada_ilimodels.xml.pdf").toFile();
+            assertTrue(resultFile.exists() == true);
             assertTrue(resultFile.length() > 60L);
             
             String content = new String(Files.readAllBytes(Paths.get(resultFile.getAbsolutePath())));
@@ -142,6 +143,7 @@ public class DatabaseDocumentExportStepTest {
             databaseDocumentExport.execute(connector, schemaName+"."+tableName, columnName, targetDir.getAbsolutePath(), null, "pdf");
 
             File resultFile = Paths.get(targetDir.getAbsolutePath(), "ilimodels.xml.pdf").toFile();
+            assertTrue(resultFile.exists() == true);            
             assertTrue(resultFile.length() > 60L);
             
             String content = new String(Files.readAllBytes(Paths.get(resultFile.getAbsolutePath())));
@@ -177,6 +179,7 @@ public class DatabaseDocumentExportStepTest {
             databaseDocumentExport.execute(connector, schemaName+"."+tableName, columnName, targetDir.getAbsolutePath(), null, null);
 
             File resultFile = Paths.get(targetDir.getAbsolutePath(), "ilimodels.xml").toFile();
+            assertTrue(resultFile.exists() == true);                        
             assertTrue(resultFile.length() > 60L);
             
             String content = new String(Files.readAllBytes(Paths.get(resultFile.getAbsolutePath())));
