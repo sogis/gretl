@@ -120,8 +120,8 @@ public class IntegrationTestUtilSql {
      */
     public static void grantDataModsInSchemaToUser(Connection con, String schemaName, String userName) {
 
-//        String sql = String.format("GRANT USAGE ON SCHEMA %s TO %s ;", schemaName, userName);
-        String sql = String.format("grant select, insert, update, delete on all tables in schema %s to %s ;", schemaName, userName);
+        String sql = String.format("GRANT USAGE ON SCHEMA %s TO %s ;", schemaName, userName);
+        sql += String.format("grant select, insert, update, delete on all tables in schema %s to %s ;", schemaName, userName);
         sql += String.format("GRANT USAGE ON ALL SEQUENCES IN SCHEMA %s TO %s ;", schemaName, userName);
         Statement s = null;
         try {

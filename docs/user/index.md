@@ -932,5 +932,36 @@ Parameter | Beschreibung
 inputFile   | Name der zu transformierenden ITF-Datei.
 outputFile  | Name der Datei, die erstellt werden soll.
 
+### DatabaseDocumentExport (Experimental)
 
+Speichert Dokumente, deren URL in einer Spalte einer Datenbanktabelle gespeichert sind, in einem lokalen Verzeichnis. Zukünftig und bei Bedarf kann der Task so erweitert werden, dass auch BLOBs aus der Datenbank gespeichert werden können.
 
+Redirect von HTTP nach HTTPS funktionieren nicht. Dies [korrekterweise](https://stackoverflow.com/questions/1884230/httpurlconnection-doesnt-follow-redirect-from-http-to-https) (?) wegen der verwendeten Java-Bibliothek.
+
+Wegen der vom Kanton Solothurn eingesetzten self-signed Zertifikate muss ein unschöner Handstand gemacht werden. Leider kann diesr Usecase schlecht getestet werden, da die Links nur in der privaten Zone verfügbar sind und die zudem noch häufig ändern können. Manuel getestet wurde es jedoch.
+
+Als Dateiname wird der letzte Teil des URL-Pfades verwendet, z.B. `https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis` wird mit den Prefix und Extension zu `ada_2W8v0qRZQBC0ahDnZGut3Q.pdf`.
+
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task executeSomeSql(type: SqlExecutor){
+    database = [db_uri, db_user, db_pass]
+	qualifiedTableName = "ada_denkmalschutz.fachapplikation_rechtsvorschrift_link"
+	documentColumn = "multimedia_link"
+    targetDir = file(".")
+	fileNamePrefix = "ada_"
+	fileNameExtension = "pdf"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank aus der die Dokumente exportiert werden sollen.
+qualifiedTableName  | Qualifizierter Tabellenname
+documentColumn | DB-Tabellenspalte mit dem Dokument resp. der URL zum Dokument.
+targetDir | Verzeichnis in das die Dokumente exportiert werden sollen.
+fileNamePrefix | Prefix für Dateinamen (optional)
+fileNameExtension | Dateinamen-Extension (optional)
