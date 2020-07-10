@@ -67,7 +67,7 @@ public class DatabaseDocumentExportStepTest {
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
             //https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis
             //http://geo.so.ch/models/ilimodels.xml
-            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://geo.so.ch/models/ilimodels.xml');");
+            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('https://geo.so.ch/models/ilimodels.xml');");
             con.commit();
 
             DatabaseDocumentExportStep databaseDocumentExport = new DatabaseDocumentExportStep();
@@ -135,7 +135,7 @@ public class DatabaseDocumentExportStepTest {
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://geo.so.ch/models/ilimodels.xml');");
+            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('https://geo.so.ch/models/ilimodels.xml');");
             con.commit();
 
             DatabaseDocumentExportStep databaseDocumentExport = new DatabaseDocumentExportStep();
@@ -170,7 +170,7 @@ public class DatabaseDocumentExportStepTest {
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://geo.so.ch/models/ilimodels.xml');");
+            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('https://geo.so.ch/models/ilimodels.xml');");
             con.commit();
 
             DatabaseDocumentExportStep databaseDocumentExport = new DatabaseDocumentExportStep();
