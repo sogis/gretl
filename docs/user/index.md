@@ -965,3 +965,9 @@ documentColumn | DB-Tabellenspalte mit dem Dokument resp. der URL zum Dokument.
 targetDir | Verzeichnis in das die Dokumente exportiert werden sollen.
 fileNamePrefix | Prefix für Dateinamen (optional)
 fileNameExtension | Dateinamen-Extension (optional)
+
+
+### S3Upload
+
+- file oder dir
+- acl enums...

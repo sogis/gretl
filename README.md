@@ -35,12 +35,12 @@ There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC 
 
 ```
 ./gradlew clean gretl:classes 
-./gradlew gretl:test gretl:dbTest gretl:s3Test
+./gradlew gretl:test gretl:dbTest gretl:s3Test -DawsAccessKey=XXXXXXX -DawsSecretKey=YYYYYYY -DawsBucketName=ch.so.agi.gretl.test
 ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:publishGretlPluginPluginMarkerMavenPublicationToMavenLocal -x test
 cd runtimeImage/
 ./build-gretl.sh
 cd ..
-./gradlew gretl:jarTest
+./gradlew gretl:jarTest **TODO: s3Test-Kategorie**
 ./gradlew gretl:imageTest 
 ```
 
@@ -71,7 +71,7 @@ The Docker image tests are done very similar. First the Docker image will be bui
 If you use a Jenkins-Docker-Image for your CI/CD pipeline you will probably run into the "Docker-in-Docker" issue when doing the Docker image integration tests. It will not find the job directory you try to mount with the docker run command. Therefor you can simple create a symbolic link on the host machine, e.g. `ln -s /opt/jenkins_home /var/jenkins_home`.
 
 ### S3 tests
-TODO...
+Instead of using a mocking library we to some real world testing with S3. Therefore a bucket must exist and the access key and secret key must be known. The keys used for CI belong to the user `gretl` (group: `gretl-group`, policy: `gretl-s3`).
 
 ## Release management / Versioning
 

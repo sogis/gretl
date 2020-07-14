@@ -164,11 +164,16 @@ task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     }
 }
 
+def awsAccessKey = System.getProperty('awsAccessKey',properties.get('awsAccessKey'))
+def awsSecretKey = System.getProperty('awsSecretKey',properties.get('awsSecretKey'))
+def awsBucketName = System.getProperty('awsBucketName',properties.get('awsBucketName'))
+
 task s3Test(type: Test, dependsOn: [compileJava, compileTestJava]) {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to AWS S3.'
+    
     useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.S3UnitTest'
+        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }
 }
 
@@ -180,4 +185,8 @@ tasks.withType(Test) {
     
     systemProperty('GRETL_PROJECT_ABS_PATH', project(':gretl').getProjectDir().getAbsolutePath())
     systemProperty('ROOT_PROJECT_ABS_PATH', project.getRootProject().getProjectDir().getAbsolutePath())
+    
+    systemProperty 'awsAccessKey', awsAccessKey
+    systemProperty 'awsSecretKey', awsSecretKey
+    systemProperty 'awsBucketName', awsBucketName
 }

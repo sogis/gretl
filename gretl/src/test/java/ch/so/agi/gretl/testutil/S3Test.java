@@ -1,5 +1,5 @@
 package ch.so.agi.gretl.testutil;
 
-public interface S3UnitTest {
+public interface S3Test {
 
 }

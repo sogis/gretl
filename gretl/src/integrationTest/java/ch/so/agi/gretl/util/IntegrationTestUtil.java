@@ -34,7 +34,7 @@ public class IntegrationTestUtil {
     }
 
     public static void runJob(String jobPath, GradleVariable[] variables) throws Exception {
-        int ret = runJob(jobPath ,variables, new StringBuffer(), new StringBuffer());
+        int ret = runJob(jobPath, variables, new StringBuffer(), new StringBuffer());
         assertThat(ret, is(0));
     }
 

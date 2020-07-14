@@ -45,7 +45,7 @@ public class DatabaseDocumentExportStep {
      * 
      * @param database Database properties to generate database connection
      * @param qualifiedTableName The qualified table name
-     * @param columnName The name of the database column where the document or the url is stored
+     * @param documentColumn The name of the database column where the document or the url is stored
      * @param targetDir The name of the directory where the exported documents will be saved
      * @param fileNamePrefix A prefix for the file name
      * @param fileNameExtension The filename extension
