@@ -152,7 +152,7 @@ test {
     useJUnit{
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
         excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.S3UnitTest'
+        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }
 }
 
@@ -164,9 +164,9 @@ task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     }
 }
 
-def awsAccessKey = System.getProperty('awsAccessKey',properties.get('awsAccessKey'))
-def awsSecretKey = System.getProperty('awsSecretKey',properties.get('awsSecretKey'))
-def awsBucketName = System.getProperty('awsBucketName',properties.get('awsBucketName'))
+def s3AccessKey = System.getProperty('s3AccessKey',properties.get('s3AccessKey'))
+def s3SecretKey = System.getProperty('s3SecretKey',properties.get('s3SecretKey'))
+def s3BucketName = System.getProperty('s3BucketName',properties.get('s3BucketName'))
 
 task s3Test(type: Test, dependsOn: [compileJava, compileTestJava]) {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
@@ -186,7 +186,7 @@ tasks.withType(Test) {
     systemProperty('GRETL_PROJECT_ABS_PATH', project(':gretl').getProjectDir().getAbsolutePath())
     systemProperty('ROOT_PROJECT_ABS_PATH', project.getRootProject().getProjectDir().getAbsolutePath())
     
-    systemProperty 'awsAccessKey', awsAccessKey
-    systemProperty 'awsSecretKey', awsSecretKey
-    systemProperty 'awsBucketName', awsBucketName
+    systemProperty 's3AccessKey', s3AccessKey
+    systemProperty 's3SecretKey', s3SecretKey
+    systemProperty 's3BucketName', s3BucketName
 }

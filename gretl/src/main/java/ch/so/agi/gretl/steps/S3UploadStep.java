@@ -31,11 +31,11 @@ public class S3UploadStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
-    public void execute(String awsAccessKey, String awsSecretKey, String sourceObject, String bucketName, String s3EndPoint, String s3Region, String acl) {        
+    public void execute(String accessKey, String secretKey, String sourceObject, String bucketName, String s3EndPoint, String s3Region, String acl) {        
         log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceObject: %s S3EndPoint: %s S3Region: %s ACL: %s)", taskName,
                 sourceObject, bucketName, s3EndPoint, s3Region, acl));
         
-        BasicAWSCredentials credentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
+        BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         AmazonS3 s3client = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(new EndpointConfiguration(s3EndPoint, s3Region))
                 .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();

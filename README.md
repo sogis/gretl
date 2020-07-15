@@ -36,14 +36,15 @@ There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC 
 ```
 ./gradlew clean gretl:classes 
 ./gradlew gretl:test gretl:dbTest 
-./gradlew gretl:s3Test -DawsAccessKey=XXXXXXX -DawsSecretKey=YYYYYYY -DawsBucketName=ch.so.agi.gretl.test
+./gradlew gretl:s3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
 ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:publishGretlPluginPluginMarkerMavenPublicationToMavenLocal -x test
 cd runtimeImage/
 ./build-gretl.sh
 cd ..
 ./gradlew gretl:jarTest 
-**TODO: s3Test-Kategorie**
+./gradlew gretl:jarS3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
 ./gradlew gretl:imageTest 
+./gradlew gretl:imageS3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
 ```
 
 ```

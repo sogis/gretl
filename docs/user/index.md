@@ -947,7 +947,7 @@ def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task executeSomeSql(type: SqlExecutor){
+task exportDocuments(type: DatabaseDocumentExport){
     database = [db_uri, db_user, db_pass]
 	qualifiedTableName = "ada_denkmalschutz.fachapplikation_rechtsvorschrift_link"
 	documentColumn = "multimedia_link"
@@ -967,7 +967,29 @@ fileNamePrefix | Prefix für Dateinamen (optional)
 fileNameExtension | Dateinamen-Extension (optional)
 
 
-### S3Upload
+### S3Upload (Experimental)
 
-- file oder dir
-- acl enums...
+Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch.
+
+```
+task uploadDirectory(type: S3Upload){
+    accessKey = abcdefg
+	secretKey = hijklmnopqrstuvwxy
+	sourceDir = file("./docs")
+	bucketName = "ch.so.ada.denkmalschutz"
+	endPoint = "https://s3.amazonaws.com/"
+    region = "eu-central-1"
+    acl = "PublicRead"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+accessKey | AccessKey
+secretKey | SecretKey
+sourceDir  | Verzeichnis mit den Dateien, die hochgeladen werden sollen.
+sourceFile  | Datei, die hochgeladen werden soll.
+bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
+endPoint | S3-Endpunkt (default: `https://s3.amazonaws.com/`)
+region | S3-Region (default: `eu-central-1`). 
+acl | Access Control Layer `[Private|PublicRead|PublicReadWrite|AuthenticatedRead|LogDeliveryWrite|BucketOwnerRead|BucketOwnerFullControl]`

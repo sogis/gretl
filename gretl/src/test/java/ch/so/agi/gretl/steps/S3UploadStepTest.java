@@ -35,9 +35,9 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.S3Test;
 
 public class S3UploadStepTest {
-    private String awsAccessKey = System.getProperty("awsAccessKey");
-    private String awsSecretKey = System.getProperty("awsSecretKey");
-    private String awsBucketName = System.getProperty("awsBucketName");
+    private String s3AccessKey = System.getProperty("s3AccessKey");
+    private String s3SecretKey = System.getProperty("s3SecretKey");
+    private String s3BucketName = System.getProperty("s3BucketName");
 
     public S3UploadStepTest() {
         this.log = LogEnvironment.getLogger(this.getClass());
@@ -58,15 +58,15 @@ public class S3UploadStepTest {
         
         // Upload files from a directory.
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(awsAccessKey, awsSecretKey, sourceObject.getAbsolutePath(), awsBucketName, s3EndPoint, s3Region, acl);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl);
         
         // Check result. 
-        BasicAWSCredentials credentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
+        BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
         AmazonS3 s3client = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(new EndpointConfiguration(s3EndPoint, s3Region))
                 .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
 
-        ObjectListing listing = s3client.listObjects(awsBucketName);
+        ObjectListing listing = s3client.listObjects(s3BucketName);
         List<S3ObjectSummary> summaries = listing.getObjectSummaries();
 
         while (listing.isTruncated()) {
@@ -85,15 +85,8 @@ public class S3UploadStepTest {
         assertTrue(keyList.contains("bar.txt"));
         
         // Remove uploaded files from bucket.
-        s3client.deleteObject(awsBucketName, "foo.txt");
-        s3client.deleteObject(awsBucketName, "bar.txt");
-        
-        summaries.clear();
-        while (listing.isTruncated()) {
-            listing = s3client.listNextBatchOfObjects (listing);
-            summaries.addAll(listing.getObjectSummaries());
-        }
-        assertTrue(summaries.size() == 0);
+        s3client.deleteObject(s3BucketName, "foo.txt");
+        s3client.deleteObject(s3BucketName, "bar.txt");
     }
     
     @Test
@@ -107,29 +100,21 @@ public class S3UploadStepTest {
         
         // Upload a single file.
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(awsAccessKey, awsSecretKey, sourceObject.getAbsolutePath(), awsBucketName, s3EndPoint, s3Region, acl);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl);
         
         // Check result. 
-        BasicAWSCredentials credentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
+        BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
         AmazonS3 s3client = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(new EndpointConfiguration(s3EndPoint, s3Region))
                 .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
 
-        S3Object s3Object = s3client.getObject(awsBucketName, "foo.txt");
+        S3Object s3Object = s3client.getObject(s3BucketName, "foo.txt");
         InputStream is = s3Object.getObjectContent();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));        
         assertTrue(reader.readLine().equalsIgnoreCase("foo"));
         
         // Remove uploaded files from bucket.
-        s3client.deleteObject(awsBucketName, "foo.txt");
-        
-        ObjectListing listing = s3client.listObjects(awsBucketName);
-        List<S3ObjectSummary> summaries = listing.getObjectSummaries();
-        while (listing.isTruncated()) {
-            listing = s3client.listNextBatchOfObjects (listing);
-            summaries.addAll(listing.getObjectSummaries());
-        }
-        assertTrue(summaries.size() == 0);
+        s3client.deleteObject(s3BucketName, "foo.txt");
     }
     
     @Test
@@ -144,7 +129,7 @@ public class S3UploadStepTest {
         // Upload a single file.
         try {
             S3UploadStep s3UploadStep = new S3UploadStep();
-            s3UploadStep.execute("login", "secret", sourceObject.getAbsolutePath(), awsBucketName, s3EndPoint, s3Region, acl);
+            s3UploadStep.execute("login", "secret", sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl);
         } catch (AmazonS3Exception e) {
             assertTrue(e.getErrorCode().equalsIgnoreCase("InvalidAccessKeyId"));
         }

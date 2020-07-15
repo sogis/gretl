@@ -19,6 +19,7 @@ install: true
 script:
   - ./gradlew --no-daemon clean gretl:classes
   - ./gradlew --no-daemon gretl:test gretl:dbTest -i
+  - ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
   - ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
   - cd runtimeImage/
   - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER

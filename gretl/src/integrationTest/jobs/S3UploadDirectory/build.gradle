@@ -6,12 +6,12 @@ def s3AccessKey = findProperty("s3AccessKey")
 def s3SecretKey = findProperty("s3SecretKey")
 def s3BucketName = findProperty("s3BucketName")
 
-defaultTasks 'fileupload'
+defaultTasks 'directoryupload'
 
-task fileupload(type: S3Upload) {
+task directoryupload(type: S3Upload) {
     accessKey = s3AccessKey
     secretKey = s3SecretKey
-    sourceFile = file("./docs/bar.txt")
+    sourceFile = file("./docs/")
     endPoint = "https://s3.amazonaws.com/"
     region = "eu-central-1"
     bucketName = s3BucketName

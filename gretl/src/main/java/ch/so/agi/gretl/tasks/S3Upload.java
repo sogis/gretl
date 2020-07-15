@@ -18,10 +18,10 @@ public class S3Upload extends DefaultTask {
     protected GretlLogger log;
 
     @Input
-    public String awsAccessKey;
+    public String accessKey;
     
     @Input
-    public String awsSecretKey;
+    public String secretKey;
         
     @InputDirectory
     public File sourceDir;
@@ -47,11 +47,11 @@ public class S3Upload extends DefaultTask {
     public void upload() {
         log = LogEnvironment.getLogger(S3Upload.class);
 
-        if (awsAccessKey == null) {
-            throw new IllegalArgumentException("awsAccessKey must not be null");
+        if (accessKey == null) {
+            throw new IllegalArgumentException("accessKey must not be null");
         }
-        if (awsSecretKey == null) {
-            throw new IllegalArgumentException("awsSecretKey must not be null");
+        if (secretKey == null) {
+            throw new IllegalArgumentException("secretKey must not be null");
         }
         if (sourceDir == null && sourceFile == null) {
             throw new IllegalArgumentException("either sourceDir or sourceFile must not be null");
@@ -72,9 +72,9 @@ public class S3Upload extends DefaultTask {
         
         try {
             S3UploadStep s3UploadStep = new S3UploadStep();
-            s3UploadStep.execute(awsAccessKey, awsSecretKey, sourceObject.getAbsolutePath(), bucketName, endPoint, region, acl);
+            s3UploadStep.execute(accessKey, secretKey, sourceObject.getAbsolutePath(), bucketName, endPoint, region, acl);
         } catch (Exception e) {
-            log.error("Exception in DatabaseDocumentExport task.", e);
+            log.error("Exception in S3Upload task.", e);
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         }

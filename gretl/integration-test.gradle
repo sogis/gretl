@@ -20,6 +20,7 @@ task jarTest(type: Test) {
 
     useJUnit {
         excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
+        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
@@ -32,6 +33,24 @@ task jarTest(type: Test) {
     classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
     jvmArgs '-Xmx1g'
 }
+
+task jarS3Test(type: Test) {
+    description = 'Runs the S3 integration tests against the installed gretl jar.'
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    useJUnit {
+        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    }
+
+    systemProperty('GRETL_TESTTYPE', 'jar')
+
+    testLogging.showStandardStreams = true
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
+    jvmArgs '-Xmx1g'
+}
+
 
 jarTest {
     filter {
@@ -53,10 +72,28 @@ task imageTest(type: Test){
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
+    useJUnit {
+        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    }
+    
     systemProperty('GRETL_TESTTYPE', 'image')
 
-    // show standard out and standard error of the test JVM(s) on the console
-    //testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+    testLogging.showStandardStreams = true
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
+}
+
+task imageS3Test(type: Test){
+    description = 'Runs S3 integration tests against the installed gretl docker image.'
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    useJUnit {
+        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    }
+
+    systemProperty('GRETL_TESTTYPE', 'image')
+
     testLogging.showStandardStreams = true
 
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
