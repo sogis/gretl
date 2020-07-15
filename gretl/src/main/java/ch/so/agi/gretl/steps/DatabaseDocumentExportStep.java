@@ -65,11 +65,11 @@ public class DatabaseDocumentExportStep {
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
         try (Connection conn = database.connect(); Statement stmt = conn.createStatement()) {
-            String sql = "SELECT DISTINCT ON ("+documentColumn+") "+documentColumn+" FROM "+qualifiedTableName+";";
+            String sql = "SELECT DISTINCT ON ("+documentColumn+") "+documentColumn+" FROM "+qualifiedTableName+" WHERE "+documentColumn+" IS NOT NULL;";
             try (ResultSet rs = stmt.executeQuery(sql)) {
                 while(rs.next()) {
                     String urlString = rs.getString(documentColumn);
-                    log.lifecycle("Url: " + urlString);
+                    //log.lifecycle("Url: " + urlString);
                     URL url = new URL(urlString);
                    
                     int fromPos = url.getPath().lastIndexOf("/");

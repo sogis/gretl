@@ -32,7 +32,7 @@ public class S3UploadStep {
     }
 
     public void execute(String accessKey, String secretKey, String sourceObject, String bucketName, String s3EndPoint, String s3Region, String acl) {        
-        log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceObject: %s S3EndPoint: %s S3Region: %s ACL: %s)", taskName,
+        log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceObject: %s BucketName: %s S3EndPoint: %s S3Region: %s ACL: %s)", taskName,
                 sourceObject, bucketName, s3EndPoint, s3Region, acl));
         
         BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -48,6 +48,9 @@ public class S3UploadStep {
             String filesList[] = directoryPath.list();
             for(String fileName : filesList) {
                 File file = Paths.get(sourceObject, fileName).toFile();
+                if (file.isDirectory()) {
+                    continue;
+                }
                 s3client.putObject(new PutObjectRequest(bucketName, fileName, file)
                         .withCannedAcl(CannedAccessControlList.valueOf(acl)));
                 uploadedFiles++;                
