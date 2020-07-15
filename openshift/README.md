@@ -94,6 +94,9 @@ rm gretl-secrets-ENVIRONMENT.yaml
 ```
 (Remove the secrets YAML file for security reasons.)
 
+Please check if all new and old secrets have got their value assigned.
+If not, run the `oc apply` command again.
+
 ### Configure a database connection
 Database connections are configured globally in the OpenShift project.
 Such that the GRETL-Jobs can use the url and credentials.
