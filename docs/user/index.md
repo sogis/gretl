@@ -942,6 +942,8 @@ Wegen der vom Kanton Solothurn eingesetzten self-signed Zertifikate muss ein uns
 
 Als Dateiname wird der letzte Teil des URL-Pfades verwendet, z.B. `https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis` wird mit den Prefix und Extension zu `ada_2W8v0qRZQBC0ahDnZGut3Q.pdf`.
 
+Es wird `DISTINCT ON (<documentColumn>)` und ein Filter `WHERE <documentColumn> IS NOT NULL` verwendet.
+
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"

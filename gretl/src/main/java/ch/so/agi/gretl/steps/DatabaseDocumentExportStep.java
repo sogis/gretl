@@ -69,6 +69,7 @@ public class DatabaseDocumentExportStep {
             try (ResultSet rs = stmt.executeQuery(sql)) {
                 while(rs.next()) {
                     String urlString = rs.getString(documentColumn);
+                    log.lifecycle("Url: " + urlString);
                     URL url = new URL(urlString);
                    
                     int fromPos = url.getPath().lastIndexOf("/");
