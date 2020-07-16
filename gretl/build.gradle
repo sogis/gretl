@@ -62,6 +62,7 @@ dependencies {
     api awsSdkDependency
     
     api apacheCommonsIoDependency
+    api apacheCommonsNetDependency
     api apacheCommonsCodeDependency
     
     api jacksonCoreDependency
