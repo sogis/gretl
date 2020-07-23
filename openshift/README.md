@@ -75,13 +75,31 @@ then apply the additional ConfigMap
 `openshift/templates/gretl-ili2pg4-pod-template-configmap.yaml`
 the same way as the default ConfigMap.
 
+### Create or update resources to be used by GRETL
+
+TODO: Creation
+
+Steps for adding a new resource:
+```
+oc get --export -o yaml configmap gretl-resources > gretl-resources-ENVIRONMENT.yaml
+vi gretl-resources-ENVIRONMENT.yaml
+```
+* Keep everything of the `data` section
+* In the `data` section append the new entries, e.g. `ORG_GRADLE_PROJECT_dbUriXy: xyxyxyxy`
+* Remove all entries of the `metadata` section, except the `labels` and the `name`
+```
+oc apply -f gretl-resources-ENVIRONMENT.yaml
+rm gretl-resources-ENVIRONMENT.yaml
+```
+(Remove the resources YAML file for security reasons.)
+
 ### Create or update secrets to be used by GRETL
 
 TODO: Creation
 
 Steps for adding a new secret:
 ```
-oc get secret gretl-secrets -o yaml > gretl-secrets-ENVIRONMENT.yaml
+oc get --export -o yaml secret gretl-secrets > gretl-secrets-ENVIRONMENT.yaml
 vi gretl-secrets-ENVIRONMENT.yaml
 ```
 * Keep everything of the `data` section
