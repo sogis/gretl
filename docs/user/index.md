@@ -258,6 +258,7 @@ Falls die CSV-Datei keine Header-Zeile enthält (mit den Spaltennamen), wird im 
 die die selbe Anzahl Attribute hat. Wird keine solche Klasse gefunden, 
 gilt das als Validierungsfehler.
 
+Die Prüfung von gleichzeitig mehreren CSV-Dateien führt zu Fehlermeldungen wie `OID o3158 of object <Modelname>.<Topicname>.<Klassenname> already exists in ...`. Beim Öffnen und Lesen einer CSV-Datei wird immer der Zähler, der die interne (in der CSV-Datei nicht vorhandene) `OID` generiert, zurückgesetzt. Somit kann immer nur eine CSV-Datei pro Task geprüft werden.
 
 ### Db2Db
 
@@ -774,7 +775,7 @@ task validate(type: ShpValidator){
 Parameter | Beschreibung
 ----------|-------------------
 dataFiles | Liste der SHP-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
-models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
+models | INTERLIS-Modell, gegen das die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der SHP-Datei.
 modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der SHP-Datei.
 configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
 forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
@@ -793,6 +794,8 @@ encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeins
 Im gegebenen Modell wird eine Klasse gesucht, 
 die genau die Attributenamen wie in der Shp-Datei enthält (wobei die Gross-/Kleinschreibung ignoriert wird); 
 die Attributtypen werden ignoriert. Wird keine solche Klasse gefunden, gilt das als Validierungsfehler.
+
+Die Prüfung von gleichzeitig mehreren Shapefiles führt zu Fehlermeldungen wie `OID o3158 of object <Modelname>.<Topicname>.<Klassenname> already exists in ...`. Beim Öffnen und Lesen eines Shapefiles wird immer der Zähler, der die interne (im Shapefile nicht vorhandene) `OID` generiert, zurückgesetzt. Somit kann immer nur ein Shapefile pro Task geprüft werden.
 
 ### JsonImport
 
