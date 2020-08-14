@@ -371,6 +371,7 @@ forceTypeValidation  | Entspricht der ili2pg Option --forceTypeValidation
 strokeArcs  | Entspricht der ili2pg Option --strokeArcs
 skipPolygonBuilding  | Entspricht der ili2pg Option --skipPolygonBuilding
 skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
+export3  | Entspricht der ili2pg Option --export3
 iligml20  | Entspricht der ili2pg Option --iligml20
 
 Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
