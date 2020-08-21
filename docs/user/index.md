@@ -571,6 +571,54 @@ task updateData(type: Ili2pgUpdate){
 
 Die Parameter sind analog wie bei Ili2pgImport.
 
+### Ili2gpkgImport
+
+Importiert Daten aus einer INTERLIS-Transferdatei in eine GeoPackage-Datei.
+
+Die Tabellen werden implizit auch angelegt, falls sie noch nicht vorhanden sind. Falls die Tabellen in der Datenbank 
+schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. bfsnr, datum etc.), welche beim Import leer bleiben.
+
+Falls beim Import ein Datensatz-Identifikator (dataset) definiert wird, darf dieser Datensatz-Identifikator in der 
+Datenbank noch nicht vorhanden sein. 
+
+Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2gpkgReplace (**not yet implemented**) verwendet werden.
+
+Beispiel:
+```
+task importData(type: Ili2gpkgImport) {
+    models = "SO_AGI_AV_GB_Administrative_Einteilungen_20180613"
+    dataFile = file("data.xtf");
+    dbfile = file("data.gpkg")    
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dbfile | GeoPackage-Datei in die importiert werden soll
+dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll
+proxy  | Entspricht der ili2gpkg Option --proxy
+proxyPort  | Entspricht der ili2gpkg Option --proxyPort
+modeldir  | Entspricht der ili2gpkg Option --modeldir
+models  | Entspricht der ili2gpkg Option --models
+dataset  | Entspricht der ili2gpkg Option --dataset
+baskets  | Entspricht der ili2gpkg Option --baskets
+topics  | Entspricht der ili2gpkg Option --topics
+preScript  | Entspricht der ili2gpkg Option --preScript
+postScript  | Entspricht der ili2gpkg Option --postScript
+deleteData  | Entspricht der ili2gpkg Option --deleteData
+logFile  | Entspricht der ili2gpkg Option --logFile
+validConfigFile  | Entspricht der ili2gpkg Option --validConfigFile
+disableValidation  | Entspricht der ili2gpkg Option --disableValidation
+disableAreaValidation  | Entspricht der ili2gpkg Option --disableAreaValidation
+forceTypeValidation  | Entspricht der ili2gpkg Option --forceTypeValidation
+strokeArcs  | Entspricht der ili2gpkg Option --strokeArcs
+skipPolygonBuilding  | Entspricht der ili2gpkg Option --skipPolygonBuilding
+skipGeometryErrors  | Entspricht der ili2gpkg Option --skipGeometryErrors
+iligml20  | Entspricht der ili2gpkg Option --iligml20
+
+Für die Beschreibung der einzenen ili2gpkg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+
+
 ### IliValidator
 
 Prüft eine INTERLIS-Datei (.itf oder .xtf) gegenüber einem INTERLIS-Modell (.ili). Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).

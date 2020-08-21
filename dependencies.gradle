@@ -4,6 +4,7 @@ ext {
     ilivalidatorVersion = '1.11.3'
     ilivalidatorCustomFunctions = '1.1.11'
     ili2pgVersion = '4.3.2'
+    ili2gpkgVersion = '4.3.2'
     ioxWkfVersion = '1.0.2-SNAPSHOT'
     ehiSqlgenVersion = '1.13.7'
     
@@ -26,14 +27,13 @@ ext {
     junitVersion = '4.12'
     mockFtpServerVersion = '2.7.1'   
     testContainersVersion = '1.10.5'
-    //s3MockVersion = '2.1.22'
-    //s3MockJunitVersion = '2.1.22'
-     
+
     // dependencies
     ioxIliDependency = [ group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion ]
     ilivalidatorDependency = [ group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion ]
     ilivalidatorCustomFunctionsDependency = [ group: 'ch.so.agi.ilivalidator', name: 'ilivalidator-custom-functions', version: ilivalidatorCustomFunctions ]
     ili2pgDependency = [ group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion ]
+    ili2gpkgDependency = [ group: 'ch.interlis', name: 'ili2gpkg', version: ili2gpkgVersion ]
     ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
     ehiSqlgenDependency = [ group: 'ch.ehi', name: 'ehisqlgen', version: ehiSqlgenVersion ]
 
