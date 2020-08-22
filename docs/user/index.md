@@ -1056,3 +1056,14 @@ Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABL
 
 **Encoding**: Die Shapefiles sind `ISO-8859-1` encodiert. `UTF-8` wäre möglich, ist aber nicht wirklich klar, ob das genügend standardisiert ist.
 
+```
+task gpkg2shp(type: Gpkg2Shp) {
+    dataFile = file("data.gpkg")
+    outputDir = file("./out/")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dataFile | GeoPackage-Datei, die nach Shapefile transformiert werden soll.
+outputDir | Verzeichnis, in das die Shapefile gespeichert werden.
