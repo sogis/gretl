@@ -1,36 +1,35 @@
-package ch.so.agi.gretl.steps;
+package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
 
-public class Gpkg2ShpStepTest {
-
-    public Gpkg2ShpStepTest() {
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
-    
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    private GretlLogger log;
-    
+public class Gpkg2ShpTest {
     @Test
     public void export_Ok() throws Exception {
-        String TEST_OUT = folder.newFolder().getAbsolutePath();
-        File gpkgFile = new File("src/test/resources/data/gpkg2shp/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg");
-
-        Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
-        gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
+        String TEST_OUT = "src/integrationTest/jobs/Gpkg2Shp/out/";
+        
+        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/Gpkg2Shp/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")); 
+        Files.list(Paths.get(TEST_OUT)).filter(p -> p.toString().contains("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20")).forEach((p) -> {
+            try {
+                Files.deleteIfExists(p);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Gpkg2Shp", gvs);
         
         //Check results
         {

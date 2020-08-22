@@ -20,17 +20,17 @@ import ch.interlis.ioxwkf.shp.ShapeWriter;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
-public class Gpgk2ShpStep {
+public class Gpkg2ShpStep {
     private GretlLogger log;
     private String taskName;
 
-    public Gpgk2ShpStep() {
+    public Gpkg2ShpStep() {
         this(null);
     }
 
-    public Gpgk2ShpStep(String taskName) {
+    public Gpkg2ShpStep(String taskName) {
         if (taskName == null) {
-            taskName = Gpgk2ShpStep.class.getSimpleName();
+            taskName = Gpkg2ShpStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }
