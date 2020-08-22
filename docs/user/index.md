@@ -1026,7 +1026,7 @@ fileNameExtension | Dateinamen-Extension (optional)
 Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch.
 
 ```
-task uploadDirectory(type: S3Upload){
+task uploadDirectory(type: S3Upload) {
     accessKey = abcdefg
 	secretKey = hijklmnopqrstuvwxy
 	sourceDir = file("./docs")
@@ -1047,3 +1047,12 @@ bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
 endPoint | S3-Endpunkt (default: `https://s3.amazonaws.com/`)
 region | S3-Region (default: `eu-central-1`). 
 acl | Access Control Layer `[Private|PublicRead|PublicReadWrite|AuthenticatedRead|LogDeliveryWrite|BucketOwnerRead|BucketOwnerFullControl]`
+
+### Gpkg2Shp (Experimental)
+
+Exportiert alle Tabellen einer GeoPackage-Datei in Shapefiles. Die Shapefiles werden zu einer einzigen Datei gezippt. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt. 
+
+Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Je nach, bei der Erstellung der GeoPackage-Datei, verwendeten Parametern, muss die Query angepasst werden. Es muss jedoch darauf geachtet werden, dass es nur eine Query gibt (für alle Datensätze). Für den vorgesehenen Anwendungsfall (sehr einfache, flache Modelle) dürfte das kein Problem darstellen.
+
+**Encoding**: Die Shapefiles sind `ISO-8859-1` encodiert. `UTF-8` wäre möglich, ist aber nicht wirklich klar, ob das genügend standardisiert ist.
+

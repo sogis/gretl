@@ -24,7 +24,7 @@ public class S3UploadStep {
     
     public S3UploadStep(String taskName) {
         if (taskName == null) {
-            taskName = DatabaseDocumentExportStep.class.getSimpleName();
+            taskName = S3UploadStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }
