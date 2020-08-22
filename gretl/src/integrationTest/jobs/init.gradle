@@ -2,6 +2,7 @@ allprojects {
     buildscript {
         repositories {
         	mavenLocal()
+            maven { url "https://dl.bintray.com/sogis/iox-wkf/" } // TODO: REMOVE!!                	
             maven { url "http://jars.interlis.ch" }
             maven { url "https://repo.osgeo.org/repository/release/" }            
             mavenCentral()
