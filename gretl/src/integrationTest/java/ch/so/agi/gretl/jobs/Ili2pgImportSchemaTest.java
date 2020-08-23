@@ -34,7 +34,7 @@ public class Ili2pgImportSchemaTest {
         Connection con = null;
         try {
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchemaTest", gvs);
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema", gvs);
             
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);

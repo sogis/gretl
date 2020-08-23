@@ -932,7 +932,7 @@ database | Datenbank aus der exportiert werden soll.
 sqlFile  | Name der SQL-Datei aus das SQL-Statement gelesen und ausgeführt wird.
 dataFile | Name der Rasterdatei, die erstellt werden soll.
 
-### OerebIconizerQgis3
+### OerebIconizerQgis3 (Deprecated)
 
 Erstellt die Symbole anhand eines WMS-Layers für den ÖREB-Kataster indem er zuerst das SLD (GetStyles) ausliest und anschliessend einzelne GetLegendGraphic-Requests macht. Die Symbole werden dann in der Datenbank in der entsprechenden Tabelle nachgeführt (`update`). Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/openoereb/oereb-iconizer](https://github.com/openoereb/oereb-iconizer).
 
@@ -965,6 +965,43 @@ typeCodeListValue | Wert der Artcodeliste in der Tabelle, dem das Symbol zugeord
 symbolAttrName | Name des Symbolattributes in der Tabelle. Dieses Attribut wird upgedatet.
 useCommunalTypeCodes | Ob in der Update-Query Substrings verglichen werden, damit kommunale Codes mit (aggregierten) kantonalen Symbolen verwendet werden können.
 legendTextAttrName | Names des Legendentext-Attributes in der Tabelle. Dieses Attribut wird upgedatet. (Optional)
+
+### OerebIconizer
+
+Erstellt die Symbole anhand eines WMS-Layers für den ÖREB-Kataster indem er zuerst das SLD (GetStyles) ausliest und anschliessend einzelne GetLegendGraphic-Requests macht. Die Symbole werden dann in der Datenbank in der entsprechenden Tabelle nachgeführt (`update`). Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/openoereb/oereb-iconizer](https://github.com/openoereb/oereb-iconizer).
+
+Einschränkungen: 
+- Artcode-Wert muss zusammen mit der Artcodeliste eindeutig sein. Beim Updaten in der Datenbank wird die Artcodeliste mit `LIKE 'NameDerListe%'` gematcht.
+
+```
+task updateSymbols(type: OerebIconizer) {
+    vendor = "QGIS3"
+    stylesUrl = "http://localhost:32793/qgis/singlesymbol?&SERVICE=WMS&REQUEST=GetStyles&LAYERS=singlepolygon&SLD_VERSION=1.1.0"
+    legendGraphicUrl = "http://localhost:32793/qgis/singlesymbol?SERVICE=WMS&REQUEST=GetLegendGraphic&LAYER=singlepolygon&FORMAT=image/png&RULELABEL=false&LAYERTITLE=false&HEIGHT=35&WIDTH=70&SYMBOLHEIGHT=3&SYMBOLWIDTH=6&DPI=300"
+    database = [db_uri, db_user, db_pass]
+    dbSchema = "agi_oereb"
+    dbTable = "transferstruktur_legendeeintrag"
+    typeCodeAttrName = "artcode"
+    typeCodeListAttrName = "artcodeliste"
+    typeCodeListValue = "Grundnutzung'
+    symbolAttrName = "symbol"
+    substringMode = true
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+vendor | Iconizer-Implementierung. Zur Zeit zur "QGIS3".
+stylesUrl | GetStyles-Request
+legendGraphicUrl | GetLegendGraphic-Request mit QGIS-spezifischen Parametern, um einzelne Symbole anfordern zu können. Der `RULE`-Parameter wird automatisch hinzugefügt.
+database | Datenbank in die importiert werden soll.
+dbSchema  | Name des Datenbankschemas.
+dbTable  | Name des Datenbanktabelle.
+typeCodeAttrName | Name des Attributes in der Tabelle, dem das Symbol zugeordnet werden kann.
+typeCodeListAttrName | Name des Artcodeliste in der Tabelle, dem das Symbol zugeordnet werden kann.
+typeCodeListValue | Wert der Artcodeliste in der Tabelle, dem das Symbol zugeordnet werden kann.
+symbolAttrName | Name des Symbolattributes in der Tabelle. Dieses Attribut wird upgedatet.
+substringMode | Ob in der Update-Query Substrings verglichen werden, damit z.B. kommunale Codes mit (aggregierten) kantonalen Symbolen verwendet werden können.
 
 ### Av2ch
 

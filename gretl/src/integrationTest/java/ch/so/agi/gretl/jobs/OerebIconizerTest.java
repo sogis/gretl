@@ -25,7 +25,7 @@ import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
-public class OerebIconizerQgis3CommunalTest {
+public class OerebIconizerTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     
     private static String dbusr = "ddluser";
@@ -44,11 +44,10 @@ public class OerebIconizerQgis3CommunalTest {
     public static GenericContainer qgis = new GenericContainer("sogis/qgis-server-base:3.4")
             .withEnv("QGIS_FCGI_MIN_PROCESSES", "0")
             .withEnv("QGIS_FCGI_MAX_PROCESSES", "1")
-            .withExposedPorts(80).withClasspathResourceMapping("oerebIconizer/communal", "/data", BindMode.READ_WRITE).waitingFor(Wait.forHttp("/"));
+            .withExposedPorts(80).withClasspathResourceMapping("oerebIconizer/single", "/data", BindMode.READ_WRITE).waitingFor(Wait.forHttp("/"));
 
-    
     @Test
-    public void createAndSaveSymbolsCommunal_Ok() throws Exception {
+    public void createAndSaveSymbols_Ok() throws Exception {
         // Schema and table creation including data preparation is done
         // in the oerebIconizer/init_postgresql.sql.
 
@@ -60,24 +59,24 @@ public class OerebIconizerQgis3CommunalTest {
         // be passed because it is dynamic.
         String sldUrl = "http://" + ipAddress + ":" + port;
         String legendGraphicUrl = "http://" + ipAddress + ":" + port;
-        
+
         GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()), GradleVariable.newGradleProperty("legendGraphicUrl", legendGraphicUrl), GradleVariable.newGradleProperty("sldUrl", sldUrl)};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/OerebIconizerQgis3Communal", gvs);
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/OerebIconizer", gvs);
         
         // check results
-        String typeCodeCommunal = "1111";
-        File symbolFile = new File("src/integrationTest/resources/oerebIconizer/communal/gruen_und_freihaltezone_innerhalb_bauzone.png");
+        String typeCode = "N111";
+        File symbolFile = new File("src/integrationTest/resources/oerebIconizer/single/gruen_und_freihaltezone_innerhalb_bauzone.png");
 
         Connection con = IntegrationTestUtilSql.connectPG(postgres);
 
         Statement s = con.createStatement();
-        ResultSet rs = s.executeQuery("SELECT artcode, symbol FROM agi_oereb.transferstruktur_legendeeintrag_kommunal");
+        ResultSet rs = s.executeQuery("SELECT artcode, symbol FROM agi_oereb.transferstruktur_legendeeintrag");
         
         if(!rs.next()) {
             fail();
         }
         
-        assertEquals(typeCodeCommunal, rs.getString(1));
+        assertEquals(typeCode, rs.getString(1));
 
         ByteArrayInputStream bis = new ByteArrayInputStream(rs.getBytes(2));
         BufferedImage bim = ImageIO.read(bis);
@@ -94,6 +93,4 @@ public class OerebIconizerQgis3CommunalTest {
 
         IntegrationTestUtilSql.closeCon(con);
     }
-    
-
 }
