@@ -9,7 +9,8 @@ ext {
     ioxWkfVersion = '1.2.23' // Temporary. Until shp-trim branch is merged into master / original repo.
     ehiSqlgenVersion = '1.13.7'
     
-    oerebIconizerVersion = '1.0.36'
+    //oerebIconizerVersion = '1.0.36'
+    oerebIconizerVersion = '2.0.5'
     av2chVersion = '1.0.12'
     
     awsSdkVersion = '1.11.795'

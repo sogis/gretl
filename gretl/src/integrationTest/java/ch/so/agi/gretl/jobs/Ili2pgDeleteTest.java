@@ -44,7 +44,7 @@ public class Ili2pgDeleteTest {
             
             // create schema, import dataset and delete dataset
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgDeleteDatasetTest", gvs);
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgDeleteDataset", gvs);
             
             
             
