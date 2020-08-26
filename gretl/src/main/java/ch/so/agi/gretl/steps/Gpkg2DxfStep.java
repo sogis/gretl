@@ -33,9 +33,9 @@ public class Gpkg2DxfStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
     
-    public void execute(String gpkgFile, String dxfFile) throws IoxException {
-        log.lifecycle(String.format("Start Gpkg2DxfStep(Name: %s GpkgFileName: %s DxfFileName: %s)", taskName, gpkgFile,
-                dxfFile));
+    public void execute(String gpkgFile, String outputDir) throws IoxException {
+        log.lifecycle(String.format("Start Gpkg2DxfStep(Name: %s GpkgFileName: %s OutputDir: %s)", taskName, gpkgFile,
+                outputDir));
         
         // Get all geopackage tables that will be converted to shape file.
 //        List<String> tableNames = new ArrayList<String>();

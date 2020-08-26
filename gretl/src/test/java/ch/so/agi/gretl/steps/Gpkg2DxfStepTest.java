@@ -28,11 +28,10 @@ public class Gpkg2DxfStepTest {
     @Test
     public void export_Ok() throws Exception {
         String TEST_OUT = folder.newFolder().getAbsolutePath();
-        File dxfFile = Paths.get(TEST_OUT, "ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.dxf").toFile();
         File gpkgFile = new File("src/test/resources/data/gpkg2dxf/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg");
 
         Gpkg2DxfStep gpkg2dxfStep = new Gpkg2DxfStep();
-        gpkg2dxfStep.execute(gpkgFile.getAbsolutePath(), gpkgFile.getAbsolutePath());
+        gpkg2dxfStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
         
         //Check results
 //        {
