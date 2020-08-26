@@ -15,6 +15,7 @@ apply from: 'integration-test.gradle'
 configurations.all {
     resolutionStrategy { 
         force 'ch.interlis:iox-ili:1.20.15'
+        force 'ch.interlis:iox-wkf:1.2.23'
         force 'ch.interlis:ili2c-tool:5.0.2'
         force 'ch.interlis:ili2c-core:5.0.2'
         force 'ch.interlis:ili2pg:4.3.2'
@@ -58,6 +59,7 @@ dependencies {
 
     api oerebIconizerDependency
     api av2chDependency
+    api av2geobauDependency
     
     api awsSdkDependency
     

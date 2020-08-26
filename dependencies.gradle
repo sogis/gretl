@@ -1,5 +1,5 @@
 ext {
-    //dependency versions
+    // dependencies version
     ioxIliVersion = '1.20.15'
     ilivalidatorVersion = '1.11.3'
     ilivalidatorCustomFunctions = '1.1.11'
@@ -12,6 +12,7 @@ ext {
     //oerebIconizerVersion = '1.0.36'
     oerebIconizerVersion = '2.0.5'
     av2chVersion = '1.0.12'
+    av2geobauVersion = '1.0.2-SNAPSHOT'
     
     awsSdkVersion = '1.11.795'
 
@@ -41,6 +42,7 @@ ext {
 
     oerebIconizerDependency = [ group: 'ch.so.agi.oereb', name: 'oereb-iconizer', version: oerebIconizerVersion ]
     av2chDependency = [ group: 'ch.so.agi.av', name: 'av2ch', version: av2chVersion ]
+    av2geobauDependency = [ group: 'ch.interlis', name: 'av2geobau', version: av2geobauVersion ]
     
     awsSdkDependency = [ group: 'com.amazonaws', name: 'aws-java-sdk', version: awsSdkVersion ]
     
@@ -61,7 +63,5 @@ ext {
     testContainersDependency = [ group: 'org.testcontainers', name: 'testcontainers', version: testContainersVersion]
     testContainersPostgresDependency = [ group: 'org.testcontainers', name: 'postgresql', version: testContainersVersion]
     testContainersOracleDependency = [ group: 'org.testcontainers', name: 'oracle-xe', version: testContainersVersion]
-    //s3MockDependency = [ group: 'com.adobe.testing', name: 's3mock', version: s3MockVersion]
-    //s3MockJunitDependency = [ group: 'com.adobe.testing', name: 's3mock-junit4', version: s3MockVersion]  
 }
 
