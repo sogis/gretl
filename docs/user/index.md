@@ -618,6 +618,10 @@ skipPolygonBuilding  | Entspricht der ili2gpkg Option --skipPolygonBuilding
 skipGeometryErrors  | Entspricht der ili2gpkg Option --skipGeometryErrors
 iligml20  | Entspricht der ili2gpkg Option --iligml20
 coalesceJson  | Entspricht der ili2gpkg Option --coalesceJson
+nameByTopic  | Entspricht der ili2gpkg Option --nameByTopic
+defaultSrsCode  | Entspricht der ili2gpkg Option --defaultSrsCode
+createEnumTabs  | Entspricht der ili2gpkg Option --createEnumTabs
+createMetaInfo  | Entspricht der ili2gpkg Option --createMetaInfo
 
 Für die Beschreibung der einzenen ili2gpkg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 

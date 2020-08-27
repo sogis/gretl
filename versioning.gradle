@@ -5,6 +5,8 @@ if (System.env.BUILD_NUMBER) {
     buildNumber = System.env.BUILD_NUMBER
 } else if (System.env.TRAVIS_BUILD_NUMBER) {
     buildNumber = System.env.TRAVIS_BUILD_NUMBER
+} else if (System.env.GITHUB_RUN_NUMBER) {
+    buildNumber = System.env.GITHUB_RUN_NUMBER
 }
 
 version = new ProjectVersion(2, 0, buildNumber)
