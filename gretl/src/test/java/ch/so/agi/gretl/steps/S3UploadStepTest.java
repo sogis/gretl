@@ -24,12 +24,6 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
-//import com.adobe.testing.s3mock.junit4.S3MockRule;
-//import com.adobe.testing.s3mock.util.HashUtil;
-//import com.amazonaws.services.s3.AmazonS3;
-//import com.amazonaws.services.s3.model.PutObjectRequest;
-//import com.amazonaws.services.s3.model.S3Object;
-
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.S3Test;
