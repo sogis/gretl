@@ -583,6 +583,8 @@ Datenbank noch nicht vorhanden sein.
 
 Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2gpkgReplace (**not yet implemented**) verwendet werden.
 
+Die Option `--doSchemaImport` wird automatisch gesetzt.
+
 Beispiel:
 ```
 task importData(type: Ili2gpkgImport) {
@@ -1040,11 +1042,11 @@ def db_pass = "dmluser"
 
 task exportDocuments(type: DatabaseDocumentExport){
     database = [db_uri, db_user, db_pass]
-	qualifiedTableName = "ada_denkmalschutz.fachapplikation_rechtsvorschrift_link"
-	documentColumn = "multimedia_link"
+    qualifiedTableName = "ada_denkmalschutz.fachapplikation_rechtsvorschrift_link"
+    documentColumn = "multimedia_link"
     targetDir = file(".")
-	fileNamePrefix = "ada_"
-	fileNameExtension = "pdf"
+    fileNamePrefix = "ada_"
+    fileNameExtension = "pdf"
 }
 ```
 
@@ -1065,10 +1067,10 @@ Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sou
 ```
 task uploadDirectory(type: S3Upload) {
     accessKey = abcdefg
-	secretKey = hijklmnopqrstuvwxy
-	sourceDir = file("./docs")
-	bucketName = "ch.so.ada.denkmalschutz"
-	endPoint = "https://s3.amazonaws.com/"
+    secretKey = hijklmnopqrstuvwxy
+    sourceDir = file("./docs")
+    bucketName = "ch.so.ada.denkmalschutz"
+    endPoint = "https://s3.amazonaws.com/"
     region = "eu-central-1"
     acl = "PublicRead"
 }
