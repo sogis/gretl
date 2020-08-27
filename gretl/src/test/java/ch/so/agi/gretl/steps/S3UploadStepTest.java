@@ -83,6 +83,7 @@ public class S3UploadStepTest {
         s3client.deleteObject(s3BucketName, "bar.txt");
     }
     
+    
     @Test
     @Category(S3Test.class)
     public void uploadFile_Ok() throws Exception {
