@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,10 +51,12 @@ public class S3UploadStepTest {
         String s3EndPoint = "https://s3.amazonaws.com/";
         String s3Region = "eu-central-1";
         String acl = "PublicRead";
+        Map<String,String> metaData = new HashMap<String,String>();
+        metaData.put("lastModified", "2020-08-28");
         
         // Upload files from a directory.
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl, metaData);
         
         // Check result. 
         BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
@@ -92,10 +96,11 @@ public class S3UploadStepTest {
         String s3EndPoint = "https://s3.amazonaws.com/";
         String s3Region = "eu-central-1";
         String acl = "PublicRead";
+        Map<String,String> metaData = new HashMap<String,String>();        
         
         // Upload a single file.
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl, metaData);
         
         // Check result. 
         BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
@@ -120,11 +125,12 @@ public class S3UploadStepTest {
         String s3EndPoint = "https://s3.amazonaws.com/";
         String s3Region = "eu-central-1";
         String acl = "PublicRead";
-        
+        Map<String,String> metaData = new HashMap<String,String>();        
+
         // Upload a single file.
         try {
             S3UploadStep s3UploadStep = new S3UploadStep();
-            s3UploadStep.execute("login", "secret", sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl);
+            s3UploadStep.execute("login", "secret", sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl, metaData);
         } catch (AmazonS3Exception e) {
             assertTrue(e.getErrorCode().equalsIgnoreCase("InvalidAccessKeyId"));
         }

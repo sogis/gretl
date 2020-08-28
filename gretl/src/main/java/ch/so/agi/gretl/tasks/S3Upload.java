@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -37,12 +39,16 @@ public class S3Upload extends DefaultTask {
     public String endPoint = "https://s3.amazonaws.com/";
     
     @Input
-    @Optional
     public String region = "eu-central-1";
     
     @Input
-    public String acl;
-
+    @Optional    
+    public String acl = null;
+    
+    @Input
+    @Optional        
+    public Map<String,String> metaData = new HashMap<String,String>();
+    
     @TaskAction
     public void upload() {
         log = LogEnvironment.getLogger(S3Upload.class);
@@ -59,6 +65,9 @@ public class S3Upload extends DefaultTask {
         if (bucketName == null) {
             throw new IllegalArgumentException("bucketName must not be null");
         }
+        if (region == null) {
+            throw new IllegalArgumentException("region must not be null");
+        }        
         if (acl == null) {
             throw new IllegalArgumentException("acl must not be null");
         }
@@ -72,7 +81,7 @@ public class S3Upload extends DefaultTask {
         
         try {
             S3UploadStep s3UploadStep = new S3UploadStep();
-            s3UploadStep.execute(accessKey, secretKey, sourceObject.getAbsolutePath(), bucketName, endPoint, region, acl);
+            s3UploadStep.execute(accessKey, secretKey, sourceObject.getAbsolutePath(), bucketName, endPoint, region, acl, metaData);
         } catch (Exception e) {
             log.error("Exception in S3Upload task.", e);
             GradleException ge = TaskUtil.toGradleException(e);
