@@ -1091,7 +1091,7 @@ bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
 endPoint | S3-Endpunkt (default: `https://s3.amazonaws.com/`)
 region | S3-Region (default: `eu-central-1`). 
 acl | Access Control Layer `[Private|PublicRead|PublicReadWrite|AuthenticatedRead|LogDeliveryWrite|BucketOwnerRead|BucketOwnerFullControl]`
-metaData  | Verzeichnis mit den Dateien, die hochgeladen werden sollen.
+metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
 
 ### Gpkg2Shp (Experimental)
