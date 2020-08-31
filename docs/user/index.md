@@ -1095,10 +1095,24 @@ metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"202
 
 ### S3Bucket2Bucket (Experimental)
 
-Kopiert Objekte von einem Bucket in einen anderen.
+Kopiert Objekte von einem Bucket in einen anderen. Die Buckets müssen in der gleichen Region sein. Die Permissions werden mitkopiert.
 
-- müssen in der gleichen Region sein.
+```
+task copyFiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
+    accessKey = s3AccessKey
+    secretKey = s3SecretKey
+    sourceBucket = s3SourceBucket
+    targetBucket = s3TargetBucket
+}
+```
 
+Parameter | Beschreibung
+----------|-------------------
+accessKey | AccessKey
+secretKey | SecretKey
+sourceBucket  | Bucket aus dem die Objekte kopiert werden.
+targetBucket  | Bucket in den die Objekte kopiert werden.
+metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
 
 ### Gpkg2Shp (Experimental)
