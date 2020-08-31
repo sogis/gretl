@@ -1,13 +1,12 @@
 package ch.so.agi.gretl.steps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.geotools.data.FileDataStore;
-import org.geotools.data.FileDataStoreFinder;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -33,18 +32,12 @@ public class Gpkg2DxfStepTest {
         Gpkg2DxfStep gpkg2dxfStep = new Gpkg2DxfStep();
         gpkg2dxfStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
         
-        //Check results
-//        {
-//            FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(TEST_OUT, "nachfuehrngskrise_gemeinde.shp"));
-//            SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
-//            assertEquals(109, featuresSource.getFeatures().size()); 
-//            assertEquals("EPSG:CH1903+ / LV95", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
-//        }
-//        {
-//            FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(TEST_OUT, "grundbuchkreise_grundbuchkreis.shp"));
-//            SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
-//            assertEquals(127, featuresSource.getFeatures().size()); 
-//            assertEquals("EPSG:CH1903+ / LV95", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
-//        }
+        // Check results
+        String contentNF = new String (Files.readAllBytes(Paths.get(TEST_OUT, "nachfuehrngskrise_gemeinde.dxf")));
+        assertTrue(contentNF.contains("LerchWeberAG"));
+        assertTrue(contentNF.contains("2638171.578"));
+        
+        String contentGB = new String (Files.readAllBytes(Paths.get(TEST_OUT, "grundbuchkreise_grundbuchkreis.dxf")));
+        assertTrue(contentGB.contains("2619682.201"));
     }
 }

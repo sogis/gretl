@@ -1117,7 +1117,7 @@ metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"202
 
 ### Gpkg2Shp (Experimental)
 
-Exportiert alle Tabellen einer GeoPackage-Datei in Shapefiles. Die Shapefiles werden zu einer einzigen Datei gezippt. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt. 
+Exportiert alle Tabellen einer GeoPackage-Datei in Shapefiles. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt. 
 
 Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Je nach, bei der Erstellung der GeoPackage-Datei, verwendeten Parametern, muss die Query angepasst werden. Es muss jedoch darauf geachtet werden, dass es nur eine Query gibt (für alle Datensätze). Für den vorgesehenen Anwendungsfall (sehr einfache, flache Modelle) dürfte das kein Problem darstellen.
 
@@ -1136,3 +1136,21 @@ dataFile | GeoPackage-Datei, die nach Shapefile transformiert werden soll.
 outputDir | Verzeichnis, in das die Shapefile gespeichert werden.
 
 ### Gpkg2Dxf (Experimental)
+
+Exportiert alle Tabellen einer GeoPackage-Datei in DXF-Dateien. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt.
+
+Es werden alle INTERLIS-Klassen exportier (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Der eigentliche SELECT-Befehl ist komplizierter weil für das Layern der einzelnen DXF-Objekte das INTERLIS-Metaattribut `!!@dxflayer="true"` ausgelesen wird. Gibt es kein solches Metaattribut wird alles in den gleichen DXF-Layer (`default`) geschrieben.
+ 
+**Encoding**: Die DXF-Dateien sind `ISO-8859-1` encodiert.
+
+```
+task gpkg2dxf(type: Gpkg2Dxf) {
+    dataFile = file("data.gpkg")
+    outputDir = file("./out/")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
+outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
