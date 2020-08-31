@@ -47,7 +47,7 @@ public class S3Upload extends DefaultTask {
     
     @Input
     @Optional        
-    public Map<String,String> metaData = new HashMap<String,String>();
+    public Map<String,String> metaData = null;
     
     @TaskAction
     public void upload() {
@@ -70,6 +70,9 @@ public class S3Upload extends DefaultTask {
         }        
         if (acl == null) {
             throw new IllegalArgumentException("acl must not be null");
+        }
+        if (metaData == null) {
+            metaData = new HashMap<String,String>();
         }
         
         File sourceObject;
