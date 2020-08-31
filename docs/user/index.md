@@ -1093,6 +1093,13 @@ region | S3-Region (default: `eu-central-1`).
 acl | Access Control Layer `[Private|PublicRead|PublicReadWrite|AuthenticatedRead|LogDeliveryWrite|BucketOwnerRead|BucketOwnerFullControl]`
 metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
+### S3Bucket2Bucket (Experimental)
+
+Kopiert Objekte von einem Bucket in einen anderen.
+
+- müssen in der gleichen Region sein.
+
+
 
 ### Gpkg2Shp (Experimental)
 
