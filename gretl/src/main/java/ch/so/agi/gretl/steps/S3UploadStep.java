@@ -69,8 +69,15 @@ public class S3UploadStep {
                 uploadedFiles++;                
              }
         } else {
-            s3client.putObject(new PutObjectRequest(bucketName, sourceObjectFile.getName(), sourceObjectFile)
-                    .withCannedAcl(CannedAccessControlList.valueOf(acl)));
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            for (Map.Entry<String,String> entry : metaData.entrySet()) {
+                objectMetadata.addUserMetadata(entry.getKey(), entry.getValue());
+            } 
+            
+            InputStream inputStream = new FileInputStream(sourceObjectFile);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, sourceObjectFile.getName(), inputStream, objectMetadata);
+
+            s3client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.valueOf(acl)));
             uploadedFiles++;                            
         }
 
