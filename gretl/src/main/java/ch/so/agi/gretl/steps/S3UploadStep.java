@@ -58,6 +58,7 @@ public class S3UploadStep {
                 }
                 
                 ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(file.length());
                 for (Map.Entry<String,String> entry : metaData.entrySet()) {
                     objectMetadata.addUserMetadata(entry.getKey(), entry.getValue());
                 } 
@@ -70,6 +71,7 @@ public class S3UploadStep {
              }
         } else {
             ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(sourceObjectFile.length());
             for (Map.Entry<String,String> entry : metaData.entrySet()) {
                 objectMetadata.addUserMetadata(entry.getKey(), entry.getValue());
             } 
