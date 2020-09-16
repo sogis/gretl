@@ -73,9 +73,8 @@ objects:
     strategy:
       sourceStrategy:
         from:
-          kind: ImageStreamTag
-          name: ${JENKINS_IMAGE_STREAM_TAG}
-          namespace: ${NAMESPACE}
+          kind: DockerImage
+          name: openshift/jenkins-2-centos7:${JENKINS_DOCKER_IMAGE_TAG}
       type: Source
     triggers:
     - github:
@@ -265,10 +264,10 @@ parameters:
   displayName: Jenkins ImageStream Namespace
   name: NAMESPACE
   value: openshift
-- description: Name of the ImageStreamTag to be used for the Jenkins image.
-  displayName: Jenkins ImageStreamTag
-  name: JENKINS_IMAGE_STREAM_TAG
-  value: jenkins:2
+- description: Name of the Tag to be used for the Jenkins image.
+  displayName: Jenkins Docker Image Tag
+  name: JENKINS_DOCKER_IMAGE_TAG
+  value: v3.11
 - description: Url of the Git repo holding the Jenkins configuration.
   displayName: Jenkins configuration Git repo
   name: JENKINS_CONFIGURATION_REPO_URL
