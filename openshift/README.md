@@ -15,7 +15,7 @@ Apply project template with the GRETL-Jenkins configuration.
 ```
 oc process -f openshift/templates/jenkins-s2i-persistent-template.yaml \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
-  -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
+  -p JENKINS_DOCKER_IMAGE_TAG="v3.11" \
   -p GRETL_JOB_REPO_URL="https://github.com/sogis/gretljobs.git" \
   -p GRETL_JOB_FILE_PATH="**" \
   -p GRETL_JOB_FILE_NAME="build.gradle" \
@@ -25,7 +25,7 @@ oc process -f openshift/templates/jenkins-s2i-persistent-template.yaml \
 ```
 Parameter:
 * JENKINS_CONFIGURATION_REPO_URL: Repo containing the Jenkins configuration.
-* JENKINS_IMAGE_STREAM_TAG: Docker base image for the Jenkins. 
+* JENKINS_DOCKER_IMAGE_TAG: Jenkins base image tag to be used.
 * GRETL_JOB_REPO_URL: Repo containing the GRETL jobs.
 * GRETL_JOB_FILE_PATH: Base path to the GRETL job definitions (Ant style)
 * GRETL_JOB_FILE_NAME: Name of the GRETL job script file (usually build.gradle).
