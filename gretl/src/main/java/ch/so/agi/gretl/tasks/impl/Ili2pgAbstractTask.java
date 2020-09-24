@@ -89,6 +89,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @Input
     @Optional
     public boolean iligml20 = false;
+    @Input
+    @Optional
+    public boolean disableRounding = false;    
 
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
@@ -167,6 +170,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (iligml20) {
             settings.setTransferFileFormat(Config.ILIGML20);
         }
+        if (disableRounding) {
+            settings.setDisableRounding(true);;
+        }        
 
         java.sql.Connection conn = null;
         try {
