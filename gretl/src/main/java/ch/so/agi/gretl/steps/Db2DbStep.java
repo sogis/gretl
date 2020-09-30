@@ -170,6 +170,7 @@ public class Db2DbStep {
         while (rs.next()) {
             transferRow(rs, insertRowStatement, columncount);
             if (k % batchSize == 0) {
+                log.lifecycle("Batching next " + batchSize + " records. (Total: " + String.valueOf(k*batchSize) + ")");
                 insertRowStatement.executeBatch();
                 insertRowStatement.clearBatch();
             }
