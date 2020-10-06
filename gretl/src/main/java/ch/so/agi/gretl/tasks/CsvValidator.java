@@ -7,6 +7,8 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
 import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
+
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
@@ -33,12 +35,21 @@ public class CsvValidator extends AbstractValidatorTask {
     public void validate() {
         log = LogEnvironment.getLogger(CsvValidator.class);
 
-        if (dataFiles == null || dataFiles.size() == 0) {
+        if (dataFiles == null) {
+            return;
+        }
+        FileCollection dataFilesCollection=null;
+        if(dataFiles instanceof FileCollection) {
+            dataFilesCollection=(FileCollection)dataFiles;
+        }else {
+            dataFilesCollection=getProject().files(dataFiles);
+        }
+        if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
         }
         List<String> files = new ArrayList<String>();
-        for (Object fileObj : dataFiles) {
-            String fileName = this.getProject().file(fileObj).getPath();
+        for (java.io.File fileObj : dataFilesCollection) {
+            String fileName = fileObj.getPath();
             files.add(fileName);
         }
 

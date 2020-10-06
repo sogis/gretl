@@ -12,6 +12,11 @@ public class IliValidatorTest {
         GradleVariable[] gvs = null;
         IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidator", gvs);
     }
+    @Test
+    public void validationFileSetOk() throws Exception {
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidatorFileSet", gvs);
+    }
 
     @Test
     public void validationFail() throws Exception {

@@ -3,6 +3,7 @@ package ch.so.agi.gretl.tasks.impl;
 import ch.ehi.basics.settings.Settings;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class AbstractValidatorTask extends DefaultTask {
     @InputFiles
-    public List<Object> dataFiles;
+    public Object dataFiles;
     @Input
     @Optional
     public String models = null;
