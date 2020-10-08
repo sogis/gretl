@@ -14,7 +14,6 @@ public class DbConnector {
 
     private static HashMap<String, String> jdbcDriverClasses = null;
 
-    private static Connection con = null;
     private static GretlLogger log = LogEnvironment.getLogger(DbConnector.class);
 
     static {
@@ -35,6 +34,7 @@ public class DbConnector {
      * @return the connection to the specific database
      */
     public static Connection connect(String connectionUrl, String userName, String password) {
+        Connection con = null;
         try {
             String[] splits = connectionUrl.split(":");
             if (splits.length < 3)
