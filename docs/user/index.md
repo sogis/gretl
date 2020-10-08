@@ -405,7 +405,7 @@ task importData(type: Ili2pgImport){
 Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank in die importiert werden soll
-dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll
+dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein.
 dbschema  | Entspricht der ili2pg Option --dbschema
 proxy  | Entspricht der ili2pg Option --proxy
 proxyPort  | Entspricht der ili2pg Option --proxyPort
@@ -599,7 +599,7 @@ task importData(type: Ili2gpkgImport) {
 Parameter | Beschreibung
 ----------|-------------------
 dbfile | GeoPackage-Datei in die importiert werden soll
-dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll
+dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein.
 proxy  | Entspricht der ili2gpkg Option --proxy
 proxyPort  | Entspricht der ili2gpkg Option --proxyPort
 modeldir  | Entspricht der ili2gpkg Option --modeldir

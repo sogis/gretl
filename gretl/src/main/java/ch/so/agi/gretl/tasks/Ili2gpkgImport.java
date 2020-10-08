@@ -1,10 +1,16 @@
 package ch.so.agi.gretl.tasks;
 
+import ch.ehi.basics.logging.EhiLogger;
 import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
+import ch.interlis.iox_j.logging.FileLogger;
 import ch.so.agi.gretl.tasks.impl.Ili2gpkgAbstractTask;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
@@ -39,13 +45,31 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
         Config settings = createConfig();
         // Probably the most wanted use case with GeoPackage?
         settings.setDoImplicitSchemaImport(true);
+
+        if (dataFile == null) {
+            return;
+        }
+        FileCollection dataFilesCollection=null;
+        if(dataFile instanceof FileCollection) {
+            dataFilesCollection=(FileCollection)dataFile;
+        }else {
+            dataFilesCollection=getProject().files(dataFile);
+        }
+        if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
+            return;
+        }
+        List<String> files = new ArrayList<String>();
+        for (java.io.File fileObj : dataFilesCollection) {
+            String fileName = fileObj.getPath();
+            files.add(fileName);
+        }
         
         if (coalesceJson) {
-            settings.setJsonTrafo(settings.JSON_TRAFO_COALESCE);
+            settings.setJsonTrafo(Config.JSON_TRAFO_COALESCE);
         }
 
         if (nameByTopic) {
-            settings.setNameOptimization(settings.NAME_OPTIMIZATION_TOPIC);
+            settings.setNameOptimization(Config.NAME_OPTIMIZATION_TOPIC);
         }
 
         if (defaultSrsCode != null) {
@@ -53,7 +77,7 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
         }
 
         if (createEnumTabs) {
-            settings.setCreateEnumDefs(settings.CREATE_ENUM_DEFS_MULTI);
+            settings.setCreateEnumDefs(Config.CREATE_ENUM_DEFS_MULTI);
         }
         
         if (createMetaInfo) {
@@ -61,14 +85,29 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
         }
 
         int function = Config.FC_IMPORT;
-        if (dataFile == null) {
-            return;
+        ch.ehi.basics.logging.FileListener fileLogger=null;
+        if(logFile!=null){
+            // setup logger here, so that multiple file imports result in one logfile
+            java.io.File logFilepath=this.getProject().file(logFile);
+            fileLogger=new FileLogger(logFilepath);
+            EhiLogger.getInstance().addListener(fileLogger);
         }
-        String xtfFilename = this.getProject().file(dataFile).getPath();
-        if (Ili2db.isItfFilename(xtfFilename)) {
-            settings.setItfTransferfile(true);
+        try {
+            for(String xtfFilename:files) {
+                if (Ili2db.isItfFilename(xtfFilename)) {
+                    settings.setItfTransferfile(true);
+                }else {
+                    settings.setItfTransferfile(false);
+                }
+                settings.setXtffile(xtfFilename);
+                run(function, settings);            
+            }
+        }finally{
+            if(fileLogger!=null){
+                EhiLogger.getInstance().removeListener(fileLogger);
+                fileLogger.close();
+                fileLogger=null;
+            }
         }
-        settings.setXtffile(xtfFilename);
-        run(function, settings);
     }
 }

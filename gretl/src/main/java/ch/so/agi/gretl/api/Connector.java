@@ -42,6 +42,17 @@ public class Connector {
         }
         return dbConnection;
     }
+    public void close() throws SQLException {
+        if (dbConnection != null) {
+            Connection con=dbConnection;
+            dbConnection=null;
+            con.close();
+        }
+        return;
+    }
+    public boolean isConnected() {
+        return (dbConnection != null);
+    }
 
     public String getDbUri() {
         return dbUri;

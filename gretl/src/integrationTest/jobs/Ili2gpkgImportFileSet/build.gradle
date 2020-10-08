@@ -1,0 +1,15 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+
+defaultTasks 'ili2gpkgimport'
+
+task ili2gpkgimport(type: Ili2gpkgImport) { 
+    models = "Beispiel2"
+    defaultSrsCode = "2056"
+    dataFile = fileTree(".").matching {
+    	include"*.xtf"
+    }
+    dbfile = file("Beispiel2.gpkg")    
+}

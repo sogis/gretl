@@ -94,7 +94,6 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
 
         settings.setFunction(function);
 
-        String xtfFilename = settings.getXtffile();
         if (proxy != null) {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_HOST, proxy);
         }
@@ -127,9 +126,6 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
         }
         if (deleteData) {
             settings.setDeleteMode(Config.DELETE_DATA);
-        }
-        if (logFile != null) {
-            settings.setLogfile(this.getProject().file(logFile).getPath());
         }
         if (trace) {
             EhiLogger.getInstance().setTraceFilter(false);

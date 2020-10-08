@@ -42,7 +42,7 @@ public class Ili2gpkgImportTest {
                 rs = stmt.executeQuery("SELECT aname FROM nachfuehrungsgeometer");
 
                 List<String> geometer = new ArrayList<String>();
-                geometer.add("Kägi");
+                geometer.add("K\u00e4gi");
                 geometer.add("Cantaluppi");
                 geometer.add("Schor");
                 geometer.add("Meile");
@@ -60,6 +60,30 @@ public class Ili2gpkgImportTest {
                 e.printStackTrace();
                 fail();
             }
+        }
+    }
+    @Test
+    public void importFileSet() throws Exception {
+        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/Ili2gpkgImportFileSet/Beispiel2.gpkg")); 
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2gpkgImportFileSet", gvs);
+
+        // check results
+        {
+            Statement stmt = null;
+            ResultSet rs = null;
+            Connection connection = null;
+            connection = DriverManager.getConnection("jdbc:sqlite:" + new File(
+                    "src/integrationTest/jobs/Ili2gpkgImportFileSet/Beispiel2.gpkg")
+                            .getAbsolutePath());
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery("SELECT count(*) FROM boflaechen");
+
+            assertTrue(rs.next());
+            int count = rs.getInt(1);
+            assertEquals(4,count);
+            rs.close();
+            stmt.close();
         }
     }
 }

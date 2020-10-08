@@ -102,7 +102,6 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
         settings.setFunction(function);
 
-        String xtfFilename = settings.getXtffile();
         if (proxy != null) {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_HOST, proxy);
         }
@@ -140,8 +139,10 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (deleteData) {
             settings.setDeleteMode(Config.DELETE_DATA);
         }
-        if (logFile != null) {
-            settings.setLogfile(this.getProject().file(logFile).getPath());
+        if(function!=Config.FC_IMPORT && function!=Config.FC_UPDATE && function!=Config.FC_REPLACE) {
+            if (logFile != null) {
+                settings.setLogfile(this.getProject().file(logFile).getPath());
+            }
         }
         if (trace) {
             EhiLogger.getInstance().setTraceFilter(false);
@@ -174,9 +175,8 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             settings.setDisableRounding(true);;
         }        
 
-        java.sql.Connection conn = null;
         try {
-            conn = database.connect();
+            java.sql.Connection conn = database.connect();
             if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
@@ -184,8 +184,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             Ili2db.readSettingsFromDb(settings);
             Ili2db.run(settings, null);
             conn.commit();
-            conn.close();
-            conn = null;
+            database.close();
         } catch (Exception e) {
             // Ili2pgDelete: If dataset does not exist, it will NOT throw an error.
             if (settings.getFunction() == Config.FC_DELETE) {
@@ -199,16 +198,19 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         } finally {
-            EhiLogger.getInstance().setTraceFilter(true);
             
-            if (conn != null) {
+            if (database.isConnected()) {
                 try {
-                    conn.rollback();
-                    conn.close();
+                    database.connect().rollback();
                 } catch (SQLException e) {
-                    log.error("failed to rollback/close", e);
+                    log.error("failed to rollback", e);
+                }finally {
+                    try {
+                        database.close();
+                    } catch (SQLException e) {
+                        log.error("failed to close", e);
+                    }
                 }
-                conn = null;
             }
         }
     }
