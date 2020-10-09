@@ -53,12 +53,12 @@ buildscript {
 			url "http://jars.umleditor.org"
 		}
 		maven {
-			url "http://download.osgeo.org/webdav/geotools/"
+			url "https://repo.osgeo.org/repository/release/"
 		}
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'ch.so.agi', name: 'gretl',  version: '1.0.+'
+		classpath group: 'ch.so.agi', name: 'gretl',  version: '2.0.+'
 	}
 }
 
