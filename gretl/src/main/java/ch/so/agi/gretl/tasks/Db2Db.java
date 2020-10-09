@@ -39,7 +39,7 @@ public class Db2Db extends DefaultTask {
     public Integer fetchSize = null;
     @Input
     @Optional
-    public java.util.Map<String, String> sqlParameters = null;
+    public Object sqlParameters = null;
 
     @TaskAction
     public void executeTask() throws Exception {
@@ -58,7 +58,16 @@ public class Db2Db extends DefaultTask {
         }
         try {
             Db2DbStep step = new Db2DbStep(taskName);
-            step.processAllTransferSets(sourceDb, targetDb, transferSets, settings, sqlParameters);
+            if(sqlParameters==null) {
+                step.processAllTransferSets(sourceDb, targetDb, transferSets, settings, null);
+            }else if(sqlParameters instanceof java.util.Map) {
+                step.processAllTransferSets(sourceDb, targetDb, transferSets, settings, (java.util.Map<String,String>)sqlParameters);
+            }else {
+                java.util.List<java.util.Map<String,String>> paramList=(java.util.List<java.util.Map<String,String>>)sqlParameters;
+                for(java.util.Map<String,String> sqlParams:paramList) {
+                    step.processAllTransferSets(sourceDb, targetDb, transferSets, settings, sqlParams);
+                }
+            }
         } catch (Exception e) {
             log.error("Exception in creating / invoking Db2DbStep in Db2DbTask", e);
 

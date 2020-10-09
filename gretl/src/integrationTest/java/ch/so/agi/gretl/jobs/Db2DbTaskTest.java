@@ -179,4 +179,72 @@ number of inserts (corresponding to the last statement)
             IntegrationTestUtilSql.closeCon(con);
         }
     }
+    @Test
+    public void parameter() throws Exception{
+        String schemaName = "parameterList".toLowerCase();
+        Connection con = null;
+        try{
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
+
+            Statement stmt=con.createStatement();
+            stmt.execute(String.format("CREATE TABLE %s.src1(title text)", schemaName));
+            stmt.execute(String.format("CREATE TABLE %s.dest(title text)", schemaName));
+            stmt.execute(String.format("INSERT INTO %s.src1(title) VALUES(\'1a')", schemaName));
+            stmt.execute(String.format("INSERT INTO %s.src1(title) VALUES(\'1b')", schemaName));
+            IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName,IntegrationTestUtilSql.PG_CON_DMLUSER);
+            
+            con.commit();
+            IntegrationTestUtilSql.closeCon(con);
+
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbParameter", gvs);
+
+            //reconnect to check results
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            String countDestSql = String.format("select count(*) from %s.dest", schemaName);
+            int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
+
+            Assert.assertEquals(2,countDest);
+        }
+        finally {
+            IntegrationTestUtilSql.closeCon(con);
+        }
+    }
+    @Test
+    public void parameterList() throws Exception{
+        String schemaName = "parameterList".toLowerCase();
+        Connection con = null;
+        try{
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
+
+            Statement stmt=con.createStatement();
+            stmt.execute(String.format("CREATE TABLE %s.src1(title text)", schemaName));
+            stmt.execute(String.format("CREATE TABLE %s.src2(title text)", schemaName));
+            stmt.execute(String.format("CREATE TABLE %s.dest(title text)", schemaName));
+            stmt.execute(String.format("INSERT INTO %s.src1(title) VALUES(\'1a')", schemaName));
+            stmt.execute(String.format("INSERT INTO %s.src1(title) VALUES(\'1b')", schemaName));
+            stmt.execute(String.format("INSERT INTO %s.src2(title) VALUES(\'2a')", schemaName));
+            stmt.execute(String.format("INSERT INTO %s.src2(title) VALUES(\'2b')", schemaName));
+            stmt.execute(String.format("INSERT INTO %s.src2(title) VALUES(\'2c')", schemaName));
+            IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName,IntegrationTestUtilSql.PG_CON_DMLUSER);
+            
+            con.commit();
+            IntegrationTestUtilSql.closeCon(con);
+
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbParameterList", gvs);
+
+            //reconnect to check results
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            String countDestSql = String.format("select count(*) from %s.dest", schemaName);
+            int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
+
+            Assert.assertEquals(5,countDest);
+        }
+        finally {
+            IntegrationTestUtilSql.closeCon(con);
+        }
+    }
 }

@@ -90,14 +90,11 @@ public class Db2DbStep {
         log.lifecycle(String.format("Start Db2DbStep(Name: %s SourceDb: %s TargetDb: %s Transfers: %s)", taskName,
                 sourceDb, targetDb, transferSets));
 
-        Connection sourceDbConnection = null;
-        Connection targetDbConnection = null;
-
         ArrayList<String> rowCountStrings = new ArrayList<String>();
 
         try {
-            sourceDbConnection = sourceDb.connect();
-            targetDbConnection = targetDb.connect();
+            Connection sourceDbConnection = sourceDb.connect();
+            Connection targetDbConnection = targetDb.connect();
             for (TransferSet transferSet : transferSets) {
                 // Check if file is readable
                 if (!transferSet.getInputSqlFile().canRead()) {
@@ -119,26 +116,42 @@ public class Db2DbStep {
             }
             sourceDbConnection.commit();
             targetDbConnection.commit();
+            sourceDb.close();
+            targetDb.close();
 
             String rowCountList = String.join(",", rowCountStrings);
             log.lifecycle(String.format(
                     "Db2DbStep %s: Transfered all Transfersets. Number of Transfersets: %s, transfered rows: [%s]",
                     taskName, rowCountStrings.size(), rowCountList));
         } catch (Exception e) {
-            if (sourceDbConnection != null) {
-                sourceDbConnection.rollback();
-            }
-            if (targetDbConnection != null) {
-                targetDbConnection.rollback();
-            }
             log.error("Exception while executing processAllTransferSets()", e);
             throw e;
         } finally {
-            if (sourceDbConnection != null) {
-                sourceDbConnection.close();
+            if (sourceDb.isConnected()) {
+                try {
+                    sourceDb.connect().rollback();
+                } catch (SQLException e) {
+                    log.error("failed to rollback", e);
+                }finally {
+                    try {
+                        sourceDb.close();
+                    } catch (SQLException e) {
+                        log.error("failed to close", e);
+                    }
+                }
             }
-            if (targetDbConnection != null) {
-                targetDbConnection.close();
+            if (targetDb.isConnected()) {
+                try {
+                    targetDb.connect().rollback();
+                } catch (SQLException e) {
+                    log.error("failed to rollback", e);
+                }finally {
+                    try {
+                        targetDb.close();
+                    } catch (SQLException e) {
+                        log.error("failed to close", e);
+                    }
+                }
             }
         }
     }
