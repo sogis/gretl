@@ -144,6 +144,45 @@ Argument verwenden:
 
 ## Tasks
 
+### Av2geobau
+
+Av2geobau konvertiert eine Interlis-Transferdatei (itf) in eine DXF-Geobau Datei. 
+Av2geobau funktioniert ohne Datenbank.
+
+Die ITF-Datei muss dem Modell DM01AVCH24LV95D entsprechen. Die Daten werden nicht validiert.
+
+Die Datenstruktur der DXF-Datei ist im Prinzip sehr einfach: Die verschiedenen Informationen aus dem Datenmodell DM01 werden in verschiedene DXF-Layer abgebildet, z.B. die begehbaren LFP1 werden in den Layer "01111" abgebildet. Oder die Gebäude in den Layer "01211".
+
+Der Datenumbau ist nicht konfigurierbar.
+
+```
+task av2geobau(type: Av2geobau){
+    itfFiles = "ch_254900.itf"
+    dxfDirectory = "./out/"
+}
+```
+
+Es können auch mehrere Dateien angegeben werden.
+
+```
+task av2geobau(type: Av2geobau){
+    itfFiles = fileTree(".").matching {
+    	include"*.itf"
+    }
+    dxfDirectory = "./out/"
+}
+```
+
+Parameter    | Beschreibung
+-------------|-------------------
+itfFiles     | ITF-Datei, die nach DXF transformiert werden soll. Es können auch mehrere Dateien angegeben werden.
+dxfDirectory | Verzeichnis, in das die DXF-Dateien gespeichert werden.
+modeldir     | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%ITF_DIR;http://models.interlis.ch/``. ``%ITF_DIR`` ist ein Platzhalter für das Verzeichnis mit der ITF-Datei.
+logFile      | Schreibt die log-Meldungen der Konvertierung in eine Text-Datei.
+proxy        | Proxy Server für den Zugriff auf Modell Repositories
+proxyPort    | Proxy Port für den Zugriff auf Modell Repositories
+
+
 ### CsvExport
 Daten aus einer bestehenden Datenbanktabelle werden in eine CSV-Datei exportiert.
 

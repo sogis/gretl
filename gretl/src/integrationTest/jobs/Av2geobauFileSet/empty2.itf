@@ -1,0 +1,46 @@
+SCNT
+////
+MTID INTERLIS1
+MODL DM01AVCH24LV95D
+TOPI FixpunkteKategorie1
+ETOP
+TOPI FixpunkteKategorie2
+ETOP
+TOPI FixpunkteKategorie3
+ETOP
+TOPI Bodenbedeckung
+ETOP
+TOPI Einzelobjekte
+ETOP
+TOPI Hoehen
+ETOP
+TOPI Nomenklatur
+ETOP
+TOPI Liegenschaften
+ETOP
+TOPI Rohrleitungen
+ETOP
+TOPI Nummerierungsbereiche
+ETOP
+TOPI Gemeindegrenzen
+ETOP
+TOPI Bezirksgrenzen
+ETOP
+TOPI Kantonsgrenzen
+ETOP
+TOPI Landesgrenzen
+ETOP
+TOPI Planeinteilungen
+ETOP
+TOPI TSEinteilung
+ETOP
+TOPI Rutschgebiete
+ETOP
+TOPI PLZOrtschaft
+ETOP
+TOPI Gebaeudeadressen
+ETOP
+TOPI Planrahmen
+ETOP
+EMOD
+ENDE
