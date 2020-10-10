@@ -175,6 +175,7 @@ public class Db2DbStep {
             deleteDestTableContents(targetCon, transferSet.getOutputQualifiedTableName());
         }
         String selectStatement = extractSingleStatement(transferSet.getInputSqlFile(), params);
+        log.debug("SQL statement: " + selectStatement);
         ResultSet rs = createResultSet(srcCon, selectStatement);
         PreparedStatement insertRowStatement = createInsertRowStatement(srcCon, targetCon, rs, transferSet);
 
