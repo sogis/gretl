@@ -967,11 +967,27 @@ task executeSomeSql(type: SqlExecutor){
 }
 ```
 
+Damit mit einer einzigen Task-Definition mehrere Datensätze verarbeitet werden können, kann auch 
+eine Liste von Parametern angegeben werden.
+
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task executeSomeSql(type: SqlExecutor){
+    database = [db_uri, db_user, db_pass]
+    sqlParameters = [[dataset:'Olten'],[dataset:'Grenchen']]
+    sqlFiles = ['demo.sql']
+}
+```
+
+
 Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank in die importiert werden soll
 sqlFiles  | Name der SQL-Datei aus der SQL-Statements gelesen und ausgeführt werden
-sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert.
+sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert (``Map<String,String>``). Oder eine Liste mit Paaren von Parameter-Name und Parameter-Wert (``List<Map<String,String>>``).
 
 Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
 

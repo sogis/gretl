@@ -13,8 +13,10 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 
 public class SqlExecutorTaskTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
@@ -84,6 +86,77 @@ public class SqlExecutorTaskTest {
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
             IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskRelPath", gvs);
+        }
+        finally {
+            IntegrationTestUtilSql.closeCon(con);
+        }
+    }
+    @Test
+    public void parameter() throws Exception{
+        String schemaName = "sqlexec".toLowerCase();
+        Connection con = null;
+        try{
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
+
+            Statement stmt=con.createStatement();
+            stmt.execute(String.format("CREATE TABLE %s.src(title text)", schemaName));
+            IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName,IntegrationTestUtilSql.PG_CON_DMLUSER);
+            
+            con.commit();
+            IntegrationTestUtilSql.closeCon(con);
+
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskParameter", gvs);
+
+            //reconnect to check results
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            String countDestSql = String.format("select title from %s.src", schemaName);
+            stmt=con.createStatement();
+            ResultSet rs=stmt.executeQuery(countDestSql);
+            HashSet<String> titles=new HashSet<String>();
+            while(rs.next()) {
+                String title=rs.getString(1);
+                titles.add(title);
+            }
+            Assert.assertEquals(1,titles.size());
+            Assert.assertTrue(titles.contains("ele1"));
+        }
+        finally {
+            IntegrationTestUtilSql.closeCon(con);
+        }
+    }
+    @Test
+    public void parameterList() throws Exception{
+        String schemaName = "sqlexec".toLowerCase();
+        Connection con = null;
+        try{
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
+
+            Statement stmt=con.createStatement();
+            stmt.execute(String.format("CREATE TABLE %s.src(title text)", schemaName));
+            IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName,IntegrationTestUtilSql.PG_CON_DMLUSER);
+            
+            con.commit();
+            IntegrationTestUtilSql.closeCon(con);
+
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskParameterList", gvs);
+
+            //reconnect to check results
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            String countDestSql = String.format("select title from %s.src", schemaName);
+            stmt=con.createStatement();
+            ResultSet rs=stmt.executeQuery(countDestSql);
+            HashSet<String> titles=new HashSet<String>();
+            while(rs.next()) {
+                String title=rs.getString(1);
+                titles.add(title);
+            }
+            Assert.assertEquals(2,titles.size());
+            Assert.assertTrue(titles.contains("ele1"));
+            Assert.assertTrue(titles.contains("ele2"));
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);

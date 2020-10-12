@@ -207,7 +207,7 @@ public class SqlExecutorStepTest {
         List<File> sqlListe = createCorrectSqlFiles();
 
         x.execute(sourceDb, sqlListe);
-        Assert.assertTrue(sourceDb.connect().isClosed());
+        Assert.assertTrue(sourceDb.isClosed());
     }
 
     private void clearTestDb(Connector sourceDb) throws Exception {

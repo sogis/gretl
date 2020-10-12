@@ -53,7 +53,6 @@ public class SqlExecutorStep {
 
     public void execute(Connector trans, List<File> sqlfiles, Map<String, String> params) throws Exception {
 
-        Connection db = null;
 
         log.lifecycle(taskName + ": Start SqlExecutor");
 
@@ -67,7 +66,7 @@ public class SqlExecutorStep {
         logPathToInputSqlFiles(sqlfiles);
 
         try {
-            db = trans.connect();
+            Connection db = trans.connect();
 
             checkIfNoExistingFileIsEmpty(sqlfiles);
 
@@ -78,17 +77,18 @@ public class SqlExecutorStep {
             readSqlFiles(sqlfiles, db, params);
 
             db.commit();
+            trans.close();
 
             log.lifecycle(taskName + ": End SqlExecutor (successful)");
         } catch (Exception e) {
-            if (db != null) {
-                db.rollback();
+            if (!trans.isClosed()) {
+                trans.connect().rollback();
             }
             throw e;
 
         } finally {
-            if (db != null) {
-                db.close();
+            if (!trans.isClosed()) {
+                trans.close();
             }
         }
     }

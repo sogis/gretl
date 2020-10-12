@@ -37,7 +37,7 @@ public class SqlExecutor extends DefaultTask {
 
     @Input
     @Optional
-    public java.util.Map<String, String> sqlParameters = null;
+    public Object sqlParameters = null;
 
     @TaskAction
     public void executeSQLExecutor() {
@@ -52,7 +52,17 @@ public class SqlExecutor extends DefaultTask {
 
         try {
             SqlExecutorStep step = new SqlExecutorStep(taskName);
-            step.execute(database, files, sqlParameters);
+            if(sqlParameters==null) {
+                step.execute(database, files, null);
+            }else if(sqlParameters instanceof java.util.Map) {
+                step.execute(database, files, (java.util.Map<String,String>)sqlParameters);
+            }else {
+                java.util.List<java.util.Map<String,String>> paramList=(java.util.List<java.util.Map<String,String>>)sqlParameters;
+                for(java.util.Map<String,String> sqlParams:paramList) {
+                    step.execute(database, files, sqlParams);
+                }
+                
+            }
             log.info("Task start");
         } catch (Exception e) {
             log.error("Exception in creating / invoking SqlExecutorStep.", e);
