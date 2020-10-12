@@ -250,7 +250,7 @@ Die Gross-/Kleinschreibung der CSV-Spaltennamen wird für die Zuordnung zu den D
 
 ### CsvValidator
 
-Prüft eine CSV-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
+Prüft eine CSV-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator). Das Datenmodell darf die OID nicht als UUID modellieren (`OID AS INTERLIS.UUIDOID`). 
 
 Beispiel:
 ```
