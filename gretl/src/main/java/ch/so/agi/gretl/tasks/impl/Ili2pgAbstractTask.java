@@ -199,7 +199,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             throw ge;
         } finally {
             
-            if (database.isConnected()) {
+            if (!database.isClosed()) {
                 try {
                     database.connect().rollback();
                 } catch (SQLException e) {

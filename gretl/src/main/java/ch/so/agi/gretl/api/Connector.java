@@ -50,8 +50,8 @@ public class Connector {
         }
         return;
     }
-    public boolean isConnected() {
-        return (dbConnection != null);
+    public boolean isClosed() {
+        return (dbConnection == null);
     }
 
     public String getDbUri() {

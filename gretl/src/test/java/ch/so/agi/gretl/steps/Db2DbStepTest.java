@@ -365,8 +365,8 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
 
-            Assert.assertTrue("SourceConnection is not closed", sourceDb.connect().isClosed());
-            Assert.assertTrue("TargetConnection is not closed", targetDb.connect().isClosed());
+            Assert.assertTrue("SourceConnection is not closed", sourceDb.isClosed());
+            Assert.assertTrue("TargetConnection is not closed", targetDb.isClosed());
 
         } finally {
             con.connect().close();
@@ -395,8 +395,8 @@ public class Db2DbStepTest {
                 log.debug("Got Exception as expected");
             }
 
-            Assert.assertTrue("SourceConnection is not closed", sourceDb.connect().isClosed());
-            Assert.assertTrue("TargetConnection is not closed", targetDb.connect().isClosed());
+            Assert.assertTrue("SourceConnection is not closed", sourceDb.isClosed());
+            Assert.assertTrue("TargetConnection is not closed", targetDb.isClosed());
         } finally {
             con.connect().close();
         }

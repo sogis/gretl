@@ -127,7 +127,7 @@ public class Db2DbStep {
             log.error("Exception while executing processAllTransferSets()", e);
             throw e;
         } finally {
-            if (sourceDb.isConnected()) {
+            if (!sourceDb.isClosed()) {
                 try {
                     sourceDb.connect().rollback();
                 } catch (SQLException e) {
@@ -140,7 +140,7 @@ public class Db2DbStep {
                     }
                 }
             }
-            if (targetDb.isConnected()) {
+            if (!targetDb.isClosed()) {
                 try {
                     targetDb.connect().rollback();
                 } catch (SQLException e) {
