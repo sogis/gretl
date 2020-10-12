@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.HashSet;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import ch.ehi.ili2db.base.DbNames;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
@@ -43,6 +45,17 @@ public class Ili2pgImportFileSetTest {
             assertTrue(rs.next());
 
             assertEquals(4,rs.getInt(1));
+
+            rs = s.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+"  FROM beispiel2."+DbNames.DATASETS_TAB);
+            HashSet<String> datasets=new HashSet<String>();
+            while(rs.next()) {
+                datasets.add(rs.getString(1));
+            }
+            assertEquals(2,datasets.size());
+            assertTrue(datasets.contains("DatasetA"));
+            assertTrue(datasets.contains("DatasetB"));
+            rs.close();
+            s.close();
             
         } finally {
             IntegrationTestUtilSql.closeCon(con);

@@ -16,6 +16,7 @@ task ili2pgschemaimport(type: Ili2pgImportSchema){
     defaultSrsCode = "2056"
     modeldir = "%ILI_FROM_DB;"+rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = "Beispiel2"
+    createBasketCol = true
 }
 
 task ili2pgimport(dependsOn:ili2pgschemaimport, type: Ili2pgImport){
@@ -24,4 +25,5 @@ task ili2pgimport(dependsOn:ili2pgschemaimport, type: Ili2pgImport){
     dataFile = fileTree(".").matching {
     	include"*.xtf"
     }
+    dataset = [ 'DatasetA', 'DatasetB']
 }

@@ -13,10 +13,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
 
+import ch.ehi.ili2db.base.DbNames;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
@@ -82,6 +84,16 @@ public class Ili2gpkgImportTest {
             assertTrue(rs.next());
             int count = rs.getInt(1);
             assertEquals(4,count);
+            rs.close();
+            stmt.close();
+            rs = stmt.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+"  FROM "+DbNames.DATASETS_TAB);
+            HashSet<String> datasets=new HashSet<String>();
+            while(rs.next()) {
+                datasets.add(rs.getString(1));
+            }
+            assertEquals(2,datasets.size());
+            assertTrue(datasets.contains("DatasetA"));
+            assertTrue(datasets.contains("DatasetB"));
             rs.close();
             stmt.close();
         }

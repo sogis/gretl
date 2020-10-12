@@ -10,6 +10,7 @@ import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
@@ -63,6 +64,20 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }
+        java.util.List<String> datasetNames=null;
+        if (dataset != null) {
+            if(dataset instanceof String) {
+                datasetNames=new ArrayList<String>();
+                datasetNames.add((String)dataset);
+            }else {
+                datasetNames=(java.util.List)dataset;
+            }
+            if(files.size()!=datasetNames.size()) {
+                throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
+            }
+            settings.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
+        }
+
         
         if (coalesceJson) {
             settings.setJsonTrafo(Config.JSON_TRAFO_COALESCE);
@@ -93,6 +108,7 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
             EhiLogger.getInstance().addListener(fileLogger);
         }
         try {
+            int i=0;
             for(String xtfFilename:files) {
                 if (Ili2db.isItfFilename(xtfFilename)) {
                     settings.setItfTransferfile(true);
@@ -100,7 +116,11 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
                     settings.setItfTransferfile(false);
                 }
                 settings.setXtffile(xtfFilename);
+                if(datasetNames!=null) {
+                    settings.setDatasetName(datasetNames.get(i));
+                }
                 run(function, settings);            
+                i++;
             }
         }finally{
             if(fileLogger!=null){

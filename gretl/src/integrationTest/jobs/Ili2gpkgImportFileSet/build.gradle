@@ -11,5 +11,6 @@ task ili2gpkgimport(type: Ili2gpkgImport) {
     dataFile = fileTree(".").matching {
     	include"*.xtf"
     }
+    dataset = [ 'DatasetA', 'DatasetB']
     dbfile = file("Beispiel2.gpkg")    
 }

@@ -9,8 +9,6 @@ import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
 public class Ili2pgDelete extends Ili2pgAbstractTask {
-    @Input
-    public String dataset = null;
 
     @TaskAction
     public void replaceData() {
@@ -19,7 +17,7 @@ public class Ili2pgDelete extends Ili2pgAbstractTask {
         if (dataset == null) {
             return;
         }
-        settings.setDatasetName(dataset);
+        settings.setDatasetName((String)dataset);
         settings.setBasketHandling(settings.BASKET_HANDLING_READWRITE);
         
         try {

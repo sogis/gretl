@@ -35,7 +35,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
     public String models = null;
     @Input
     @Optional
-    public String dataset = null;
+    public Object dataset = null;
     @Input
     @Optional
     public String baskets = null;
@@ -105,9 +105,6 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
         }
         if (models != null) {
             settings.setModels(models);
-        }
-        if (dataset != null) {
-            settings.setDatasetName(dataset);
         }
         if (baskets != null) {
             settings.setBaskets(baskets);
