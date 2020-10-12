@@ -400,6 +400,23 @@ task exportData(type: Ili2pgExport){
 }
 ```
 
+Damit mit einer einzigen Task-Definition mehrere Datensätze verarbeitet werden können, kann auch 
+eine Liste von Dateinamen und Datensätzen angegeben werden.
+
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task exportData(type: Ili2pgExport){
+    database = [db_uri, db_user, db_pass]
+    dataFile = ["lv03_254900-out.itf","lv03_255000-out.itf"]
+    dataset = ["254900","255000"]
+    logFile = "ili2pg.log"
+}
+```
+
+
 Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank aus der exportiert werden soll
@@ -599,6 +616,20 @@ task deleteDataset(type: Ili2pgDelete){
     dataset = "kammersrohr"
 }
 ```
+
+Es können auch mehrere Datensätze pro Task gelöscht werden:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task deleteDataset(type: Ili2pgDelete){
+    database = [db_uri, db_user, db_pass]
+    dbschema = "dm01"
+    dataset = ["Olten","Grenchen"]
+}
+```
+
 
 ### Ili2pgUpdate
 
