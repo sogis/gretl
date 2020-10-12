@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.tasks;
 
+import java.util.ArrayList;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
@@ -17,11 +19,22 @@ public class Ili2pgDelete extends Ili2pgAbstractTask {
         if (dataset == null) {
             return;
         }
-        settings.setDatasetName((String)dataset);
+        java.util.List<String> datasetNames=null;
+        if (dataset != null) {
+            if(dataset instanceof String) {
+                datasetNames=new ArrayList<String>();
+                datasetNames.add((String)dataset);
+            }else {
+                datasetNames=(java.util.List)dataset;
+            }
+        }
         settings.setBasketHandling(settings.BASKET_HANDLING_READWRITE);
         
         try {
-            run(function, settings);
+            for(String datasetName:datasetNames) {
+                settings.setDatasetName(datasetName);
+                run(function, settings);
+            }
         } catch (GradleException ge) {
             String msg = ge.getMessage();
             // If dataset does not exist, it will NOT throw an error.

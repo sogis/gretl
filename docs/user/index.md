@@ -600,6 +600,20 @@ task deleteDataset(type: Ili2pgDelete){
 }
 ```
 
+Es können auch mehrere Datensätze pro Task gelöscht werden:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task deleteDataset(type: Ili2pgDelete){
+    database = [db_uri, db_user, db_pass]
+    dbschema = "dm01"
+    dataset = ["Olten","Grenchen"]
+}
+```
+
+
 ### Ili2pgUpdate
 
 Aktualisiert die Daten in der PostgreSQL-Datenbank anhand einer INTERLIS-Transferdatei, d.h. 
