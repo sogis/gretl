@@ -46,19 +46,14 @@ apply plugin: 'ch.so.agi.gretl'
 
 buildscript {
 	repositories {
-		maven {
-			url "http://jars.interlis.ch"
-		}
-		maven {
-			url "http://jars.umleditor.org"
-		}
-		maven {
-			url "http://download.osgeo.org/webdav/geotools/"
-		}
+		maven { url "http://jars.interlis.ch" }
+		maven { url "http://jars.umleditor.org" }
+		maven { url "https://repo.osgeo.org/repository/release/" }
+		maven { url "https://plugins.gradle.org/m2/" }
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'ch.so.agi', name: 'gretl',  version: '1.0.+'
+		classpath group: 'ch.so.agi', name: 'gretl',  version: '2.0.+'
 	}
 }
 
