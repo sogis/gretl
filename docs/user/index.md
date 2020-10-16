@@ -378,6 +378,31 @@ Eine ``TransferSet`` ist
 
 Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
 
+### FtpDownload
+
+Lädt alle Dateien aus dem definierten Verzeichnis des Servers in ein lokales 
+Verzeichnis herunter.
+
+Beispiel:
+
+task ftpdownload(type: FtpDownload){
+    server= "ftp.server.org"
+    user= "Hans"
+    password= "dummy"
+    localDir= "downloads"
+    remoteDir= ""
+}
+
+Parameter               | Beschreibung
+------------------------|-------------------
+server                  | Name des Servers (ohne ftp://) 
+user                    | Benutzername auf dem Server
+password                | Passwort für den Zugriff auf dem Server
+localDir                | Lokales Verzeichnis indem die Dateien gespeichert werden
+remoteDir               | Verzeichnis auf dem Server
+passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
+controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
+
 ### Ili2pgExport
 
 Exportiert Daten aus der PostgreSQL-Datenbank in eine INTERLIS-Transferdatei.
