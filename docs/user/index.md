@@ -385,6 +385,7 @@ Verzeichnis herunter.
 
 Beispiel:
 
+```
 task ftpdownload(type: FtpDownload){
     server= "ftp.server.org"
     user= "Hans"
@@ -392,6 +393,7 @@ task ftpdownload(type: FtpDownload){
     localDir= "downloads"
     remoteDir= ""
 }
+```
 
 Parameter               | Beschreibung
 ------------------------|-------------------
