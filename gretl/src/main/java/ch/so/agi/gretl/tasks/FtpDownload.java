@@ -31,6 +31,9 @@ public class FtpDownload extends DefaultTask {
     public boolean passiveMode=true;
     @Input
     @Optional
+    public String systemTypeKey="UNIX";
+    @Input
+    @Optional
     public long controlKeepAliveTimeout=300; // set timeout to 5 minutes
    
     @TaskAction
@@ -50,6 +53,8 @@ public class FtpDownload extends DefaultTask {
             if(!FTPReply.isPositiveCompletion(reply)) {
                 throw new Exception("FTP server refused connection.");
             }
+
+            ftp.configure(new FTPClientConfig(systemTypeKey));
             
             if (!passiveMode) {
                 ftp.enterLocalActiveMode();
@@ -61,7 +66,7 @@ public class FtpDownload extends DefaultTask {
                 ftp.setControlKeepAliveTimeout(controlKeepAliveTimeout); 
             }
 
-            for (final FTPFile f : ftp.mlistDir(remoteDir)) {
+            for (FTPFile f : ftp.listFiles(remoteDir)) {
                 if(f.isFile()) {
                     String remoteFileName=f.getName();
                     String localFileName=remoteFileName;
@@ -71,7 +76,7 @@ public class FtpDownload extends DefaultTask {
                     try {
                         fos = new FileOutputStream(localFile);
 
-                        boolean downloadOk = ftp.retrieveFile(remoteFileName, fos);
+                        boolean downloadOk = ftp.retrieveFile(remoteDir + "/" + remoteFileName, fos);
                         if (downloadOk == false) {
                             throw new Exception("Could not retrieve file: " + remoteFileName);
                         }
