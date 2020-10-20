@@ -419,7 +419,7 @@ localDir                | Lokales Verzeichnis indem die Dateien gespeichert werd
 remoteDir               | Verzeichnis auf dem Server
 remoteFile              | Dateiname oder Liste der Dateinamen auf dem Server (kann auch ein Muster sein (* oder ?)). Ohne diesen Parameter werden alle Dateien aus dem Remoteverzeichnis heruntergeladen.
 systemType              | UNIX oder WINDOWS. Default ist UNIX.
-fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\'.
+fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\\'.
 passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
 controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
 
@@ -450,7 +450,7 @@ password                | Passwort für den Zugriff auf dem Server
 remoteDir               | Verzeichnis auf dem Server
 files                   | Liste der Dateinamen auf dem Server
 systemType              | UNIX oder WINDOWS. Default ist UNIX.
-fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\'.
+fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\\'.
 passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
 controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
 
