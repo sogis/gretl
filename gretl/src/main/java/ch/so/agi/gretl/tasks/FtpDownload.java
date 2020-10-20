@@ -3,26 +3,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import org.apache.commons.net.ftp.*;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
-import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.tasks.impl.AbstractFtpTask;
 import ch.so.agi.gretl.util.TaskUtil;
 
-public class FtpDownload extends DefaultTask {
-    protected GretlLogger log;
+public class FtpDownload extends AbstractFtpTask {
     
-    @Input
-    public String server;
-    @Input
-    public String user;
-    @Input
-    public String password;
     @OutputDirectory
     public String localDir;
     @Input
@@ -30,58 +22,16 @@ public class FtpDownload extends DefaultTask {
     @Input
     @Optional
     public Object remoteFile=null;
-    @Input
-    @Optional
-    public String systemType=FTPClientConfig.SYST_UNIX;
-    @Input
-    @Optional
-    public String fileSeparator=null;
-    @Input
-    @Optional
-    public boolean passiveMode=true;
-    @Input
-    @Optional
-    public long controlKeepAliveTimeout=300; // set timeout to 5 minutes
    
     @TaskAction
     void download()
     {
         log = LogEnvironment.getLogger(FtpDownload.class);
         
-        FTPClient ftp = new FTPClient();
-
-        FTPClientConfig config=new FTPClientConfig(systemType);
-        ftp.configure(config);
+        FTPClient ftp = null;
         
         try {
-            ftp.connect(server, 21);
-            
-            ftp.login(user, password);
-            
-            int reply = ftp.getReplyCode();
-            if(!FTPReply.isPositiveCompletion(reply)) {
-                throw new Exception("FTP server refused connection.");
-            }
-            
-            log.debug("systemType "+ftp.getSystemType());
-
-            //if(ftp.features()){
-            //    log.debug("features "+ftp.getReplyString()); 
-            //}
-            
-            if (!passiveMode) {
-                ftp.enterLocalActiveMode();
-            } else {
-                ftp.enterLocalPassiveMode();
-            }  
-            
-            if(controlKeepAliveTimeout>0) {
-                ftp.setControlKeepAliveTimeout(controlKeepAliveTimeout); 
-            }
-
-            if(fileSeparator==null) {
-                fileSeparator=systemType.equalsIgnoreCase(FTPClientConfig.SYST_NT)?"\\":"/";
-            }
+            ftp = setup();
 
             if(remoteFile==null) {
                 for (final FTPFile f : ftp.listFiles(remoteDir)) {
@@ -107,12 +57,13 @@ public class FtpDownload extends DefaultTask {
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         } finally {
-            if(ftp.isConnected()) {
+            if(ftp!=null && ftp.isConnected()) {
                 try {
                     ftp.disconnect();
                 } catch(IOException e) {
                     // do nothing
                 }
+                ftp=null;
             }
         }
         
@@ -152,8 +103,5 @@ public class FtpDownload extends DefaultTask {
                 fos.close();
             }
         }
-    }
-    private boolean match(String pattern, String str){
-        return org.apache.tools.ant.types.selectors.SelectorUtils.match(pattern, str);    
     }
 }

@@ -423,6 +423,37 @@ fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist de
 passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
 controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
 
+### FtpList
+
+Liefert eine Liste der Dateien aus dem definierten Verzeichnis des Servers.
+
+Beispiel:
+
+```
+task ftplist(type: FtpList){
+    server= "ftp.server.org"
+    user= "Hans"
+    password= "dummy"
+    remoteDir= ""
+    doLast {
+    	println files
+    }
+}
+```
+
+
+Parameter               | Beschreibung
+------------------------|-------------------
+server                  | Name des Servers (ohne ftp://) 
+user                    | Benutzername auf dem Server
+password                | Passwort für den Zugriff auf dem Server
+remoteDir               | Verzeichnis auf dem Server
+files                   | Liste der Dateinamen auf dem Server
+systemType              | UNIX oder WINDOWS. Default ist UNIX.
+fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\'.
+passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
+controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
+
 ### Ili2pgExport
 
 Exportiert Daten aus der PostgreSQL-Datenbank in eine INTERLIS-Transferdatei.
