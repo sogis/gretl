@@ -395,6 +395,21 @@ task ftpdownload(type: FtpDownload){
 }
 ```
 
+Um eine bestimmte Datei herunterzuladen:
+
+```
+task ftpdownload(type: FtpDownload){
+    server="ftp.infogrips.ch"
+    user= "Hans"
+    password= "dummy"
+    systemType="WINDOWS"
+    localDir= "downloads"
+    remoteDir="\\dm01avso24lv95\\itf"
+    remoteFile="240100.zip"
+}
+```
+
+
 Parameter               | Beschreibung
 ------------------------|-------------------
 server                  | Name des Servers (ohne ftp://) 
@@ -402,6 +417,9 @@ user                    | Benutzername auf dem Server
 password                | Passwort für den Zugriff auf dem Server
 localDir                | Lokales Verzeichnis indem die Dateien gespeichert werden
 remoteDir               | Verzeichnis auf dem Server
+remoteFile              | Dateiname oder Liste der Dateinamen auf dem Server (kann auch ein Muster sein (* oder ?)). Ohne diesen Parameter werden alle Dateien aus dem Remoteverzeichnis heruntergeladen.
+systemType              | UNIX oder WINDOWS. Default ist UNIX.
+fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\'.
 passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
 controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
 
