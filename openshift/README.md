@@ -10,6 +10,13 @@ Create the GRETL system on the OpenShift container platform.
 oc new-project gretl-system
 ```
 
+### Optional: Create a Docker image pull secret
+Create a secret for pulling images from Docker Hub, and link this secret to the default service account:
+```
+oc create secret docker-registry my-pull-secret --docker-username=xx --docker-password=yy
+oc secrets link default my-pull-secret --for=pull
+```
+
 ### GRETL-Jenkins
 Apply project template with the GRETL-Jenkins configuration.
 ```
