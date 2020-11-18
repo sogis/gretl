@@ -50,6 +50,7 @@ buildscript {
 		maven { url "http://jars.umleditor.org" }
 		maven { url "https://repo.osgeo.org/repository/release/" }
 		maven { url "https://plugins.gradle.org/m2/" }
+		maven { url "https://dl.bintray.com/sogis/iox-wkf" } // temporary
 		mavenCentral()
 	}
 	dependencies {
