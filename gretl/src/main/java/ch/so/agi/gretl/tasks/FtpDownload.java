@@ -22,7 +22,9 @@ public class FtpDownload extends AbstractFtpTask {
     @Input
     @Optional
     public Object remoteFile=null;
-   
+    @Input
+    @Optional
+    public String fileType="ASCII";
     @TaskAction
     void download()
     {
@@ -33,6 +35,12 @@ public class FtpDownload extends AbstractFtpTask {
         try {
             ftp = setup();
 
+            if (fileType.equalsIgnoreCase("ASCII")) {
+                ftp.setFileType(FTP.ASCII_FILE_TYPE);
+            } else {
+                ftp.setFileType(FTP.BINARY_FILE_TYPE);
+            }
+            
             if(remoteFile==null) {
                 for (final FTPFile f : ftp.listFiles(remoteDir)) {
                     if(f.isFile()) {
