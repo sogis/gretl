@@ -32,6 +32,8 @@ jobs:
           ./gradlew gretl:jarTest
           ./gradlew gretl:jarS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
         env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
           BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
 
       # - name: Push docker image
