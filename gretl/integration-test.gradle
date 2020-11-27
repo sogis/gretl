@@ -72,6 +72,9 @@ task imageTest(type: Test){
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
+    // FIXME / TODO
+    exclude '**/DbDriverContainedTest.class'
+
     useJUnit {
         excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }

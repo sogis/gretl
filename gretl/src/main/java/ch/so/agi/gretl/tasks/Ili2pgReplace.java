@@ -46,6 +46,9 @@ public class Ili2pgReplace extends Ili2pgAbstractTask {
                 datasetNames.add((String)dataset);
             }else {
                 datasetNames=(java.util.List)dataset;
+                System.out.println("fuuuubar");
+                System.out.println(datasetNames.size());
+
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");

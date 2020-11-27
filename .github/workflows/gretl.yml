@@ -49,17 +49,13 @@ jobs:
         env:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      - name: Publish plugin
+        run: ./gradlew gretl:publishPlugins
+        env:
+          GRADLEPUBLISHKEY: ${{ secrets.GRADLEPUBLISHKEY }}
+          GRADLEPUBLISHSECRET: ${{ secrets.GRADLEPUBLISHSECRET }}
           BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
-
-      # - name: Push docker image
-      #   run: |
-      #     export CI_JOB_TIMESTAMP=$(date +%Y%m%dT%H%M%S)
-      #     echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-      #     docker images
-      #     ./gradlew pushDockerImages
-      #   env:
-      #     DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      #     DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-      #     DOCKER_ACCOUNT: sogis
-      #     DOCKER_REPO: cadastre-web-service
-      
+      - name: Publish Docker image
+        run: ./runtimeImage/push-gretl.sh $DOCKERHUB_PWD
+        env:
+          DOCKERHUB_PWD: ${{ secrets.DOCKERHUB_PWD }}
