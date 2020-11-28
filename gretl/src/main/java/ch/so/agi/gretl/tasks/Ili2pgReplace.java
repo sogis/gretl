@@ -6,8 +6,10 @@ import ch.ehi.ili2db.gui.Config;
 import ch.interlis.iox_j.logging.FileLogger;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
@@ -42,19 +44,18 @@ public class Ili2pgReplace extends Ili2pgAbstractTask {
         }
         java.util.List<String> datasetNames=null;
         
-        System.out.println(dataset);
         if (dataset != null) {
             if(dataset instanceof String) {
                 datasetNames=new ArrayList<String>();
                 datasetNames.add((String)dataset);
-            }else {
-                System.out.println(dataset.getClass());
-                System.out.println(((FileTree)dataset).getFiles().size());
-//                System.out.println(((java.util.List)dataset).size());
+            } else if (dataset instanceof FileCollection) {
+                Set<File> datasetFiles = ((FileTree)dataset).getFiles();
+                for (File datasetFile : datasetFiles) {
+                    datasetNames = new ArrayList<String>();
+                    datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", ""));
+                }
+            } else {
                 datasetNames=(java.util.List)dataset;
-                System.out.println("fuuuubar");
-                System.out.println(datasetNames.size());
-
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
