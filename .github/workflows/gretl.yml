@@ -5,6 +5,8 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
     steps:
       - uses: actions/checkout@v1
       - uses: actions/cache@v1
@@ -51,11 +53,12 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
       - name: Publish plugin
         run: ./gradlew gretl:publishPlugins
+        if: ${{ github.ref == 'refs/heads/master' }}
         env:
-          GRADLEPUBLISHKEY: ${{ secrets.GRADLEPUBLISHKEY }}
-          GRADLEPUBLISHSECRET: ${{ secrets.GRADLEPUBLISHSECRET }}
-          BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
+          gradlePublishKey: ${{ secrets.GRADLEPUBLISHKEY }}
+          gradlePublishSecret: ${{ secrets.GRADLEPUBLISHSECRET }}
       - name: Publish Docker image
         run: ./runtimeImage/push-gretl.sh $DOCKERHUB_PWD
+        if: ${{ github.ref == 'refs/heads/master' }}
         env:
           DOCKERHUB_PWD: ${{ secrets.DOCKERHUB_PWD }}

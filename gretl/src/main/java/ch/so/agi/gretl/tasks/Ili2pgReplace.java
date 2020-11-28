@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -40,11 +41,16 @@ public class Ili2pgReplace extends Ili2pgAbstractTask {
             files.add(fileName);
         }
         java.util.List<String> datasetNames=null;
+        
+        System.out.println(dataset);
         if (dataset != null) {
             if(dataset instanceof String) {
                 datasetNames=new ArrayList<String>();
                 datasetNames.add((String)dataset);
             }else {
+                System.out.println(dataset.getClass());
+                System.out.println(((FileTree)dataset).getFiles().size());
+//                System.out.println(((java.util.List)dataset).size());
                 datasetNames=(java.util.List)dataset;
                 System.out.println("fuuuubar");
                 System.out.println(datasetNames.size());

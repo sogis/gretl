@@ -54,7 +54,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'ch.so.agi', name: 'gretl',  version: '2.0.+'
+		classpath group: 'ch.so.agi', name: 'gretl',  version: '2.1.+'
 	}
 }
 
