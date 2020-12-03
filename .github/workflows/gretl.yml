@@ -33,6 +33,7 @@ jobs:
           echo foo
           echo $TRAVIS_BUILD_NUMBER
           echo bar
+          echo ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
           ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
           cd ..
         env:
