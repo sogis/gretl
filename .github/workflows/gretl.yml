@@ -31,13 +31,14 @@ jobs:
         run: |
           cd runtimeImage/
           echo foo
+          echo $TRAVIS_COMMIT
           echo $TRAVIS_BUILD_NUMBER
           echo bar
           echo ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
           ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
           cd ..
         env:
-          TRAVIS_COMMIT: ${{ env.GITHUB_SHA }}
+          TRAVIS_COMMIT: ${{ github.sha }}
           TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
       - name: List Docker Images
         run: docker images
