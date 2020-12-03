@@ -35,6 +35,8 @@ jobs:
         env:
           TRAVIS_COMMIT: ${{ env.GITHUB_SHA }}
           TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
+      - name: List Docker Images
+        run: docker images
       - name: Publish Docker image
         run: ./runtimeImage/push-gretl.sh $DOCKERHUB_PWD
         if: ${{ github.ref == 'refs/heads/master' }}
