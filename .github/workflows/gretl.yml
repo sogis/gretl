@@ -23,25 +23,42 @@ jobs:
         run: ./gradlew clean gretl:classes 
       - name: Unit Tests 
         run: |
+          ./gradlew gretl:test gretl:dbTest
+          ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
           ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      - name: Integration Test (Jar)
+        run: |
+          ./gradlew gretl:jarTest
+          ./gradlew gretl:jarS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
         env:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
       - name: Build Docker Image
         run: |
           cd runtimeImage/
-          echo foo
-          echo $TRAVIS_COMMIT
-          echo $TRAVIS_BUILD_NUMBER
-          echo bar
-          echo ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
           ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
           cd ..
         env:
           TRAVIS_COMMIT: ${{ github.sha }}
           TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
+      - name: Integration Test (Docker Image)
+        run: |
+          ./gradlew gretl:imageTest
+          ./gradlew gretl:imageS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
       - name: List Docker Images
         run: docker images
+      - name: Publish plugin
+        run: ./gradlew gretl:publishPlugins
+        if: ${{ github.ref == 'refs/heads/master' }}
+        env:
+          gradlePublishKey: ${{ secrets.GRADLEPUBLISHKEY }}
+          gradlePublishSecret: ${{ secrets.GRADLEPUBLISHSECRET }}
       - name: Publish Docker image
         run: ./runtimeImage/push-gretl.sh $DOCKERHUB_PWD
         if: ${{ github.ref == 'refs/heads/master' }}
