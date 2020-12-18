@@ -1209,19 +1209,21 @@ substringMode | Ob in der Update-Query Substrings verglichen werden, damit z.B. 
 
 Transformiert eine INTERLIS1-Transferdatei im kantonalen AV-DM01-Modell in das Bundesmodell. Unterstützt werden die Sprachen _Deutsch_ und _Italienisch_ und der Bezugrahmen _LV95_. Getestet mit Daten aus den Kantonen Solothurn, Glarus und Tessin. Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/sogis/av2ch](https://github.com/sogis/av2ch).
 
+Das Bundes-ITF hat denselben Namen wie das Kantons-ITF.
+
 Aufgrund der sehr vielen Logging-Messages einer verwendeten Bibliothek, wird der `System.err`-Ouput nach `dev/null` [https://github.com/sogis/av2ch/blob/master/src/main/java/ch/so/agi/av/Av2ch.java#L75](gemappt).
 
 ```
 task transform(type: Av2ch) {
     inputFile = file("254900.itf")
-    outputFile = file("ch_254900.itf")
+    outputDirectory = file("output")
 }
 ```
 
 Parameter | Beschreibung
 ----------|-------------------
 inputFile   | Name der zu transformierenden ITF-Datei.
-outputFile  | Name der Datei, die erstellt werden soll.
+outputDirectory  | Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
 
 ### DatabaseDocumentExport (Experimental)
 

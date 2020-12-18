@@ -20,7 +20,7 @@ public class Av2chTest {
         GradleVariable[] gvs = null;
         IntegrationTestUtil.runJob("src/integrationTest/jobs/Av2ch", gvs);
         
-        File resultFile = new File("src/integrationTest/jobs/Av2ch/ch_254900.itf");
+        File resultFile = new File("src/integrationTest/jobs/Av2ch/output/254900.itf");
         
         long resultSize = resultFile.length();
         assertTrue("Size of result file is wrong.", resultSize > 580000);
@@ -31,6 +31,18 @@ public class Av2chTest {
         assertThat(resultString, containsString("MODL DM01AVCH24LV95D"));
         assertThat(resultString, containsString("TABL LFP3Nachfuehrung"));
         assertThat(resultString, containsString("OBJE 2540 2514 2611693.294 1233674.211 111.9 1 3 1"));
+    }
+    
+    @Test 
+    public void transformationFileSet_Ok() throws Exception {
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Av2chFileSet", gvs);
+        
+        File resultFile1 = new File("src/integrationTest/jobs/Av2ch/output/254900.itf");
+        File resultFile2 = new File("src/integrationTest/jobs/Av2ch/output/254900.itf");
+        
+        assertTrue(resultFile1.exists());
+        assertTrue(resultFile2.exists());        
     }
     
     @Test

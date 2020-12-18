@@ -6,5 +6,5 @@ defaultTasks 'transform'
 
 task transform(type: Av2ch) {
     inputFile = file("fubar.itf")
-    outputFile = file("ch_fubar.itf");
+    outputFile = file("output");
 }
