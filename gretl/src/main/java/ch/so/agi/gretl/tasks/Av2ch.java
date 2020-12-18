@@ -94,7 +94,7 @@ public class Av2ch extends DefaultTask {
                     zipOutputStream.closeEntry();
                     zipOutputStream.close();
                     
-                    itfFile.delete();
+                    //itfFile.delete();
                 }
             }
         } catch (Exception e) {

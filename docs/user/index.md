@@ -177,6 +177,8 @@ modeldir     | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere P
 logFile      | Schreibt die log-Meldungen der Konvertierung in eine Text-Datei.
 proxy        | Proxy Server für den Zugriff auf Modell Repositories
 proxyPort    | Proxy Port für den Zugriff auf Modell Repositories
+zip          | Die zu erstellende Datei wird gezippt und es werden zusätzliche Dateien (Musterplan, Layerbeschreibung, Hinweise) hinzugefügt (Default: false).
+
 
 
 ### CsvExport

@@ -1,8 +1,18 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -46,9 +56,19 @@ public class Av2geobau extends DefaultTask {
     @Optional
     public Integer proxyPort = null;
     
+    @Input
+    @Optional
+    public boolean zip = false;
+    
     @TaskAction
     public void runTransformation() {
         log = LogEnvironment.getLogger(Av2geobau.class);
+        
+        if (dxfDirectory instanceof File) {
+            ((File) dxfDirectory).mkdirs();
+        } else {
+            new File((String) dxfDirectory).mkdirs();
+        }
         
         Settings settings=new Settings();
         settings.setValue(org.interlis2.av2geobau.Av2geobau.SETTING_ILIDIRS, org.interlis2.av2geobau.Av2geobau.SETTING_DEFAULT_ILIDIRS);
@@ -91,9 +111,35 @@ public class Av2geobau extends DefaultTask {
                 if(!ok) {
                     break;
                 }
+                
+                if (zip) {
+                    String outZipFileName = Paths.get(dxfDir.getAbsolutePath(), dxf.getName().replaceFirst("[.][^.]+$", "") + ".zip").toFile().getAbsolutePath();
+                    FileOutputStream fileOutputStream = new FileOutputStream(outZipFileName);
+                    ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
+
+                    ZipEntry dxfZipEntry = new ZipEntry(dxf.getName());
+                    zipOutputStream.putNextEntry(dxfZipEntry);
+                    new FileInputStream(dxf).getChannel().transferTo(0, dxf.length(), Channels.newChannel(zipOutputStream));
+
+                    List<String> addonFileNames = Arrays.asList("DXF_Geobau_Layerdefinition.pdf", "Hinweise.pdf", "Musterplan.pdf");
+                    for (String addonFileName : addonFileNames) {
+                        File addonFile = Paths.get(dxfDir.getAbsolutePath(), addonFileName).toFile();
+                        InputStream addonInputStream = Av2geobau.class.getResourceAsStream("/Av2geobau/"+addonFileName); 
+                        Files.copy(addonInputStream, addonFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        addonInputStream.close();
+                        
+                        ZipEntry layerDefinitionZipEntry = new ZipEntry(addonFile.getName());
+                        zipOutputStream.putNextEntry(layerDefinitionZipEntry);
+                        new FileInputStream(addonFile).getChannel().transferTo(0, addonFile.length(), Channels.newChannel(zipOutputStream));
+                    }
+                    
+                    zipOutputStream.closeEntry();
+                    zipOutputStream.close();
+                }
             }
         } catch (Exception e) {
             log.error("failed to run Av2geobau", e);
+            
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         } 
