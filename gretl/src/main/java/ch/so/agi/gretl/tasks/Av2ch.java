@@ -1,8 +1,14 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.Channels;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -27,6 +33,10 @@ public class Av2ch extends DefaultTask {
     @Input
     @Optional
     public String language = "de";
+    
+    @Input
+    @Optional
+    public boolean zip = false;
 
     @TaskAction
     public void runTransformation() {
@@ -70,6 +80,22 @@ public class Av2ch extends DefaultTask {
                 
                 ch.so.agi.av.Av2ch av2ch = new ch.so.agi.av.Av2ch();
                 av2ch.convert(inputFileName, outputPath, outputFileName, language);
+                
+                if (zip) {
+                    String outZipFileName = Paths.get(outputPath, outputFileName + ".zip").toFile().getAbsolutePath();
+                    FileOutputStream fileOutputStream = new FileOutputStream(outZipFileName);
+                    ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
+
+                    File itfFile = Paths.get(outputPath, outputFileName).toFile();
+                    ZipEntry dxfZipEntry = new ZipEntry(itfFile.getName());
+                    zipOutputStream.putNextEntry(dxfZipEntry);
+                    new FileInputStream(itfFile).getChannel().transferTo(0, itfFile.length(), Channels.newChannel(zipOutputStream));
+
+                    zipOutputStream.closeEntry();
+                    zipOutputStream.close();
+                    
+                    itfFile.delete();
+                }
             }
         } catch (Exception e) {
             log.error("failed to run Av2ch", e);

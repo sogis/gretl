@@ -1224,6 +1224,7 @@ Parameter | Beschreibung
 ----------|-------------------
 inputFile   | Name der zu transformierenden ITF-Datei.
 outputDirectory  | Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
+zip | Die zu erstellende Datei wird gezippt (Default: false).
 
 ### DatabaseDocumentExport (Experimental)
 
