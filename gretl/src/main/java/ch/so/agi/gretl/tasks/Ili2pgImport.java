@@ -51,8 +51,8 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
                 datasetNames.add((String)dataset);
             } else if (dataset instanceof FileCollection) {
                 Set<File> datasetFiles = ((FileTree)dataset).getFiles();
+                datasetNames = new ArrayList<String>();                
                 for (File datasetFile : datasetFiles) {
-                    datasetNames = new ArrayList<String>();
                     datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", ""));
                 }
             } else {
