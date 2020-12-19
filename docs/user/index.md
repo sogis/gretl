@@ -381,6 +381,60 @@ Eine ``TransferSet`` ist
 
 Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
 
+### FtpDelete
+
+Löscht Daten auf einem FTP-Server.
+
+Beispiel, löscht alle Daten in einem Verzeichnis:
+
+```
+task ftpdelete(type: FtpDelete) {
+    server= "ftp.server.org"
+    user= "Hans"
+    password= "dummy"
+    remoteDir = "\\dm01avso24lv95\\itf"
+    remoteFile = fileTree(pathToTempFolder) { include '*.zip' } 
+    //remoteFile = "*.zip"
+}
+```
+
+Um bestimmte Dateien zu löschen:
+
+```
+task ftpdownload(type: FtpDownload){
+    server= "ftp.server.org"
+    user= "Hans"
+    password= "dummy"
+    remoteDir = "\\dm01avso24lv95\\itf"
+    remoteFile = "*.zip"
+}
+```
+
+Um heruntergeladene Daten zu löschen:
+
+```
+task ftpdownload(type: FtpDownload){
+    server= "ftp.server.org"
+    user= "Hans"
+    password= "dummy"
+    remoteDir = "\\dm01avso24lv95\\itf"
+    remoteFile = fileTree(pathToDownloadFolder) { include '*.zip' } 
+}
+```
+
+
+Parameter               | Beschreibung
+------------------------|-------------------
+server                  | Name des Servers (ohne ftp://) 
+user                    | Benutzername auf dem Server
+password                | Passwort für den Zugriff auf dem Server
+remoteDir               | Verzeichnis auf dem Server
+remoteFile              | Dateiname oder Liste der Dateinamen auf dem Server (kann auch ein Muster sein (* oder ?)). Ohne diesen Parameter werden alle Dateien aus dem Remoteverzeichnis gelöscht.
+systemType              | UNIX oder WINDOWS. Default ist UNIX.
+fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\\'.
+passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
+controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
+
 ### FtpDownload
 
 Lädt alle Dateien aus dem definierten Verzeichnis des Servers in ein lokales 
