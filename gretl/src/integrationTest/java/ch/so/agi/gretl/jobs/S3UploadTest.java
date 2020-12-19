@@ -71,6 +71,46 @@ public class S3UploadTest {
     }
     
     @Test
+    @Category(S3Test.class)        
+    public void uploadFileTree_Ok() throws Exception {
+        // Upload all files from a directory.
+        GradleVariable[] gvs = { 
+                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
+                GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
+                GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
+            };
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadFileTree", gvs);
+
+        // Check result. 
+        BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
+        AmazonS3 s3client = AmazonS3ClientBuilder.standard()
+                .withEndpointConfiguration(new EndpointConfiguration("https://s3.amazonaws.com/", "eu-central-1"))
+                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+
+        ObjectListing listing = s3client.listObjects(s3BucketName);
+        List<S3ObjectSummary> summaries = listing.getObjectSummaries();
+
+        while (listing.isTruncated()) {
+           listing = s3client.listNextBatchOfObjects (listing);
+           summaries.addAll(listing.getObjectSummaries());
+        }
+        
+        assertTrue(summaries.size() == 2);
+        
+        List<String> keyList = new ArrayList<String>();
+        for (S3ObjectSummary summary : summaries) {
+            keyList.add(summary.getKey());
+        }
+        
+        assertTrue(keyList.contains("foo.csv"));
+        assertTrue(keyList.contains("bar.csv"));
+        
+        // Remove uploaded files from bucket.
+        s3client.deleteObject(s3BucketName, "foo.csv");
+        s3client.deleteObject(s3BucketName, "bar.csv");
+    }
+    
+    @Test
     @Category(S3Test.class)    
     public void uploadFile_Ok() throws Exception {
         // Upload single file from a directory.

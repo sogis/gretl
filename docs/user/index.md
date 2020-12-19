@@ -1287,6 +1287,7 @@ accessKey | AccessKey
 secretKey | SecretKey
 sourceDir  | Verzeichnis mit den Dateien, die hochgeladen werden sollen.
 sourceFile  | Datei, die hochgeladen werden soll.
+sourceFiles  | FileCollection mit den Dateien, die hochgeladen werden sollen, z.B. `fileTree("/path/to/directoy/") { include "*.itf" }`
 bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
 endPoint | S3-Endpunkt (default: `https://s3.amazonaws.com/`)
 region | S3-Region (default: `eu-central-1`). 

@@ -26,10 +26,13 @@ public class S3Upload extends DefaultTask {
     public String secretKey;
         
     @InputDirectory
-    public File sourceDir;
+    public Object sourceDir;
     
     @Input
-    public File sourceFile;
+    public Object sourceFile;
+    
+    @Input 
+    public Object sourceFiles;
 
     @Input
     public String bucketName;
@@ -59,8 +62,8 @@ public class S3Upload extends DefaultTask {
         if (secretKey == null) {
             throw new IllegalArgumentException("secretKey must not be null");
         }
-        if (sourceDir == null && sourceFile == null) {
-            throw new IllegalArgumentException("either sourceDir or sourceFile must not be null");
+        if (sourceDir == null && sourceFile == null && sourceFiles == null) {
+            throw new IllegalArgumentException("either sourceDir or sourceFile or sourceFiles must not be null");
         }
         if (bucketName == null) {
             throw new IllegalArgumentException("bucketName must not be null");
@@ -75,16 +78,18 @@ public class S3Upload extends DefaultTask {
             metaData = new HashMap<String,String>();
         }
         
-        File sourceObject;
+        Object sourceObject;
         if(sourceDir != null) {
             sourceObject = sourceDir;
+        } else if (sourceFiles != null) {
+            sourceObject = sourceFiles;
         } else {
             sourceObject = sourceFile;
         }
         
         try {
             S3UploadStep s3UploadStep = new S3UploadStep();
-            s3UploadStep.execute(accessKey, secretKey, sourceObject.getAbsolutePath(), bucketName, endPoint, region, acl, metaData);
+            s3UploadStep.execute(accessKey, secretKey, sourceObject, bucketName, endPoint, region, acl, metaData);
         } catch (Exception e) {
             log.error("Exception in S3Upload task.", e);
             GradleException ge = TaskUtil.toGradleException(e);

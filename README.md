@@ -53,7 +53,7 @@ cd ..
 
 E.g. if you want to test only the jar and only one test:
 ```
-./gradlew clean gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:jarTest --tests ch.so.agi.gretl.jobs.Av2chTest.transformation_Ok
+./gradlew clean gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:jarTest -x test --tests ch.so.agi.gretl.jobs.Av2chTest.transformation_Ok
 
 ```
 
