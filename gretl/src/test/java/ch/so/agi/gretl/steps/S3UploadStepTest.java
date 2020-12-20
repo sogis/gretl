@@ -56,7 +56,7 @@ public class S3UploadStepTest {
         
         // Upload files from a directory.
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl, metaData);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, metaData);
         
         // Check result. 
         BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
@@ -100,7 +100,7 @@ public class S3UploadStepTest {
         
         // Upload a single file.
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl, metaData);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, metaData);
         
         // Check result. 
         BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
@@ -130,7 +130,7 @@ public class S3UploadStepTest {
         // Upload a single file.
         try {
             S3UploadStep s3UploadStep = new S3UploadStep();
-            s3UploadStep.execute("login", "secret", sourceObject.getAbsolutePath(), s3BucketName, s3EndPoint, s3Region, acl, metaData);
+            s3UploadStep.execute("login", "secret", sourceObject, s3BucketName, s3EndPoint, s3Region, acl, metaData);
         } catch (AmazonS3Exception e) {
             assertTrue(e.getErrorCode().equalsIgnoreCase("InvalidAccessKeyId"));
         }

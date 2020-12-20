@@ -1,3 +1,5 @@
+CREATE EXTENSION postgis_raster;
+
 GRANT ALL PRIVILEGES ON DATABASE gretl TO ddluser;
 CREATE ROLE dmluser WITH LOGIN PASSWORD 'dmluser';
 CREATE ROLE readeruser WITH LOGIN PASSWORD 'readeruser';

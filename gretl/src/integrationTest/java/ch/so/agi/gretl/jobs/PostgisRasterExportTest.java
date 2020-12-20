@@ -42,7 +42,7 @@ public class PostgisRasterExportTest {
 
         GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
         IntegrationTestUtil.runJob(jobPath, gvs);
-
+        
         long targetFileSize = new File(jobPath, targetFileName).length();
         long exportFileSize = new File(jobPath, exportFileName).length();
 
@@ -60,13 +60,13 @@ public class PostgisRasterExportTest {
         // Delete existing file from previous test runs.
         File file = new File(jobPath, exportFileName);
         Files.deleteIfExists(file.toPath());
-
+        
         GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
         IntegrationTestUtil.runJob(jobPath, gvs);
 
         long targetFileSize = new File(jobPath, targetFileName).length();
         long exportFileSize = new File(jobPath, exportFileName).length();
-
+        
         assertEquals(targetFileSize, exportFileSize);
     }
 }
