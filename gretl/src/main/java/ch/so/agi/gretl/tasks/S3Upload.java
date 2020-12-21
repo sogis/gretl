@@ -49,6 +49,10 @@ public class S3Upload extends DefaultTask {
     public String acl = null;
     
     @Input
+    @Optional
+    public String contentType = null;
+    
+    @Input
     @Optional        
     public Map<String,String> metaData = null;
     
@@ -89,7 +93,7 @@ public class S3Upload extends DefaultTask {
         
         try {
             S3UploadStep s3UploadStep = new S3UploadStep();
-            s3UploadStep.execute(accessKey, secretKey, sourceObject, bucketName, endPoint, region, acl, metaData);
+            s3UploadStep.execute(accessKey, secretKey, sourceObject, bucketName, endPoint, region, acl, contentType, metaData);
         } catch (Exception e) {
             log.error("Exception in S3Upload task.", e);
             GradleException ge = TaskUtil.toGradleException(e);

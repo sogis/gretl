@@ -16,5 +16,6 @@ task fileupload(type: S3Upload) {
     region = "eu-central-1"
     bucketName = s3BucketName
     acl = "PublicRead"
+    contentType = "plain/text"
     metaData = ["lastModified":"2020-08-28"]
 }

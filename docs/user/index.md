@@ -1321,7 +1321,9 @@ fileNameExtension | Dateinamen-Extension (optional)
 
 ### S3Upload (Experimental)
 
-Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch.
+Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch. 
+
+Mit dem passenden Content-Typ kann man das Verhalten des Browsers steuern. Default ist 'application/octect-stream', was dazu führt, dass die Datei immer heruntergeladen wird. Soll z.B. ein PDF oder ein Bild im Browser direkt angezeigt werden, muss der korrekte Content-Typ gewählt werden.
 
 ```
 task uploadDirectory(type: S3Upload) {
@@ -1332,6 +1334,7 @@ task uploadDirectory(type: S3Upload) {
     endPoint = "https://s3.amazonaws.com/"
     region = "eu-central-1"
     acl = "PublicRead"
+    contentType = "application/pdf"
 }
 ```
 
@@ -1346,6 +1349,7 @@ bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
 endPoint | S3-Endpunkt (default: `https://s3.amazonaws.com/`)
 region | S3-Region (default: `eu-central-1`). 
 acl | Access Control Layer `[Private|PublicRead|PublicReadWrite|AuthenticatedRead|LogDeliveryWrite|BucketOwnerRead|BucketOwnerFullControl]`
+contentType | Content-Type
 metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
 ### S3Bucket2Bucket (Experimental)
