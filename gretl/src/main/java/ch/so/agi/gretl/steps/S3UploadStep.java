@@ -42,7 +42,7 @@ public class S3UploadStep {
 
     public void execute(String accessKey, String secretKey, Object sourceObject, String bucketName, String s3EndPoint, String s3Region, String acl, String contentType, Map<String, String> metaData) throws FileNotFoundException {        
         log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceObject: %s BucketName: %s S3EndPoint: %s S3Region: %s ACL: %s ContentType: %s MetaData: %s)", taskName,
-                sourceObject.toString(), bucketName, s3EndPoint, s3Region, acl, metaData));
+                sourceObject.toString(), bucketName, s3EndPoint, s3Region, acl, contentType, metaData));
         
         BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         AmazonS3 s3client = AmazonS3ClientBuilder.standard()
