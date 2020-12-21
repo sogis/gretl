@@ -54,7 +54,7 @@ public class S3Bucket2BucketStepTest {
         
         // Upload files from a directory.
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3SourceBucketName, s3EndPoint, s3Region, acl, metaData);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3SourceBucketName, s3EndPoint, s3Region, acl, null, metaData);
         
         // Copy files from one bucket to another.
         S3Bucket2BucketStep s3Bucket2Bucket = new S3Bucket2BucketStep();
