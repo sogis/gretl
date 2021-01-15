@@ -22,6 +22,7 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.S3Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
@@ -63,14 +64,13 @@ public class S3UploadStepTest {
         s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
         
         // Check result. 
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(s3AccessKey, s3SecretKey);
-
+        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
         Region region = Region.of(s3Region);
         S3Client s3client = S3Client.builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .credentialsProvider(creds)
                 .region(region)
-                .endpointOverride(new URI(s3EndPoint))
-                .build();
+                .endpointOverride(URI.create(s3EndPoint))
+                .build(); 
 
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
@@ -94,7 +94,6 @@ public class S3UploadStepTest {
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
     }
     
-    
     @Test
     @Category(S3Test.class)
     public void uploadFile_Ok() throws Exception {
@@ -110,14 +109,13 @@ public class S3UploadStepTest {
         s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
         
         // Check result. 
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(s3AccessKey, s3SecretKey);
-
+        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
         Region region = Region.of(s3Region);
         S3Client s3client = S3Client.builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .credentialsProvider(creds)
                 .region(region)
-                .endpointOverride(new URI(s3EndPoint))
-                .build();
+                .endpointOverride(URI.create(s3EndPoint))
+                .build(); 
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(s3BucketName)

@@ -39,7 +39,7 @@ public class S3Upload extends DefaultTask {
     
     @Input
     @Optional
-    public String endPoint = "https://s3.amazonaws.com/";
+    public String endPoint = "https://s3.eu-central-1.amazonaws.com";
     
     @Input
     public String region = "eu-central-1";

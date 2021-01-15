@@ -1,9 +1,7 @@
 package ch.so.agi.gretl.steps;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
@@ -16,7 +14,6 @@ import org.gradle.api.file.FileCollection;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -45,7 +42,7 @@ public class S3UploadStep {
     public void execute(String accessKey, String secretKey, Object sourceObject, String bucketName, String s3EndPoint, String s3Region, String acl, String contentType, Map<String, String> metaData) throws FileNotFoundException, URISyntaxException {        
         log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceObject: %s BucketName: %s S3EndPoint: %s S3Region: %s ACL: %s ContentType: %s MetaData: %s)", taskName,
                 sourceObject.toString(), bucketName, s3EndPoint, s3Region, acl, contentType, metaData));
-
+        
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
         Region region = Region.of(s3Region);
         S3Client s3client = S3Client.builder()
@@ -79,7 +76,7 @@ public class S3UploadStep {
         }
         
         for (File s3file : files) {            
-            XXXXsoftware.amazon.awssdk.services.s3.model.PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder();
+            software.amazon.awssdk.services.s3.model.PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder();
             requestBuilder
                 .bucket(bucketName)
                 .key(s3file.getName())

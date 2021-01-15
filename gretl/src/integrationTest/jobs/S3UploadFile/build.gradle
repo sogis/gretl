@@ -12,10 +12,10 @@ task fileupload(type: S3Upload) {
     accessKey = s3AccessKey
     secretKey = s3SecretKey
     sourceFile = file("./docs/bar.txt")
-    endPoint = "https://s3.amazonaws.com/"
+    endPoint = "https://s3.eu-central-1.amazonaws.com"
     region = "eu-central-1"
     bucketName = s3BucketName
-    acl = "PublicRead"
+    acl = "public-read"
     contentType = "plain/text"
     metaData = ["lastModified":"2020-08-28"]
 }

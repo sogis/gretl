@@ -6,8 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -24,6 +26,15 @@ import org.junit.experimental.categories.Category;
 import ch.so.agi.gretl.testutil.S3Test;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3Bucket2BucketTest {
     private String s3AccessKey = System.getProperty("s3AccessKey");
@@ -31,85 +42,51 @@ public class S3Bucket2BucketTest {
     private String s3SourceBucket = "ch.so.agi.gretl.test";
     private String s3TargetBucket = "ch.so.agi.gretl.test-copy";
 
-//    @Test
-//    @Category(S3Test.class)    
-//    public void uploadDirectory_Ok() throws Exception {
-//        // Upload files  and copy files from one bucket to another.
-//        GradleVariable[] gvs = { 
-//                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
-//                GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
-//                GradleVariable.newGradleProperty("s3SourceBucket", s3SourceBucket),
-//                GradleVariable.newGradleProperty("s3TargetBucket", s3TargetBucket)
-//            };
-//        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3Bucket2Bucket", gvs);
-//
-//        // Check result. 
-//        BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
-//        AmazonS3 s3client = AmazonS3ClientBuilder.standard()
-//                .withEndpointConfiguration(new EndpointConfiguration("https://s3.amazonaws.com/", "eu-central-1"))
-//                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-//
-//        ObjectListing listing = s3client.listObjects(s3TargetBucket);
-//        List<S3ObjectSummary> summaries = listing.getObjectSummaries();
-//
-//        while (listing.isTruncated()) {
-//           listing = s3client.listNextBatchOfObjects (listing);
-//           summaries.addAll(listing.getObjectSummaries());
-//        }
-//        
-//        assertTrue(summaries.size() == 2);
-//        
-//        List<String> keyList = new ArrayList<String>();
-//        for (S3ObjectSummary summary : summaries) {
-//            keyList.add(summary.getKey());
-//        }
-//        
-//        assertTrue(keyList.contains("foo.txt"));
-//        assertTrue(keyList.contains("bar.txt"));
-//        
-//        // Remove uploaded files from buckets.
-//        s3client.deleteObject(s3SourceBucket, "foo.txt");
-//        s3client.deleteObject(s3SourceBucket, "bar.txt");
-//        
-//        s3client.deleteObject(s3TargetBucket, "foo.txt");
-//        s3client.deleteObject(s3TargetBucket, "bar.txt");
-//    }
-    
-//    @Test
-//    @Category(S3Test.class)    
-//    public void uploadFile_Ok() throws Exception {
-//        // Upload single file from a directory.
-//        GradleVariable[] gvs = { 
-//                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
-//                GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
-//                GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
-//            };
-//        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadFile", gvs);
-//
-//        // Check result. 
-//        BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
-//        AmazonS3 s3client = AmazonS3ClientBuilder.standard()
-//                .withEndpointConfiguration(new EndpointConfiguration("https://s3.amazonaws.com/", "eu-central-1"))
-//                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-//
-//        S3Object s3Object = s3client.getObject(s3BucketName, "bar.txt");
-//        InputStream is = s3Object.getObjectContent();
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(is));        
-//        assertTrue(reader.readLine().equalsIgnoreCase("bar"));
-//        
-//        // Remove uploaded files from bucket.
-//        s3client.deleteObject(s3BucketName, "bar.txt");        
-//    }
-//    
-//    @Test
-//    @Category(S3Test.class)        
-//    public void uploadFile_Fail() throws Exception {
-//        // Upload single file from a directory.
-//        GradleVariable[] gvs = { 
-//                GradleVariable.newGradleProperty("s3AccessKey", "login"), 
-//                GradleVariable.newGradleProperty("s3SecretKey", "password"),
-//                GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
-//            };
-//        assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadFileFail", gvs, new StringBuffer(), new StringBuffer()));
-//    }
+    @Test
+    @Category(S3Test.class)    
+    public void uploadDirectory_Ok() throws Exception {
+        // Upload files  and copy files from one bucket to another.
+        GradleVariable[] gvs = { 
+                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
+                GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
+                GradleVariable.newGradleProperty("s3SourceBucket", s3SourceBucket),
+                GradleVariable.newGradleProperty("s3TargetBucket", s3TargetBucket)
+            };
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3Bucket2Bucket", gvs);
+
+        // Check result. 
+        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
+        Region region = Region.of("eu-central-1");
+        S3Client s3client = S3Client.builder()
+                .credentialsProvider(creds)
+                .region(region)
+                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
+                .build(); 
+
+
+        ListObjectsRequest listObjects = ListObjectsRequest
+                .builder()
+                .bucket(s3TargetBucket)
+                .build();
+
+        ListObjectsResponse res = s3client.listObjects(listObjects);
+        List<S3Object> objects = res.contents();
+        
+        List<String> keyList = new ArrayList<String>();
+        for (ListIterator<S3Object> iterVals = objects.listIterator(); iterVals.hasNext(); ) {
+            S3Object myObject = iterVals.next();            
+            keyList.add(myObject.key());
+        }
+
+        assertTrue(keyList.contains("foo.txt"));
+        assertTrue(keyList.contains("bar.txt"));
+        assertTrue(keyList.size() == 2);
+        
+        // Remove uploaded files from buckets.
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucket).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucket).key("bar.txt").build());
+
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("bar.txt").build());        
+    }    
 }

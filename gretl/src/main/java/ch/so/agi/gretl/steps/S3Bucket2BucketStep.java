@@ -1,21 +1,27 @@
 package ch.so.agi.gretl.steps;
 
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
-
-//import com.amazonaws.auth.AWSStaticCredentialsProvider;
-//import com.amazonaws.auth.BasicAWSCredentials;
-//import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
-//import com.amazonaws.services.s3.AmazonS3;
-//import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-//import com.amazonaws.services.s3.model.CopyObjectRequest;
-//import com.amazonaws.services.s3.model.ObjectListing;
-//import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3Bucket2BucketStep {
     private GretlLogger log;
@@ -34,31 +40,46 @@ public class S3Bucket2BucketStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
     
-    public void execute(String accessKey, String secretKey, String sourceBucket, String targetBucket, String s3EndPoint, String s3Region, Map<String, String> metaData) throws FileNotFoundException {        
+    public void execute(String accessKey, String secretKey, String sourceBucket, String targetBucket, String s3EndPoint, String s3Region, Map<String, String> metaData) throws FileNotFoundException, UnsupportedEncodingException {        
         log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceBucket: %s TargetBucket: %s S3EndPoint: %s S3Region: %s MetaData: %s)", taskName,
                 sourceBucket, targetBucket, s3EndPoint, s3Region, metaData));
         
-//        BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-//        AmazonS3 s3client = AmazonS3ClientBuilder.standard()
-//                .withEndpointConfiguration(new EndpointConfiguration(s3EndPoint, s3Region))
-//                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-//
-//        int copiedFiles = 0;
-//        
-//        ObjectListing listing = s3client.listObjects(sourceBucket);
-//        List<S3ObjectSummary> summaries = listing.getObjectSummaries();
-//
-//        while (listing.isTruncated()) {
-//            listing = s3client.listNextBatchOfObjects(listing);
-//            summaries.addAll(listing.getObjectSummaries());
-//        }
-//
-//        for (S3ObjectSummary summary : summaries) {
-//            CopyObjectRequest copyObjRequest = new CopyObjectRequest(sourceBucket, summary.getKey(), targetBucket, summary.getKey());
-//            copyObjRequest.setAccessControlList(s3client.getObjectAcl(sourceBucket, summary.getKey()));
-//            s3client.copyObject(copyObjRequest);
-//            copiedFiles++;
-//        }
-//        log.lifecycle(taskName + ": " + copiedFiles + " Files have been copied: "+sourceBucket+" -> "+targetBucket);
+        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
+        Region region = Region.of(s3Region);
+        S3Client s3client = S3Client.builder()
+                .credentialsProvider(creds)
+                .region(region)
+                .endpointOverride(URI.create(s3EndPoint))
+                .build(); 
+        
+        int copiedFiles = 0;
+        
+        ListObjectsRequest listObjects = ListObjectsRequest
+                .builder()
+                .bucket(sourceBucket)
+                .build();
+
+        ListObjectsResponse res = s3client.listObjects(listObjects);
+        List<S3Object> objects = res.contents();
+
+        
+        
+        List<String> keyList = new ArrayList<String>();
+        for (ListIterator<S3Object> iterVals = objects.listIterator(); iterVals.hasNext(); ) {
+            S3Object myObject = iterVals.next();        
+            
+            String encodedUrl = encodedUrl = URLEncoder.encode(sourceBucket + "/" + myObject.key(), StandardCharsets.UTF_8.toString());
+            CopyObjectRequest copyReq = CopyObjectRequest.builder()
+                    .copySource(encodedUrl)
+                    .destinationBucket(targetBucket)
+                    .destinationKey(myObject.key())
+                    .build();
+
+            CopyObjectResponse copyRes = s3client.copyObject(copyReq);
+            
+            copiedFiles++;
+         }
+
+        log.lifecycle(taskName + ": " + copiedFiles + " Files have been copied: "+sourceBucket+" -> "+targetBucket);
     }
 }
