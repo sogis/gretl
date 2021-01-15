@@ -7,6 +7,7 @@ The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql
 ## API Breaks
 - v2.1.73 (2021-01-15)
   * S3Upload: `endPoint` and `acl` have changed applicable values. The default value have changed too. See [manual](docs/user/index.md#s3upload-experimental)
+  * S3Bucket2Bucket: `endPoint` and `acl` have changed applicable values. The default value have changed too. See [manual](docs/user/index.md#s3upload-experimental)
 
 ## Manual
 
