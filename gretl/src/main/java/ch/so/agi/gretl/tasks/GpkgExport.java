@@ -2,6 +2,8 @@ package ch.so.agi.gretl.tasks;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -25,9 +27,9 @@ public class GpkgExport extends DefaultTask {
     @InputFile
     public Object dataFile = null;
     @Input
-    String dstTableName = null;    
+    Object dstTableName = null;    
     @Input
-    String srcTableName = null;
+    Object srcTableName = null;
     @Input
     @Optional
     public String schemaName = null;
@@ -50,27 +52,57 @@ public class GpkgExport extends DefaultTask {
         if (dataFile == null) {
             return;
         }
-        Settings settings = new Settings();
-        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, srcTableName);
-        settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);        
-        // set optional parameters
-        if (schemaName != null) {
-            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
+        
+        List<String> srcTableNames = null;
+        if (srcTableName instanceof String) {
+            srcTableNames =  new ArrayList<String>();
+            srcTableNames.add((String)srcTableName);
+        } else {
+            srcTableNames = (List)srcTableName;
+        }
+        
+        List<String> dstTableNames = null;
+        if (dstTableName instanceof String) {
+            dstTableNames =  new ArrayList<String>();
+            dstTableNames.add((String)dstTableName);
+        } else {
+            dstTableNames = (List)dstTableName;
+        }
+        
+        if (srcTableNames.size() != dstTableNames.size()) {
+            throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
         }
 
-        File data = this.getProject().file(dataFile);
         java.sql.Connection conn = null;
         try {
             conn = database.connect();
             if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
-            Db2Gpkg db2shp = new Db2Gpkg();
-            db2shp.exportData(data, conn, settings);
-            conn.commit();
-            conn.close();
-            conn = null;
-        } catch (Exception e) {
+            
+            int i=0;
+            for (String srcTableName : srcTableNames) {
+                String dstTableName = dstTableNames.get(i);
+                
+                Settings settings = new Settings();
+                settings.setValue(IoxWkfConfig.SETTING_DBTABLE, srcTableName);
+                settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);        
+                // set optional parameters
+                if (schemaName != null) {
+                    settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
+                }
+
+                File data = this.getProject().file(dataFile);
+                
+                Db2Gpkg db2gpkg = new Db2Gpkg();
+                db2gpkg.exportData(data, conn, settings);
+                conn.commit();
+                //conn.close();
+                //conn = null; 
+                
+                i++;
+            }
+       } catch (Exception e) {
             log.error("failed to run GpkgExport", e);
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;

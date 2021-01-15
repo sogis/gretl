@@ -934,7 +934,7 @@ Die Gross-/Kleinschreibung der GeoPckage-Spaltennamen wird für die Zuordnung zu
 
 Daten aus einer bestehenden Datenbanktabelle werden in eine GeoPackage-Datei exportiert.
 
-Beispiel:
+Beispiele:
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
@@ -949,13 +949,27 @@ task gpkgexport(type: GpkgExport){
 }
 ```
 
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task gpkgexport(type: GpkgExport){
+    database = [db_uri, db_user, db_pass]
+    schemaName = "gpkgexport"
+    srcTableName = ["exportTable1", "exportTable2"]
+    dataFile = "data.gpkg"
+    dstTableName = ["exportTable1", "exportTable2"]
+}
+```
+
 Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank aus der exportiert werden soll
 dataFile  | Name der GeoPackage-Datei, die erstellt werden soll
-srcTableName | Name der DB-Tabelle, die exportiert werden soll
+srcTableName | Name der DB-Tabelle(n), die exportiert werden soll(en). String oder List.
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-dstTableName | Name der Tabelle in der GeoPackage-Datei.
+dstTableName | Name der Tabelle(n) in der GeoPackage-Datei. String oder List.
 
 ### GpkgValidator
 Prüft eine GeoPackage-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
