@@ -5,9 +5,10 @@
 The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql-centric (geo)data etl. gretl = gradle etl.
 
 ## API Breaks
-- v2.1.73
-  * S3Upload: `endPoint` and `acl` have changed applicable values. The default values have changed too. See [manual](docs/user/index.md#s3upload-experimental)
-  * S3Bucket2Bucket: `endPoint` and `acl` have changed applicable values. The default values have changed too. See [manual](docs/user/index.md#s3upload-experimental)
+
+### 2.1.73
+- S3Upload: `endPoint` and `acl` have changed applicable values. The default values have changed too. See [manual](docs/user/index.md#s3upload-experimental)
+- S3Bucket2Bucket: `endPoint` and `acl` have changed applicable values. The default values have changed too. See [manual](docs/user/index.md#s3upload-experimental)
 
 ## Manual
 
