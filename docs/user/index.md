@@ -45,17 +45,17 @@ import ch.so.agi.gretl.api.*
 apply plugin: 'ch.so.agi.gretl'
 
 buildscript {
-	repositories {
-		maven { url "http://jars.interlis.ch" }
-		maven { url "http://jars.umleditor.org" }
-		maven { url "https://repo.osgeo.org/repository/release/" }
-		maven { url "https://plugins.gradle.org/m2/" }
-		maven { url "https://dl.bintray.com/sogis/iox-wkf" } // temporary
-		mavenCentral()
-	}
-	dependencies {
-		classpath group: 'ch.so.agi', name: 'gretl',  version: '2.1.+'
-	}
+    repositories {
+        maven { url "http://jars.interlis.ch" }
+        maven { url "http://jars.umleditor.org" }
+        maven { url "https://repo.osgeo.org/repository/release/" }
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://dl.bintray.com/sogis/iox-wkf" } // temporary
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'ch.so.agi', name: 'gretl',  version: '2.1.+'
+    }
 }
 
 defaultTasks 'validate'
@@ -73,12 +73,12 @@ Erstellen Sie nun noch die Datei ``BeispielA.xtf`` (damit danach der Job erfolgr
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
-	<HEADERSECTION SENDER="gretldemo" VERSION="2.3">
-	</HEADERSECTION>
-	<DATASECTION>
-		<OeREBKRMtrsfr_V1_1.Transferstruktur BID="B01">
-		</OeREBKRMtrsfr_V1_1.Transferstruktur>
-	</DATASECTION>
+    <HEADERSECTION SENDER="gretldemo" VERSION="2.3">
+    </HEADERSECTION>
+    <DATASECTION>
+        <OeREBKRMtrsfr_V1_1.Transferstruktur BID="B01">
+        </OeREBKRMtrsfr_V1_1.Transferstruktur>
+    </DATASECTION>
 </TRANSFER>
 ```
 
@@ -163,7 +163,7 @@ Es können auch mehrere Dateien angegeben werden.
 ```
 task av2geobau(type: Av2geobau){
     itfFiles = fileTree(".").matching {
-    	include"*.itf"
+        include"*.itf"
     }
     dxfDirectory = "./out/"
 }
@@ -494,7 +494,7 @@ task ftplist(type: FtpList){
     password= "dummy"
     remoteDir= ""
     doLast {
-    	println files
+        println files
     }
 }
 ```
@@ -907,7 +907,7 @@ def db_pass = "dmluser"
 
 task gpkgimport(type: GpkgImport){
     database = [db_uri, db_user, db_pass]
-	schemaName = "gpkgimport"
+    schemaName = "gpkgimport"
     srcTableName = "Point"
     dstTableName = "importdata"
     dataFile = "point.gpkg"
@@ -942,8 +942,8 @@ def db_pass = "dmluser"
 
 task gpkgexport(type: GpkgExport){
     database = [db_uri, db_user, db_pass]
-	schemaName = "gpkgexport"
-	srcTableName = "exportdata"
+    schemaName = "gpkgexport"
+    srcTableName = "exportdata"
     dataFile = "data.gpkg"
     dstTableName = "exportdata"
 }
@@ -963,7 +963,7 @@ Prüft eine GeoPackage-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [
 Beispiel:
 ```
 task validate(type: GpkgValidator){
-	models = "GpkgModel"
+    models = "GpkgModel"
     dataFiles = ["attributes.gpkg"]
     tableName = "Attributes"
 }
