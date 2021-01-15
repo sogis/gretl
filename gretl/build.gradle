@@ -61,7 +61,8 @@ dependencies {
     api av2chDependency
     api av2geobauDependency
     
-    api awsSdkDependency
+    //api awsSdkDependency
+    api awsSdkS3Dependency
     
     api apacheCommonsIoDependency
     api apacheCommonsNetDependency

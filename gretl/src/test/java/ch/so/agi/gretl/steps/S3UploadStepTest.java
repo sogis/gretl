@@ -6,9 +6,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.junit.Rule;
@@ -16,19 +18,21 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.S3Test;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3UploadStepTest {
     private String s3AccessKey = System.getProperty("s3AccessKey");
@@ -48,9 +52,9 @@ public class S3UploadStepTest {
     public void uploadDirectory_Ok() throws Exception {
         File sourceObject = new File("src/test/resources/data/s3upload/");
         
-        String s3EndPoint = "https://s3.amazonaws.com/";
+        String s3EndPoint = "https://s3.eu-central-1.amazonaws.com";
         String s3Region = "eu-central-1";
-        String acl = "PublicRead";
+        String acl = "public-read";
         Map<String,String> metaData = new HashMap<String,String>();
         metaData.put("lastModified", "2020-08-28");
         
@@ -59,32 +63,35 @@ public class S3UploadStepTest {
         s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
         
         // Check result. 
-        BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
-        AmazonS3 s3client = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(new EndpointConfiguration(s3EndPoint, s3Region))
-                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(s3AccessKey, s3SecretKey);
 
-        ObjectListing listing = s3client.listObjects(s3BucketName);
-        List<S3ObjectSummary> summaries = listing.getObjectSummaries();
+        Region region = Region.of(s3Region);
+        S3Client s3client = S3Client.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .region(region)
+                .endpointOverride(new URI(s3EndPoint))
+                .build();
 
-        while (listing.isTruncated()) {
-           listing = s3client.listNextBatchOfObjects (listing);
-           summaries.addAll(listing.getObjectSummaries());
-        }
-        
-        assertTrue(summaries.size() == 2);
+        ListObjectsRequest listObjects = ListObjectsRequest
+                .builder()
+                .bucket(s3BucketName)
+                .build();
+
+        ListObjectsResponse res = s3client.listObjects(listObjects);
+        List<S3Object> objects = res.contents();
         
         List<String> keyList = new ArrayList<String>();
-        for (S3ObjectSummary summary : summaries) {
-            keyList.add(summary.getKey());
+        for (ListIterator<S3Object> iterVals = objects.listIterator(); iterVals.hasNext(); ) {
+            S3Object myValue = iterVals.next();            
+            keyList.add(myValue.key());
         }
-        
+  
         assertTrue(keyList.contains("foo.txt"));
         assertTrue(keyList.contains("bar.txt"));
         
         // Remove uploaded files from bucket.
-        s3client.deleteObject(s3BucketName, "foo.txt");
-        s3client.deleteObject(s3BucketName, "bar.txt");
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
     }
     
     
@@ -93,9 +100,9 @@ public class S3UploadStepTest {
     public void uploadFile_Ok() throws Exception {
         File sourceObject = new File("src/test/resources/data/s3upload/foo.txt");
         
-        String s3EndPoint = "https://s3.amazonaws.com/";
+        String s3EndPoint = "https://s3.eu-central-1.amazonaws.com";
         String s3Region = "eu-central-1";
-        String acl = "PublicRead";
+        String acl = "public-read";
         Map<String,String> metaData = new HashMap<String,String>();        
         
         // Upload a single file.
@@ -103,18 +110,26 @@ public class S3UploadStepTest {
         s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
         
         // Check result. 
-        BasicAWSCredentials credentials = new BasicAWSCredentials(s3AccessKey, s3SecretKey);
-        AmazonS3 s3client = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(new EndpointConfiguration(s3EndPoint, s3Region))
-                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(s3AccessKey, s3SecretKey);
 
-        S3Object s3Object = s3client.getObject(s3BucketName, "foo.txt");
-        InputStream is = s3Object.getObjectContent();
+        Region region = Region.of(s3Region);
+        S3Client s3client = S3Client.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .region(region)
+                .endpointOverride(new URI(s3EndPoint))
+                .build();
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(s3BucketName)
+                .key("foo.txt")
+                .build();
+
+        ResponseInputStream<GetObjectResponse> is = s3client.getObject(getObjectRequest);
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));        
         assertTrue(reader.readLine().equalsIgnoreCase("foo"));
         
         // Remove uploaded files from bucket.
-        s3client.deleteObject(s3BucketName, "foo.txt");
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
     }
     
     @Test
@@ -122,17 +137,17 @@ public class S3UploadStepTest {
     public void uploadFile_Fail() throws Exception {
         File sourceObject = new File("src/test/resources/data/s3upload/foo.txt");
         
-        String s3EndPoint = "https://s3.amazonaws.com/";
+        String s3EndPoint = "https://s3.eu-central-1.amazonaws.com";
         String s3Region = "eu-central-1";
-        String acl = "PublicRead";
+        String acl = "public-read";
         Map<String,String> metaData = new HashMap<String,String>();        
 
         // Upload a single file.
         try {
             S3UploadStep s3UploadStep = new S3UploadStep();
             s3UploadStep.execute("login", "secret", sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
-        } catch (AmazonS3Exception e) {
-            assertTrue(e.getErrorCode().equalsIgnoreCase("InvalidAccessKeyId"));
+        } catch (S3Exception e) {
+            assertTrue(e.getMessage().contains("The AWS Access Key Id you provided does not exist in our records"));
         }
     }
 }
