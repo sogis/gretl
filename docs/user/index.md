@@ -1347,7 +1347,7 @@ task uploadDirectory(type: S3Upload) {
     bucketName = "ch.so.ada.denkmalschutz"
     endPoint = "https://s3.eu-central-1.amazonaws.com" 
     region = "eu-central-1"
-    acl = "PublicRead"
+    acl = "public-read"
     contentType = "application/pdf"
 }
 ```
@@ -1362,7 +1362,7 @@ sourceFiles  | FileCollection mit den Dateien, die hochgeladen werden sollen, z.
 bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
 endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
 region | S3-Region (default: `eu-central-1`). 
-acl | Access Control Layer `[private|public-read|public-read-write|authenticated-read|aws-exec-read|bucket-owner-read|bucket-owner-full-control]`
+acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
 contentType | Content-Type
 metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
