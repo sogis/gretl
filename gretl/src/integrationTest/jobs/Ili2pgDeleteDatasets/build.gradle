@@ -31,4 +31,5 @@ task ili2pgdelete(dependsOn:ili2pgimport, type: Ili2pgDelete){
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
     dataset = [ 'DatasetA', 'DatasetB']
+    failOnException = false
 }

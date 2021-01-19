@@ -577,6 +577,7 @@ skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
 export3  | Entspricht der ili2pg Option --export3
 iligml20  | Entspricht der ili2pg Option --iligml20
 disableRounding  | Entspricht der ili2pg Option --disableRounding
+failOnException | Task wirft Exception, falls ili2db-Prozess fehlerhaft ist (= Ili2dbException). Default: true.
 
 Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -646,6 +647,7 @@ skipPolygonBuilding  | Entspricht der ili2pg Option --skipPolygonBuilding
 skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
 iligml20  | Entspricht der ili2pg Option --iligml20
 disableRounding  | Entspricht der ili2pg Option --disableRounding
+failOnException | Task wirft Exception, falls ili2db-Prozess fehlerhaft ist (= Ili2dbException). Default: true.
 
 Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -725,6 +727,7 @@ createDatasetCol | Entspricht der ili2pg Option --createDatasetCol
 ver4_translation | Entspricht der ili2pg Option --ver4_translation
 translation | Entspricht der ili2pg Option --translation
 createMetaInfo | Entspricht der ili2pg Option --createMetaInfo
+failOnException | Task wirft Exception, falls ili2db-Prozess fehlerhaft ist (= Ili2dbException). Default: true.
 
 Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -751,7 +754,7 @@ Die Parameter sind analog wie bei Ili2pgImport.
 
 ### Ili2pgDelete
 
-Löscht einen Datensatz in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators. Diese Funktion bedingt, dass das Datenbankschema mit der Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema). Falls das Dataset nicht existiert, wird kein Fehler gemeldet und der Task läuft erfolgreich durch.
+Löscht einen Datensatz in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators. Diese Funktion bedingt, dass das Datenbankschema mit der Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema). Der Parameter `failOnException` muss `false` sein, ansonsten bricht der Job ab.
 
 Beispiel:
 ```

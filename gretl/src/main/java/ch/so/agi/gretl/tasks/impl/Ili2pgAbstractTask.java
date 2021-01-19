@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tasks.impl;
 
 import ch.ehi.basics.logging.EhiLogger;
 import ch.ehi.ili2db.base.Ili2db;
+import ch.ehi.ili2db.base.Ili2dbException;
 import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
@@ -91,7 +92,10 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     public boolean iligml20 = false;
     @Input
     @Optional
-    public boolean disableRounding = false;    
+    public boolean disableRounding = false;  
+    @Input
+    @Optional
+    public boolean failOnException = true;
 
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
@@ -183,13 +187,17 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             conn.commit();
             database.close();
         } catch (Exception e) {
-            // Ili2pgDelete: If dataset does not exist, it will NOT throw an error.
-            if (settings.getFunction() == Config.FC_DELETE) {
-                String msg = e.getMessage();
-                if (msg.contains("dataset") && msg.contains("doesn") && msg.contains("exist")) {
-                    return;
-                }
+            if (e instanceof Ili2dbException && !failOnException) {
+                log.lifecycle(e.getMessage());
+                return;
             }
+
+//            if (settings.getFunction() == Config.FC_DELETE) {
+//                String msg = e.getMessage();
+//                if (msg.contains("dataset") && msg.contains("doesn") && msg.contains("exist")) {
+//                    return;
+//                }
+//            }
             log.error("failed to run ili2pg", e);
 
             GradleException ge = TaskUtil.toGradleException(e);

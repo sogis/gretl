@@ -33,4 +33,5 @@ task ili2pgdelete(type: Ili2pgDelete, dependsOn: 'ili2pgreplace') {
     models = "DM01AVSO24LV95"
     dbschema = "dm01"
     dataset = "kammersrohr"
+    failOnException = false
 }
