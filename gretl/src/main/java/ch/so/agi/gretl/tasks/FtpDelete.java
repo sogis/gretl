@@ -42,8 +42,8 @@ public class FtpDelete extends AbstractFtpTask {
                 for (final FTPFile f : ftp.listFiles(remoteDir)) {
                     if (f.isFile()) {
                         String remoteFileName = f.getName();
-                        //ftp.deleteFile(remoteDir + fileSeparator + remoteFileName);
-                        System.out.println("**** 1 DELETE REMOTE FILE: " + remoteDir + fileSeparator + remoteFileName);
+                        ftp.deleteFile(remoteDir + fileSeparator + remoteFileName);
+                        //System.out.println("**** 1 DELETE REMOTE FILE: " + remoteDir + fileSeparator + remoteFileName);
                     }
                 }
             } else {
@@ -86,14 +86,14 @@ public class FtpDelete extends AbstractFtpTask {
                 if (f.isFile()) {
                     fileName = f.getName();
                     if (match(remoteFilePattern, fileName)) {
-                        //ftp.deleteFile(remoteDir + fileSeparator + fileName);
-                        System.out.println("**** 2 DELETE REMOTE FILE: " + remoteDir + fileSeparator + fileName);
+                        ftp.deleteFile(remoteDir + fileSeparator + fileName);
+                        //System.out.println("**** 2 DELETE REMOTE FILE: " + remoteDir + fileSeparator + fileName);
                     }
                 }
             }
         } else {
-            //ftp.deleteFile(remoteDir + fileSeparator + fileName);            
-            System.out.println("**** 3 DELETE REMOTE FILE: " + remoteDir + fileSeparator + fileName);
+            ftp.deleteFile(remoteDir + fileSeparator + fileName);            
+            //System.out.println("**** 3 DELETE REMOTE FILE: " + remoteDir + fileSeparator + fileName);
         }
     }
 }
