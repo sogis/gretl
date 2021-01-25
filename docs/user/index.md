@@ -609,6 +609,11 @@ task importData(type: Ili2pgImport){
 ```
 
 Beispiel 2:
+
+Import der AV-Daten. In der `t_datasetname`-Spalte soll die BFS-Nummer stehen. Die BFS-Nummer entspricht den ersten vier Zeichen des Filenamens. 
+
+Für `dataset` wird der `dataFile` verwendet, damit es nur einen einzigen `FileTree` gibt, da sonst die Reihenfolge nicht garantiert ist. Anschliessend wird eine Liste aus dem Filetree gemacht und während des Herstellens der Liste, werden aus den Filenamen die BFS-Nummern extrahiert.
+
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
@@ -617,7 +622,7 @@ def db_pass = "dmluser"
 task importData(type: Ili2pgImport){
     database = [db_uri, db_user, db_pass]
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
-    dataset = fileTree(pathToUnzipFolder) { include '*.itf' }
+    dataset = dataFile.collect { it.getName().substring(0,4)} 
     logFile = "ili2pg.log"
 }
 ```
