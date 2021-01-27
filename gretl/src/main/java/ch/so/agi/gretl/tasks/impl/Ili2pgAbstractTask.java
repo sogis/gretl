@@ -8,6 +8,8 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
+import groovy.lang.Range;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
@@ -17,6 +19,8 @@ import org.gradle.api.tasks.OutputFile;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Ili2pgAbstractTask extends DefaultTask {
     protected GretlLogger log;
@@ -96,6 +100,11 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @Input
     @Optional
     public boolean failOnException = true;
+    @Input
+    @Optional
+    //public List<Integer> substring = null;
+    public Range<Integer> substring = null;
+
 
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
@@ -103,7 +112,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
-
+        
         settings.setFunction(function);
 
         if (proxy != null) {
@@ -192,12 +201,6 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
                 return;
             }
 
-//            if (settings.getFunction() == Config.FC_DELETE) {
-//                String msg = e.getMessage();
-//                if (msg.contains("dataset") && msg.contains("doesn") && msg.contains("exist")) {
-//                    return;
-//                }
-//            }
             log.error("failed to run ili2pg", e);
 
             GradleException ge = TaskUtil.toGradleException(e);

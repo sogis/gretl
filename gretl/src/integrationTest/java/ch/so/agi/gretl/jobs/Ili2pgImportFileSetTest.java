@@ -52,8 +52,8 @@ public class Ili2pgImportFileSetTest {
                 datasets.add(rs.getString(1));
             }
             assertEquals(2,datasets.size());
-            assertTrue(datasets.contains("DatasetA"));
-            assertTrue(datasets.contains("DatasetB"));
+            assertTrue(datasets.contains("A_Da"));
+            assertTrue(datasets.contains("B_Da"));
             rs.close();
             s.close();
             

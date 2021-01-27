@@ -591,7 +591,7 @@ schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. bfsnr, da
 Falls beim Import ein Datensatz-Identifikator (dataset) definiert wird, darf dieser Datensatz-Identifikator in der 
 Datenbank noch nicht vorhanden sein. 
 
-Falls man mehrere Dateien importieren will, diese jedoch erst zur Laufzeit eruiert werden können, muss der Parameter `dataFile` eine Gradle `FileCollection` resp. eine implementierende Klasse (z.B. `FileTree`) sein. Gleiches gilt für den `dataset`-Parameter. Als einzelner Wert für das Dataset wird in diesem Fall der Name der Datei _ohne_ Extension verwendet. Leider kann nicht bereits in der Task-Definition aus dem Filetree eine Liste gemacht werden, z.B. `fileTree(pathToUnzipFolder) { include '*.itf' }.files.name`. Diese Liste ist leer.
+Falls man mehrere Dateien importieren will, diese jedoch erst zur Laufzeit eruiert werden können, muss der Parameter `dataFile` eine Gradle `FileCollection` resp. eine implementierende Klasse (z.B. `FileTree`) sein. Gleiches gilt für den `dataset`-Parameter. Als einzelner Wert für das Dataset wird in diesem Fall der Name der Datei _ohne_ Extension und _ohne_ Pfad verwendet. Leider kann nicht bereits in der Task-Definition aus dem Filetree eine Liste gemacht werden, z.B. `fileTree(pathToUnzipFolder) { include '*.itf' }.files.name`. Diese Liste ist leer.
 
 Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2pgReplace verwendet werden.
 
@@ -612,8 +612,6 @@ Beispiel 2:
 
 Import der AV-Daten. In der `t_datasetname`-Spalte soll die BFS-Nummer stehen. Die BFS-Nummer entspricht den ersten vier Zeichen des Filenamens. 
 
-Für `dataset` wird der `dataFile` verwendet, damit es nur einen einzigen `FileTree` gibt, da sonst die Reihenfolge nicht garantiert ist. Anschliessend wird eine Liste aus dem Filetree gemacht und während des Herstellens der Liste, werden aus den Filenamen die BFS-Nummern extrahiert.
-
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
@@ -622,7 +620,8 @@ def db_pass = "dmluser"
 task importData(type: Ili2pgImport){
     database = [db_uri, db_user, db_pass]
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
-    dataset = dataFile.collect { it.getName().substring(0,4)} 
+    dataset = dataFile
+    substring = 0..4
     logFile = "ili2pg.log"
 }
 ```
@@ -653,6 +652,7 @@ skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
 iligml20  | Entspricht der ili2pg Option --iligml20
 disableRounding  | Entspricht der ili2pg Option --disableRounding
 failOnException | Task wirft Exception, falls ili2db-Prozess fehlerhaft ist (= Ili2dbException). Default: true.
+substring | Range für das Extrahieren eines Substrings von Datasets
 
 Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 

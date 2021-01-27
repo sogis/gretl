@@ -53,10 +53,30 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
                 Set<File> datasetFiles = ((FileTree)dataset).getFiles();
                 datasetNames = new ArrayList<String>();                
                 for (File datasetFile : datasetFiles) {
-                    datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", ""));
+                    if (substring != null) {  
+                        if (substring.size() > 1) {
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(substring.getFrom(), substring.getTo()));
+                        } else {
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(substring.getFrom()));
+                        }
+                    } else {
+                        datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", ""));
+                    }
                 }
             } else {
-                datasetNames=(java.util.List)dataset;
+                datasetNames=new ArrayList<String>();
+                if (substring != null) {
+                    List<String> fileNames = (java.util.List)dataset;
+                    for (String fileName : fileNames) {
+                        if (substring.size() > 1) {
+                            datasetNames.add(fileName.substring(substring.getFrom(), substring.getTo()));
+                        } else {
+                            datasetNames.add(fileName.substring(substring.getFrom()));
+                        }
+                    }
+                } else {
+                    datasetNames=(java.util.List)dataset;
+                }
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
