@@ -102,8 +102,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     public boolean failOnException = true;
     @Input
     @Optional
-    //public List<Integer> substring = null;
-    public Range<Integer> substring = null;
+    public Range<Integer> datasetSubstring = null;
 
 
     protected void run(int function, Config settings) {

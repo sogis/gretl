@@ -52,11 +52,11 @@ public class Ili2pgReplace extends Ili2pgAbstractTask {
                 Set<File> datasetFiles = ((FileTree)dataset).getFiles();
                 datasetNames = new ArrayList<String>();                
                 for (File datasetFile : datasetFiles) {
-                    if (substring != null) {  
-                        if (substring.size() > 1) {
-                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(substring.getFrom(), substring.getTo()));
+                    if (datasetSubstring != null) {  
+                        if (datasetSubstring.size() > 1) {
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.getFrom(), datasetSubstring.getTo()));
                         } else {
-                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(substring.getFrom()));
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.getFrom()));
                         }
                     } else {
                         datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", ""));
@@ -64,13 +64,13 @@ public class Ili2pgReplace extends Ili2pgAbstractTask {
                 }
             } else {
                 datasetNames=new ArrayList<String>();
-                if (substring != null) {
+                if (datasetSubstring != null) {
                     List<String> fileNames = (java.util.List)dataset;
                     for (String fileName : fileNames) {
-                        if (substring.size() > 1) {
-                            datasetNames.add(fileName.substring(substring.getFrom(), substring.getTo()));
+                        if (datasetSubstring.size() > 1) {
+                            datasetNames.add(fileName.substring(datasetSubstring.getFrom(), datasetSubstring.getTo()));
                         } else {
-                            datasetNames.add(fileName.substring(substring.getFrom()));
+                            datasetNames.add(fileName.substring(datasetSubstring.getFrom()));
                         }
                     }
                 } else {

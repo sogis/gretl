@@ -621,7 +621,7 @@ task importData(type: Ili2pgImport){
     database = [db_uri, db_user, db_pass]
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
     dataset = dataFile
-    substring = 0..4
+    datasetSubstring = 0..4
     logFile = "ili2pg.log"
 }
 ```
@@ -636,6 +636,7 @@ proxyPort  | Entspricht der ili2pg Option --proxyPort
 modeldir  | Entspricht der ili2pg Option --modeldir
 models  | Entspricht der ili2pg Option --models
 dataset  | Entspricht der ili2pg Option --dataset
+datasetSubstring | Range für das Extrahieren eines Substrings von Datasets
 baskets  | Entspricht der ili2pg Option --baskets
 topics  | Entspricht der ili2pg Option --topics
 preScript  | Entspricht der ili2pg Option --preScript
@@ -652,7 +653,6 @@ skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
 iligml20  | Entspricht der ili2pg Option --iligml20
 disableRounding  | Entspricht der ili2pg Option --disableRounding
 failOnException | Task wirft Exception, falls ili2db-Prozess fehlerhaft ist (= Ili2dbException). Default: true.
-substring | Range für das Extrahieren eines Substrings von Datasets
 
 Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
