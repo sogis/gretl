@@ -27,9 +27,6 @@ public class FileStylingDefinition {
      *                   thrown
      */
     public static void checkForUtf8(File inputfile) throws Exception {
-//        byte[] buffer = new byte[256];
-//        System.out.println("******");
-//        System.out.println(inputfile.length());
         if (inputfile.length() > 0) {
             byte[] buffer = new byte[(int) inputfile.length()];
             int fileEnd = -1;

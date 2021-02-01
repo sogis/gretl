@@ -1,13 +1,13 @@
 ext {
     // dependencies version
-    ioxIliVersion = '1.20.15'
-    ilivalidatorVersion = '1.11.3'
-    ilivalidatorCustomFunctions = '1.1.11'
-    ili2pgVersion = '4.3.2'
-    ili2gpkgVersion = '4.3.2'
+    ioxIliVersion = '1.21.4'
+    ilivalidatorVersion = '1.11.9'
+    ilivalidatorCustomFunctions = '1.1.20'
+    ili2pgVersion = '4.4.5'
+    ili2gpkgVersion = '4.4.5'
     //ioxWkfVersion = '1.0.2-SNAPSHOT'
     ioxWkfVersion = '1.2.23' // Temporary. Until shp-trim branch is merged into master / original repo.
-    ehiSqlgenVersion = '1.13.7'
+    ehiSqlgenVersion = '1.13.8'
     
     //oerebIconizerVersion = '1.0.36'
     oerebIconizerVersion = '2.0.5'
