@@ -15,7 +15,8 @@ apply from: 'integration-test.gradle'
 configurations.all {
     resolutionStrategy { 
         force 'ch.interlis:iox-ili:1.21.4'
-        force 'ch.interlis:iox-wkf:1.2.23'
+        force 'ch.interlis:iox-wkf:1.0.2-SNAPSHOT'
+        //force 'ch.interlis:iox-wkf:1.3.24'
         force 'ch.interlis:ili2c-tool:5.1.5'
         force 'ch.interlis:ili2c-core:5.1.5'
         force 'ch.interlis:ili2pg:4.4.5'

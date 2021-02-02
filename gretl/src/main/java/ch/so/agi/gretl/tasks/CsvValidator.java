@@ -67,7 +67,7 @@ public class CsvValidator extends AbstractValidatorTask {
         if (encoding != null) {
             settings.setValue(CsvReader.ENCODING, encoding);
         }
-
+        System.out.println(settings);
         validationOk = new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
         if (!validationOk && failOnError) {
             throw new TaskExecutionException(this, new Exception("validation failed"));

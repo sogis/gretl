@@ -49,6 +49,7 @@ public class IntegrationTestUtil {
             buf.append(" -i "); // TODO: expose
             varText = buf.toString();
         }
+        varText += " -i ";
         return varText;
     }
 
