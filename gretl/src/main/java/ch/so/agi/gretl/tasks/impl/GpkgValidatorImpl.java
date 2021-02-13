@@ -15,9 +15,7 @@ import ch.interlis.ioxwkf.gpkg.GeoPackageReader;
 
 public class GpkgValidatorImpl extends Validator {
     @Override
-    protected IoxReader createReader(String filename, TransferDescription td,LogEventFactory errFactory,Settings settings,PipelinePool pool) throws IoxException {
-        System.err.println("*x***********c****");
-
+    protected IoxReader createReader(String filename, TransferDescription td, LogEventFactory errFactory, Settings settings, PipelinePool pool) throws IoxException {
         GeoPackageReader reader = new GeoPackageReader(new File(filename), settings.getValue(IoxWkfConfig.SETTING_GPKGTABLE), settings);
         reader.setModel(td);
         return reader;

@@ -4,13 +4,6 @@
 
 The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql-centric (geo)data etl. gretl = gradle etl.
 
-## TODO 
-- bump version:
-  * av2ch 
-  * av2geobau
-  * ilivalidator-custom-functions
-
-
 ## API Breaks
 
 ### 2.1.73

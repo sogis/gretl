@@ -5,14 +5,12 @@ import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
-import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
 import ch.so.agi.gretl.tasks.impl.GpkgValidatorImpl;
 
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
-import org.interlis2.validator.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,25 +49,7 @@ public class GpkgValidator extends AbstractValidatorTask {
         settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, tableName);
         initSettings(settings);
 
-        System.err.println("****************");
-        System.err.println("*2***************");
-        System.err.println(files.toArray(new String[files.size()]).length);
-        
-        // failed to write logfile
-        //settings.setValue(Validator.SETTING_LOGFILE, "/Users/stefan/gaga/fubar.log");
-        
-        System.err.println(settings);
-        
-        
-
-        ch.so.agi.gretl.tasks.impl.GpkgValidatorImpl validator = new ch.so.agi.gretl.tasks.impl.GpkgValidatorImpl();
-        validator.validate(files.toArray(new String[files.size()]), settings);
-        
-//        validationOk = new GpkgValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-
-        System.err.println(validationOk);
-        System.err.println("*3*3**************");
-
+        validationOk = new GpkgValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
         if (!validationOk && failOnError) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
