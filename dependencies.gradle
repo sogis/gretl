@@ -23,8 +23,8 @@ ext {
     jacksonVersion = '2.10.0'
 
     postgresqlVersion = '42.2.5'
-    //sqliteJdbcVersion = '3.8.11.2' // -> ili2gpkg
-    sqliteJdbcVersion = '3.21.0.1' // -> iox-wkf    
+    sqliteJdbcVersion = '3.8.11.2' // -> ili2gpkg
+    //sqliteJdbcVersion = '3.21.0.1' // -> iox-wkf    
     derbyVersion = '10.13.1.1'
     oracleVersion = '19.3.0.0'
     
