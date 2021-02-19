@@ -1,14 +1,8 @@
-[![Build Status](https://travis-ci.org/sogis/gretl.svg?branch=master)](https://travis-ci.org/sogis/gretl)
+![CI/CD](https://github.com/sogis/gretl/workflows/gretl/badge.svg)
 
 # gretl
 
 The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql-centric (geo)data etl. gretl = gradle etl.
-
-## API Breaks
-
-### 2.1.73
-- S3Upload: `endPoint` and `acl` have changed applicable values. The default values have changed too. See [manual](docs/user/index.md#s3upload-experimental)
-- S3Bucket2Bucket: `endPoint` and `acl` have changed applicable values. The default values have changed too. See [manual](docs/user/index.md#s3upload-experimental)
 
 ## Manual
 

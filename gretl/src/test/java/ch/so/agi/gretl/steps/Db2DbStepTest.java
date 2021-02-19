@@ -16,6 +16,7 @@ import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import javax.xml.transform.Result;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -57,6 +58,31 @@ public class Db2DbStepTest {
     public void finalise() throws Exception {
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         clearTestDb(sourceDb);
+    }
+
+    @Test
+    public void faultFreeExecutionH2MemoryDb() throws Exception {
+        Connector con = new Connector("jdbc:h2:mem:dbtest;DB_CLOSE_DELAY=-1", null, null);
+        createTestDb(con);
+
+        File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors; ", "query.sql");
+        File sqlFile2 = TestUtil.createFile(folder, "SELECT * FROM colors; ", "query2.sql");
+
+        ArrayList<TransferSet> transferSets = new ArrayList<TransferSet>();
+        transferSets.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", true));
+        transferSets.add(new TransferSet(sqlFile2.getAbsolutePath(), "colors_copy", false));
+
+        Connector sourceDb = new Connector("jdbc:h2:mem:dbtest;DB_CLOSE_DELAY=-1", null, null);
+        Connector targetDb = sourceDb;
+
+        Db2DbStep db2db = new Db2DbStep();
+        db2db.processAllTransferSets(sourceDb, targetDb, transferSets);
+
+        ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy WHERE farbname = 'blau'");
+        while (rs.next()) {
+            assertEquals(rs.getInt("rot"), 0);
+            assertEquals(rs.getString("farbname"), "blau");
+        }
     }
 
     @Test
@@ -117,7 +143,6 @@ public class Db2DbStepTest {
         } finally {
             con.connect().close();
         }
-
     }
 
     @Test
@@ -399,6 +424,63 @@ public class Db2DbStepTest {
             Assert.assertTrue("TargetConnection is not closed", targetDb.isClosed());
         } finally {
             con.connect().close();
+        }
+    }
+
+    @Category(DbTest.class)
+    @Test
+    public void canWriteGeomFromPg2H2GisTest() throws Exception {
+        // Prepare
+        String sourceUrl = postgres.getJdbcUrl();
+        try (Connection conn = DriverManager.getConnection(sourceUrl, postgres.getUsername(), postgres.getPassword()); Statement stmt = conn.createStatement()) {
+            stmt.execute("CREATE TABLE public.locations (t_id int PRIMARY KEY, geom geometry(POINT,2056))");
+            stmt.execute("INSERT INTO public.locations VALUES (1, ST_PointFromText('POINT(2600000 1200000)', 2056))");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        }
+
+        String targetUrl = "jdbc:h2:mem:dbtest;DB_CLOSE_DELAY=-1";
+        try (Connection conn = DriverManager.getConnection(targetUrl); Statement stmt = conn.createStatement()) {
+            stmt.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR \"org.h2gis.functions.factory.H2GISFunctions.load\"");
+            stmt.execute("CALL H2GIS_SPATIAL()");
+            stmt.execute("CREATE TABLE public.locations (t_id int IDENTITY PRIMARY KEY, geom geometry)");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        }
+
+        // Run db2db
+        Db2DbStep step = new Db2DbStep();
+        File queryFile = TestUtil.createFile(folder, "SELECT ST_AsBinary(geom) AS geom FROM public.locations", "select.sql");
+
+        Connector src = new Connector(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        Connector sink = new Connector(targetUrl, "", "");
+        TransferSet tSet = new TransferSet(queryFile.getAbsolutePath(), "public.locations", true,
+                new String[] { "geom:wkb:2056" });
+
+        step.processAllTransferSets(src, sink, Arrays.asList(tSet));
+
+        // Check result
+        try (Connection conn = DriverManager.getConnection(targetUrl); Statement stmt = conn.createStatement()) {
+            ResultSet rs = stmt.executeQuery("SELECT t_id, ST_AsText(geom), ST_AsText(ST_Buffer(geom, 1)) FROM public.locations");
+
+            int i=0;
+            int tid = -99;
+            String geomWkt = null;
+            String bufferWkt = null;
+            while(rs.next()) {
+                tid = rs.getInt(1);
+                geomWkt = rs.getString(2);
+                bufferWkt = rs.getString(3);
+                i++;
+            }
+            Assert.assertEquals(1, i);
+            Assert.assertEquals("POINT (2600000 1200000)", geomWkt);
+            Assert.assertTrue(bufferWkt.contains("2600001 1200000"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception(e);
         }
     }
 

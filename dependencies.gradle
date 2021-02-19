@@ -1,10 +1,11 @@
 ext {
     // dependencies version
-    ioxIliVersion = '1.21.4'
+    ioxIliVersion = '1.21.5'
     ilivalidatorVersion = '1.11.5'
     ilivalidatorCustomFunctions = '1.1.20'
-    ili2pgVersion = '4.4.5'
-    ili2gpkgVersion = '4.4.5'
+    ili2pgVersion = '4.4.6'
+    ili2gpkgVersion = '4.4.6'
+    ili2h2gisVersion = '4.4.6'
     //ioxWkfVersion = '1.0.2-SNAPSHOT'
     ioxWkfVersion = '1.3.24' // Temporary. Until shp-trim branch is merged into master / original repo.
     ehiSqlgenVersion = '1.13.8'
@@ -22,12 +23,14 @@ ext {
     
     jacksonVersion = '2.10.0'
 
+    derbyVersion = '10.13.1.1'
+    h2Version = '1.4.197'
+    h2GisVersion = '1.5.0'
+    oracleVersion = '19.3.0.0'
     postgresqlVersion = '42.2.5'
     sqliteJdbcVersion = '3.8.11.2' // -> ili2gpkg
     //sqliteJdbcVersion = '3.21.0.1' // -> iox-wkf    
-    derbyVersion = '10.13.1.1'
-    oracleVersion = '19.3.0.0'
-    
+
     junitVersion = '4.12'
     mockFtpServerVersion = '2.7.1'   
     testContainersVersion = '1.15.1'
@@ -38,6 +41,7 @@ ext {
     ilivalidatorCustomFunctionsDependency = [ group: 'ch.so.agi.ilivalidator', name: 'ilivalidator-custom-functions', version: ilivalidatorCustomFunctions ]
     ili2pgDependency = [ group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion ]
     ili2gpkgDependency = [ group: 'ch.interlis', name: 'ili2gpkg', version: ili2gpkgVersion ]
+    ili2h2gisDependency = [ group: 'ch.interlis', name: 'ili2h2gis', version: ili2h2gisVersion ]
     ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
     ehiSqlgenDependency = [ group: 'ch.ehi', name: 'ehisqlgen', version: ehiSqlgenVersion ]
 
@@ -53,12 +57,14 @@ ext {
     
     jacksonCoreDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion ]
     jacksonDatabindDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion ]
-    
+
+    derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion ]
+    h2Dependency = [group: 'com.h2database', name: 'h2', version: h2Version ]
+    h2GisDependency = [group: 'org.orbisgis', name: 'h2gis', version: h2GisVersion ]
+    oracleDependency = [ group: 'com.oracle.ojdbc', name: 'ojdbc8', version: oracleVersion]
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
-    derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
-    oracleDependency = [ group: 'com.oracle.ojdbc', name: 'ojdbc8', version: oracleVersion]
-    
+
     junitDependency = [ group: 'junit', name: 'junit', version: junitVersion ]
     mockFtpServerDependency = [ group: 'org.mockftpserver', name: 'MockFtpServer', version: mockFtpServerVersion ]
     testContainersDependency = [ group: 'org.testcontainers', name: 'testcontainers', version: testContainersVersion]

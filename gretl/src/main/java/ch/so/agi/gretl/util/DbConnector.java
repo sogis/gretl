@@ -18,10 +18,11 @@ public class DbConnector {
 
     static {
         jdbcDriverClasses = new HashMap<String, String>();
+        jdbcDriverClasses.put("derby", "org.apache.derby.jdbc.EmbeddedDriver");
+        jdbcDriverClasses.put("h2", "org.h2.Driver");
+        jdbcDriverClasses.put("oracle", "oracle.jdbc.driver.OracleDriver");
         jdbcDriverClasses.put("postgresql", "org.postgresql.Driver");
         jdbcDriverClasses.put("sqlite", "org.sqlite.JDBC");
-        jdbcDriverClasses.put("derby", "org.apache.derby.jdbc.EmbeddedDriver");
-        jdbcDriverClasses.put("oracle", "oracle.jdbc.driver.OracleDriver");
     }
 
     /**

@@ -24,11 +24,11 @@ fi
 build_timestamp=$(date '+%Y-%m-%d_%H:%M:%S')
 
 docker build \
-    --no-cache --force-rm -t sogis/gretl-runtime:2.1.$buildident \
-    --label gretl.created=$build_timestamp --label gretl.git_commit=$githash --label gretl.travis_build=2.1.$buildident \
+    --no-cache --force-rm -t sogis/gretl-runtime:2.2.$buildident \
+    --label gretl.created=$build_timestamp --label gretl.git_commit=$githash --label gretl.travis_build=2.2.$buildident \
     -f gretl/Dockerfile gretl
 
-docker tag sogis/gretl-runtime:2.1.$buildident sogis/gretl-runtime:latest
+docker tag sogis/gretl-runtime:2.2.$buildident sogis/gretl-runtime:latest
 
 rm gretl/__jars4image/*
 

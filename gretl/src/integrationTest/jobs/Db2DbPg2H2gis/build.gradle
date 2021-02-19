@@ -1,0 +1,31 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.api.*
+apply plugin: 'ch.so.agi.gretl'
+
+def GRETLTEST_DBURI = 'gretltest_dburi_pg'
+def source_db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl'
+def source_db_user = "dmluser"
+def source_db_pass = "dmluser"
+def targetDbFileName = file("./targetDb").getAbsolutePath()
+def target_db_uri = 'jdbc:h2:' + targetDbFileName
+def target_db_user = ""
+def target_db_pass = ""
+
+defaultTasks 'transferDataToPg'
+
+task transferDataToH2(type: Db2Db) {
+    sourceDb = [source_db_uri,source_db_user,source_db_pass]
+    targetDb = [target_db_uri,target_db_user,target_db_pass]
+    transferSets = [
+            new TransferSet('makeitso.sql', 'public.locations', true, ["geom:wkb:2056"] as String[])
+    ];
+}
+
+task transferDataToPg(type: Db2Db, dependsOn: 'transferDataToH2') {
+    sourceDb = [target_db_uri,target_db_user,target_db_pass]
+    targetDb = [source_db_uri,source_db_user,source_db_pass]
+    transferSets = [
+            new TransferSet('makeitsoToPg.sql', 'public.locations', true, ["geom:wkb:2056"] as String[])
+    ];
+
+}

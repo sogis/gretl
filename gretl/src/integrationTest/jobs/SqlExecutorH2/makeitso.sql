@@ -1,0 +1,1 @@
+INSERT INTO colors  VALUES (255,0,0,'rot');

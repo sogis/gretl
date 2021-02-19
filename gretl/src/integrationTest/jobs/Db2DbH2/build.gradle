@@ -1,0 +1,20 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.api.*
+apply plugin: 'ch.so.agi.gretl'
+
+def sourceDbFileName = file("./sourceDb").getAbsolutePath()
+def targetDbFileName = file("./targetDb").getAbsolutePath()
+def source_db_uri = 'jdbc:h2:' + sourceDbFileName
+def target_db_uri = 'jdbc:h2:' + targetDbFileName
+def db_user = ""
+def db_pass = ""
+
+defaultTasks 'transferData'
+
+task transferData(type: Db2Db) {
+    sourceDb =  [source_db_uri,db_user,db_pass]
+    targetDb = [target_db_uri,db_user,db_pass]
+    transferSets = [
+            new TransferSet('makeitso.sql', 'public.colors', true)
+    ];
+}

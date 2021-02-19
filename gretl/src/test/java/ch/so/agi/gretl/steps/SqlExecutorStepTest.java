@@ -210,6 +210,22 @@ public class SqlExecutorStepTest {
         Assert.assertTrue(sourceDb.isClosed());
     }
 
+    @Test
+    public void createH2MemoryDb_Ok() throws Exception {
+        Connector sourceDb = new Connector("jdbc:h2:mem:dbtest", null, null);
+        Connection con = sourceDb.connect();
+        con.setAutoCommit(true);
+
+        Statement stmt = con.createStatement();
+        stmt.execute("CREATE TABLE colors ( " + "  rot integer, " + "  gruen integer, " + "  blau integer, "
+                + "  farbname VARCHAR(200))");
+
+        SqlExecutorStep x = new SqlExecutorStep();
+        List<File> sqlListe = createCorrectSqlFiles();
+        x.execute(sourceDb, sqlListe);
+        Assert.assertTrue(sourceDb.isClosed());
+    }
+
     private void clearTestDb(Connector sourceDb) throws Exception {
         Connection con = sourceDb.connect();
         con.setAutoCommit(true);

@@ -21,7 +21,6 @@ public class DbConnectorTest {
 
     @Test
     public void connectToDerbyDb() throws Exception {
-
         DbConnector x = new DbConnector();
         try {
             con = x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
@@ -39,7 +38,6 @@ public class DbConnectorTest {
 
     @Test
     public void connectionAutoCommit() throws Exception {
-
         DbConnector x = new DbConnector();
         try {
             con = x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
@@ -52,6 +50,17 @@ public class DbConnectorTest {
             if (con != null) {
                 con.close();
             }
+        }
+    }
+
+    @Test
+    public void connectToH2MemoryDb() throws Exception {
+        DbConnector x = new DbConnector();
+        try {
+            con = x.connect("jdbc:h2:mem:dbtest", null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GretlException("Could not connect to database");
         }
     }
 }
