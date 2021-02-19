@@ -363,6 +363,36 @@ task transferSomeData(type: Db2Db) {
 }
 ```
 
+Will man Daten aus einer PostgreSQL- in eine H2GIS-Datenbank schreiben, muss man die Geometrie via WKB transportieren. Zusätzlich muss die H2GIS-Datenbank mit den GIS-Funktionalitäten initialisiert werden (z.B. in einem SQLExecutor-Task):
+
+```
+CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.factory.H2GISFunctions.load";
+CALL H2GIS_SPATIAL();
+```
+
+```
+task transferDataToH2(type: Db2Db) {
+    sourceDb = [source_db_uri,source_db_user,source_db_pass]
+    targetDb = [target_db_uri,target_db_user,target_db_pass]
+    transferSets = [
+        new TransferSet('makeitso.sql', 'public.locations', true, ["geom:wkb:2056"] as String[])
+    ];
+}
+```
+
+Der SELECT-Befehl muss die Umwandlung nach WKB vornehmen:
+
+```
+SELECT
+    t_id,
+    ST_AsBinary(geom) AS geom
+FROM
+    public.locations
+;
+```
+
+Es wird WKB, WKT und GeoJSON unterstützt.
+
 
 Parameter | Beschreibung
 ----------|-------------------
@@ -379,7 +409,7 @@ Eine ``TransferSet`` ist
 - dem Namen der Ziel-Tabelle in der targetDb, und 
 - der Angabe ob in der Ziel-Tabelle vor dem INSERT zuerst alle Records gelöscht werden sollen.
 
-Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
+Unterstützte Datenbanken: PostgreSQL, SQLite, Derby, H2GIS und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
 
 ### FtpDelete
 

@@ -212,7 +212,7 @@ public class SqlExecutorStepTest {
 
     @Test
     public void createH2MemoryDb_Ok() throws Exception {
-        Connector sourceDb = new Connector("jdbc:h2:mem:dbtest", null, null);
+        Connector sourceDb = new Connector("jdbc:h2:mem:dbtest;DB_CLOSE_DELAY=-1", null, null);
         Connection con = sourceDb.connect();
         con.setAutoCommit(true);
 
