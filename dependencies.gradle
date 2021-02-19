@@ -7,7 +7,7 @@ ext {
     ili2gpkgVersion = '4.4.6'
     ili2h2gisVersion = '4.4.6'
     //ioxWkfVersion = '1.0.2-SNAPSHOT'
-    ioxWkfVersion = '1.3.24' // Temporary. Until shp-trim branch is merged into master / original repo.
+    ioxWkfVersion = '1.3.25' // Temporary. Until shp-trim branch is merged into master / original repo.
     ehiSqlgenVersion = '1.13.8'
     
     //oerebIconizerVersion = '1.0.36'

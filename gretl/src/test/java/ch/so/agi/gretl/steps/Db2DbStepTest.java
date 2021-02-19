@@ -440,7 +440,7 @@ public class Db2DbStepTest {
             throw new Exception(e);
         }
 
-        String targetUrl = "jdbc:h2:mem:dbtest;DB_CLOSE_DELAY=-1";
+        String targetUrl = "jdbc:h2:mem:pgtest;DB_CLOSE_DELAY=-1";
         try (Connection conn = DriverManager.getConnection(targetUrl); Statement stmt = conn.createStatement()) {
             stmt.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR \"org.h2gis.functions.factory.H2GISFunctions.load\"");
             stmt.execute("CALL H2GIS_SPATIAL()");
