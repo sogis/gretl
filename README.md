@@ -45,6 +45,7 @@ cd ..
 ./gradlew gretl:jarS3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
 ./gradlew gretl:imageTest 
 ./gradlew gretl:imageS3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
+./gradlew gretl:thirdPartyPluginImageTest
 ```
 
 ```

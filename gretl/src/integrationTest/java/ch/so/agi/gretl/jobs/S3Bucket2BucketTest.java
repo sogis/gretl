@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -41,7 +42,7 @@ public class S3Bucket2BucketTest {
     private String s3SecretKey = System.getProperty("s3SecretKey");
     private String s3SourceBucket = "ch.so.agi.gretl.test";
     private String s3TargetBucket = "ch.so.agi.gretl.test-copy";
-
+    
     @Test
     @Category(S3Test.class)    
     public void uploadDirectory_Ok() throws Exception {

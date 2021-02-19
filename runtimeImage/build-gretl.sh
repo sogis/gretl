@@ -30,7 +30,7 @@ docker build \
 
 docker tag sogis/gretl-runtime:2.2.$buildident sogis/gretl-runtime:latest
 
-#rm gretl/__jars4image/*
+rm gretl/__jars4image/*
 
 # look into the container:
 # docker run -it --entrypoint=/bin/sh sogis/gretl-runtime:$buildident
