@@ -21,6 +21,7 @@ task jarTest(type: Test) {
     useJUnit {
         excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
         excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+        excludeCategories 'ch.so.agi.gretl.testutil.ThirdPartyPluginTest'        
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
