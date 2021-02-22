@@ -4,7 +4,6 @@ import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
@@ -14,8 +13,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.File;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.util.Arrays;
-import java.util.List;
 
 public class Db2DbTaskH2Test {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
@@ -27,16 +24,6 @@ public class Db2DbTaskH2Test {
                     .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
                     .withInitScript("init_postgresql.sql")
                     .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
-
-//    @Before
-//    public void setup() {
-//        String[] files = new File("src/integrationTest/jobs/Db2DbH2/").list();
-//        for (String file : files) {
-//            if (file.contains("db")) {
-//                Paths.get("src/integrationTest/jobs/Db2DbH2/", file).toFile().delete();
-//            }
-//        }
-//    }
 
     @Test
     public void pgToH2gis_Ok() throws Exception {

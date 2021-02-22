@@ -2,7 +2,8 @@ import ch.so.agi.gretl.tasks.*
 
 apply plugin: 'ch.so.agi.gretl'
 
-def db_uri = 'jdbc:postgresql://localhost:5432/gretl'
+def testDbFileName = file("./testdb").getAbsolutePath()
+def db_uri = 'jdbc:h2:' + testDbFileName
 def db_user = ""
 def db_pass = ""
 
@@ -10,8 +11,5 @@ defaultTasks 'schemaimport'
 
 task schemaimport(type: Ili2h2gisImportSchema){
     database = [db_uri, db_user, db_pass]
-    models = "GB2AV"
-    modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
-    dbschema = "gb2av"
-    coalesceJson = true
+    models = "SO_Nutzungsplanung_20171118"
 }
