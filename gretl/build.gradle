@@ -57,6 +57,15 @@ dependencies {
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
+    api (ili2gpkgDependency) {
+        exclude group: 'ch.ehi', module: 'ehisqlgen'
+        
+    }
+    api (ili2h2gisDependency) {
+        exclude group: 'ch.ehi', module: 'ehisqlgen'
+        
+    }
+    
     api ioxWkfDependency
     api ioxIliDependency
     api ehiSqlgenDependency
