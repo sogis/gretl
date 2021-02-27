@@ -124,6 +124,7 @@ dependencies {
      * Provides, at run-time, the dependencies that both _main_ and _test_ require to run.
      */
     integrationTestImplementation configurations.runtime
+    integrationTestImplementation 'org.locationtech.jts:jts-core:1.15.1' // TODO: Wird benötigt für die Auswertung der Tests. Wie geht das ohne hardcodiert?
     integrationTestImplementation configurations.testRuntime
 }
 

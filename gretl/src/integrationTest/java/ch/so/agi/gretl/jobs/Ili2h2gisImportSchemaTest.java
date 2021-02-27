@@ -36,6 +36,11 @@ public class Ili2h2gisImportSchemaTest {
                 Assert.assertEquals("PUBLIC", rs.getString(1).toUpperCase());
                 Assert.assertEquals("AMT", rs.getString(2).toUpperCase());
             }
+            
+            ResultSet rs2 = stmt.executeQuery("SELECT JAVA_CLASS FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_NAME = 'ST_GEOMFROMWKB'AND COLUMN_COUNT = 1");
+            while (rs2.next()) {
+                Assert.assertEquals("org.h2gis.functions.spatial.convert.ST_GeomFromWKB", rs2.getString(1));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception(e);

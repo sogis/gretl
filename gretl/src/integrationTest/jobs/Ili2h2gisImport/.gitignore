@@ -1,0 +1,3 @@
+*.mv.db
+*.trace.db
+.gradle

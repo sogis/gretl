@@ -24,8 +24,8 @@ import groovy.lang.Range;
 public abstract class Ili2h2gisAbstractTask extends DefaultTask {
     protected GretlLogger log;
 
-    @Input
-    public Connector database;
+    @InputFile
+    public Object dbfile;
     @Input
     @Optional
     public String dbschema = null;
@@ -35,7 +35,6 @@ public abstract class Ili2h2gisAbstractTask extends DefaultTask {
     @Input
     @Optional
     public Integer proxyPort = null;
-
     @Input
     @Optional
     public String modeldir = null;
@@ -109,8 +108,8 @@ public abstract class Ili2h2gisAbstractTask extends DefaultTask {
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
 
-        if (database == null) {
-            throw new IllegalArgumentException("database must not be null");
+        if (dbfile == null) {
+            throw new IllegalArgumentException("dbfile must not be null");
         }
         
         settings.setFunction(function);
@@ -189,41 +188,18 @@ public abstract class Ili2h2gisAbstractTask extends DefaultTask {
         }        
 
         try {
-            java.sql.Connection conn = database.connect();
-            if (conn == null) {
-                throw new IllegalArgumentException("connection must not be null");
-            }
-            settings.setJdbcConnection(conn);
+            String dbFileName = this.getProject().file(dbfile).getAbsolutePath();
+            settings.setDbfile(dbFileName);
+            settings.setDburl("jdbc:h2:" + settings.getDbfile());
+
             Ili2db.readSettingsFromDb(settings);
             Ili2db.run(settings, null);
-            conn.commit();
-            database.close();
         } catch (Exception e) {
-            if (e instanceof Ili2dbException && !failOnException) {
-                log.lifecycle(e.getMessage());
-                return;
-            }
-
             log.error("failed to run ili2h2gis", e);
 
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
-        } finally {
-            
-            if (!database.isClosed()) {
-                try {
-                    database.connect().rollback();
-                } catch (SQLException e) {
-                    log.error("failed to rollback", e);
-                }finally {
-                    try {
-                        database.close();
-                    } catch (SQLException e) {
-                        log.error("failed to close", e);
-                    }
-                }
-            }
-        }
+        }        
     }
 
     protected Config createConfig() {

@@ -89,7 +89,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
         log = LogEnvironment.getLogger(Ili2gpkgAbstractTask.class);
 
         if (dbfile == null) {
-            throw new IllegalArgumentException("database must not be null");
+            throw new IllegalArgumentException("dbfile must not be null");
         }
 
         settings.setFunction(function);
@@ -160,7 +160,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
             Ili2db.readSettingsFromDb(settings);
             Ili2db.run(settings, null);
         } catch (Exception e) {
-            log.error("failed to run ili2pg", e);
+            log.error("failed to run ili2gpkg", e);
 
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;

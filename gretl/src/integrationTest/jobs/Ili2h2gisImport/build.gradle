@@ -1,0 +1,20 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+def testDbFileName = file("./254900").getAbsolutePath()
+
+defaultTasks 'dataimport'
+
+task schemaimport(type: Ili2h2gisImportSchema){
+    dbfile = testDbFileName
+    models = "DM01AVSO24LV95"
+    defaultSrsCode = "2056"
+}
+
+task dataimport(type: Ili2h2gisImport, dependsOn: 'schemaimport') {
+    dbfile = testDbFileName
+    models = "DM01AVSO24LV95"
+    dataFile = file("254900.itf")
+    disableValidation = true
+}
