@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+  <HEADERSECTION SENDER="Amt für Geoinformation" VERSION="2.3">
+    <MODELS>
+      <MODEL NAME="OeREBKRMvs_V1_1" VERSION="2016-08-15" URI="http://models.geo.admin.ch/V_D/OeREB/"/>
+    </MODELS>
+    <!-- Stand der XML-Datei -->
+    <COMMENT>"2020-02-25"</COMMENT>
+  </HEADERSECTION>
+  <DATASECTION>
+    <OeREBKRMvs_V1_1.HinweiseGesetzlicheGrundlagen BID="b1">
+      <!-- gesetzliche Grundlagen Kanton Solothurn -->
+      <!-- BGS 711.1 - Planungs- und Baugesetz -->
+      <OeREBKRMvs_V1_1.Vorschriften.Dokument TID="ch.so.sk.bgs.711.1">
+        <TextImWeb>
+          <OeREBKRM_V1_1.MultilingualUri>
+            <LocalisedText>
+              <OeREBKRM_V1_1.LocalisedUri>
+                <Language>de</Language>
+                <Text>https://bgs.so.ch/data/711.1</Text>
+              </OeREBKRM_V1_1.LocalisedUri>
+			</LocalisedText>  
+          </OeREBKRM_V1_1.MultilingualUri>
+        </TextImWeb>
+        <Rechtsstatus>inKraft</Rechtsstatus>
+        <publiziertAb>1978-12-03</publiziertAb>
+		<Kanton>SO</Kanton>
+        <Titel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Planungs- und Baugesetz</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Titel>
+        <Abkuerzung>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>PBG</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Abkuerzung>
+        <OffizielleNr>BGS 711.1</OffizielleNr>
+        <ZustaendigeStelle REF="ch.so.sk"/>
+      </OeREBKRMvs_V1_1.Vorschriften.Dokument>
+      <!-- BGS 711.61 - Kantonale Bauverordnung -->
+      <OeREBKRMvs_V1_1.Vorschriften.Dokument TID="ch.so.sk.bgs.711.61">
+        <TextImWeb>
+          <OeREBKRM_V1_1.MultilingualUri>
+            <LocalisedText>
+              <OeREBKRM_V1_1.LocalisedUri>
+                <Language>de</Language>
+                <Text>https://bgs.so.ch/data/711.61/</Text>
+              </OeREBKRM_V1_1.LocalisedUri>
+            </LocalisedText>
+          </OeREBKRM_V1_1.MultilingualUri>
+        </TextImWeb>
+        <Rechtsstatus>inKraft</Rechtsstatus>
+        <publiziertAb>1978-07-03</publiziertAb>
+		<Kanton>SO</Kanton>
+        <Titel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Kantonale Bauverordnung</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Titel>
+        <Abkuerzung>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>KBV</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Abkuerzung>
+        <OffizielleNr>BGS 711.61</OffizielleNr>
+        <ZustaendigeStelle REF="ch.so.sk"/>
+      </OeREBKRMvs_V1_1.Vorschriften.Dokument>
+      <!-- BGS 712.15 - Gesetz über Wasser, Boden und Abfall -->
+      <OeREBKRMvs_V1_1.Vorschriften.Dokument TID="ch.so.sk.bgs.712.15">
+        <TextImWeb>
+          <OeREBKRM_V1_1.MultilingualUri>
+            <LocalisedText>
+              <OeREBKRM_V1_1.LocalisedUri>
+                <Language>de</Language>
+                <Text>https://bgs.so.ch/data/712.15/</Text>
+              </OeREBKRM_V1_1.LocalisedUri>
+            </LocalisedText>
+          </OeREBKRM_V1_1.MultilingualUri>
+        </TextImWeb>
+        <Rechtsstatus>inKraft</Rechtsstatus>
+        <publiziertAb>2009-03-04</publiziertAb>
+		<Kanton>SO</Kanton>
+        <Titel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Gesetz über Wasser, Boden und Abfall</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Titel>
+        <Abkuerzung>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>GWBA</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Abkuerzung>
+        <OffizielleNr>BGS 712.15</OffizielleNr>
+        <ZustaendigeStelle REF="ch.so.sk"/>
+      </OeREBKRMvs_V1_1.Vorschriften.Dokument>
+     <!-- BGS 712.16 - Verordnung über Wasser, Boden und Abfall -->
+      <OeREBKRMvs_V1_1.Vorschriften.Dokument TID="ch.so.sk.bgs.712.16">
+        <TextImWeb>
+          <OeREBKRM_V1_1.MultilingualUri>
+            <LocalisedText>
+              <OeREBKRM_V1_1.LocalisedUri>
+                <Language>de</Language>
+                <Text>https://bgs.so.ch/data/712.16/</Text>
+              </OeREBKRM_V1_1.LocalisedUri>
+            </LocalisedText>
+          </OeREBKRM_V1_1.MultilingualUri>
+        </TextImWeb>
+        <Rechtsstatus>inKraft</Rechtsstatus>
+        <publiziertAb>2009-12-22</publiziertAb>
+		<Kanton>SO</Kanton>
+        <Titel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Verordnung über Wasser, Boden und Abfall</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Titel>
+        <Abkuerzung>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>VWBA</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Abkuerzung>
+        <OffizielleNr>BGS 712.16</OffizielleNr>
+        <ZustaendigeStelle REF="ch.so.sk"/>
+      </OeREBKRMvs_V1_1.Vorschriften.Dokument>
+     <!-- BGS 931.11 - Waldgesetz  -->
+      <OeREBKRMvs_V1_1.Vorschriften.Dokument TID="ch.so.sk.bgs.931.11">
+        <TextImWeb>
+          <OeREBKRM_V1_1.MultilingualUri>
+            <LocalisedText>
+              <OeREBKRM_V1_1.LocalisedUri>
+                <Language>de</Language>
+                <Text>https://bgs.so.ch/data/931.11/</Text>
+              </OeREBKRM_V1_1.LocalisedUri>
+            </LocalisedText>
+          </OeREBKRM_V1_1.MultilingualUri>
+        </TextImWeb>
+        <Rechtsstatus>inKraft</Rechtsstatus>
+        <publiziertAb>1995-01-29</publiziertAb>
+		<Kanton>SO</Kanton>
+        <Titel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Waldgesetz</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Titel>
+		<Abkuerzung>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>WaGSO</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Abkuerzung>
+        <OffizielleNr>BGS 931.11</OffizielleNr>
+        <ZustaendigeStelle REF="ch.so.sk"/>
+      </OeREBKRMvs_V1_1.Vorschriften.Dokument>	
+	  <!-- BGS 931.12 - Waldverordnung  -->
+      <OeREBKRMvs_V1_1.Vorschriften.Dokument TID="ch.so.sk.bgs.931.12">
+        <TextImWeb>
+          <OeREBKRM_V1_1.MultilingualUri>
+            <LocalisedText>
+              <OeREBKRM_V1_1.LocalisedUri>
+                <Language>de</Language>
+                <Text>https://bgs.so.ch/data/931.12/</Text>
+              </OeREBKRM_V1_1.LocalisedUri>
+            </LocalisedText>
+          </OeREBKRM_V1_1.MultilingualUri>
+        </TextImWeb>
+        <Rechtsstatus>inKraft</Rechtsstatus>
+        <publiziertAb>1995-11-14</publiziertAb>
+		<Kanton>SO</Kanton>
+        <Titel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Waldverordnung</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Titel>
+		<Abkuerzung>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>WaVSO</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Abkuerzung>
+        <OffizielleNr>BGS 931.12</OffizielleNr>
+        <ZustaendigeStelle REF="ch.so.sk"/>
+      </OeREBKRMvs_V1_1.Vorschriften.Dokument>	  	  
+     <!-- BGS 931.72 - Verordnung über Waldfeststellung und Waldabstand  -->
+      <OeREBKRMvs_V1_1.Vorschriften.Dokument TID="ch.so.sk.bgs.931.72">
+        <TextImWeb>
+          <OeREBKRM_V1_1.MultilingualUri>
+            <LocalisedText>
+              <OeREBKRM_V1_1.LocalisedUri>
+                <Language>de</Language>
+                <Text>https://bgs.so.ch/data/931.72/</Text>
+              </OeREBKRM_V1_1.LocalisedUri>
+            </LocalisedText>
+          </OeREBKRM_V1_1.MultilingualUri>
+        </TextImWeb>
+        <Rechtsstatus>inKraft</Rechtsstatus>
+        <publiziertAb>1993-06-15</publiziertAb>
+		<Kanton>SO</Kanton>
+        <Titel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Verordnung über Waldfeststellung und Waldabstand</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Titel>
+        <OffizielleNr>BGS 931.72</OffizielleNr>
+        <ZustaendigeStelle REF="ch.so.sk"/>
+      </OeREBKRMvs_V1_1.Vorschriften.Dokument>  
+<!--  BGS 436.11 - Verordnung über den Schutz der historischen Kulturdenkmäler -->
+      <OeREBKRMvs_V1_1.Vorschriften.Dokument TID="ch.so.sk.bgs.436.11">
+        <TextImWeb>
+          <OeREBKRM_V1_1.MultilingualUri>
+            <LocalisedText>
+              <OeREBKRM_V1_1.LocalisedUri>
+                <Language>de</Language>
+                <Text>https://bgs.so.ch/data/436.11/</Text>
+              </OeREBKRM_V1_1.LocalisedUri>
+            </LocalisedText>
+          </OeREBKRM_V1_1.MultilingualUri>
+        </TextImWeb>
+        <Rechtsstatus>inKraft</Rechtsstatus>
+        <publiziertAb>1995-12-19</publiziertAb>
+		<Kanton>SO</Kanton>		
+        <Titel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Kulturdenkmäler-Verordnung</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Titel>
+		<OffiziellerTitel>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Verordnung über den Schutz der historischen Kulturdenkmäler</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </OffiziellerTitel>
+        <OffizielleNr>BGS 436.11</OffizielleNr>
+        <ZustaendigeStelle REF="ch.so.sk"/>
+      </OeREBKRMvs_V1_1.Vorschriften.Dokument>
+<!--  Zuständige Stelle 	-->	  
+      <OeREBKRMvs_V1_1.Vorschriften.Amt TID="ch.so.sk">
+        <Name>
+          <LocalisationCH_V1.MultilingualText>
+            <LocalisedText>
+              <LocalisationCH_V1.LocalisedText>
+                <Language>de</Language>
+                <Text>Staatskanzlei</Text>
+              </LocalisationCH_V1.LocalisedText>
+            </LocalisedText>
+          </LocalisationCH_V1.MultilingualText>
+        </Name>
+        <AmtImWeb>https://www.so.ch/staatskanzlei/</AmtImWeb>
+      </OeREBKRMvs_V1_1.Vorschriften.Amt> 
+    </OeREBKRMvs_V1_1.HinweiseGesetzlicheGrundlagen>
+  </DATASECTION>
+</TRANSFER>
