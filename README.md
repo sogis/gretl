@@ -95,3 +95,4 @@ It uses a simple release management and versioning mechanism: Local builds are t
 ## Jenkins (CI/CD)
 For a working github webhook one have to choose the content type `application/x-www-form-urlencoded` and not `application/json`. And do not forget the trailing `/`.  
 
+
