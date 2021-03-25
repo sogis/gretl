@@ -11,7 +11,7 @@ ext {
     
     //oerebIconizerVersion = '1.0.36'
     oerebIconizerVersion = '2.0.5'
-    av2chVersion = '1.0.12'
+    av2chVersion = '1.1.6'
     av2geobauVersion = '1.0.2-SNAPSHOT'
     
     //awsSdkVersion = '2.15.64'
@@ -41,7 +41,7 @@ ext {
     ehiSqlgenDependency = [ group: 'ch.ehi', name: 'ehisqlgen', version: ehiSqlgenVersion ]
 
     oerebIconizerDependency = [ group: 'ch.so.agi.oereb', name: 'oereb-iconizer', version: oerebIconizerVersion ]
-    av2chDependency = [ group: 'ch.so.agi.av', name: 'av2ch', version: av2chVersion ]
+    av2chDependency = [ group: 'io.github.sogis', name: 'av2ch', version: av2chVersion ]
     av2geobauDependency = [ group: 'ch.interlis', name: 'av2geobau', version: av2geobauVersion ]
     
     awsSdkS3Dependency = [ group: 'software.amazon.awssdk', name: 's3', version: '2.15.64' ]
