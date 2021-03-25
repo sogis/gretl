@@ -2,7 +2,7 @@ ext {
     // dependencies version
     ioxIliVersion = '1.20.15'
     ilivalidatorVersion = '1.11.3'
-    ilivalidatorCustomFunctions = '1.1.11'
+    ilivalidatorCustomFunctions = '1.1.47'
     ili2pgVersion = '4.3.2'
     ili2gpkgVersion = '4.3.2'
     //ioxWkfVersion = '1.0.2-SNAPSHOT'
@@ -14,7 +14,7 @@ ext {
     av2chVersion = '1.0.12'
     av2geobauVersion = '1.0.2-SNAPSHOT'
     
-    //awsSdkVersion = '1.11.795'
+    //awsSdkVersion = '2.15.64'
     
     apacheCommonsIoVersion = '2.6'
     apacheCommonsNetVersion = '3.6'
@@ -34,7 +34,7 @@ ext {
     // dependencies
     ioxIliDependency = [ group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion ]
     ilivalidatorDependency = [ group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion ]
-    ilivalidatorCustomFunctionsDependency = [ group: 'ch.so.agi.ilivalidator', name: 'ilivalidator-custom-functions', version: ilivalidatorCustomFunctions ]
+    ilivalidatorCustomFunctionsDependency = [ group: 'io.github.sogis', name: 'ilivalidator-custom-functions', version: ilivalidatorCustomFunctions ]
     ili2pgDependency = [ group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion ]
     ili2gpkgDependency = [ group: 'ch.interlis', name: 'ili2gpkg', version: ili2gpkgVersion ]
     ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
@@ -44,8 +44,6 @@ ext {
     av2chDependency = [ group: 'ch.so.agi.av', name: 'av2ch', version: av2chVersion ]
     av2geobauDependency = [ group: 'ch.interlis', name: 'av2geobau', version: av2geobauVersion ]
     
-    //awsSdkDependency = [ group: 'com.amazonaws', name: 'aws-java-sdk', version: awsSdkVersion ]
-    //awsSdkDependency = [group: 'software.amazon.awssdk', name: 'bom', version: '2.15.64', ext: 'pom']
     awsSdkS3Dependency = [ group: 'software.amazon.awssdk', name: 's3', version: '2.15.64' ]
     
     apacheCommonsIoDependency = [ group: 'commons-io', name: 'commons-io', version: apacheCommonsIoVersion ]
