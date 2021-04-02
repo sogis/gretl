@@ -39,6 +39,10 @@ public class SqlExecutor extends DefaultTask {
     @Optional
     public Object sqlParameters = null;
 
+    @Input
+    @Optional
+    public boolean failOnError = true;
+
     @TaskAction
     public void executeSQLExecutor() {
 
@@ -67,8 +71,10 @@ public class SqlExecutor extends DefaultTask {
         } catch (Exception e) {
             log.error("Exception in creating / invoking SqlExecutorStep.", e);
 
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            if (failOnError) {
+                GradleException ge = TaskUtil.toGradleException(e);
+                throw ge;
+            }
         }
     }
 
