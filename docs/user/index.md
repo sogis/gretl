@@ -1376,7 +1376,7 @@ metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"202
 
 ### S3Bucket2Bucket (Experimental)
 
-Kopiert Objekte von einem Bucket in einen anderen. Die Buckets müssen in der gleichen Region sein. Die Permissions werden mitkopiert.
+Kopiert Objekte von einem Bucket in einen anderen. Die Buckets müssen in der gleichen Region sein. Die Permissions werden nicht mitkopiert und müssen explizit gesetzt werden. 
 
 ```
 task copyFiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
@@ -1384,6 +1384,7 @@ task copyFiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
     secretKey = s3SecretKey
     sourceBucket = s3SourceBucket
     targetBucket = s3TargetBucket
+    acl = "public-read"
 }
 ```
 
@@ -1393,6 +1394,7 @@ accessKey | AccessKey
 secretKey | SecretKey
 sourceBucket  | Bucket aus dem die Objekte kopiert werden.
 targetBucket  | Bucket in den die Objekte kopiert werden.
+acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
 metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
 

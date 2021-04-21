@@ -19,8 +19,11 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectAclRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectAclResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3Bucket2BucketStep {
@@ -40,9 +43,9 @@ public class S3Bucket2BucketStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
     
-    public void execute(String accessKey, String secretKey, String sourceBucket, String targetBucket, String s3EndPoint, String s3Region, Map<String, String> metaData) throws FileNotFoundException, UnsupportedEncodingException {        
-        log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceBucket: %s TargetBucket: %s S3EndPoint: %s S3Region: %s MetaData: %s)", taskName,
-                sourceBucket, targetBucket, s3EndPoint, s3Region, metaData));
+    public void execute(String accessKey, String secretKey, String sourceBucket, String targetBucket, String s3EndPoint, String s3Region, String acl, Map<String, String> metaData) throws FileNotFoundException, UnsupportedEncodingException {        
+        log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceBucket: %s TargetBucket: %s S3EndPoint: %s S3Region: %s ACL: %s MetaData: %s)", taskName,
+                sourceBucket, targetBucket, s3EndPoint, s3Region, acl, metaData));
         
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
         Region region = Region.of(s3Region);
@@ -53,7 +56,9 @@ public class S3Bucket2BucketStep {
                 .build(); 
         
         int copiedFiles = 0;
-        
+
+        ObjectCannedACL aclObj = ObjectCannedACL.fromValue(acl);            
+
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
                 .bucket(sourceBucket)
@@ -62,17 +67,16 @@ public class S3Bucket2BucketStep {
         ListObjectsResponse res = s3client.listObjects(listObjects);
         List<S3Object> objects = res.contents();
 
-        
-        
         List<String> keyList = new ArrayList<String>();
         for (ListIterator<S3Object> iterVals = objects.listIterator(); iterVals.hasNext(); ) {
             S3Object myObject = iterVals.next();        
-            
+
             String encodedUrl = encodedUrl = URLEncoder.encode(sourceBucket + "/" + myObject.key(), StandardCharsets.UTF_8.toString());
             CopyObjectRequest copyReq = CopyObjectRequest.builder()
                     .copySource(encodedUrl)
                     .destinationBucket(targetBucket)
                     .destinationKey(myObject.key())
+                    .acl(aclObj)
                     .build();
 
             CopyObjectResponse copyRes = s3client.copyObject(copyReq);

@@ -24,4 +24,5 @@ task copyfiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
     secretKey = s3SecretKey
     sourceBucket = s3SourceBucket
     targetBucket = s3TargetBucket
+    acl = "public-read"
 }

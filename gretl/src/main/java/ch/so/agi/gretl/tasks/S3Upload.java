@@ -45,7 +45,6 @@ public class S3Upload extends DefaultTask {
     public String region = "eu-central-1";
     
     @Input
-    @Optional    
     public String acl = null;
     
     @Input

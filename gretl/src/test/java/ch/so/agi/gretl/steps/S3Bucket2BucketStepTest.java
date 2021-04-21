@@ -69,7 +69,7 @@ public class S3Bucket2BucketStepTest {
         
         // Copy files from one bucket to another.
         S3Bucket2BucketStep s3Bucket2Bucket = new S3Bucket2BucketStep();
-        s3Bucket2Bucket.execute(s3AccessKey, s3SecretKey, s3SourceBucketName, s3TargetBucketName, s3EndPoint, s3Region, metaData);
+        s3Bucket2Bucket.execute(s3AccessKey, s3SecretKey, s3SourceBucketName, s3TargetBucketName, s3EndPoint, s3Region, acl, metaData);
         
         // Check result. 
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));

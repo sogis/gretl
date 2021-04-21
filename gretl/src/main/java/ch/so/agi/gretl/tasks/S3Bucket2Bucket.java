@@ -40,6 +40,9 @@ public class S3Bucket2Bucket extends DefaultTask {
     public String region = "eu-central-1";
         
     @Input
+    public String acl = null;
+    
+    @Input
     @Optional        
     public Map<String,String> metaData = new HashMap<String,String>();
     
@@ -61,11 +64,14 @@ public class S3Bucket2Bucket extends DefaultTask {
         }        
         if (region == null) {
             throw new IllegalArgumentException("region must not be null");
-        }        
+        }                
+        if (acl == null) {
+            throw new IllegalArgumentException("acl must not be null");
+        }
                 
         try {
             S3Bucket2BucketStep s3Bucket2Bucket = new S3Bucket2BucketStep();
-            s3Bucket2Bucket.execute(accessKey, secretKey, sourceBucket, targetBucket, endPoint, region, metaData);
+            s3Bucket2Bucket.execute(accessKey, secretKey, sourceBucket, targetBucket, endPoint, region, acl, metaData);
         } catch (Exception e) {
             log.error("Exception in S3Upload task.", e);
             GradleException ge = TaskUtil.toGradleException(e);
