@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.11.0'
+    id 'com.gradle.plugin-publish' version '0.14.0'
 }
 
 sourceCompatibility = 1.8

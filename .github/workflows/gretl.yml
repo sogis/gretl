@@ -22,20 +22,22 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean gretl:classes 
       - name: Unit Tests 
-        run: |
-          ./gradlew gretl:test gretl:dbTest
-          ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+        # run: |
+        #   ./gradlew gretl:test gretl:dbTest
+        #   ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+        #   ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
+        # run: |
           ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
         env:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-      - name: Integration Test (Jar)
-        run: |
-          ./gradlew gretl:jarTest
-          ./gradlew gretl:jarS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
-        env:
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      # - name: Integration Test (Jar)
+      #   run: |
+      #     ./gradlew gretl:jarTest
+      #     ./gradlew gretl:jarS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+      #   env:
+      #     S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      #     S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
       - name: Build Docker Image
         run: |
           cd runtimeImage/
@@ -44,13 +46,13 @@ jobs:
         env:
           TRAVIS_COMMIT: ${{ github.sha }}
           TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
-      - name: Integration Test (Docker Image)
-        run: |
-          ./gradlew gretl:imageTest
-          ./gradlew gretl:imageS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
-        env:
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      # - name: Integration Test (Docker Image)
+      #   run: |
+      #     ./gradlew gretl:imageTest
+      #     ./gradlew gretl:imageS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+      #   env:
+      #     S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      #     S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
       - name: List Docker Images
         run: docker images
       - name: Publish plugin
