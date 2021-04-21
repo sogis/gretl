@@ -26,7 +26,7 @@ jobs:
         #   ./gradlew gretl:test gretl:dbTest
         #   ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
         #   ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
-        # run: |
+        run: |
           ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
         env:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
