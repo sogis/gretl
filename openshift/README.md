@@ -196,15 +196,14 @@ Update an existing system.
 ### Update GRETL runtime image
 There are several ways to change the GRETL runtime image version.
 
-Apply the template from the previous section again with the desired image tag.
+Either apply the `gretl-is-template.yaml` template again with the desired image tag.
 
-
-Apply a patch update with the desired image tag:
+Or set the image tag with a command like this:
 ```
-oc patch is gretl -p $'spec:\n  tags:\n  - from:\n      kind: DockerImage\n      name: sogis/gretl-runtime:32\n    name: latest'
+oc tag --source=docker sogis/gretl-runtime:2.1.119 gretl:ili2pg4
 ```
 
-Edit the version manually inside the web console of OpenShift
+Or edit the Image Stream manually inside the OpenShift web console:
 1. go to the project
 1. select Builds -> Images
 1. click on the Image Stream with name *gretl*
