@@ -22,7 +22,7 @@ Apply project template with the GRETL-Jenkins configuration.
 ```
 oc process -f openshift/templates/jenkins-s2i-persistent-template.yaml \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
-  -p JENKINS_DOCKER_IMAGE_TAG="v3.11" \
+  -p JENKINS_DOCKER_IMAGE_TAG="4.7" \
   -p GRETL_JOB_REPO_URL="https://github.com/sogis/gretljobs.git" \
   -p GRETL_JOB_FILE_PATH="**" \
   -p GRETL_JOB_FILE_NAME="build.gradle" \
@@ -58,7 +58,7 @@ Basically you could add the label `role=jenkins-slave` to the image stream,
 so the OpenShift Sync plug-in, which is installed in our Jenkins,
 would automatically create the configuration
 for a Jenkins agent running the GRETL runtime image.
-Documentation: https://docs.openshift.com/container-platform/3.11/using_images/other_images/jenkins.html#configuring-the-jenkins-kubernetes-plug-in
+Documentation: https://docs.openshift.com/container-platform/4.7/openshift_images/using_images/images-other-jenkins.html#images-other-jenkins-config-kubernetes_images-other-jenkins
 However, as we want to provide some further configuration
 of our Jenkins agent, we don't use this feature,
 but instead provide with the following steps a ConfigMap
