@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   app: gretl-platform
@@ -23,11 +23,11 @@ metadata:
   creationTimestamp: null
   name: gretl-platform
 objects:
-- apiVersion: v1
+- apiVersion: image.openshift.io/v1
   kind: ImageStream
   metadata:
     name: gretl-jenkins
-- apiVersion: v1
+- apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
     annotations:
@@ -52,7 +52,7 @@ objects:
     resources:
       requests:
         storage: ${VOLUME_CAPACITY}
-- apiVersion: v1
+- apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
     creationTimestamp: null
@@ -74,7 +74,7 @@ objects:
       sourceStrategy:
         from:
           kind: DockerImage
-          name: openshift/jenkins-2-centos7:${JENKINS_DOCKER_IMAGE_TAG}
+          name: quay.io/openshift/origin-jenkins:${JENKINS_DOCKER_IMAGE_TAG}
       type: Source
     triggers:
     - github:
@@ -86,7 +86,7 @@ objects:
     - type: ConfigChange
   status:
     lastVersion: 0
-- apiVersion: v1
+- apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
     annotations:
@@ -267,7 +267,7 @@ parameters:
 - description: Name of the Tag to be used for the Jenkins image.
   displayName: Jenkins Docker Image Tag
   name: JENKINS_DOCKER_IMAGE_TAG
-  value: v3.11
+  value: '4.7'
 - description: Url of the Git repo holding the Jenkins configuration.
   displayName: Jenkins configuration Git repo
   name: JENKINS_CONFIGURATION_REPO_URL

@@ -19,7 +19,7 @@ data:
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
           <name>jnlp</name>
           <!-- Attention: Before creating this ConfigMap, please adapt the image URI below so it points to the right project -->
-          <image>docker-registry.default.svc:5000/PROJECT-NAME/gretl:latest</image>
+          <image>image-registry.openshift-image-registry.svc:5000/PROJECT-NAME/gretl:latest</image>
           <privileged>false</privileged>
           <alwaysPullImage>true</alwaysPullImage>
           <workingDir>/tmp</workingDir>
