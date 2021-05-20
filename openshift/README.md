@@ -84,7 +84,17 @@ the same way as the default ConfigMap.
 
 ### Create or update resources to be used by GRETL
 
-TODO: Creation
+Create a ConfigMap containing the resources that may be used by GRETL:
+
+Use the file `templates/gretl-resources-example.yaml`
+as a template for creating a file named `gretl-resources-ENVIRONMENT.yaml`
+and modify it to your needs.
+Then run
+```
+oc apply -f gretl-resources-ENVIRONMENT.yaml
+rm gretl-resources-ENVIRONMENT.yaml
+```
+(Remove the resources YAML file for security reasons.)
 
 Steps for adding a new resource:
 ```
@@ -102,7 +112,17 @@ rm gretl-resources-ENVIRONMENT.yaml
 
 ### Create or update secrets to be used by GRETL
 
-TODO: Creation
+Create a Secret containing the secrets that may be used by GRETL:
+
+Use the file `templates/gretl-secrets-example.yaml`
+as a template for creating a file named `gretl-secrets-ENVIRONMENT.yaml`
+and modify it to your needs.
+Then run
+```
+oc apply -f gretl-secrets-ENVIRONMENT.yaml
+rm gretl-secrets-ENVIRONMENT.yaml
+```
+(Remove the secrets YAML file for security reasons.)
 
 Steps for adding a new secret:
 ```
