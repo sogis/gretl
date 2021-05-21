@@ -22,11 +22,6 @@ data:
           <claimName>agi-gretl-ENVIRONMENT-lowback</claimName>
           <readOnly>false</readOnly>
         </org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
-        <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
-          <mountPath>/opt/gretl-jenkins-share</mountPath>
-          <claimName>jenkins-share</claimName>
-          <readOnly>false</readOnly>
-        </org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
       </volumes>
       <containers>
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
