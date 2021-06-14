@@ -75,13 +75,6 @@ oc apply -f openshift/templates/gretl-pod-template-configmap.yaml
 Note: When editing the ConfigMap any further, pay close attention
 to the indentation of the lines inside the `<yaml>` XML tags.
 
-If you need an additional Jenkins agent running a different GRETL image tag,
-create an additional Image Stream tag, e.g.
-`oc tag --scheduled=true --source=docker sogis/gretl-runtime:latest gretl:ili2pg4`,
-then apply the additional ConfigMap
-`openshift/templates/gretl-ili2pg4-pod-template-configmap.yaml`
-the same way as the default ConfigMap.
-
 ### Create or update resources to be used by GRETL
 
 Create a ConfigMap containing the resources that may be used by GRETL:
@@ -220,7 +213,7 @@ Either apply the `gretl-is-template.yaml` template again with the desired image 
 
 Or set the image tag with a command like this:
 ```
-oc tag --source=docker sogis/gretl-runtime:2.1.119 gretl:ili2pg4
+oc tag --source=docker sogis/gretl-runtime:2.1.119 gretl:latest
 ```
 
 Or edit the Image Stream manually inside the OpenShift web console:

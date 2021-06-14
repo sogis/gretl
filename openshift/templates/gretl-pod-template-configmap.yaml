@@ -10,7 +10,7 @@ data:
     <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
       <inheritFrom></inheritFrom>
       <name>gretl</name>
-      <instanceCap>2</instanceCap>
+      <instanceCap>4</instanceCap>
       <idleMinutes>0</idleMinutes>
       <label>gretl</label>
       <serviceAccount>jenkins</serviceAccount>

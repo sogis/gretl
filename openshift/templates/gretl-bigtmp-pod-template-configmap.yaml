@@ -10,7 +10,7 @@ data:
     <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
       <inheritFrom></inheritFrom>
       <name>gretl-bigtmp</name>
-      <instanceCap>2</instanceCap>
+      <instanceCap>1</instanceCap>
       <idleMinutes>0</idleMinutes>
       <label>gretl-bigtmp</label>
       <serviceAccount>jenkins</serviceAccount>
@@ -27,7 +27,7 @@ data:
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
           <name>jnlp</name>
           <!-- Attention: Before creating this ConfigMap, please adapt the image URI below so it points to the right project -->
-          <image>docker-registry.default.svc:5000/PROJECT-NAME/gretl:ili2pg4</image>
+          <image>docker-registry.default.svc:5000/PROJECT-NAME/gretl:latest</image>
           <privileged>false</privileged>
           <alwaysPullImage>true</alwaysPullImage>
           <workingDir>/workspace</workingDir>
