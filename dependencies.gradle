@@ -5,8 +5,8 @@ ext {
     ilivalidatorCustomFunctions = '1.1.47'
     ili2pgVersion = '4.3.2'
     ili2gpkgVersion = '4.3.2'
-    //ioxWkfVersion = '1.0.2-SNAPSHOT'
-    ioxWkfVersion = '1.2.23' // Temporary. Until shp-trim branch is merged into master / original repo.
+    ioxWkfVersion = '1.0.2'
+    //ioxWkfVersion = '1.2.23' // Temporary. Until shp-trim branch is merged into master / original repo.
     ehiSqlgenVersion = '1.13.7'
     
     //oerebIconizerVersion = '1.0.36'
