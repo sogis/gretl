@@ -114,7 +114,7 @@ public class S3UploadTest {
         
         assertTrue(keyList.contains("foo.csv"));
         assertTrue(keyList.contains("bar.csv"));
-        assertTrue(keyList.size() == 2);
+        assertTrue(keyList.size() == 3); // TODO 3 wegen download.txt
         
         // Remove uploaded files from bucket.
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.csv").build());
