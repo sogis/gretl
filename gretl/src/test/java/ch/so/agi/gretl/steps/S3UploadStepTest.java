@@ -59,11 +59,6 @@ public class S3UploadStepTest {
         Map<String,String> metaData = new HashMap<String,String>();
         metaData.put("lastModified", "2020-08-28");
         
-        // Upload files from a directory.
-        S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
-        
-        // Check result. 
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
         Region region = Region.of(s3Region);
         S3Client s3client = S3Client.builder()
@@ -72,6 +67,14 @@ public class S3UploadStepTest {
                 .endpointOverride(URI.create(s3EndPoint))
                 .build(); 
 
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
+
+        // Upload files from a directory.
+        S3UploadStep s3UploadStep = new S3UploadStep();
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
+        
+        // Check result. 
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
                 .bucket(s3BucketName)
@@ -104,11 +107,6 @@ public class S3UploadStepTest {
         String acl = "public-read";
         Map<String,String> metaData = new HashMap<String,String>();        
         
-        // Upload a single file.
-        S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
-        
-        // Check result. 
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
         Region region = Region.of(s3Region);
         S3Client s3client = S3Client.builder()
@@ -117,6 +115,13 @@ public class S3UploadStepTest {
                 .endpointOverride(URI.create(s3EndPoint))
                 .build(); 
 
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
+        
+        // Upload a single file.
+        S3UploadStep s3UploadStep = new S3UploadStep();
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3EndPoint, s3Region, acl, null, metaData);
+        
+        // Check result. 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(s3BucketName)
                 .key("foo.txt")

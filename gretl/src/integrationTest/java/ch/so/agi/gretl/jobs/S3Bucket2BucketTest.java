@@ -45,6 +45,18 @@ public class S3Bucket2BucketTest {
     @Test
     @Category(S3Test.class)    
     public void uploadDirectory_Ok() throws Exception {
+        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
+        Region region = Region.of("eu-central-1");
+        S3Client s3client = S3Client.builder()
+                .credentialsProvider(creds)
+                .region(region)
+                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
+                .build(); 
+
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("bar.txt").build()); 
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("download.txt").build());
+
         // Upload files  and copy files from one bucket to another.
         GradleVariable[] gvs = { 
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
@@ -55,15 +67,6 @@ public class S3Bucket2BucketTest {
         IntegrationTestUtil.runJob("src/integrationTest/jobs/S3Bucket2Bucket", gvs);
 
         // Check result. 
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of("eu-central-1");
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
-                .build(); 
-
-
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
                 .bucket(s3TargetBucket)

@@ -38,6 +38,17 @@ public class S3UploadTest {
     @Test
     @Category(S3Test.class)    
     public void uploadDirectory_Ok() throws Exception {
+        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
+        Region region = Region.of("eu-central-1");
+        S3Client s3client = S3Client.builder()
+                .credentialsProvider(creds)
+                .region(region)
+                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
+                .build(); 
+
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
+
         // Upload all files from a directory.
         GradleVariable[] gvs = { 
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
@@ -47,14 +58,6 @@ public class S3UploadTest {
         IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadDirectory", gvs);
 
         // Check result.
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of("eu-central-1");
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
-                .build(); 
-
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
                 .bucket(s3BucketName)
@@ -80,14 +83,6 @@ public class S3UploadTest {
     @Test
     @Category(S3Test.class)        
     public void uploadFileTree_Ok() throws Exception {
-        // Upload all files from a directory.
-        GradleVariable[] gvs = { 
-                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
-                GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
-                GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
-            };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadFileTree", gvs);
-
         // Check result. 
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
         Region region = Region.of("eu-central-1");
@@ -96,6 +91,19 @@ public class S3UploadTest {
                 .region(region)
                 .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
                 .build(); 
+
+        // Remove uploaded files from bucket.
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.csv").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.csv").build());   
+
+        // Upload all files from a directory.
+        GradleVariable[] gvs = { 
+                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
+                GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
+                GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
+            };
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadFileTree", gvs);
+
 
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
@@ -110,7 +118,6 @@ public class S3UploadTest {
             S3Object myValue = iterVals.next();            
             keyList.add(myValue.key());
          }
-
         
         assertTrue(keyList.contains("foo.csv"));
         assertTrue(keyList.contains("bar.csv"));
@@ -124,6 +131,16 @@ public class S3UploadTest {
     @Test
     @Category(S3Test.class)    
     public void uploadFile_Ok() throws Exception {
+        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
+        Region region = Region.of("eu-central-1");
+        S3Client s3client = S3Client.builder()
+                .credentialsProvider(creds)
+                .region(region)
+                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
+                .build(); 
+
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
+        
         // Upload single file from a directory.
         GradleVariable[] gvs = { 
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
@@ -133,14 +150,6 @@ public class S3UploadTest {
         IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadFile", gvs);
 
         // Check result. 
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of("eu-central-1");
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
-                .build(); 
-
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(s3BucketName)
                 .key("bar.txt")

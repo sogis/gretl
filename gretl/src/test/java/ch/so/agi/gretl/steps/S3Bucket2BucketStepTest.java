@@ -63,6 +63,18 @@ public class S3Bucket2BucketStepTest {
         String acl = "public-read";
         Map<String,String> metaData = new HashMap<String,String>();
         
+        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
+        Region region = Region.of(s3Region);
+        S3Client s3client = S3Client.builder()
+                .credentialsProvider(creds)
+                .region(region)
+                .endpointOverride(URI.create(s3EndPoint))
+                .build(); 
+
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
+
         // Upload files from a directory.
         S3UploadStep s3UploadStep = new S3UploadStep();
         s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3SourceBucketName, s3EndPoint, s3Region, acl, null, metaData);
@@ -72,14 +84,6 @@ public class S3Bucket2BucketStepTest {
         s3Bucket2Bucket.execute(s3AccessKey, s3SecretKey, s3SourceBucketName, s3TargetBucketName, s3EndPoint, s3Region, acl, metaData);
         
         // Check result. 
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of(s3Region);
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create(s3EndPoint))
-                .build(); 
-
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
                 .bucket(s3TargetBucketName)
