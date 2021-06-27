@@ -36,6 +36,11 @@ jobs:
         env:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: reports-jar
+          path: gretl/build/reports/tests/
       - name: Build Docker Image
         run: |
           cd runtimeImage/
@@ -51,6 +56,11 @@ jobs:
         env:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: reports-docker
+          path: gretl/build/reports/tests/
       - name: List Docker Images
         run: docker images
       - name: Publish plugin

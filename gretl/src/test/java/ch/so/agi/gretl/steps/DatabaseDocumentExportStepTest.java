@@ -51,11 +51,6 @@ public class DatabaseDocumentExportStepTest {
     public void exportDocuments_Ok() throws Exception {
         Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
 
-        System.out.println(postgres.getJdbcUrl());
-        System.out.println(postgres.getContainerId());
-        System.out.println(postgres.getContainerName());
-        System.out.println(postgres.getDockerImageName());
-        
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
