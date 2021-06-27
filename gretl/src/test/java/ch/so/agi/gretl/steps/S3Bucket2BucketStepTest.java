@@ -96,7 +96,8 @@ public class S3Bucket2BucketStepTest {
 
         assertTrue(keyList.contains("foo.txt"));
         assertTrue(keyList.contains("bar.txt"));
-        assertTrue(keyList.size() == 2);
+        assertTrue(keyList.contains("download.txt"));
+        assertTrue(keyList.size() == 3);
         
         // Remove uploaded files from buckets.
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucketName).key("foo.txt").build());
@@ -104,5 +105,6 @@ public class S3Bucket2BucketStepTest {
 
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
     }    
 }
