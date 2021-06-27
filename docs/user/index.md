@@ -1339,6 +1339,31 @@ targetDir | Verzeichnis in das die Dokumente exportiert werden sollen.
 fileNamePrefix | Prefix für Dateinamen (optional)
 fileNameExtension | Dateinamen-Extension (optional)
 
+### S3Download (Experimental)
+
+Lädt eine Datei aus einem S3-Bucket herunter.
+
+```
+task downloadFile(type: S3Download) {
+    accessKey = abcdefg
+    secretKey = hijklmnopqrstuvwxy
+    downloadDir = file("./path/to/dir/")
+    bucketName = "ch.so.ada.denkmalschutz"
+    key = "foo.pdf"
+    endPoint = "https://s3.eu-central-1.amazonaws.com" 
+    region = "eu-central-1"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+accessKey | AccessKey
+secretKey | SecretKey
+downloadDir  | Verzeichnis in das die Datei heruntergeladen werden soll.
+bucketName  | Name des Buckets, in dem die Datei gespeichert ist.
+key | Name der Datei
+endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
+region | S3-Region (default: `eu-central-1`). 
 
 ### S3Upload (Experimental)
 
