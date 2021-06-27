@@ -43,7 +43,7 @@ public class DatabaseDocumentExportTest {
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://geo.so.ch/models/ilimodels.xml');");
+            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://models.geo.admin.ch/ilimodels.xml');");
             stmt.close();
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
 
