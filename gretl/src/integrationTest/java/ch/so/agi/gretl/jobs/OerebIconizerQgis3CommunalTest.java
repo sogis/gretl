@@ -76,9 +76,7 @@ public class OerebIconizerQgis3CommunalTest {
         if(!rs.next()) {
             fail();
         }
-        
-        Thread.sleep(52000);
-        
+                
         assertEquals(typeCodeCommunal, rs.getString(1));
 
         ByteArrayInputStream bis = new ByteArrayInputStream(rs.getBytes(2));
