@@ -51,6 +51,11 @@ public class DatabaseDocumentExportStepTest {
     public void exportDocuments_Ok() throws Exception {
         Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
 
+        System.out.println(postgres.getJdbcUrl());
+        System.out.println(postgres.getContainerId());
+        System.out.println(postgres.getContainerName());
+        System.out.println(postgres.getDockerImageName());
+        
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
@@ -67,7 +72,8 @@ public class DatabaseDocumentExportStepTest {
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
             //https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis
             //http://geo.so.ch/models/ilimodels.xml
-            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('https://geo.so.ch/models/ilimodels.xml');");
+            //http://models.geo.admin.ch/ilimodels.xml
+            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://models.geo.admin.ch/ilimodels.xml');");
             con.commit();
 
             DatabaseDocumentExportStep databaseDocumentExport = new DatabaseDocumentExportStep();
@@ -136,7 +142,7 @@ public class DatabaseDocumentExportStepTest {
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('https://geo.so.ch/models/ilimodels.xml');");
+            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://models.geo.admin.ch/ilimodels.xml');");
             con.commit();
 
             DatabaseDocumentExportStep databaseDocumentExport = new DatabaseDocumentExportStep();
@@ -172,7 +178,7 @@ public class DatabaseDocumentExportStepTest {
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('https://geo.so.ch/models/ilimodels.xml');");
+            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://models.geo.admin.ch/ilimodels.xml');");
             con.commit();
 
             DatabaseDocumentExportStep databaseDocumentExport = new DatabaseDocumentExportStep();
