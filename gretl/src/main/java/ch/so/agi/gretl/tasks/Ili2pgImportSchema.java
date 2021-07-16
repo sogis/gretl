@@ -121,7 +121,7 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public boolean keepAreaRef = false;
     @Input
     @Optional
-    public boolean importTid = false;
+    public boolean createTidCol = false;
     @Input
     @Optional
     public boolean createBasketCol = false;
@@ -264,7 +264,7 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         if (keepAreaRef) {
             settings.setAreaRef(settings.AREA_REF_KEEP);
         }
-        if (importTid) {
+        if (createTidCol) {
             settings.setTidHandling(settings.TID_HANDLING_PROPERTY);
         }
         if (createBasketCol) {

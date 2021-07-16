@@ -642,6 +642,8 @@ preScript  | Entspricht der ili2pg Option --preScript
 postScript  | Entspricht der ili2pg Option --postScript
 deleteData  | Entspricht der ili2pg Option --deleteData
 logFile  | Entspricht der ili2pg Option --logFile
+importTid | Entspricht der ili2pg Option --importTid
+importBid | Entspricht der lii2pg Option --importBid
 validConfigFile  | Entspricht der ili2pg Option --validConfigFile
 disableValidation  | Entspricht der ili2pg Option --disableValidation
 disableAreaValidation  | Entspricht der ili2pg Option --disableAreaValidation
@@ -725,7 +727,7 @@ nameByTopic | Entspricht der ili2pg Option --nameByTopic
 maxNameLength | Entspricht der ili2pg Option --maxNameLength
 sqlEnableNull | Entspricht der ili2pg Option --sqlEnableNull
 keepAreaRef | Entspricht der ili2pg Option --keepAreaRef
-importTid | Entspricht der ili2pg Option --importTid
+createTidCol | Entspricht der ili2pg Option --createTidCol
 createBasketCol | Entspricht der ili2pg Option --createBasketCol
 createDatasetCol | Entspricht der ili2pg Option --createDatasetCol
 ver4_translation | Entspricht der ili2pg Option --ver4_translation

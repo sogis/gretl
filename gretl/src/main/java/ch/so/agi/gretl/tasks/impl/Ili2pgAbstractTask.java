@@ -55,6 +55,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @Input
     @Optional
     public boolean importTid = false;
+    @Input
+    @Optional
+    public boolean importBid = false;
     @InputFile
     @Optional
     public File preScript = null;
@@ -138,6 +141,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         }
         if (importTid) {
             settings.setImportTid(true);
+        }
+        if (importBid) {
+            settings.setImportBid(true);
         }
         if (preScript != null) {
             settings.setPreScript(this.getProject().file(preScript).getPath());
