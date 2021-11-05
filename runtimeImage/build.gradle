@@ -25,7 +25,12 @@ configurations.all {
 dependencies {
     // Add latest gretl jar. Since it's not added as plugin,
     // it will not try to get it from plugins.gradle.org.
-    api 'ch.so.agi:gretl:latest.integration'
+    //api 'ch.so.agi:gretl:latest.integration'
+    // Anscheinend wird trotzdem plugins.gradle.org berücksichtigt.
+    // Warum weiss ich nicht wirklich. Weil es trotzdem wie ein 
+    // Maven-Repo ist? Aus diesem Grund verwende ich nun nicht
+    // mehr latest integration, sondern eine dynamische Version.
+    api 'ch.so.agi:gretl:2.1.+'
 
     // Add 3rd party libs which we want in the docker image.
     api 'de.undercouch:gradle-download-task:3.4.1'
