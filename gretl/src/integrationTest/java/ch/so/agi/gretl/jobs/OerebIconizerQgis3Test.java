@@ -15,16 +15,19 @@ import javax.imageio.ImageIO;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import ch.so.agi.gretl.testutil.QgisReachableTest;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
+@Category(QgisReachableTest.class)
 public class OerebIconizerQgis3Test {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     
