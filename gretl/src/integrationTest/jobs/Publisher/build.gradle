@@ -1,0 +1,59 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+defaultTasks 'publishFile'
+
+task publishFile(type: Publisher){
+	dataIdent = "ch.so.agi.vermessung.file"
+    targetFolder ="sftp://ftp.server.ch/data"
+    targetUser = "user"
+    targetPassword ="password"
+	//targetFolder = "out"  // Alternative: Filesystem-Folder
+	kgdiService = ["http://api.kgdi.ch/metadata","user","pwd"]
+  	userFormats = true
+  	sourcePath = "/path/file.xtf"
+  	validationConfig =  "validationConfig.ini"
+  	grooming = "grooming.json"
+}
+
+task publishFileRegion(type: Publisher){
+	dataIdent = "ch.so.agi.vermessung.file.regionen"
+    targetFolder ="sftp://ftp.server.ch/data"
+    targetUser = "user"
+    targetPassword ="password"
+	kgdiService = ["http://api.kgdi.ch/metadata","user","pwd"]
+  	userFormats = true
+  	sourcePath = "/path/file.xtf"
+	region = "[0-9][0-9][0-9][0-9]"  // muster; ersetzt den filename im sourcePath	  
+}
+task publishEditDbRegion(type: Publisher){
+	dataIdent = "ch.so.agi.vermessung.db.edit"
+    targetFolder ="sftp://ftp.server.ch/data"
+    targetUser = "user"
+    targetPassword ="password"
+	kgdiService = ["http://api.kgdi.ch/metadata","user","pwd"]
+    dbhost =  "localhost",
+	dbport = "port",
+	dbdatabase = "database",
+	dbusr = "username",
+	dbpwd = "password",
+	dbparams = "filename",
+	dbschema = "schema",
+	dataset = "dataset"
+}
+task publishEditDbRegion(type: Publisher){
+	dataIdent = "ch.so.agi.vermessung.db.regionen.edit"
+    targetFolder ="sftp://ftp.server.ch/data"
+    targetUser = "user"
+    targetPassword ="password"
+	kgdiService = ["http://api.kgdi.ch/metadata","user","pwd"]
+    dbhost =  "localhost",
+	dbport = "port",
+	dbdatabase = "database",
+	dbusr = "username",
+	dbpwd = "password",
+	dbparams = "filename",
+	dbschema = "schema",
+	region = "[0-9][0-9][0-9][0-9]"	  // muster der dataset pro Region
+}

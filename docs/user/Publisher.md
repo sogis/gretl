@@ -5,7 +5,6 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
 ## ToDos
 
-- XTF -> local XTF
 - XTF -> remote XTF
 - DB -> XTF
 - Regionen
@@ -40,25 +39,6 @@ Für den Datenbezug wird das build.gradle mit zwei Aufrufen des Publisher-Task e
     }
 
 Bei Problemen mit der Datenqualität der Originaldaten schlägt der Task "pubEdit" fehl. Der Job bricht mit Fehler ab, bevor die Daten irgendwo landen.
-
-## XTF -> XTF
-
-Falls die Daten bereits als XTF-/ITF-Datei vorliegen, muss die Quelldatei angegeben werden.
-
-    task publishFile(type: Publisher){
-      dataIdent = "ch.so.agi.vermessung.edit"
-      target = [ "sftp://ftp.server.ch/data", "user", "password" ]
-      sourcePath = "/path/file.xtf"
-    }
-
-Die Daten können alternativ zu SFTP in ein lokales Verzeichnis publiziert werden:
-
-    task publishFile(type: Publisher){
-      dataIdent = "ch.so.agi.vermessung.edit"
-      target = "/out"  
-      sourcePath = "/path/file.xtf"
-    }
-
 
 ## Ablauf
 
@@ -132,6 +112,24 @@ Beispiel AV (Regionen-Identifier ist die BFS-NR):
 >       * ...    
 >   * hist/
 >     * ...
+
+## XTF -> XTF
+
+Falls die Daten bereits als XTF-/ITF-Datei vorliegen, muss die Quelldatei angegeben werden.
+
+    task publishFile(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung.edit"
+      target = [ "sftp://ftp.server.ch/data", "user", "password" ]
+      sourcePath = "/path/file.xtf"
+    }
+
+Die Daten können alternativ zu SFTP in ein lokales Verzeichnis publiziert werden:
+
+    task publishFile(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung.edit"
+      target = "/out"  
+      sourcePath = "/path/file.xtf"
+    }
 
 
 
