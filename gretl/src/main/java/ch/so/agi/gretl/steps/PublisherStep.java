@@ -11,7 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -23,6 +26,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.ehi.basics.settings.Settings;
+import ch.interlis.ili2c.metamodel.Model;
+import ch.interlis.ili2c.metamodel.TransferDescription;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
@@ -119,6 +124,19 @@ public class PublisherStep {
         File targetMetaPath=new File(targetDatePath,PATH_ELE_META);
         targetMetaPath.mkdirs();
         // ilis kopieren
+        Iterator<Model> modeli=validator.getModel().iterator();
+        Set<String> visitedFiles=new HashSet<String>();
+        while(modeli.hasNext()) {
+            Model model=modeli.next();
+            if(model instanceof ch.interlis.ili2c.metamodel.PredefinedModel) {
+                continue;
+            }
+            String filename=model.getFileName();
+            if(!visitedFiles.contains(filename)) {
+                Files.copy(new File(filename).toPath(), new File(targetMetaPath,new File(filename).getName()).toPath());
+                visitedFiles.add(filename);
+            }
+        }
         // publishdate.json erzeugen
         writePublishDate(targetDatePath,date);
         // aktuell umbenennen auf Ordnername gemaess Datum in publishdate.json
@@ -127,6 +145,7 @@ public class PublisherStep {
                 if(currentPublishdate.equals(date)) {
                     deleteFileTree(targetCurrentPath.toPath());
                 }else {
+                    targetHistPath.mkdir();
                     Files.move(targetCurrentPath.toPath(),new File(targetHistPath,currentPublishdate).toPath());
                 }
             }
@@ -138,7 +157,7 @@ public class PublisherStep {
         // ausduennen
         
     }
-    private void deleteFileTree(Path pathToBeDeleted) throws IOException {
+    public static void deleteFileTree(Path pathToBeDeleted) throws IOException {
         Files.walkFileTree(pathToBeDeleted, 
                 new SimpleFileVisitor<Path>() {
                   @Override
@@ -158,14 +177,14 @@ public class PublisherStep {
               });
         
     }
-    private void writePublishDate(File targetPath, String date) throws IOException {
+    public static void writePublishDate(File targetPath, String date) throws IOException {
         File publishdatePath = getPublishdatePath(targetPath);
         java.util.Map<String, Object> map = new java.util.HashMap<>();
         map.put(JSON_ATTR_PUBLISHDATE, date);
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(publishdatePath, map);
     }
-    private String readPublishDate(File targetPath) throws IOException {
+    public static String readPublishDate(File targetPath) throws IOException {
         File publishdatePath = getPublishdatePath(targetPath);
         if(!publishdatePath.exists()) {
             return null;
@@ -175,7 +194,7 @@ public class PublisherStep {
         String date=(String)map.get(JSON_ATTR_PUBLISHDATE);
         return date;
     }
-    private File getPublishdatePath(File targetPath) {
+    private static File getPublishdatePath(File targetPath) {
         File targetMetaPath=new File(targetPath,PATH_ELE_META);
         File publishdatePath=new File(targetMetaPath,PATH_ELE_PUBLISHDATE_JSON);
         return publishdatePath;

@@ -14,12 +14,12 @@ apply from: 'integration-test.gradle'
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:iox-ili:1.20.15'
-        force 'ch.interlis:iox-wkf:1.0.2'
-        force 'ch.interlis:ili2c-tool:5.0.2'
-        force 'ch.interlis:ili2c-core:5.0.2'
-        force 'ch.interlis:ili2pg:4.3.2'
-        force 'ch.interlis:ili2gpkg:4.3.2'
+        //force 'ch.interlis:iox-ili:1.20.15'
+        //force 'ch.interlis:iox-wkf:1.0.2'
+        //force 'ch.interlis:ili2c-tool:5.0.2'
+        //force 'ch.interlis:ili2c-core:5.0.2'
+        //force 'ch.interlis:ili2pg:4.3.2'
+        //force 'ch.interlis:ili2gpkg:4.3.2'
     }
 }
 
@@ -48,7 +48,8 @@ configurations {
 dependencies {
     api gradleApi()
   
-    api ilivalidatorDependency
+    //api ilivalidatorDependency
+    api 'ch.interlis:ilivalidator:1.11.13+'
     api ilivalidatorCustomFunctionsDependency
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
@@ -70,6 +71,8 @@ dependencies {
     
     api jacksonCoreDependency
     api jacksonDatabindDependency
+    //api 'com.jcraft:jsch:0.1.55'
+    //api 'com.pastdev:jsch-nio:1.0.14'
     
     runtimeOnly postgresqlDependency
     runtimeOnly sqliteJdbcDependency
