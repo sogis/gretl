@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -26,8 +27,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.ehi.basics.settings.Settings;
+import ch.ehi.ili2db.base.Ili2db;
+import ch.ehi.ili2db.base.Ili2dbException;
+import ch.ehi.ili2db.fromili.TransferFromIli;
+import ch.ehi.ili2db.gui.Config;
+import ch.ehi.ili2pg.PgCustomStrategy;
 import ch.interlis.ili2c.metamodel.Model;
 import ch.interlis.ili2c.metamodel.TransferDescription;
+import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
@@ -42,7 +49,56 @@ public class PublisherStep {
     public PublisherStep() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-    public void publishFromFile(String date,String dataIdent, Path sourcePath, Path target, String targetUsr, String targetPwd,String regionRegEx,List<String> publishedRegions,boolean validate,File groomingJson,Settings settings) 
+    public void publishDatasetFromDb(String date,String dataIdent, java.sql.Connection conn, String dbSchema,Path target, String datasetName, File groomingJson,Settings settings,Path tempFolder) 
+            throws Exception 
+    {
+        ch.ehi.ili2db.gui.Config config=new ch.ehi.ili2db.gui.Config();
+        // clone settings
+        {
+            if(settings!=null){
+                java.util.Iterator<String> it=settings.getValuesIterator();
+                while(it.hasNext()){
+                    String name=it.next();
+                    String obj=settings.getValue(name);
+                    config.setValue(name,obj);
+                }
+                it=settings.getTransientValues().iterator();
+                while(it.hasNext()){
+                    String name=(String)it.next();
+                    Object obj=settings.getTransientObject(name);
+                    config.setTransientObject(name,obj);
+                }
+            }
+            
+        }
+        new ch.ehi.ili2pg.PgMain().initConfig(config);
+        config.setDbschema(dbSchema);
+        {
+            ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
+            String datasetNames[] = datasetName.split(ch.interlis.ili2c.Main.MODELS_SEPARATOR);
+            for (String dtName : datasetNames) {
+                Long datasetId=Ili2db.getDatasetId(dtName, conn, config);
+                if(datasetId==null){
+                    throw new Ili2dbException("dataset <"+dtName+"> doesn't exist");
+                }
+                Ili2db.getBasketSqlIdsFromDatasetId(datasetId,modelv,conn,config);
+            }
+            ch.interlis.ilirepository.IliFiles iliFiles=TransferFromIli.readIliFiles(conn,config.getDbschema(),new PgCustomStrategy(),config.isVer3_export());
+            ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
+            config.setItfTransferfile(iliFile.getIliVersion()<2.0);
+        }
+        Path xtfFile=tempFolder.resolve(datasetName+(config.isItfTransferfile()?".itf":".xtf"));
+        config.setXtffile(xtfFile.toString());
+        config.setModeldir(Ili2db.ILI_FROM_DB);
+        config.setFunction(Config.FC_EXPORT);
+        config.setDatasetName(datasetName);
+        config.setValidation(false);
+        config.setJdbcConnection(conn);
+        Ili2db.readSettingsFromDb(config);
+        Ili2db.run(config, null);
+        publishFromFile(date,dataIdent,xtfFile,target,null,null,true,groomingJson,settings);
+    }
+    public void publishFromFile(String date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> publishedRegions,boolean validate,File groomingJson,Settings settings) 
             throws Exception 
     {
         String files[]=new String[1];

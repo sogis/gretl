@@ -23,20 +23,21 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
 public abstract class AbstractPublisherStepTest {
-    private String SRC_TEST_DATA = "src/test/resources/data/publisher";
-    final String SRC_DATA_IDENT = "ch.so.agi.vermessung.edit";
-    final String SRC_DATA_DATE_0="2021-12-02";
-    final String SRC_DATA_FILENAME="av_test.itf";
-    final String SRC_ILI_FILENAME="DM.01-AV-CH_LV95_24d_ili1.ili";
-    final Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_FILENAME);
-    final String ILI_DIRS=new File(SRC_TEST_DATA,"ili").getAbsolutePath();
-    private GretlLogger log;
+    final protected String SRC_TEST_DATA = "src/test/resources/data/publisher";
+    final protected String SRC_DATA_IDENT = "ch.so.agi.vermessung.edit";
+    final protected String SRC_DATA_DATE_0="2021-12-02";
+    final protected String SRC_DATA_FILENAME="av_test.itf";
+    final protected String SRC_ILI_FILENAME="DM.01-AV-CH_LV95_24d_ili1.ili";
+    final protected Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_FILENAME);
+    final protected String ILI_DIRS=new File(SRC_TEST_DATA,"ili").getAbsolutePath();
+    protected GretlLogger log;
     public AbstractPublisherStepTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
     }
+    protected abstract Path getTargetPath();
     @Test
-    public void file2local_allNew() throws Exception {
+    public void file_allNew() throws Exception {
         final String SRC_DATA_DATE=SRC_DATA_DATE_0;
         Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
         // prepare
@@ -52,7 +53,7 @@ public abstract class AbstractPublisherStepTest {
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
-        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,true,null,settings);
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,true,null,settings);
         // verify
         {
             Assert.assertTrue(Files.exists(targetFolder));
@@ -67,10 +68,9 @@ public abstract class AbstractPublisherStepTest {
             Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
-    protected abstract Path getTargetPath();
     
     @Test
-    public void file2local_firstHistory() throws Exception {
+    public void file_firstHistory() throws Exception {
         Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
         // prepare
         {
@@ -79,14 +79,14 @@ public abstract class AbstractPublisherStepTest {
                 PublisherStep.deleteFileTree(targetFolder);
             }
         }
-        file2local_allNew();
+        file_allNew();
         final String SRC_DATA_DATE="2021-12-03";
         final Path targetPath = getTargetPath().toAbsolutePath();
         PublisherStep step=new PublisherStep();
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
-        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,true,null,settings);
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,true,null,settings);
         // verify
         {
             Assert.assertTrue(Files.exists(targetFolder));
@@ -115,7 +115,7 @@ public abstract class AbstractPublisherStepTest {
         }
     }
     @Test
-    public void file2local_overwriteAktuell() throws Exception {
+    public void file_overwriteAktuell() throws Exception {
         Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
         final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
         final Path unexpectedTargetFile=targetFolderAktuell.resolve(SRC_DATA_FILENAME+".gugus");
@@ -126,7 +126,7 @@ public abstract class AbstractPublisherStepTest {
                 PublisherStep.deleteFileTree(targetFolder);
             }
         }
-        file2local_allNew();
+        file_allNew();
         {
            // daten file loeschen
             Files.delete(targetFolderAktuell.resolve(SRC_DATA_FILENAME+".zip"));
@@ -139,7 +139,7 @@ public abstract class AbstractPublisherStepTest {
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
-        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,true,null,settings);
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,true,null,settings);
         // verify
         {
             Assert.assertTrue(Files.exists(targetFolder));
@@ -155,7 +155,7 @@ public abstract class AbstractPublisherStepTest {
         }
     }
     @Test
-    public void file2local_newExistingHistory_fail() throws Exception {
+    public void file_newExistingHistory_fail() throws Exception {
         Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
         // prepare
         {
@@ -164,7 +164,7 @@ public abstract class AbstractPublisherStepTest {
                 PublisherStep.deleteFileTree(targetFolder);
             }
         }
-        file2local_firstHistory();
+        file_firstHistory();
         final String SRC_DATA_DATE=SRC_DATA_DATE_0;
         final Path targetPath = getTargetPath().toAbsolutePath();
         PublisherStep step=new PublisherStep();
@@ -172,7 +172,7 @@ public abstract class AbstractPublisherStepTest {
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
         try {
-            step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,true,null,settings);
+            step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,true,null,settings);
             Assert.fail();
         }catch(IllegalArgumentException ex) {
             Assert.assertEquals("neuer Stand (2021-12-02) existiert auch schon als History",ex.getMessage());
