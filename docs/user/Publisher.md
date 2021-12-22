@@ -5,7 +5,6 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
 ## ToDos
 
-- XTF -> remote XTF
 - DB -> XTF
 - Regionen
 - Validierung
