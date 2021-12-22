@@ -27,7 +27,11 @@ public class PublisherStepRemoteTest extends AbstractPublisherStepTest {
             try {
                 rawuri = new URI( ftpurl);
                 path=rawuri.getRawPath();
-                host= new URI(rawuri.getScheme()+"://"+rawuri.getHost());
+                if(rawuri.getPort()==-1) {
+                    host= new URI(rawuri.getScheme()+"://"+rawuri.getHost());
+                }else {
+                    host= new URI(rawuri.getScheme()+"://"+rawuri.getHost()+":"+rawuri.getPort());
+                }
             } catch (URISyntaxException e) {
                 throw new IllegalArgumentException(e);
             }
