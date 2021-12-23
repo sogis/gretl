@@ -5,7 +5,6 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
 ## ToDos
 
-- DB -> XTF
 - Regionen
 - Validierung
 - Benutzer-Formate (GPKG, DXF, SHP)
@@ -46,15 +45,24 @@ Der Publisher arbeitet die folgenden Hauptschritte ab:
 1) Verstecktes Verzeichnis für den Datenstand via FTPS erstellen (.yyyy-MM-dd/). Kein Abbruch, falls das Verzeichnis vorhanden ist.
 2) XTFs in Verzeichnis ablegen.
    1) Für Datenthemen mit Quelle=Datenbank: XTF-Transferdateien exportieren.
-      1) Mit ili2pg das xtf erzeugen.
-      2) Prüfung der xtf gegen das Modell. Abbruch bei fatalen Fehlern.
+      1) Mit ili2pg das xtf erzeugen
+      2) Prüfung des xtf gegen das Modell. Abbruch bei fatalen Fehlern
+      3) Prüf-Bericht (und evtl. Prüf-Konfiguartion) muss auch mit in die ZIP Datei
+      4) ZIP-Datei publizieren
    2) Für Datenthemen mit Quelle=XTF: XTF in Verzeichnis kopieren.
+      1) Prüfung des xtf gegen das Modell. Abbruch bei fatalen Fehlern
+      2) Prüf-Bericht (und evtl. Prüf-Konfiguartion) muss auch mit in die ZIP Datei
+      3) ZIP-Datei publizieren   
 3) Aus dem Publikations-xtf die Benutzerformate (Geopackage, Shapefile, Dxf) ableiten und ablegen.
-4) Metadaten sammeln (aktuell nur Publikationsdatum und ili-Dateien) und im Unterordner meta/ ablegen.
+4) Metadaten sammeln und im Unterordner meta/ ablegen.
+   1) Publikationsdatum
+   2) ili-Dateien
+   3) Beipackzettel (HTML via REST-API vom SIMI-Service beziehen) 
 5) Neue Ordnernamen setzen.
-   1) aktuell umbenennen auf Ordnername gemäss Datum in publishdate.json.
+   1) "aktuell" umbenennen auf Ordnername gemäss Datum in publishdate.json und verschieben in "hist".
    2) Verstecktes Verzeichnis umbenennen auf aktuell.
-6) Publikationsdatum via bereitgestelltes REST-API in den KGDI-Metadaten nachführen
+   3) Benutzerformate in "hist" löschen
+6) Publikationsdatum via REST-API in den KGDI-Metadaten nachführen
 7) Historische Stände ausdünnen.
 
 ## Ordnerstruktur im Ziel-Verzeichnis
@@ -69,22 +77,47 @@ Namenskonvention für die Dateien: \[Datenbereitstellungs-Identifier\].\[Format-
 > * ch.so.avt.verkehrszaehlstellen/
 >    * aktuell/
 >      * ch.so.avt.verkehrszaehlstellen.dxf.zip
+>        * ch.so.avt.verkehrszaehlstellen.dxf
+>        * validation.log
+>        * validation.ini
 >      * ch.so.avt.verkehrszaehlstellen.gpkg.zip
+>        * ch.so.avt.verkehrszaehlstellen.gpkg
+>        * validation.log
+>        * validation.ini
 >      * ch.so.avt.verkehrszaehlstellen.shp.zip
+>        * ch.so.avt.verkehrszaehlstellen.shp
+>        * validation.log
+>        * validation.ini
 >      * ch.so.avt.verkehrszaehlstellen.xtf.zip
+>        * ch.so.avt.verkehrszaehlstellen.xtf
+>        * validation.log
+>        * validation.ini
 >      * meta/
 >        * SO_AVT_Verkehrszaehlstellen_Publikation_20190206.ili
 >        * publishdate.json      
+>        * datenbeschreibung.html
 >   * hist/
->     * 2021.04.12/ -- intern identisch aufgebaut wie Ordner aktuell/
+>     * 2021.04.12/ -- intern identisch aufgebaut wie Ordner aktuell/ aber ohne Benutzerformate
+>       * ch.so.avt.verkehrszaehlstellen.xtf.zip
+>         * ch.so.avt.verkehrszaehlstellen.xtf
+>         * validation.log
+>         * validation.ini
+>       * meta/
+>         * SO_AVT_Verkehrszaehlstellen_Publikation_20190206.ili
+>         * publishdate.json      
+>         * datenbeschreibung.html
 >     * 2021.03.14/
 >     * ...
 > * ch.so.avt.verkehrszaehlstellen.edit/
 >   * aktuell/
 >       * ch.so.avt.verkehrszaehlstellen.edit.xtf.zip
+>         * ch.so.avt.verkehrszaehlstellen.edit.xtf
+>         * validation.log
+>         * validation.ini
 >       * meta/
 >         * SO_AVT_Verkehrszaehlstellen_20190206.ili  
 >         * publishdate.json      
+>         * datenbeschreibung.html
 >   * hist/
 >     * ...
 
@@ -172,6 +205,8 @@ Die Validierung kann mit einer ilivalidator Konfigurationsdatei konfiguriert wer
 
 ## Benutzer-Formate (GPKG, DXF, SHP)
 
+Optional können Benutzerformate (Geopackage, Shapefile, Dxf) erstellt werden. Die Daten müssen in einer
+entsprechend flachen Struktur vorliegen.
 Kann nur ab DB erstellt werden.
 
     task publishDb(type: Publisher){
@@ -226,6 +261,18 @@ In der Datei grooming.json wird konfiguriert, wie ausgedünnt wird.
 
 Parameter | Beschreibung
 ----------|-------------------
-inputFile   | Name der zu transformierenden ITF-Datei.
-outputDirectory  | Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
-zip | Die zu erstellende Datei wird gezippt (Default: false).
+dataIdent | Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+target    | Zielverzeichnis z.B. [ "sftp://ftp.server.ch/data", "user", "password" ] oder einfach ein Pfad "/out"
+sourcePath | Quelldatei z.B. "/path/file.xtf"
+database  | Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
+dbSchema  | Schema in der Datenbank z.B. "av"
+dataset   | ili2db-Datasetname der Quelldaten "dataset" (Das ili2db-Schema muss also immer mit --createBasketCol erstellt werden)
+region    | Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"	  
+validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
+userFormats | Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default ist false
+kgdiService | Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]
+grooming | Konfiguration für die Ausdünnung z.B. "grooming.json"
+exportModels | Das Export-Modell, indem die Daten exportiert werden. Der Parameter wird nur bei der Ausdünnung benötigt. Als Export-Modelle sind Basis-Modelle zulässig. 
+modeldir     | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%ITF_DIR;http://models.interlis.ch/``. ``%ITF_DIR`` ist ein Platzhalter für das Verzeichnis mit der ITF-Datei.
+proxy        | Proxy Server für den Zugriff auf Modell Repositories
+proxyPort    | Proxy Port für den Zugriff auf Modell Repositories

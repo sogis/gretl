@@ -29,9 +29,7 @@ task publishFileRegion(type: Publisher){
 }
 task publishEditDbRegion(type: Publisher){
 	dataIdent = "ch.so.agi.vermessung.db.edit"
-    targetFolder ="sftp://ftp.server.ch/data"
-    targetUser = "user"
-    targetPassword ="password"
+    targetFolder = [ "sftp://ftp.server.ch/data", "user", "password"]
 	kgdiService = ["http://api.kgdi.ch/metadata","user","pwd"]
     dbhost =  "localhost",
 	dbport = "port",
