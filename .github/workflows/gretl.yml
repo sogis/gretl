@@ -1,6 +1,7 @@
 name: gretl
 
 on:
+  workflow_dispatch:
   push:
     branches-ignore:
       - publisher
