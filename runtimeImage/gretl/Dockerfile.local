@@ -1,0 +1,58 @@
+FROM bellsoft/liberica-openjdk-debian:8
+
+RUN apt-get update && apt-get upgrade
+
+CMD ["gradle"]
+
+ENV GRADLE_HOME /opt/gradle
+
+RUN set -o errexit -o nounset \
+    && echo "Adding gradle user and group" \
+    && groupadd --system --gid 1001 gradle \
+    && useradd --system --gid gradle --uid 1001 --shell /bin/bash --create-home gradle \
+    && mkdir /home/gradle/.gradle && echo "org.gradle.daemon=false" >> /home/gradle//.gradle/gradle.properties 
+
+COPY gretl /usr/local/bin/
+COPY __jars4image /home/gradle/libs/
+
+COPY init.gradle /home/gradle/
+
+RUN chown --recursive gradle:gradle /home/gradle \
+    \
+    && echo "Symlinking root Gradle cache to gradle Gradle cache" \
+    && ln --symbolic /home/gradle/.gradle /root/.gradle
+
+VOLUME /home/gradle/.gradle
+
+WORKDIR /home/gradle
+
+RUN set -o errexit -o nounset \
+    && apt-get update \
+    && apt-get install --yes --no-install-recommends \
+        unzip \
+        wget \
+    && rm --recursive --force /var/lib/apt/lists/* 
+
+ENV GRADLE_VERSION 4.2.1
+ARG GRADLE_DOWNLOAD_SHA256=b551cc04f2ca51c78dd14edb060621f0e5439bdfafa6fd167032a09ac708fbc0
+RUN set -o errexit -o nounset \
+    && echo "Downloading Gradle" \
+    && wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" \
+    \
+    && echo "Checking download hash" \
+    && echo "${GRADLE_DOWNLOAD_SHA256} *gradle.zip" | sha256sum --check - \
+    \
+    && echo "Installing Gradle" \
+    && unzip gradle.zip \
+    && rm gradle.zip \
+    && mv "gradle-${GRADLE_VERSION}" "${GRADLE_HOME}/" \
+    && ln --symbolic "${GRADLE_HOME}/bin/gradle" /usr/bin/gradle \
+    \
+    && echo "Testing Gradle installation" \
+    && gradle --version
+
+RUN ls -la /usr/local/bin/  && \
+    ls -la /home/gradle && \
+    ls -la /home/gradle/libs
+
+USER 1001
