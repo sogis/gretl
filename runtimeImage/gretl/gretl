@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
-run_parameter=( "$@" )
+run_parameter="$@"
 
 if [ -f /home/gradle/build.info ]; then
     cat /home/gradle/build.info
 fi
 
-gradle "${run_parameter[@]}" \
+gradle $run_parameter \
        --init-script /home/gradle/init.gradle \
        --stacktrace \
        --no-daemon \
