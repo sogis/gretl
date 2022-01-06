@@ -126,8 +126,8 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9  # v1.10.0 (2021-10-22)
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         if: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
 
       - name: Multi-platform build 
