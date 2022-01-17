@@ -30,7 +30,12 @@ data:
           <resourceRequestMemory>1Gi</resourceRequestMemory>
           <resourceLimitCpu>1</resourceLimitCpu>
           <resourceLimitMemory>3.5Gi</resourceLimitMemory>
-          <envVars/>
+          <envVars>
+            <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
+              <key>GRADLE_OPTS</key>
+              <value>-Xmx1024m</value>
+            </org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
+          </envVars>
         </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
       </containers>
       <envVars/>
