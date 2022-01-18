@@ -57,6 +57,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     public boolean importTid = false;
     @Input
     @Optional
+    public boolean exportTid = false;
+    @Input
+    @Optional
     public boolean importBid = false;
     @InputFile
     @Optional
@@ -141,6 +144,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         }
         if (importTid) {
             settings.setImportTid(true);
+        }        
+        if (exportTid) {
+            settings.setExportTid(true);
         }
         if (importBid) {
             settings.setImportBid(true);
