@@ -277,4 +277,4 @@ parameters:
 - description: Url of the Git repo holding the GRETL Job configurations.
   displayName: Git repo containing GRETL jobs
   name: GRETL_JOB_REPO_URL
-  value: git://github.com/sogis/gretljobs.git
+  value: https://github.com/sogis/gretljobs.git
