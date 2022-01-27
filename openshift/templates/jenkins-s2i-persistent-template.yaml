@@ -122,10 +122,6 @@ objects:
             value: ${JNLP_SERVICE_NAME}
           - name: GRETL_JOB_REPO_URL
             value: ${GRETL_JOB_REPO_URL}
-          - name: GRETL_JOB_FILE_PATH
-            value: ${GRETL_JOB_FILE_PATH}
-          - name: GRETL_JOB_FILE_NAME
-            value: ${GRETL_JOB_FILE_NAME}
           - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
             value: "true"
           image: ' '
@@ -282,11 +278,3 @@ parameters:
   displayName: Git repo containing GRETL jobs
   name: GRETL_JOB_REPO_URL
   value: git://github.com/sogis/gretljobs.git
-- description: GRETL Job directory definition as ANT fileset pattern conventions.
-  displayName: Job dir definition inside Git repo
-  name: GRETL_JOB_FILE_PATH
-  value: '**'
-- description: GRETL Job configuration filename.
-  displayName: GRETL Job pipeline file
-  name: GRETL_JOB_FILE_NAME
-  value: build.gradle
