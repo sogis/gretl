@@ -15,21 +15,31 @@ data:
       <label>gretl</label>
       <serviceAccount>jenkins</serviceAccount>
       <nodeSelector></nodeSelector>
+      <resourceRequestCpu>200m</resourceRequestCpu>
+      <resourceRequestMemory>1Gi</resourceRequestMemory>
+      <resourceLimitCpu>1</resourceLimitCpu>
+      <resourceLimitMemory>3.5Gi</resourceLimitMemory>
       <containers>
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
           <name>jnlp</name>
-          <!-- Attention: Before creating this ConfigMap, please adapt the image URI below so it points to the right project -->
-          <image>image-registry.openshift-image-registry.svc:5000/PROJECT-NAME/gretl:latest</image>
+          <image>quay.io/openshift/origin-jenkins-agent-base:latest</image>
           <privileged>false</privileged>
           <alwaysPullImage>true</alwaysPullImage>
           <workingDir>/tmp</workingDir>
           <command></command>
           <args>${computer.jnlpmac} ${computer.name}</args>
           <ttyEnabled>false</ttyEnabled>
-          <resourceRequestCpu>200m</resourceRequestCpu>
-          <resourceRequestMemory>1Gi</resourceRequestMemory>
-          <resourceLimitCpu>1</resourceLimitCpu>
-          <resourceLimitMemory>3.5Gi</resourceLimitMemory>
+          <envVars/>
+        </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+        <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+          <name>gretl</name>
+          <image>sogis/gretl-local:latest</image>
+          <privileged>false</privileged>
+          <alwaysPullImage>true</alwaysPullImage>
+          <workingDir>/tmp</workingDir>
+          <command>sleep</command>
+          <args>24h</args>
+          <ttyEnabled>false</ttyEnabled>
           <envVars>
             <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
               <key>GRADLE_OPTS</key>
@@ -47,7 +57,7 @@ data:
     kind: Pod
     spec:
       containers:
-        - name: jnlp
+        - name: gretl
           envFrom:
             - configMapRef:
                 name: gretl-resources
