@@ -42,6 +42,10 @@ RUN set -o errexit -o nounset \
     && echo "Testing Gradle installation" \
     && gradle --version
 
+RUN mkdir -p /home/default/.gradle \
+    && chown -R gradle:root /home/default \
+    && chmod -R g=u /home/default
+
 RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
     ls -la /home/gradle/libs
