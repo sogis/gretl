@@ -6,8 +6,8 @@ ENV GRADLE_HOME /opt/gradle
 
 RUN set -o errexit -o nounset \
     && echo "Adding gradle user and group" \
-    && addgroup --system --gid 1000 gradle \
-    && adduser --system --ingroup gradle --uid 1000 --shell /bin/ash gradle \
+    && addgroup --system --gid 1001 gradle \
+    && adduser --system --ingroup gradle --uid 1001 --shell /bin/ash gradle \
     && mkdir /home/gradle/.gradle
 
 COPY gretl /usr/local/bin/
@@ -36,14 +36,16 @@ RUN set -o errexit -o nounset \
     && echo "Installing Gradle" \
     && unzip gradle.zip \
     && rm gradle.zip \
-    && mv "gradle-${GRADLE_VERSION}" "${GRADLE_HOME}/" \
-    && ln -s "${GRADLE_HOME}/bin/gradle" /usr/bin/gradle \
-    \
-    && echo "Testing Gradle installation" \
+    && mv "gradle-${GRADLE_VERSION}" "${GRADLE_HOME}/"
+
+RUN ln -s "${GRADLE_HOME}/bin/gradle" /usr/bin/gradle 
+
+USER 1001
+    
+    RUN echo "Testing Gradle installation" \
     && gradle --version
 
 RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
     ls -la /home/gradle/libs
 
-USER 1001

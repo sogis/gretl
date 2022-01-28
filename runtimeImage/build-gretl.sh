@@ -2,8 +2,8 @@
 
 echo "======================================================================="
 echo "Build Docker container for GRETL runtime"
-echo "Uses the following container definition:"
-echo "https://github.com/openshift/jenkins/blob/master/slave-maven/Dockerfile"
+echo "Uses container definition from:"
+echo "https://github.com/openshift/jenkins"
 echo "======================================================================="
 
 

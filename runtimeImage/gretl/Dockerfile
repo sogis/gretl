@@ -1,9 +1,16 @@
-FROM openshift/jenkins-slave-maven-centos7
+FROM quay.io/openshift/origin-jenkins-agent-base:latest
 
 USER root
 
-RUN yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-RUN yum -y --nogpgcheck install postgresql10
+RUN dnf clean all
+RUN rm -r /var/cache/dnf
+#RUN rm -r /var/cache/PackageKit
+RUN dnf upgrade
+
+RUN dnf -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+RUN dnf --disablerepo AppStream -y install postgresql12
+#RUN yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+#RUN yum -y --nogpgcheck install postgresql13
 
 COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
