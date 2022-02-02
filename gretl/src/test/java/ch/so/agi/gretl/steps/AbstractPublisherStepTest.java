@@ -30,6 +30,8 @@ public abstract class AbstractPublisherStepTest {
     final protected String SRC_ILI_FILENAME="DM.01-AV-CH_LV95_24d_ili1.ili";
     final protected Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_FILENAME);
     final protected String ILI_DIRS=new File(SRC_TEST_DATA,"ili").getAbsolutePath();
+    final protected Path localTestOut = Paths.get("build").resolve("out");
+
     protected GretlLogger log;
     public AbstractPublisherStepTest() {
         LogEnvironment.initStandalone();
@@ -53,14 +55,14 @@ public abstract class AbstractPublisherStepTest {
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
-        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,true,null,settings);
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,settings,localTestOut);
         // verify
         {
             Assert.assertTrue(Files.exists(targetFolder));
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
             Assert.assertTrue(Files.exists(targetFolderAktuell));
             Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_FILENAME+".zip")));
+            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip")));
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
@@ -86,14 +88,14 @@ public abstract class AbstractPublisherStepTest {
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
-        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,true,null,settings);
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,settings,localTestOut);
         // verify
         {
             Assert.assertTrue(Files.exists(targetFolder));
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
             Assert.assertTrue(Files.exists(targetFolderAktuell));
             Assert.assertTrue(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_FILENAME+".zip")));
+            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip")));
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
@@ -106,7 +108,7 @@ public abstract class AbstractPublisherStepTest {
             final Path targetFolderHistoryRoot = targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY);
             final Path targetFolderHistory = targetFolderHistoryRoot.resolve(SRC_DATA_DATE_0);
             Assert.assertTrue(Files.exists(targetFolderHistory));
-            Assert.assertTrue(Files.exists(targetFolderHistory.resolve(SRC_DATA_FILENAME+".zip")));
+            Assert.assertTrue(Files.exists(targetFolderHistory.resolve(SRC_DATA_IDENT+".itf.zip")));
             final Path targetFolderAktuellMeta = targetFolderHistory.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
@@ -129,7 +131,7 @@ public abstract class AbstractPublisherStepTest {
         file_allNew();
         {
            // daten file loeschen
-            Files.delete(targetFolderAktuell.resolve(SRC_DATA_FILENAME+".zip"));
+            Files.delete(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip"));
            // anderes file erzeugen
             Files.createFile(unexpectedTargetFile);
         }
@@ -139,13 +141,13 @@ public abstract class AbstractPublisherStepTest {
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
-        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,true,null,settings);
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,settings,localTestOut);
         // verify
         {
             Assert.assertTrue(Files.exists(targetFolder));
             Assert.assertTrue(Files.exists(targetFolderAktuell));
             Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_FILENAME+".zip")));
+            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip")));
             Assert.assertFalse(Files.exists(unexpectedTargetFile));
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
@@ -172,7 +174,7 @@ public abstract class AbstractPublisherStepTest {
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
         try {
-            step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,true,null,settings);
+            step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,settings,localTestOut);
             Assert.fail();
         }catch(IllegalArgumentException ex) {
             Assert.assertEquals("neuer Stand (2021-12-02) existiert auch schon als History",ex.getMessage());

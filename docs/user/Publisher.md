@@ -6,7 +6,6 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 ## ToDos
 
 - Regionen
-- Validierung
 - Benutzer-Formate (GPKG, DXF, SHP)
 - KGDI-Service
 - Archiv aufräumen
@@ -262,7 +261,7 @@ In der Datei grooming.json wird konfiguriert, wie ausgedünnt wird.
 Parameter | Beschreibung
 ----------|-------------------
 dataIdent | Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
-target    | Zielverzeichnis z.B. [ "sftp://ftp.server.ch/data", "user", "password" ] oder einfach ein Pfad "/out"
+target    | Zielverzeichnis z.B. [ "sftp://ftp.server.ch/data", "user", "password" ] oder einfach ein Pfad ["/out"]
 sourcePath | Quelldatei z.B. "/path/file.xtf"
 database  | Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
 dbSchema  | Schema in der Datenbank z.B. "av"

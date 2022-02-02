@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.ehi.basics.settings.Settings;
+import ch.ehi.basics.view.GenericFileFilter;
 import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.base.Ili2dbException;
 import ch.ehi.ili2db.fromili.TransferFromIli;
@@ -49,7 +51,7 @@ public class PublisherStep {
     public PublisherStep() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-    public void publishDatasetFromDb(String date,String dataIdent, java.sql.Connection conn, String dbSchema,Path target, String datasetName, File groomingJson,Settings settings,Path tempFolder) 
+    public void publishDatasetFromDb(String date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String exportModels,Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder) 
             throws Exception 
     {
         ch.ehi.ili2db.gui.Config config=new ch.ehi.ili2db.gui.Config();
@@ -73,6 +75,7 @@ public class PublisherStep {
         }
         new ch.ehi.ili2pg.PgMain().initConfig(config);
         config.setDbschema(dbSchema);
+        config.setExportModels(exportModels);
         {
             ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
             String datasetNames[] = datasetName.split(ch.interlis.ili2c.Main.MODELS_SEPARATOR);
@@ -96,13 +99,18 @@ public class PublisherStep {
         config.setJdbcConnection(conn);
         Ili2db.readSettingsFromDb(config);
         Ili2db.run(config, null);
-        publishFromFile(date,dataIdent,xtfFile,target,null,null,true,groomingJson,settings);
+        publishFromFile(date,dataIdent,xtfFile,target,null,null,validationConfig,groomingJson,settings,tempFolder);
     }
-    public void publishFromFile(String date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> publishedRegions,boolean validate,File groomingJson,Settings settings) 
+    public void publishFromFile(String date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> publishedRegions,Path validate,Path groomingJson,Settings settings,Path tempFolder) 
             throws Exception 
     {
         String files[]=new String[1];
         files[0]=sourcePath.toAbsolutePath().toString();
+        Path logFile=tempFolder.resolve(new Random().nextLong()+".log");
+        settings.setValue(Validator.SETTING_LOGFILE, logFile.toString());
+        if(validate!=null) {
+            settings.setValue(Validator.SETTING_CONFIGFILE, validate.toString());
+        }
         Validator validator=new Validator();
         boolean ok = validator.validate(files, settings);
         if(!ok) {
@@ -134,38 +142,18 @@ public class PublisherStep {
         Path targetDatePath=targetPath.resolve("."+date);
         Files.createDirectories(targetDatePath);
         // xtf in zip kopieren
-        java.io.BufferedInputStream in=null;
         ZipOutputStream out=null;
         try{
-            try {
-                in=new java.io.BufferedInputStream(Files.newInputStream(sourcePath));
-            } catch (FileNotFoundException e) {
-                throw new IllegalArgumentException("failed to open file",e);
-            }
             String sourceName=sourcePath.getFileName().toString();
-            Path targetFile = targetDatePath.resolve(sourceName+".zip");
+            String sourceExt="."+GenericFileFilter.getFileExtension(sourceName);
+            Path targetFile = targetDatePath.resolve(dataIdent+sourceExt+".zip");
             out = new ZipOutputStream(Files.newOutputStream(targetFile));
-            ZipEntry e = new ZipEntry(sourceName);
-            out.putNextEntry(e);
-
-            try {
-                byte[] buf = new byte[1024];
-                int i = 0;
-                while ((i = in.read(buf)) != -1) {
-                    out.write(buf, 0, i);
-                }
-            } catch (IOException ex) {
-                throw new IllegalArgumentException("failed to copy file",ex);
+            copyFileToZip(out,dataIdent+sourceExt,sourcePath);
+            copyFileToZip(out,"validation.log",logFile);
+            if(validate!=null) {
+                copyFileToZip(out,"validation.ini",validate);
             }
         }finally {
-            if(in!=null){
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    log.error("failed to close file",e);
-                }
-                in=null;
-            }
             if(out!=null){
                 try {
                     out.closeEntry();
@@ -175,6 +163,7 @@ public class PublisherStep {
                 }
                 out=null;
             }
+            Files.delete(logFile);
         }
         // meta erzeugen
         Path targetMetaPath=targetDatePath.resolve(PATH_ELE_META);
@@ -212,6 +201,28 @@ public class PublisherStep {
         // Publikationsdatum in KGDI-Metadaten nachfuehren
         // ausduennen
         
+    }
+    private void copyFileToZip(ZipOutputStream out, String filename, Path sourcePath) throws IOException {
+        java.io.BufferedInputStream in=null;
+        try {
+            in=new java.io.BufferedInputStream(Files.newInputStream(sourcePath));
+            ZipEntry e = new ZipEntry(filename);
+            out.putNextEntry(e);
+            byte[] buf = new byte[1024];
+            int i = 0;
+            while ((i = in.read(buf)) != -1) {
+                out.write(buf, 0, i);
+            }
+        }finally {
+            if(in!=null){
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.error("failed to close file",e);
+                }
+                in=null;
+            }
+        }
     }
     public static void deleteFileTree(Path pathToBeDeleted) throws IOException {
         if(Files.exists(pathToBeDeleted)){

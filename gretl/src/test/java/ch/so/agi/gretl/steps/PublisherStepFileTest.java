@@ -16,7 +16,6 @@ import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
 
 public class PublisherStepFileTest extends AbstractPublisherStepTest {
-    public Path localTestOut = Paths.get("build").resolve("out");
     public PublisherStepFileTest() {
         super();
     }
@@ -75,7 +74,7 @@ public class PublisherStepFileTest extends AbstractPublisherStepTest {
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,targetPath,datasetName,null,settings,localTestOut);
+            step.publishDatasetFromDb(SRC_DATA_DATE,SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,targetPath,null,null,null,null,settings,localTestOut);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -89,7 +88,7 @@ public class PublisherStepFileTest extends AbstractPublisherStepTest {
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
             Assert.assertTrue(Files.exists(targetFolderAktuell));
             Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(datasetName+".itf.zip")));
+            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip")));
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
