@@ -13,6 +13,12 @@ compileJava.options.encoding = 'US-ASCII'
 apply from: '../dependencies.gradle'
 apply from: 'integration-test.gradle'
 
+// to get the latest SNAPSHOT uncomment the following lines
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 Properties properties = new Properties()
 File propFile=project.file('user.properties')
 if(propFile.exists()){

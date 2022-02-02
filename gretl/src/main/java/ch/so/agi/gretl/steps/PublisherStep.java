@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -76,46 +77,183 @@ public class PublisherStep {
         new ch.ehi.ili2pg.PgMain().initConfig(config);
         config.setDbschema(dbSchema);
         config.setExportModels(exportModels);
-        {
-            ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
-            String datasetNames[] = datasetName.split(ch.interlis.ili2c.Main.MODELS_SEPARATOR);
-            for (String dtName : datasetNames) {
+        if(regionRegEx!=null && datasetName==null){
+            List<String> regions=getRegionsFromDb(conn, config,regionRegEx);
+            if(regions.size()>0){
+                ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
+                String dtName = regions.get(0);
                 Long datasetId=Ili2db.getDatasetId(dtName, conn, config);
                 if(datasetId==null){
                     throw new Ili2dbException("dataset <"+dtName+"> doesn't exist");
                 }
                 Ili2db.getBasketSqlIdsFromDatasetId(datasetId,modelv,conn,config);
+                ch.interlis.ilirepository.IliFiles iliFiles=TransferFromIli.readIliFiles(conn,config.getDbschema(),new PgCustomStrategy(),config.isVer3_export());
+                ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
+                config.setItfTransferfile(iliFile.getIliVersion()<2.0);
             }
-            ch.interlis.ilirepository.IliFiles iliFiles=TransferFromIli.readIliFiles(conn,config.getDbschema(),new PgCustomStrategy(),config.isVer3_export());
-            ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
-            config.setItfTransferfile(iliFile.getIliVersion()<2.0);
+            publishFilePre(date,dataIdent,target,settings,tempFolder);
+            List<Path> modelFiles=null;
+            for(String region:regions) {
+                Path xtfFile=tempFolder.resolve(region+(config.isItfTransferfile()?".itf":".xtf"));
+                try {
+                    config.setXtffile(xtfFile.toString());
+                    config.setModeldir(Ili2db.ILI_FROM_DB);
+                    config.setFunction(Config.FC_EXPORT);
+                    config.setDatasetName(region);
+                    config.setValidation(false);
+                    config.setJdbcConnection(conn);
+                    Ili2db.readSettingsFromDb(config);
+                    Ili2db.run(config, null);
+                    modelFiles=new ArrayList<Path>();
+                    publishFile(date,dataIdent,xtfFile,target,region,validationConfig,settings,tempFolder,modelFiles);
+                    publishedRegions.add(region);
+                }finally {
+                    Files.delete(xtfFile);
+                }
+            }
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+        }else if(datasetName!=null && regionRegEx==null){
+            {
+                ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
+                String datasetNames[] = datasetName.split(ch.interlis.ili2c.Main.MODELS_SEPARATOR);
+                for (String dtName : datasetNames) {
+                    Long datasetId=Ili2db.getDatasetId(dtName, conn, config);
+                    if(datasetId==null){
+                        throw new Ili2dbException("dataset <"+dtName+"> doesn't exist");
+                    }
+                    Ili2db.getBasketSqlIdsFromDatasetId(datasetId,modelv,conn,config);
+                }
+                ch.interlis.ilirepository.IliFiles iliFiles=TransferFromIli.readIliFiles(conn,config.getDbschema(),new PgCustomStrategy(),config.isVer3_export());
+                ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
+                config.setItfTransferfile(iliFile.getIliVersion()<2.0);
+            }
+            Path xtfFile=tempFolder.resolve(datasetName+(config.isItfTransferfile()?".itf":".xtf"));
+            try {
+                config.setXtffile(xtfFile.toString());
+                config.setModeldir(Ili2db.ILI_FROM_DB);
+                config.setFunction(Config.FC_EXPORT);
+                config.setDatasetName(datasetName);
+                config.setValidation(false);
+                config.setJdbcConnection(conn);
+                Ili2db.readSettingsFromDb(config);
+                Ili2db.run(config, null);
+                List<Path> modelFiles=new ArrayList<Path>();
+                publishFilePre(date,dataIdent,target,settings,tempFolder);
+                publishFile(date,dataIdent,xtfFile,target,null,validationConfig,settings,tempFolder,modelFiles);
+                publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+            }finally {
+                Files.delete(xtfFile);
+            }
+        }else{
+            throw new IllegalArgumentException("regionRegEx==null && datasetName==null");
         }
-        Path xtfFile=tempFolder.resolve(datasetName+(config.isItfTransferfile()?".itf":".xtf"));
-        config.setXtffile(xtfFile.toString());
-        config.setModeldir(Ili2db.ILI_FROM_DB);
-        config.setFunction(Config.FC_EXPORT);
-        config.setDatasetName(datasetName);
-        config.setValidation(false);
-        config.setJdbcConnection(conn);
-        Ili2db.readSettingsFromDb(config);
-        Ili2db.run(config, null);
-        publishFromFile(date,dataIdent,xtfFile,target,null,null,validationConfig,groomingJson,settings,tempFolder);
     }
-    public void publishFromFile(String date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> publishedRegions,Path validate,Path groomingJson,Settings settings,Path tempFolder) 
+    private List<String> getRegionsFromDb(Connection conn, Config config, String regionRegEx) throws Exception {
+        List<String> datasets=Ili2db.getDatasets(conn, config);
+        List<String> regions=new ArrayList<String>();
+        for(String dataset:datasets) {
+            if(dataset.matches(regionRegEx)) {
+                regions.add(dataset);
+            }
+        }
+        return regions;
+    }
+    public void publishFromFile(String date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder) 
+            throws Exception 
+    {
+        if(regionRegEx!=null) {
+            String sourceName=sourcePath.getFileName().toString();
+            String sourceExt=GenericFileFilter.getFileExtension(sourceName);
+            Path sourceParent=sourcePath.getParent();
+            List<String> regions=listRegions(sourceParent, regionRegEx, sourceExt);
+            publishFilePre(date,dataIdent,target,settings,tempFolder);
+            List<Path> modelFiles=new ArrayList<Path>();
+            for(String region:regions) {
+                Path xtfFile=sourceParent.resolve(region+"."+sourceExt);
+                modelFiles=new ArrayList<Path>();
+                publishFile(date,dataIdent,xtfFile,target,region,validationConfig,settings,tempFolder,modelFiles);
+                if(publishedRegions!=null) {
+                    publishedRegions.add(region);
+                }
+            }
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+        }else {
+            publishFilePre(date,dataIdent,target,settings,tempFolder);
+            List<Path> modelFiles=new ArrayList<Path>();
+            publishFile(date,dataIdent,sourcePath,target,null,validationConfig,settings,tempFolder,modelFiles);
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+        }
+    }
+    public void publishFile(String date,String dataIdent, Path sourcePath, Path target, String region,Path validationConfig,Settings settings,Path tempFolder,List<Path> modelFiles) 
             throws Exception 
     {
         String files[]=new String[1];
         files[0]=sourcePath.toAbsolutePath().toString();
         Path logFile=tempFolder.resolve(new Random().nextLong()+".log");
         settings.setValue(Validator.SETTING_LOGFILE, logFile.toString());
-        if(validate!=null) {
-            settings.setValue(Validator.SETTING_CONFIGFILE, validate.toString());
+        if(validationConfig!=null) {
+            settings.setValue(Validator.SETTING_CONFIGFILE, validationConfig.toString());
         }
         Validator validator=new Validator();
         boolean ok = validator.validate(files, settings);
         if(!ok) {
             throw new Exception("validation failed");
         }
+        Path targetRootPath=target;
+        Path targetPath=targetRootPath.resolve(dataIdent);
+        Path targetCurrentPath=targetPath.resolve(PATH_ELE_AKTUELL);
+        Path targetHistPath=targetPath.resolve(PATH_ELE_HISTORY);
+        String currentPublishdate=null;
+        if(Files.exists(targetCurrentPath)) {
+            currentPublishdate=readPublishDate(targetCurrentPath);
+        }
+        String regionPrefix="";
+        if(region!=null) {
+            regionPrefix=region+".";
+        }
+        Path targetDatePath=targetPath.resolve("."+date);
+        // xtf in zip kopieren
+        ZipOutputStream out=null;
+        try{
+            String sourceName=sourcePath.getFileName().toString();
+            String sourceExt="."+GenericFileFilter.getFileExtension(sourceName);
+            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+".zip");
+            out = new ZipOutputStream(Files.newOutputStream(targetFile));
+            copyFileToZip(out,regionPrefix+dataIdent+sourceExt,sourcePath);
+            copyFileToZip(out,"validation.log",logFile);
+            if(validationConfig!=null) {
+                copyFileToZip(out,"validation.ini",validationConfig);
+            }
+            // ilis merken
+            Iterator<Model> modeli=validator.getModel().iterator();
+            Set<String> visitedFiles=new HashSet<String>();
+            while(modeli.hasNext()) {
+                Model model=modeli.next();
+                if(model instanceof ch.interlis.ili2c.metamodel.PredefinedModel) {
+                    continue;
+                }
+                String filename=model.getFileName();
+                if(!visitedFiles.contains(filename)) {
+                    modelFiles.add(Paths.get(filename));
+                    visitedFiles.add(filename);
+                }
+            }
+        }finally {
+            if(out!=null){
+                try {
+                    out.closeEntry();
+                    out.close();        
+                } catch (IOException e) {
+                    log.error("failed to close file",e);
+                }
+                out=null;
+            }
+            Files.delete(logFile);
+        }
+    }
+    public void publishFilePre(String date,String dataIdent, Path target, Settings settings,Path tempFolder) 
+            throws Exception 
+    {
         Path targetRootPath=target;
         // {dataIdent} erzeugen
         Path targetPath=targetRootPath.resolve(dataIdent);
@@ -141,46 +279,25 @@ public class PublisherStep {
         // .{date} erzeugen
         Path targetDatePath=targetPath.resolve("."+date);
         Files.createDirectories(targetDatePath);
-        // xtf in zip kopieren
-        ZipOutputStream out=null;
-        try{
-            String sourceName=sourcePath.getFileName().toString();
-            String sourceExt="."+GenericFileFilter.getFileExtension(sourceName);
-            Path targetFile = targetDatePath.resolve(dataIdent+sourceExt+".zip");
-            out = new ZipOutputStream(Files.newOutputStream(targetFile));
-            copyFileToZip(out,dataIdent+sourceExt,sourcePath);
-            copyFileToZip(out,"validation.log",logFile);
-            if(validate!=null) {
-                copyFileToZip(out,"validation.ini",validate);
-            }
-        }finally {
-            if(out!=null){
-                try {
-                    out.closeEntry();
-                    out.close();        
-                } catch (IOException e) {
-                    log.error("failed to colse file",e);
-                }
-                out=null;
-            }
-            Files.delete(logFile);
+    }
+    public void publishFilePost(String date,String dataIdent, Path target, Settings settings,Path tempFolder,List<Path> modelFiles) 
+            throws Exception 
+    {
+        Path targetRootPath=target;
+        Path targetPath=targetRootPath.resolve(dataIdent);
+        Path targetCurrentPath=targetPath.resolve(PATH_ELE_AKTUELL);
+        Path targetHistPath=targetPath.resolve(PATH_ELE_HISTORY);
+        String currentPublishdate=null;
+        if(Files.exists(targetCurrentPath)) {
+            currentPublishdate=readPublishDate(targetCurrentPath);
         }
+        Path targetDatePath=targetPath.resolve("."+date);
         // meta erzeugen
         Path targetMetaPath=targetDatePath.resolve(PATH_ELE_META);
         Files.createDirectories(targetMetaPath);
         // ilis kopieren
-        Iterator<Model> modeli=validator.getModel().iterator();
-        Set<String> visitedFiles=new HashSet<String>();
-        while(modeli.hasNext()) {
-            Model model=modeli.next();
-            if(model instanceof ch.interlis.ili2c.metamodel.PredefinedModel) {
-                continue;
-            }
-            String filename=model.getFileName();
-            if(!visitedFiles.contains(filename)) {
-                Files.copy(Paths.get(filename), targetMetaPath.resolve(Paths.get(filename).getFileName().toString()));
-                visitedFiles.add(filename);
-            }
+        for(Path modelFile:modelFiles) {
+           Files.copy(modelFile, targetMetaPath.resolve(modelFile.getFileName().toString()));
         }
         // publishdate.json erzeugen
         writePublishDate(targetDatePath,date);
@@ -245,6 +362,24 @@ public class PublisherStep {
                   });
         }
     }
+    public static List<String> listRegions(Path dir,String pattern,String ext) throws IOException {
+        List<String> fileList = new ArrayList<String>();
+        Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
+                if (!Files.isDirectory(file)) {
+                    String fileName=file.getFileName().toString();
+                    //String fileExt="."+GenericFileFilter.getFileExtension(fileName);
+                    if(fileName.matches(pattern+"\\."+ext)) {
+                        fileList.add(fileName.substring(0,fileName.length()-ext.length()-1));
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return fileList;
+    }    
     public static void writePublishDate(Path targetPath, String date) throws IOException {
         Path publishdatePath = getPublishdatePath(targetPath);
         java.util.Map<String, Object> map = new java.util.HashMap<>();

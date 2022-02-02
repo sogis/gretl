@@ -7,7 +7,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.interlis2.validator.Validator;
@@ -23,13 +25,15 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
 public abstract class AbstractPublisherStepTest {
-    final protected String SRC_TEST_DATA = "src/test/resources/data/publisher";
-    final protected String SRC_DATA_IDENT = "ch.so.agi.vermessung.edit";
-    final protected String SRC_DATA_DATE_0="2021-12-02";
-    final protected String SRC_DATA_FILENAME="av_test.itf";
-    final protected String SRC_ILI_FILENAME="DM.01-AV-CH_LV95_24d_ili1.ili";
-    final protected Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_FILENAME);
-    final protected String ILI_DIRS=new File(SRC_TEST_DATA,"ili").getAbsolutePath();
+    final public static String SRC_TEST_DATA = "src/test/resources/data/publisher";
+    final public static String SRC_TEST_DATA_FILES = SRC_TEST_DATA+"/files";
+    final public static String SRC_TEST_DATA_ILI = SRC_TEST_DATA+"/ili";
+    final protected static String SRC_DATA_IDENT = "ch.so.agi.vermessung.edit";
+    final protected static String SRC_DATA_DATE_0="2021-12-02";
+    final protected static String SRC_DATA_FILENAME="av_test.itf";
+    final protected static String SRC_ILI_FILENAME="DM.01-AV-CH_LV95_24d_ili1.ili";
+    final protected Path sourceFile = Paths.get(SRC_TEST_DATA_FILES).resolve(SRC_DATA_FILENAME);
+    final protected static String ILI_DIRS=new File(SRC_TEST_DATA_ILI).getAbsolutePath();
     final protected Path localTestOut = Paths.get("build").resolve("out");
 
     protected GretlLogger log;
@@ -70,6 +74,43 @@ public abstract class AbstractPublisherStepTest {
             Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
+    @Test
+    public void file_regions() throws Exception {
+        final String SRC_DATA_DATE=SRC_DATA_DATE_0;
+        Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
+        // prepare
+        {
+            // delete output folder
+            if(Files.exists(targetFolder)) {
+                PublisherStep.deleteFileTree(targetFolder);
+            }
+        }
+        Path targetPath = getTargetPath().toAbsolutePath();
+        Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_FILENAME);
+        PublisherStep step=new PublisherStep();
+        Settings settings=new Settings();
+        settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
+        settings.setValue(Validator.SETTING_CONFIGFILE, null);
+        List<String> publishedRegions=new ArrayList<String>();
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,"[0-9][0-9][0-9][0-9]",publishedRegions,null,null,settings,localTestOut);
+        // verify
+        {
+            Assert.assertTrue(Files.exists(targetFolder));
+            final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
+            Assert.assertTrue(Files.exists(targetFolderAktuell));
+            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            Assert.assertEquals(2,publishedRegions.size());
+            for(String controlRegion:new String[] {"2501","2502"}) {
+                Assert.assertTrue(publishedRegions.contains(controlRegion));
+                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+SRC_DATA_IDENT+".itf.zip")));
+            }
+            final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
+        }
+    }
     
     @Test
     public void file_firstHistory() throws Exception {
@@ -88,7 +129,7 @@ public abstract class AbstractPublisherStepTest {
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
-        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,settings,localTestOut);
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourceFile,targetPath,null,null,null,null,settings,localTestOut);
         // verify
         {
             Assert.assertTrue(Files.exists(targetFolder));
@@ -141,7 +182,7 @@ public abstract class AbstractPublisherStepTest {
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
-        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,settings,localTestOut);
+        step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourceFile,targetPath,null,null,null,null,settings,localTestOut);
         // verify
         {
             Assert.assertTrue(Files.exists(targetFolder));
@@ -174,7 +215,7 @@ public abstract class AbstractPublisherStepTest {
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
         settings.setValue(Validator.SETTING_CONFIGFILE, null);
         try {
-            step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,settings,localTestOut);
+            step.publishFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourceFile,targetPath,null,null,null,null,settings,localTestOut);
             Assert.fail();
         }catch(IllegalArgumentException ex) {
             Assert.assertEquals("neuer Stand (2021-12-02) existiert auch schon als History",ex.getMessage());

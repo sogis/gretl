@@ -2,12 +2,19 @@ import ch.so.agi.gretl.tasks.*
 
 apply plugin: 'ch.so.agi.gretl'
 
-defaultTasks 'publishFile'
+defaultTasks 'printPublishedRegions'
 
 task publishFile(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [project.buildDir]
       sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
       modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      region="[0-9][0-9][0-9][0-9]"
+}
+
+task printPublishedRegions(dependsOn: publishFile){
+	doLast(){
+		println publishFile.publishedRegions
+	}
 }
 

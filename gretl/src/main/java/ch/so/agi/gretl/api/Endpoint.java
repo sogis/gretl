@@ -1,12 +1,6 @@
 package ch.so.agi.gretl.api;
 
-import ch.so.agi.gretl.util.DbConnector;
-
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -18,6 +12,9 @@ public class Endpoint {
     private String user;
     private String password;
 
+    public Endpoint(File dbUri) {
+        this(dbUri.getPath(), null, null);
+    }
     public Endpoint(String dbUri) {
         this(dbUri, null, null);
     }

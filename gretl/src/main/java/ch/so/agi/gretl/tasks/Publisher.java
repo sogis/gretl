@@ -8,7 +8,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -34,7 +37,7 @@ public class Publisher extends DefaultTask {
     
     @Input
     public String dataIdent=null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
-    //@Output
+    @Input
     public Endpoint target=null; // Zielverzeichnis
     @InputFile
     @Optional
@@ -51,6 +54,8 @@ public class Publisher extends DefaultTask {
     @Input
     @Optional
     public String region=null; // Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"     
+    @Optional
+    public List<String> publishedRegions=null; // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen     
     @InputFile
     @Optional
     public Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
@@ -93,17 +98,19 @@ public class Publisher extends DefaultTask {
             if(dbSchema==null) {
                 throw new IllegalArgumentException("dbSchema must be set");
             }
-            if(dataset==null) {
-                throw new IllegalArgumentException("dataset must be set");
+            if(dataset==null && region==null) {
+                throw new IllegalArgumentException("dataset OR region must be set");
+            }else if(dataset!=null && region!=null) {
+                throw new IllegalArgumentException("only dataset OR region can be set");
             }
         }else {
             throw new IllegalArgumentException("one of sourcePath OR database must be set");
         }
         Path targetFile=null;
         if(target!=null) {
-            try {
-                java.net.URI uri=new java.net.URI(target.getUrl());
-                if(uri.getScheme().equals("sftp")) {
+            log.info("target "+target.toString());
+            {
+                if(target.getUrl().startsWith("sftp:")) {
                     URI host=null;
                     URI rawuri=null;
                     String path=null;
@@ -129,13 +136,9 @@ public class Publisher extends DefaultTask {
                         throw new IllegalArgumentException(e);
                     }
                     targetFile = fileSystem.getPath(path);
-                }else if(uri.getScheme().equals("file")){
-                    targetFile=getProject().file(target.getUrl()).toPath();
                 }else {
-                    throw new IllegalArgumentException("target.url must be a valid file or sftp URI");
+                    targetFile=getProject().file(target.getUrl()).toPath();
                 }
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("target.url must be a valid file or sftp URI");
             }
         }else {
             throw new IllegalArgumentException("target must be set");
@@ -162,10 +165,14 @@ public class Publisher extends DefaultTask {
             versionTag=new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
         }
         try {
+            Files.createDirectories(getProject().getBuildDir().toPath());
+            if(region!=null) {
+                publishedRegions=new ArrayList<String>();
+            }
             if(database!=null) {
-                step.publishDatasetFromDb(versionTag, dataIdent, database.connect(), dbSchema,dataset,exportModels,targetFile, region,null, validationFile, groomingFile, settings,getProject().getBuildDir().toPath());
+                step.publishDatasetFromDb(versionTag, dataIdent, database.connect(), dbSchema,dataset,exportModels,targetFile, region,publishedRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath());
             }else {
-                step.publishFromFile(versionTag, dataIdent, sourceFile, targetFile, region, null, validationFile, groomingFile, settings,getProject().getBuildDir().toPath());
+                step.publishFromFile(versionTag, dataIdent, sourceFile, targetFile, region, publishedRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath());
             }
         } catch (Exception e) {
             log.error("failed to run Publisher", e);

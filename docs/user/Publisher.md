@@ -5,11 +5,9 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
 ## ToDos
 
-- Regionen
 - Benutzer-Formate (GPKG, DXF, SHP)
 - KGDI-Service
 - Archiv aufräumen
-- effektiv publizierte Regionen als Output
 
 ## Einbindung in einen typischen GRETL-Publikationsjob
 
@@ -151,18 +149,16 @@ Falls die Daten bereits als XTF-/ITF-Datei vorliegen, muss die Quelldatei angege
     task publishFile(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [ "sftp://ftp.server.ch/data", "user", "password" ]
-      sourcePath = "/path/file.xtf"
+      sourcePath = file("/path/file.xtf")
     }
 
 Die Daten können alternativ zu SFTP in ein lokales Verzeichnis publiziert werden:
 
     task publishFile(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
-      target = "/out"  
-      sourcePath = "/path/file.xtf"
+      target = [file("/out")]  
+      sourcePath = file("/path/file.xtf")
     }
-
-
 
 ## DB -> XTF
 
@@ -178,13 +174,19 @@ Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss d
 
 ## Regionen
 
+Falls die Daten bereits als XTF-/ITF-Datei vorliegen, muss zusätzlich zu einer möglichen Quelldatei (sourcePath) 
+das Dateinamens-Muster (ohne Nameserweiterung (.xtf oder .itf) der Regionen (region) angegeben werden.
+
     task publishFile(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [ "sftp://ftp.server.ch/data", "user", "password" ]
-      sourcePath = "/path/file.xtf"
-      region = "[0-9][0-9][0-9][0-9]"  // muster; ersetzt den filename im sourcePath	  
+      sourcePath = file("/path/file.xtf")
+      region = "[0-9][0-9][0-9][0-9]"  // muster; ersetzt den filename im sourcePath
     }
 
+Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss dem Datensatz-Namen (dataset) 
+das Muster der Datensatz-Namen (=ein Datensazt pro Region) (region) angegeben werden.
+    
     task publishFromDb(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [ "sftp://ftp.server.ch/data", "user", "password" ]
@@ -192,6 +194,22 @@ Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss d
       dbSchema "av"
       region = "[0-9][0-9][0-9][0-9]"  // muster; ersetzt das dataset
     }
+    
+Damit nachfolgende Tasks die Liste der tatsächlich publizierten Regionen auswerten können, 
+kann der Parameter publishedRegions des Tasks Publisher verwendet werden.
+
+    task publishFile(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung.edit"
+      target = [ "sftp://ftp.server.ch/data", "user", "password" ]
+      sourcePath = file("/path/file.xtf")
+      region = "[0-9][0-9][0-9][0-9]"
+    }
+    task printPublishedRegions(dependsOn: publishFile){
+      doLast(){
+        println publishFile.publishedRegions
+      }
+    }
+
     
 ## Validierung
 
@@ -261,12 +279,13 @@ In der Datei grooming.json wird konfiguriert, wie ausgedünnt wird.
 Parameter | Beschreibung
 ----------|-------------------
 dataIdent | Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
-target    | Zielverzeichnis z.B. [ "sftp://ftp.server.ch/data", "user", "password" ] oder einfach ein Pfad ["/out"]
-sourcePath | Quelldatei z.B. "/path/file.xtf"
+target    | Zielverzeichnis z.B. [ "sftp://ftp.server.ch/data", "user", "password" ] oder einfach ein Pfad [file("/out")]
+sourcePath | Quelldatei z.B. file("/path/file.xtf")
 database  | Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
 dbSchema  | Schema in der Datenbank z.B. "av"
 dataset   | ili2db-Datasetname der Quelldaten "dataset" (Das ili2db-Schema muss also immer mit --createBasketCol erstellt werden)
 region    | Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"	  
+publishedRegions | Liste der effektiv publizierten Regionen	  
 validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
 userFormats | Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default ist false
 kgdiService | Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]

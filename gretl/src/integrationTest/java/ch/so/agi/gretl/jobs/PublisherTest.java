@@ -14,5 +14,10 @@ public class PublisherTest {
         GradleVariable[] gvs = null;
         IntegrationTestUtil.runJob("src/integrationTest/jobs/Publisher", gvs);
     }
+    @Test
+    public void regions() throws Exception {
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/PublisherRegions", gvs);
+    }
 
 }
