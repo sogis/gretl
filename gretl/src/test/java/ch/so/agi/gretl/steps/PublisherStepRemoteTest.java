@@ -9,9 +9,13 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 import org.junit.Assert;
+import org.junit.experimental.categories.Category;
 
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
 
+import ch.so.agi.gretl.testutil.SftpTest;
+
+@Category(SftpTest.class)
 public class PublisherStepRemoteTest extends AbstractPublisherStepTest {
     private static FileSystem fileSystem=null;
     static String ftpurl=System.getProperty("ftpurl"); 

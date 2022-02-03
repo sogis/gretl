@@ -12,10 +12,12 @@ import java.util.List;
 import org.interlis2.validator.Validator;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import ch.ehi.basics.settings.Settings;
 import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
+import ch.so.agi.gretl.testutil.DbTest;
 
 public class PublisherStepLocalTest extends AbstractPublisherStepTest {
     public PublisherStepLocalTest() {
@@ -29,6 +31,7 @@ public class PublisherStepLocalTest extends AbstractPublisherStepTest {
     String dbuser=System.getProperty("dbusr");
     String dbpwd=System.getProperty("dbpwd"); 
     final protected String DB_SCHEMA="publisher";
+    @Category(DbTest.class)
     @Test
     public void db_allNew() throws Exception {
         final String SRC_DATA_DATE=SRC_DATA_DATE_0;
@@ -98,6 +101,7 @@ public class PublisherStepLocalTest extends AbstractPublisherStepTest {
             Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
+    @Category(DbTest.class)
     @Test
     public void db_regions() throws Exception {
         final String SRC_DATA_DATE=SRC_DATA_DATE_0;

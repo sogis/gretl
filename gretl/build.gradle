@@ -179,6 +179,7 @@ test {
     useJUnit{
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
         excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
+        excludeCategories 'ch.so.agi.gretl.testutil.SftpTest'
         excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }
 }
@@ -188,6 +189,13 @@ task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     description = 'Runs all unit tests with dependency to a db server (pg, oracle, ...).'
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    }
+}
+task sftpTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = 'Runs all unit tests with dependency to a SFTP server'
+    useJUnit {
+        includeCategories 'ch.so.agi.gretl.testutil.SftpTest'
     }
 }
 
