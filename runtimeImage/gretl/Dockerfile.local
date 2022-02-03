@@ -21,24 +21,15 @@ RUN set -o errexit -o nounset \
     && echo "Testing Gradle installation" \
     && gradle --version
 
-RUN set -o errexit -o nounset \
-    && echo "Adding gradle user and group" \
-    && addgroup --system --gid 1001 gradle \
-    && adduser --system --ingroup gradle --uid 1001 --shell /bin/ash gradle \
-    && mkdir /home/gradle/.gradle
+RUN mkdir -p /home/gradle/.gradle
 
 COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
-
 COPY init.gradle /home/gradle/
 
-RUN chown -R gradle:gradle /home/gradle
+RUN chmod -R g+w /home/gradle
 
 WORKDIR /home/gradle
-
-RUN mkdir -p /home/default/.gradle \
-    && chown -R gradle:root /home/default \
-    && chmod -R g=u /home/default
 
 RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
