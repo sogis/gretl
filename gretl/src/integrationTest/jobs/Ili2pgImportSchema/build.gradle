@@ -16,4 +16,5 @@ task ili2pgschemaimport(type: Ili2pgImportSchema){
     modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = "gb2av"
     coalesceJson = true
+    createBasketCol = true
 }
