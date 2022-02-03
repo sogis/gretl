@@ -62,6 +62,9 @@ configurations {
     
     all*.exclude module: 'spring-boot-starter-logging'
     
+    all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
+    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
+    
 }
 
 dependencies {
