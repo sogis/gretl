@@ -4,6 +4,8 @@ CMD ["gradle"]
 
 WORKDIR /home/gradle
 
+ENV GRADLE_USER_HOME=/home/gradle/.gradle
+
 ENV GRADLE_HOME /opt/gradle
 ENV GRADLE_VERSION 4.2.1
 ARG GRADLE_DOWNLOAD_SHA256=b551cc04f2ca51c78dd14edb060621f0e5439bdfafa6fd167032a09ac708fbc0
