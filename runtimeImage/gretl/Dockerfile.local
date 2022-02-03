@@ -32,12 +32,7 @@ COPY __jars4image /home/gradle/libs/
 
 COPY init.gradle /home/gradle/
 
-RUN chown -R gradle:gradle /home/gradle \
-    \
-    && echo "Symlinking root Gradle cache to gradle Gradle cache" \
-    && ln -s /home/gradle/.gradle /root/.gradle
-
-VOLUME /home/gradle/.gradle
+RUN chown -R gradle:gradle /home/gradle
 
 WORKDIR /home/gradle
 
