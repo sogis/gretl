@@ -35,4 +35,6 @@ RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
     ls -la /home/gradle/libs
 
+WORKDIR /home/gradle/project
+
 USER 1001
