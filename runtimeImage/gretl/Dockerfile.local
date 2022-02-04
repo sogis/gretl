@@ -1,6 +1,6 @@
 FROM bellsoft/liberica-openjdk-alpine-musl:8u312-7
 
-CMD ["gradle"]
+CMD ["gretl"]
 
 WORKDIR /home/gradle
 
