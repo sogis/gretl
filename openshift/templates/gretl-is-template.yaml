@@ -12,7 +12,7 @@ objects:
     name: gretl
   spec:
     lookupPolicy:
-      local: false
+      local: true
     tags:
     - annotations: null
       from:

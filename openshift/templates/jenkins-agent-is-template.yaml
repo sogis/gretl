@@ -12,7 +12,7 @@ objects:
     name: jenkins-agent
   spec:
     lookupPolicy:
-      local: false
+      local: true
     tags:
     - annotations: null
       from:
