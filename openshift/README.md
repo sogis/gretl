@@ -38,27 +38,29 @@ Parameter:
 ### GRETL runtime
 The GRETL runtime configuration with definition of which Docker image to pull from Docker Hub.
 
-#### Create the gretl Image Stream providing the GRETL runtime image
+#### Create the gretl image stream providing the GRETL runtime image
 
-Add gretl imagestream to pull newest GRETL runtime image:
+Add the *gretl* image stream to pull the newest GRETL runtime image:
 ```
 oc process -f openshift/templates/gretl-is-template.yaml \
   -p GRETL_RUNTIME_IMAGE_TAG="latest" \
   | oc apply -f -
 ```
-Parameter:
+Parameters:
 * GRETL_RUNTIME_IMAGE_TAG: Docker image tag of GRETL runtime to be pulled from Docker Hub.
 * IMPORT_POLICY_SCHEDULED: Regularly check for changed image; defaults to "false"
 
-Basically you could add the label `role=jenkins-slave` to the image stream,
-so the OpenShift Sync plug-in, which is installed in our Jenkins,
-would automatically create the configuration
-for a Jenkins agent running the GRETL runtime image.
-Documentation: https://docs.openshift.com/container-platform/4.7/openshift_images/using_images/images-other-jenkins.html#images-other-jenkins-config-kubernetes_images-other-jenkins
-However, as we want to provide some further configuration
-of our Jenkins agent, we don't use this feature,
-but instead provide with the following steps a ConfigMap
-with the label `role=jenkins-slave`.
+#### Create the jenkins-agent image stream providing the Jenkins agent image
+
+Add the *jenkins-agent* image stream to pull a Jenkins agent image:
+```
+oc process -f openshift/templates/jenkins-agent-is-template.yaml \
+  -p JENKINS_AGENT_IMAGE_TAG=4.7 \
+  | oc apply -f -
+```
+Parameters:
+* JENKINS_AGENT_IMAGE_TAG: Docker image tag of Jenkins agent to be pulled from Quay.io.
+* IMPORT_POLICY_SCHEDULED: Regularly check for changed image; defaults to "false"
 
 #### Create a ConfigMap that configures the GRETL runtime Jenkins agent
 
