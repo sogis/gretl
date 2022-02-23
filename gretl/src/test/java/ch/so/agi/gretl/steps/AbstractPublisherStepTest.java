@@ -30,9 +30,10 @@ public abstract class AbstractPublisherStepTest {
     final public static String SRC_TEST_DATA_ILI = SRC_TEST_DATA+"/ili";
     final protected static String SRC_DATA_IDENT = "ch.so.agi.vermessung.edit";
     final protected static String SRC_DATA_DATE_0="2021-12-02";
-    final protected static String SRC_DATA_FILENAME="av_test.itf";
-    final protected static String SRC_ILI_FILENAME="DM.01-AV-CH_LV95_24d_ili1.ili";
-    final protected Path sourceFile = Paths.get(SRC_TEST_DATA_FILES).resolve(SRC_DATA_FILENAME);
+    final protected static String SRC_DATA_SIMPLE_FILENAME="SimpleCoord23a.xtf";
+    final protected static String SRC_DATA_AV_FILENAME="av_test.itf";
+    final protected static String SRC_ILI_SIMPLE_FILENAME="SimpleCoord23.ili";
+    final protected static String SRC_ILI_AV_FILENAME="DM.01-AV-CH_LV95_24d_ili1.ili";
     final protected static String ILI_DIRS=new File(SRC_TEST_DATA_ILI).getAbsolutePath();
     final protected Path localTestOut = Paths.get("build").resolve("out");
 
@@ -54,7 +55,7 @@ public abstract class AbstractPublisherStepTest {
             }
         }
         Path targetPath = getTargetPath().toAbsolutePath();
-        Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_FILENAME);
+        Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_AV_FILENAME);
         PublisherStep step=new PublisherStep();
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
@@ -69,7 +70,7 @@ public abstract class AbstractPublisherStepTest {
             Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip")));
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
             Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
         }
@@ -86,7 +87,7 @@ public abstract class AbstractPublisherStepTest {
             }
         }
         Path targetPath = getTargetPath().toAbsolutePath();
-        Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_FILENAME);
+        Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_AV_FILENAME);
         PublisherStep step=new PublisherStep();
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
@@ -106,7 +107,7 @@ public abstract class AbstractPublisherStepTest {
             }
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
             Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
         }
@@ -125,6 +126,7 @@ public abstract class AbstractPublisherStepTest {
         file_allNew();
         final String SRC_DATA_DATE="2021-12-03";
         final Path targetPath = getTargetPath().toAbsolutePath();
+        final Path sourceFile = Paths.get(SRC_TEST_DATA_FILES).resolve(SRC_DATA_AV_FILENAME);
         PublisherStep step=new PublisherStep();
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
@@ -139,7 +141,7 @@ public abstract class AbstractPublisherStepTest {
             Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip")));
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
             Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
         }
@@ -152,7 +154,7 @@ public abstract class AbstractPublisherStepTest {
             Assert.assertTrue(Files.exists(targetFolderHistory.resolve(SRC_DATA_IDENT+".itf.zip")));
             final Path targetFolderAktuellMeta = targetFolderHistory.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
             Assert.assertEquals(SRC_DATA_DATE_0, PublisherStep.readPublishDate(targetFolderHistory));
         }
@@ -161,7 +163,7 @@ public abstract class AbstractPublisherStepTest {
     public void file_overwriteAktuell() throws Exception {
         Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
         final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-        final Path unexpectedTargetFile=targetFolderAktuell.resolve(SRC_DATA_FILENAME+".gugus");
+        final Path unexpectedTargetFile=targetFolderAktuell.resolve(SRC_DATA_AV_FILENAME+".gugus");
         // prepare
         {
             // delete output folder
@@ -178,6 +180,7 @@ public abstract class AbstractPublisherStepTest {
         }
         final String SRC_DATA_DATE=SRC_DATA_DATE_0;
         final Path targetPath = getTargetPath().toAbsolutePath();
+        final Path sourceFile = Paths.get(SRC_TEST_DATA_FILES).resolve(SRC_DATA_AV_FILENAME);
         PublisherStep step=new PublisherStep();
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
@@ -192,7 +195,7 @@ public abstract class AbstractPublisherStepTest {
             Assert.assertFalse(Files.exists(unexpectedTargetFile));
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
             Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
         }
@@ -210,6 +213,7 @@ public abstract class AbstractPublisherStepTest {
         file_firstHistory();
         final String SRC_DATA_DATE=SRC_DATA_DATE_0;
         final Path targetPath = getTargetPath().toAbsolutePath();
+        final Path sourceFile = Paths.get(SRC_TEST_DATA_FILES).resolve(SRC_DATA_AV_FILENAME);
         PublisherStep step=new PublisherStep();
         Settings settings=new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);

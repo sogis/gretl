@@ -5,7 +5,8 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
 ## ToDos
 
-- Benutzer-Formate (GPKG, DXF, SHP)
+- Regionen update/ergänzen
+- explizite Liste der Regionen als Input
 - KGDI-Service
 - Archiv aufräumen
 
@@ -74,7 +75,9 @@ Namenskonvention für die Dateien: \[Datenbereitstellungs-Identifier\].\[Format-
 > * ch.so.avt.verkehrszaehlstellen/
 >    * aktuell/
 >      * ch.so.avt.verkehrszaehlstellen.dxf.zip
->        * ch.so.avt.verkehrszaehlstellen.dxf
+>        * Tabelle1.dxf
+>        * Tabelle2.dxf
+>        * ....
 >        * validation.log
 >        * validation.ini
 >      * ch.so.avt.verkehrszaehlstellen.gpkg.zip
@@ -82,7 +85,14 @@ Namenskonvention für die Dateien: \[Datenbereitstellungs-Identifier\].\[Format-
 >        * validation.log
 >        * validation.ini
 >      * ch.so.avt.verkehrszaehlstellen.shp.zip
->        * ch.so.avt.verkehrszaehlstellen.shp
+>        * Tabelle1.prj
+>        * Tabelle1.shp
+>        * Tabelle1.shx
+>        * Tabelle2.dbf
+>        * Tabelle2.prj
+>        * Tabelle2.shp
+>        * Tabelle2.shx
+>        * ....
 >        * validation.log
 >        * validation.ini
 >      * ch.so.avt.verkehrszaehlstellen.xtf.zip

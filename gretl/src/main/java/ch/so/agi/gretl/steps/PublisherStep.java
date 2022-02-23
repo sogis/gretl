@@ -37,6 +37,8 @@ import ch.ehi.ili2db.gui.Config;
 import ch.ehi.ili2pg.PgCustomStrategy;
 import ch.interlis.ili2c.metamodel.Model;
 import ch.interlis.ili2c.metamodel.TransferDescription;
+import ch.interlis.iox.IoxException;
+import ch.interlis.models.DM01AVCH24LV95D_;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
@@ -47,37 +49,21 @@ public class PublisherStep {
     public static final String PATH_ELE_META = "meta";
     public static final String PATH_ELE_PUBLISHDATE_JSON="publishdate.json";
     public static final String JSON_ATTR_PUBLISHDATE="publishdate";
+    private static final Object MODEL_DM01 = DM01AVCH24LV95D_.MODEL;
     private GretlLogger log;
 
     public PublisherStep() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-    public void publishDatasetFromDb(String date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String exportModels,Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder) 
+    public void publishDatasetFromDb(String date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String exportModels,boolean userFormats, Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder) 
             throws Exception 
     {
-        ch.ehi.ili2db.gui.Config config=new ch.ehi.ili2db.gui.Config();
-        // clone settings
-        {
-            if(settings!=null){
-                java.util.Iterator<String> it=settings.getValuesIterator();
-                while(it.hasNext()){
-                    String name=it.next();
-                    String obj=settings.getValue(name);
-                    config.setValue(name,obj);
-                }
-                it=settings.getTransientValues().iterator();
-                while(it.hasNext()){
-                    String name=(String)it.next();
-                    Object obj=settings.getTransientObject(name);
-                    config.setTransientObject(name,obj);
-                }
-            }
-            
-        }
+        ch.ehi.ili2db.gui.Config config=cloneSettings(new ch.ehi.ili2db.gui.Config(),settings);
         new ch.ehi.ili2pg.PgMain().initConfig(config);
         config.setDbschema(dbSchema);
         config.setExportModels(exportModels);
         if(regionRegEx!=null && datasetName==null){
+            boolean isDM01=false;
             List<String> regions=getRegionsFromDb(conn, config,regionRegEx);
             if(regions.size()>0){
                 ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
@@ -90,11 +76,17 @@ public class PublisherStep {
                 ch.interlis.ilirepository.IliFiles iliFiles=TransferFromIli.readIliFiles(conn,config.getDbschema(),new PgCustomStrategy(),config.isVer3_export());
                 ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
                 config.setItfTransferfile(iliFile.getIliVersion()<2.0);
+                isDM01=((ch.interlis.ili2c.modelscan.IliModel)(iliFile.iteratorModel().next())).getName().equals(MODEL_DM01);
             }
             publishFilePre(date,dataIdent,target,settings,tempFolder);
             List<Path> modelFiles=null;
             for(String region:regions) {
-                Path xtfFile=tempFolder.resolve(region+(config.isItfTransferfile()?".itf":".xtf"));
+                String filename=region+"."+dataIdent;
+                Path xtfFile=tempFolder.resolve(filename+(config.isItfTransferfile()?".itf":".xtf"));
+                Path validationLog=tempFolder.resolve(filename+".log");
+                Path gpkgFile=tempFolder.resolve(filename+".gpkg");
+                Path shpFolder=tempFolder.resolve(filename+".shp");
+                Path dxfFolder=tempFolder.resolve(filename+".dxf");
                 try {
                     config.setXtffile(xtfFile.toString());
                     config.setModeldir(Ili2db.ILI_FROM_DB);
@@ -103,16 +95,36 @@ public class PublisherStep {
                     config.setValidation(false);
                     config.setJdbcConnection(conn);
                     Ili2db.readSettingsFromDb(config);
+                    settings.setValue(Config.PREFIX+".defaultSrsAuthority",config.getDefaultSrsAuthority());
+                    settings.setValue(Config.PREFIX+".defaultSrsCode",config.getDefaultSrsCode());
                     Ili2db.run(config, null);
                     modelFiles=new ArrayList<Path>();
-                    publishFile(date,dataIdent,xtfFile,target,region,validationConfig,settings,tempFolder,modelFiles);
+                    publishFile(date,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles);
+                    if(userFormats) {
+                        writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
+                        publishUserFormatFile(date,dataIdent,gpkgFile,target,region,validationLog,validationConfig,settings,tempFolder);
+                        writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
+                        publishUserFormatFolder(date,dataIdent,shpFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                        if(isDM01) {
+                            writeGeobauDxfFile(xtfFile,dxfFolder,settings,tempFolder);
+                            publishUserFormatFile(date,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                        }else {
+                            writeDxfFile(gpkgFile,dxfFolder,settings,tempFolder);
+                            publishUserFormatFolder(date,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                        }
+                    }
                     publishedRegions.add(region);
                 }finally {
-                    Files.delete(xtfFile);
+                    deleteFile(xtfFile);
+                    deleteFile(gpkgFile);
+                    deleteFile(validationLog);
+                    deleteFileTree(shpFolder);
+                    deleteFileTree(dxfFolder);
                 }
             }
             publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
         }else if(datasetName!=null && regionRegEx==null){
+            boolean isDM01=false;
             {
                 ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
                 String datasetNames[] = datasetName.split(ch.interlis.ili2c.Main.MODELS_SEPARATOR);
@@ -126,8 +138,14 @@ public class PublisherStep {
                 ch.interlis.ilirepository.IliFiles iliFiles=TransferFromIli.readIliFiles(conn,config.getDbschema(),new PgCustomStrategy(),config.isVer3_export());
                 ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
                 config.setItfTransferfile(iliFile.getIliVersion()<2.0);
+                isDM01=((ch.interlis.ili2c.modelscan.IliModel)(iliFile.iteratorModel().next())).getName().equals(MODEL_DM01);
             }
-            Path xtfFile=tempFolder.resolve(datasetName+(config.isItfTransferfile()?".itf":".xtf"));
+            String filename=datasetName;
+            Path xtfFile=tempFolder.resolve(filename+(config.isItfTransferfile()?".itf":".xtf"));
+            Path validationLog=tempFolder.resolve(filename+".log");
+            Path gpkgFile=tempFolder.resolve(filename+".gpkg");
+            Path shpFolder=tempFolder.resolve(filename+".shp");
+            Path dxfFolder=tempFolder.resolve(filename+".dxf");
             try {
                 config.setXtffile(xtfFile.toString());
                 config.setModeldir(Ili2db.ILI_FROM_DB);
@@ -136,17 +154,159 @@ public class PublisherStep {
                 config.setValidation(false);
                 config.setJdbcConnection(conn);
                 Ili2db.readSettingsFromDb(config);
+                settings.setValue(Config.PREFIX+".defaultSrsAuthority",config.getDefaultSrsAuthority());
+                settings.setValue(Config.PREFIX+".defaultSrsCode",config.getDefaultSrsCode());
                 Ili2db.run(config, null);
                 List<Path> modelFiles=new ArrayList<Path>();
                 publishFilePre(date,dataIdent,target,settings,tempFolder);
-                publishFile(date,dataIdent,xtfFile,target,null,validationConfig,settings,tempFolder,modelFiles);
+                publishFile(date,dataIdent,xtfFile,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
+                if(userFormats) {
+                    writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
+                    publishUserFormatFile(date,dataIdent,gpkgFile,target,null,validationLog,validationConfig,settings,tempFolder);
+                    writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
+                    publishUserFormatFolder(date,dataIdent,shpFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                    if(isDM01) {
+                        writeGeobauDxfFile(xtfFile,dxfFolder,settings,tempFolder);
+                        publishUserFormatFile(date,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                    }else {
+                        writeDxfFile(gpkgFile,dxfFolder,settings,tempFolder);
+                        publishUserFormatFolder(date,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                    }
+                }
                 publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
             }finally {
-                Files.delete(xtfFile);
+                deleteFile(xtfFile);
+                deleteFile(gpkgFile);
+                deleteFile(validationLog);
+                deleteFileTree(shpFolder);
+                deleteFileTree(dxfFolder);
             }
         }else{
             throw new IllegalArgumentException("regionRegEx==null && datasetName==null");
         }
+    }
+    private void deleteFile(Path file) throws IOException {
+        try {
+            Files.delete(file);
+        }catch(java.nio.file.NoSuchFileException e) {
+            // ignore
+        }
+    }
+    private void writeDxfFile(Path gpkgFile, Path dxfFolder, Settings settings, Path tempFolder) throws Exception {
+        Files.createDirectories(dxfFolder);
+        Gpkg2DxfStep converter=new Gpkg2DxfStep();
+        converter.execute(gpkgFile.toString(),dxfFolder.toString());
+    }
+    private void writeGeobauDxfFile(Path itfFile, Path dxfFile, Settings settings, Path tempFolder) throws Exception {
+        boolean ok = org.interlis2.av2geobau.Av2geobau.convert(itfFile.toFile(),dxfFile.toFile(),settings);
+        if(!ok) {
+            throw new Exception("Av2geobau failed");
+        }
+    }
+    private void writeShpFile(Path gpkgFile, Path shpFolder, Settings settings, Path tempFolder) throws IoxException, IOException {
+        Files.createDirectories(shpFolder);
+        Gpkg2ShpStep converter=new Gpkg2ShpStep();
+        converter.execute(gpkgFile.toString(),shpFolder.toString());
+    }
+    private Config cloneSettings(Config config, Settings settings) {
+        if(settings!=null){
+            java.util.Iterator<String> it=settings.getValuesIterator();
+            while(it.hasNext()){
+                String name=it.next();
+                String obj=settings.getValue(name);
+                config.setValue(name,obj);
+            }
+            it=settings.getTransientValues().iterator();
+            while(it.hasNext()){
+                String name=(String)it.next();
+                Object obj=settings.getTransientObject(name);
+                config.setTransientObject(name,obj);
+            }
+        }
+        return config;
+    }
+    private void publishUserFormatFile(String date, String dataIdent, Path sourcePath, Path target, String region,Path validationLog,Path validationConfig,Settings settings,
+            Path tempFolder) throws IOException {
+        Path targetRootPath=target;
+        Path targetPath=targetRootPath.resolve(dataIdent);
+        String regionPrefix="";
+        if(region!=null) {
+            regionPrefix=region+".";
+        }
+        Path targetDatePath=targetPath.resolve("."+date);
+        // xtf in zip kopieren
+        ZipOutputStream out=null;
+        try{
+            String sourceName=sourcePath.getFileName().toString();
+            String sourceExt="."+GenericFileFilter.getFileExtension(sourceName);
+            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+".zip");
+            out = new ZipOutputStream(Files.newOutputStream(targetFile));
+            copyFileToZip(out,regionPrefix+dataIdent+sourceExt,sourcePath);
+            copyFileToZip(out,"validation.log",validationLog);
+            if(validationConfig!=null) {
+                copyFileToZip(out,"validation.ini",validationConfig);
+            }
+        }finally {
+            if(out!=null){
+                try {
+                    out.closeEntry();
+                    out.close();        
+                } catch (IOException e) {
+                    log.error("failed to close file",e);
+                }
+                out=null;
+            }
+        }
+    }
+    private void publishUserFormatFolder(String date, String dataIdent, Path sourceFolder, Path target, String region,Path validationLog,Path validationConfig,Settings settings,
+            Path tempFolder) throws IOException {
+        Path targetRootPath=target;
+        Path targetPath=targetRootPath.resolve(dataIdent);
+        String regionPrefix="";
+        if(region!=null) {
+            regionPrefix=region+".";
+        }
+        Path targetDatePath=targetPath.resolve("."+date);
+        // xtf in zip kopieren
+        ZipOutputStream out=null;
+        try{
+            String sourceName=sourceFolder.getFileName().toString();
+            String sourceExt="."+GenericFileFilter.getFileExtension(sourceName);
+            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+".zip");
+            out = new ZipOutputStream(Files.newOutputStream(targetFile));
+            // copy all files from sourceFolder to zip
+            copyFilesFromFolderToZip(out, sourceFolder);
+            copyFileToZip(out,"validation.log",validationLog);
+            if(validationConfig!=null) {
+                copyFileToZip(out,"validation.ini",validationConfig);
+            }
+        }finally {
+            if(out!=null){
+                try {
+                    out.closeEntry();
+                    out.close();        
+                } catch (IOException e) {
+                    log.error("failed to close file",e);
+                }
+                out=null;
+            }
+        }
+    }
+    private void writeGpkgFile(Path xtfFile, Path gpkgFile, Settings settings, Path tempFolder) throws Ili2dbException {
+        ch.ehi.ili2db.gui.Config config=cloneSettings(new ch.ehi.ili2db.gui.Config(),settings);
+        ch.ehi.ili2gpkg.GpkgMain gpkgMain=new ch.ehi.ili2gpkg.GpkgMain();
+        gpkgMain.initConfig(config);
+        
+        config.setXtffile(xtfFile.toString());
+        config.setDbfile(gpkgFile.toString());
+        //config.setDburl(gpkgMain.getDbUrlConverter().makeUrl(config));
+        config.setDburl("jdbc:sqlite:"+config.getDbfile());
+        config.setModeldir(settings.getValue(Validator.SETTING_ILIDIRS));
+        config.setFunction(Config.FC_IMPORT);
+        config.setDoImplicitSchemaImport(true);
+        config.setValidation(false);
+        config.setCreateMetaInfo(true); // required by following Gpkg2DxfStep
+        Ili2db.run(config, null);
     }
     private List<String> getRegionsFromDb(Connection conn, Config config, String regionRegEx) throws Exception {
         List<String> datasets=Ili2db.getDatasets(conn, config);
@@ -170,26 +330,29 @@ public class PublisherStep {
             List<Path> modelFiles=new ArrayList<Path>();
             for(String region:regions) {
                 Path xtfFile=sourceParent.resolve(region+"."+sourceExt);
+                Path validationLog=tempFolder.resolve(region+"."+dataIdent+".log");
                 modelFiles=new ArrayList<Path>();
-                publishFile(date,dataIdent,xtfFile,target,region,validationConfig,settings,tempFolder,modelFiles);
+                publishFile(date,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles);
                 if(publishedRegions!=null) {
                     publishedRegions.add(region);
                 }
+                Files.delete(validationLog);
             }
             publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
         }else {
             publishFilePre(date,dataIdent,target,settings,tempFolder);
             List<Path> modelFiles=new ArrayList<Path>();
-            publishFile(date,dataIdent,sourcePath,target,null,validationConfig,settings,tempFolder,modelFiles);
+            Path validationLog=tempFolder.resolve(dataIdent+".log");
+            publishFile(date,dataIdent,sourcePath,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
             publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+            Files.delete(validationLog);
         }
     }
-    public void publishFile(String date,String dataIdent, Path sourcePath, Path target, String region,Path validationConfig,Settings settings,Path tempFolder,List<Path> modelFiles) 
+    public void publishFile(String date,String dataIdent, Path sourcePath, Path target, String region,Path logFile,Path validationConfig,Settings settings,Path tempFolder,List<Path> modelFiles) 
             throws Exception 
     {
         String files[]=new String[1];
         files[0]=sourcePath.toAbsolutePath().toString();
-        Path logFile=tempFolder.resolve(new Random().nextLong()+".log");
         settings.setValue(Validator.SETTING_LOGFILE, logFile.toString());
         if(validationConfig!=null) {
             settings.setValue(Validator.SETTING_CONFIGFILE, validationConfig.toString());
@@ -201,12 +364,6 @@ public class PublisherStep {
         }
         Path targetRootPath=target;
         Path targetPath=targetRootPath.resolve(dataIdent);
-        Path targetCurrentPath=targetPath.resolve(PATH_ELE_AKTUELL);
-        Path targetHistPath=targetPath.resolve(PATH_ELE_HISTORY);
-        String currentPublishdate=null;
-        if(Files.exists(targetCurrentPath)) {
-            currentPublishdate=readPublishDate(targetCurrentPath);
-        }
         String regionPrefix="";
         if(region!=null) {
             regionPrefix=region+".";
@@ -248,7 +405,6 @@ public class PublisherStep {
                 }
                 out=null;
             }
-            Files.delete(logFile);
         }
     }
     public void publishFilePre(String date,String dataIdent, Path target, Settings settings,Path tempFolder) 
@@ -318,6 +474,20 @@ public class PublisherStep {
         // Publikationsdatum in KGDI-Metadaten nachfuehren
         // ausduennen
         
+    }
+    private void copyFilesFromFolderToZip(ZipOutputStream out,Path sourceFolder) throws IOException {
+        //ZipOutputStream out=null;
+        Files.walkFileTree(sourceFolder, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
+                if (!Files.isDirectory(file)) {
+                    String fileName=file.getFileName().toString();
+                    copyFileToZip(out,fileName,file);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
     private void copyFileToZip(ZipOutputStream out, String filename, Path sourcePath) throws IOException {
         java.io.BufferedInputStream in=null;
