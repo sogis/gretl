@@ -287,8 +287,8 @@ valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten interpretiert
 encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 
 Falls die CSV-Datei eine Header-Zeile enthält (mit den Spaltennamen), wird im gegebenen Modell eine Klasse gesucht, 
-die genau diese Attribute (wobei die Gross-/Kleinschreibung ignoriert wird) enthält. Wird keine solche Klasse gefunden, 
-gilt das als Validierungsfehler.
+welche die Header-Spaltennamen enthält (Gross-/Kleinschreibung sowie optionale "Spalten" der Modell-Klasse werden ignoriert). 
+Wird keine solche Klasse gefunden, gilt das als Validierungsfehler.
 
 Falls die CSV-Datei keine Header-Zeile enthält (mit den Spaltennamen), wird im gegebenen Modell eine Klasse gesucht, 
 die die selbe Anzahl Attribute hat. Wird keine solche Klasse gefunden, 

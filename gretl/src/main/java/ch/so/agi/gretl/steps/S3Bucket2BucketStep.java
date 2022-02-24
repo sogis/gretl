@@ -44,7 +44,7 @@ public class S3Bucket2BucketStep {
     }
     
     public void execute(String accessKey, String secretKey, String sourceBucket, String targetBucket, String s3EndPoint, String s3Region, String acl, Map<String, String> metaData) throws FileNotFoundException, UnsupportedEncodingException {        
-        log.lifecycle(String.format("Start S3UploadStep(Name: %s SourceBucket: %s TargetBucket: %s S3EndPoint: %s S3Region: %s ACL: %s MetaData: %s)", taskName,
+        log.lifecycle(String.format("Start S3Bucket2Bucket(Name: %s SourceBucket: %s TargetBucket: %s S3EndPoint: %s S3Region: %s ACL: %s MetaData: %s)", taskName,
                 sourceBucket, targetBucket, s3EndPoint, s3Region, acl, metaData));
         
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
