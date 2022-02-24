@@ -42,6 +42,10 @@ data:
           <ttyEnabled>false</ttyEnabled>
           <envVars>
             <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
+              <key>HOME</key>
+              <value>/home/gradle</value>
+            </org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
+            <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
               <key>GRADLE_OPTS</key>
               <value>-Xmx1024m</value>
             </org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
