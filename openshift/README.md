@@ -24,8 +24,6 @@ oc process -f openshift/templates/jenkins-s2i-persistent-template.yaml \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
   -p JENKINS_DOCKER_IMAGE_TAG="4.7" \
   -p GRETL_JOB_REPO_URL="https://github.com/sogis/gretljobs.git" \
-  -p GRETL_JOB_FILE_PATH="**" \
-  -p GRETL_JOB_FILE_NAME="build.gradle" \
   -p VOLUME_CAPACITY="2Gi" \
   -p JENKINS_HOSTNAME="gretl.example.org" \
   | oc apply -f -
@@ -34,8 +32,6 @@ Parameter:
 * JENKINS_CONFIGURATION_REPO_URL: Repo containing the Jenkins configuration.
 * JENKINS_DOCKER_IMAGE_TAG: Jenkins base image tag to be used.
 * GRETL_JOB_REPO_URL: Repo containing the GRETL jobs.
-* GRETL_JOB_FILE_PATH: Base path to the GRETL job definitions (Ant style)
-* GRETL_JOB_FILE_NAME: Name of the GRETL job script file (usually build.gradle).
 * VOLUME_CAPACITY: Persistent volume size for Jenkins configuration data, e.g. 512Mi, 2Gi.
 * JENKINS_HOSTNAME: The public hostname for the Jenkins service.
 
