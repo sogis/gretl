@@ -15,10 +15,6 @@ data:
       <label>gretl-bigtmp</label>
       <serviceAccount>jenkins</serviceAccount>
       <nodeSelector></nodeSelector>
-      <resourceRequestCpu>200m</resourceRequestCpu>
-      <resourceRequestMemory>1Gi</resourceRequestMemory>
-      <resourceLimitCpu>1</resourceLimitCpu>
-      <resourceLimitMemory>3.5Gi</resourceLimitMemory>
       <volumes>
         <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
           <mountPath>/tmp</mountPath>
@@ -48,6 +44,10 @@ data:
           <command>sleep</command>
           <args>24h</args>
           <ttyEnabled>false</ttyEnabled>
+          <resourceRequestCpu>200m</resourceRequestCpu>
+          <resourceRequestMemory>1Gi</resourceRequestMemory>
+          <resourceLimitCpu>1</resourceLimitCpu>
+          <resourceLimitMemory>3.5Gi</resourceLimitMemory>
           <envVars>
             <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
               <key>HOME</key>
