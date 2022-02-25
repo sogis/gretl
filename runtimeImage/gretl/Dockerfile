@@ -1,21 +1,40 @@
-FROM openshift/jenkins-slave-maven-centos7
+FROM bellsoft/liberica-openjdk-alpine:8u322-6
 
-USER root
+CMD ["gretl"]
 
-RUN yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-RUN yum -y --nogpgcheck install postgresql10
+WORKDIR /home/gradle
+
+ENV GRADLE_USER_HOME=/home/gradle/.gradle
+
+ENV GRADLE_HOME /opt/gradle
+ENV GRADLE_VERSION 4.2.1
+ARG GRADLE_DOWNLOAD_SHA256=b551cc04f2ca51c78dd14edb060621f0e5439bdfafa6fd167032a09ac708fbc0
+RUN set -o errexit -o nounset \
+    && echo "Downloading Gradle" \
+    && wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" \
+    \
+    && echo "Checking download hash" \
+    && echo "${GRADLE_DOWNLOAD_SHA256} *gradle.zip" | sha256sum -c - \
+    \
+    && echo "Installing Gradle" \
+    && unzip gradle.zip \
+    && rm gradle.zip \
+    && mv "gradle-${GRADLE_VERSION}" "${GRADLE_HOME}/" \
+    && ln -s "${GRADLE_HOME}/bin/gradle" /usr/bin/gradle \
+    \
+    && echo "Testing Gradle installation" \
+    && gradle --version
 
 COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
-#COPY __jars4image/ilivalidator-custom-functions-*.jar /home/gradle/plugins/ilivalidator-custom-functions.jar
-
 COPY init.gradle /home/gradle/
 
-RUN mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties \
-    chown -R 1001:0 /home/gradle && \
-    chmod -R g+rw /home/gradle && \
-    ls -la /usr/local/bin/  && \
+RUN chmod -R g+w /home/gradle
+
+RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
     ls -la /home/gradle/libs
+
+WORKDIR /home/gradle/project
 
 USER 1001
