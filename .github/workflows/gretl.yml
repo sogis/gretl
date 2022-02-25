@@ -98,7 +98,7 @@ jobs:
         with:
           platforms: linux/amd64
           context: ./runtimeImage/gretl
-          file: ./runtimeImage/gretl/Dockerfile.local # todo rename
+          file: ./runtimeImage/gretl/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           load: true
@@ -135,7 +135,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           context: ./runtimeImage/gretl
-          file: ./runtimeImage/gretl/Dockerfile.local # todo rename
+          file: ./runtimeImage/gretl/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           #pull: true
