@@ -122,7 +122,6 @@ jobs:
           name: reports-docker
           path: |
             gretl/build/reports/tests/
-            *.log
         
 
 
