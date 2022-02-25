@@ -97,7 +97,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           load: true
-          #pull: true 
+          pull: true 
 
       - name: List images
         run: |
@@ -133,5 +133,5 @@ jobs:
           file: ./runtimeImage/gretl/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          #pull: true
+          pull: true
           push: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
