@@ -49,14 +49,14 @@ jobs:
       #   with:
       #     name: reports-jar
       #     path: gretl/build/reports/tests/
-      - name: Build Docker Image
-        run: |
-          cd runtimeImage/
-          ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
-          cd ..
-        env:
-          TRAVIS_COMMIT: ${{ github.sha }}
-          TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
+      # - name: Build Docker Image
+      #   run: |
+      #     cd runtimeImage/
+      #     ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
+      #     cd ..
+      #   env:
+      #     TRAVIS_COMMIT: ${{ github.sha }}
+      #     TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
 
       - name: Stage jar files
         run: |
@@ -78,10 +78,10 @@ jobs:
           images: sogis/gretl
           labels: |
             org.opencontainers.image.title=gretl
-            org.opencontainers.image.version=${{ env.VERSION }}
-            org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-debian:8
+            org.opencontainers.image.version=2.1.${{ github.run_number }}
+            org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-alpine-musl:8u312-7
           tags: |
-            type=raw,value=${{ env.VERSION }},enable=true,priority=200
+            type=raw,value=2.1.${{ github.run_number }},enable=true,priority=200
             type=raw,value=2.1,enable=true,priority=200
             type=raw,value=2,enable=true,priority=200
             type=raw,value=latest,enable=true,priority=200
