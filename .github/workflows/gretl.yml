@@ -52,15 +52,6 @@ jobs:
         with:
           name: reports-jar
           path: gretl/build/reports/tests/
-      - name: Build Docker Image
-      
-        run: |
-          cd runtimeImage/
-          ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
-          cd ..
-        env:
-          TRAVIS_COMMIT: ${{ github.sha }}
-          TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
 
       - name: Stage jar files
         run: |
