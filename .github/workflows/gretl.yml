@@ -29,34 +29,38 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean gretl:classes 
-      # - name: Unit Tests 
-      #   run: |
-      #     ./gradlew gretl:test gretl:dbTest
-      #     ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
-      #     ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
-      #   env:
-      #     S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-      #     S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-      # - name: Integration Test (Jar)
-      #   run: |
-      #     ./gradlew gretl:jarTest
-      #     ./gradlew gretl:jarS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
-      #   env:
-      #     S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-      #     S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-      # - uses: actions/upload-artifact@v2
-      #   if: ${{ failure() }}
-      #   with:
-      #     name: reports-jar
-      #     path: gretl/build/reports/tests/
-      # - name: Build Docker Image
-      #   run: |
-      #     cd runtimeImage/
-      #     ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
-      #     cd ..
-      #   env:
-      #     TRAVIS_COMMIT: ${{ github.sha }}
-      #     TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
+
+      - name: Unit Tests 
+        run: |
+          ./gradlew gretl:test gretl:dbTest
+          ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+          ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+
+      - name: Integration Test (Jar)
+        run: |
+          ./gradlew gretl:jarTest
+          ./gradlew gretl:jarS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: reports-jar
+          path: gretl/build/reports/tests/
+      - name: Build Docker Image
+      
+        run: |
+          cd runtimeImage/
+          ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
+          cd ..
+        env:
+          TRAVIS_COMMIT: ${{ github.sha }}
+          TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
 
       - name: Stage jar files
         run: |
