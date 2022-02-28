@@ -3,7 +3,7 @@ OpenShift GRETL system project
 Create the GRETL system on the OpenShift container platform.
 
 
-## Setup runtime with Jenkins
+## Setup the GRETL system with Jenkins
 
 ### Create project
 ```
@@ -35,19 +35,21 @@ Parameter:
 * VOLUME_CAPACITY: Persistent volume size for Jenkins configuration data, e.g. 512Mi, 2Gi.
 * JENKINS_HOSTNAME: The public hostname for the Jenkins service.
 
-### GRETL runtime
-The GRETL runtime configuration with definition of which Docker image to pull from Docker Hub.
+### Jenkins agent
 
-#### Create the gretl image stream providing the GRETL runtime image
+The configuration of the Jenkins agent,
+including the definition of which Docker image to pull from Docker Hub.
 
-Add the *gretl* image stream to pull the newest GRETL runtime image:
+#### Create the gretl image stream providing the GRETL image
+
+Add the *gretl* image stream to pull the newest GRETL image:
 ```
 oc process -f openshift/templates/gretl-is-template.yaml \
-  -p GRETL_RUNTIME_IMAGE_TAG="latest" \
+  -p GRETL_IMAGE_TAG="latest" \
   | oc apply -f -
 ```
 Parameters:
-* GRETL_RUNTIME_IMAGE_TAG: Docker image tag of GRETL runtime to be pulled from Docker Hub.
+* GRETL_IMAGE_TAG: GRETL image tag to be pulled from Docker Hub.
 * IMPORT_POLICY_SCHEDULED: Regularly check for changed image; defaults to "false"
 
 #### Create the jenkins-agent image stream providing the Jenkins agent image
@@ -62,7 +64,7 @@ Parameters:
 * JENKINS_AGENT_IMAGE_TAG: Docker image tag of Jenkins agent to be pulled from Quay.io.
 * IMPORT_POLICY_SCHEDULED: Regularly check for changed image; defaults to "false"
 
-#### Create a ConfigMap that configures the GRETL runtime Jenkins agent
+#### Create a ConfigMap that configures the Jenkins agent
 
 Adapt the OpenShift project name (and maybe the image tag) in the ConfigMap
 `openshift/templates/gretl-pod-template-configmap.yaml`,
@@ -204,14 +206,14 @@ The database connection string can then be combined with the protocol, url and d
 ## Updates
 Update an existing system.
 
-### Update GRETL runtime image
-There are several ways to change the GRETL runtime image version.
+### Update GRETL image
+There are several ways to change the GRETL image version.
 
 Either apply the `gretl-is-template.yaml` template again with the desired image tag.
 
 Or set the image tag with a command like this:
 ```
-oc tag --source=docker sogis/gretl-runtime:2.1.119 gretl:latest
+oc tag --source=docker sogis/gretl:2.1.119 gretl:latest
 ```
 
 Or edit the Image Stream manually inside the OpenShift web console:
