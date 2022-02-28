@@ -31,6 +31,8 @@ COPY init.gradle /home/gradle/
 
 RUN chmod -R g+w /home/gradle
 
+RUN apk add --no-cache curl
+
 RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
     ls -la /home/gradle/libs
