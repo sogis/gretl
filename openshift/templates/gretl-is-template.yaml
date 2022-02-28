@@ -17,14 +17,14 @@ objects:
     - annotations: null
       from:
         kind: DockerImage
-        name: sogis/gretl-local:${GRETL_RUNTIME_IMAGE_TAG}
+        name: sogis/gretl:${GRETL_IMAGE_TAG}
       name: latest
       importPolicy:
         scheduled: ${{IMPORT_POLICY_SCHEDULED}}
 parameters:
-- name: GRETL_RUNTIME_IMAGE_TAG
-  description: Docker image tag of GRETL runtime to be pulled from Docker Hub.
-  displayName: Docker image tag of GRETL runtime
+- name: GRETL_IMAGE_TAG
+  description: GRETL image tag to be pulled from Docker Hub.
+  displayName: GRETL image tag
   value: latest
 - name: IMPORT_POLICY_SCHEDULED
   description: Regularly check for changed image
