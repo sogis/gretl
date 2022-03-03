@@ -3,6 +3,10 @@ name: gretl
 on:
   workflow_dispatch:
   push:
+    paths-ignore:
+      - 'docs/**'
+      - 'openshift/**'
+      - '**.md'
     branches-ignore:
       - publisher
 
