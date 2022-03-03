@@ -25,6 +25,10 @@ data:
           <command></command>
           <args>${computer.jnlpmac} ${computer.name}</args>
           <ttyEnabled>false</ttyEnabled>
+          <resourceRequestCpu>200m</resourceRequestCpu>
+          <resourceRequestMemory>256Mi</resourceRequestMemory>
+          <resourceLimitCpu>1</resourceLimitCpu>
+          <resourceLimitMemory>512Mi</resourceLimitMemory>
           <envVars/>
         </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
