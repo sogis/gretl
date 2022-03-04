@@ -5,7 +5,6 @@ CMD ["gretl"]
 WORKDIR /home/gradle
 
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
-
 ENV GRADLE_HOME /opt/gradle
 ENV GRADLE_VERSION 4.2.1
 ARG GRADLE_DOWNLOAD_SHA256=b551cc04f2ca51c78dd14edb060621f0e5439bdfafa6fd167032a09ac708fbc0
@@ -25,6 +24,7 @@ RUN set -o errexit -o nounset \
     && echo "Testing Gradle installation" \
     && gradle --version
 
+ENV ILI_CACHE=/home/gradle/.ilicache
 COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
 COPY init.gradle /home/gradle/
