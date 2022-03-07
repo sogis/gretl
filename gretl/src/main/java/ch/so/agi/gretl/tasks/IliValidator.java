@@ -50,8 +50,11 @@ public class IliValidator extends AbstractValidatorTask {
         List<String> userFunctionList = new ArrayList<String>();
         userFunctionList.add("ch.so.agi.ilivalidator.ext.IsHttpResourceIoxPlugin");
         userFunctionList.add("ch.so.agi.ilivalidator.ext.AreaIoxPlugin");
+        userFunctionList.add("ch.so.agi.ilivalidator.ext.LengthIoxPlugin");
         userFunctionList.add("ch.so.agi.ilivalidator.ext.IsValidDocumentsCycleIoxPlugin");
-        userFunctionList.add("ch.so.agi.ilivalidator.ext.IsHttpResourceFromOerebMultilingualUriIoxPlugin");
+        userFunctionList.add("ch.so.agi.ilivalidator.ext.RingSelfIntersectionIoxPlugin");
+        userFunctionList.add("ch.so.agi.ilivalidator.ext.TooFewPointsPolylineIoxPlugin");
+        //userFunctionList.add("ch.so.agi.ilivalidator.ext.IsHttpResourceFromOerebMultilingualUriIoxPlugin");
         
         Map<String,Class> userFunctions = new HashMap<String,Class>();
         try {
