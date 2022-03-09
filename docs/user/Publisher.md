@@ -7,7 +7,6 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
 - Regionen update/ergänzen
 - explizite Liste der Regionen als Input
-- KGDI-Service
 - Archiv aufräumen
 
 ## Einbindung in einen typischen GRETL-Publikationsjob
@@ -247,6 +246,11 @@ Kann nur ab DB erstellt werden.
 Falls das Datenmodell der Quelldaten ``DM01AVCH24LV95D`` ist, wird das DXF automatisch in der Geobau-Struktur erstellt. 
 
 ## KGDI-Service
+
+Der Service wird benutzt, um:
+
+- den Beipackzettel (im Unterordner meta) zu erstellen/beziehen
+- das Publikationsdatum in den Metadaten nachzuführen
 
     task publishFile(type: Publisher){
       ...

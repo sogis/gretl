@@ -9,5 +9,6 @@ task publishFile(type: Publisher){
       target = [project.buildDir]
       sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
       modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      //kgdiService=["http://localhost:8080/simi-svc/rest","admin","admin"]
 }
 

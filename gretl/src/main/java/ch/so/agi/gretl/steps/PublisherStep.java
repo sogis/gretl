@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +13,9 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,12 +45,14 @@ import ch.interlis.models.DM01AVCH24LV95D_;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.util.SimiSvcApi;
 
 public class PublisherStep {
     public static final String PATH_ELE_HISTORY = "hist";
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
     public static final String PATH_ELE_PUBLISHDATE_JSON="publishdate.json";
+    public static final String PATH_ELE_LEAFLET_HTML="datenbeschreibung.html";
     public static final String JSON_ATTR_PUBLISHDATE="publishdate";
     private static final Object MODEL_DM01 = DM01AVCH24LV95D_.MODEL;
     private GretlLogger log;
@@ -55,13 +60,14 @@ public class PublisherStep {
     public PublisherStep() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-    public void publishDatasetFromDb(String date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String exportModels,boolean userFormats, Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder) 
+    public void publishDatasetFromDb(Date date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String exportModels,boolean userFormats, Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
             throws Exception 
     {
         ch.ehi.ili2db.gui.Config config=cloneSettings(new ch.ehi.ili2db.gui.Config(),settings);
         new ch.ehi.ili2pg.PgMain().initConfig(config);
         config.setDbschema(dbSchema);
         config.setExportModels(exportModels);
+        String dateTag=getDateTag(date);
         if(regionRegEx!=null && datasetName==null){
             boolean isDM01=false;
             List<String> regions=getRegionsFromDb(conn, config,regionRegEx);
@@ -78,7 +84,7 @@ public class PublisherStep {
                 config.setItfTransferfile(iliFile.getIliVersion()<2.0);
                 isDM01=((ch.interlis.ili2c.modelscan.IliModel)(iliFile.iteratorModel().next())).getName().equals(MODEL_DM01);
             }
-            publishFilePre(date,dataIdent,target,settings,tempFolder);
+            publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
             List<Path> modelFiles=null;
             for(String region:regions) {
                 String filename=region+"."+dataIdent;
@@ -99,18 +105,18 @@ public class PublisherStep {
                     settings.setValue(Config.PREFIX+".defaultSrsCode",config.getDefaultSrsCode());
                     Ili2db.run(config, null);
                     modelFiles=new ArrayList<Path>();
-                    publishFile(date,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles);
+                    publishFile(dateTag,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles);
                     if(userFormats) {
                         writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
-                        publishUserFormatFile(date,dataIdent,gpkgFile,target,region,validationLog,validationConfig,settings,tempFolder);
+                        publishUserFormatFile(dateTag,dataIdent,gpkgFile,target,region,validationLog,validationConfig,settings,tempFolder);
                         writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
-                        publishUserFormatFolder(date,dataIdent,shpFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                        publishUserFormatFolder(dateTag,dataIdent,shpFolder,target,region,validationLog,validationConfig,settings,tempFolder);
                         if(isDM01) {
                             writeGeobauDxfFile(xtfFile,dxfFolder,settings,tempFolder);
-                            publishUserFormatFile(date,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                            publishUserFormatFile(dateTag,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
                         }else {
                             writeDxfFile(gpkgFile,dxfFolder,settings,tempFolder);
-                            publishUserFormatFolder(date,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                            publishUserFormatFolder(dateTag,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
                         }
                     }
                     publishedRegions.add(region);
@@ -122,7 +128,7 @@ public class PublisherStep {
                     deleteFileTree(dxfFolder);
                 }
             }
-            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc);
         }else if(datasetName!=null && regionRegEx==null){
             boolean isDM01=false;
             {
@@ -158,22 +164,22 @@ public class PublisherStep {
                 settings.setValue(Config.PREFIX+".defaultSrsCode",config.getDefaultSrsCode());
                 Ili2db.run(config, null);
                 List<Path> modelFiles=new ArrayList<Path>();
-                publishFilePre(date,dataIdent,target,settings,tempFolder);
-                publishFile(date,dataIdent,xtfFile,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
+                publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
+                publishFile(dateTag,dataIdent,xtfFile,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
                 if(userFormats) {
                     writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
-                    publishUserFormatFile(date,dataIdent,gpkgFile,target,null,validationLog,validationConfig,settings,tempFolder);
+                    publishUserFormatFile(dateTag,dataIdent,gpkgFile,target,null,validationLog,validationConfig,settings,tempFolder);
                     writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
-                    publishUserFormatFolder(date,dataIdent,shpFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                    publishUserFormatFolder(dateTag,dataIdent,shpFolder,target,null,validationLog,validationConfig,settings,tempFolder);
                     if(isDM01) {
                         writeGeobauDxfFile(xtfFile,dxfFolder,settings,tempFolder);
-                        publishUserFormatFile(date,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                        publishUserFormatFile(dateTag,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
                     }else {
                         writeDxfFile(gpkgFile,dxfFolder,settings,tempFolder);
-                        publishUserFormatFolder(date,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                        publishUserFormatFolder(dateTag,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
                     }
                 }
-                publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+                publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc);
             }finally {
                 deleteFile(xtfFile);
                 deleteFile(gpkgFile);
@@ -318,37 +324,38 @@ public class PublisherStep {
         }
         return regions;
     }
-    public void publishFromFile(String date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder) 
+    public void publishDatasetFromFile(Date date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
             throws Exception 
     {
+        String dateTag=getDateTag(date);
         if(regionRegEx!=null) {
             String sourceName=sourcePath.getFileName().toString();
             String sourceExt=GenericFileFilter.getFileExtension(sourceName);
             Path sourceParent=sourcePath.getParent();
             List<String> regions=listRegions(sourceParent, regionRegEx, sourceExt);
-            publishFilePre(date,dataIdent,target,settings,tempFolder);
+            publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
             List<Path> modelFiles=new ArrayList<Path>();
             for(String region:regions) {
                 Path xtfFile=sourceParent.resolve(region+"."+sourceExt);
                 Path validationLog=tempFolder.resolve(region+"."+dataIdent+".log");
                 modelFiles=new ArrayList<Path>();
-                publishFile(date,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles);
+                publishFile(dateTag,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles);
                 if(publishedRegions!=null) {
                     publishedRegions.add(region);
                 }
                 Files.delete(validationLog);
             }
-            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc);
         }else {
-            publishFilePre(date,dataIdent,target,settings,tempFolder);
+            publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
             List<Path> modelFiles=new ArrayList<Path>();
             Path validationLog=tempFolder.resolve(dataIdent+".log");
-            publishFile(date,dataIdent,sourcePath,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
-            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles);
+            publishFile(dateTag,dataIdent,sourcePath,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc);
             Files.delete(validationLog);
         }
     }
-    public void publishFile(String date,String dataIdent, Path sourcePath, Path target, String region,Path logFile,Path validationConfig,Settings settings,Path tempFolder,List<Path> modelFiles) 
+    private void publishFile(String date,String dataIdent, Path sourcePath, Path target, String region,Path logFile,Path validationConfig,Settings settings,Path tempFolder,List<Path> modelFiles) 
             throws Exception 
     {
         String files[]=new String[1];
@@ -407,7 +414,7 @@ public class PublisherStep {
             }
         }
     }
-    public void publishFilePre(String date,String dataIdent, Path target, Settings settings,Path tempFolder) 
+    private void publishFilePre(String date,String dataIdent, Path target, Settings settings,Path tempFolder) 
             throws Exception 
     {
         Path targetRootPath=target;
@@ -436,7 +443,7 @@ public class PublisherStep {
         Path targetDatePath=targetPath.resolve("."+date);
         Files.createDirectories(targetDatePath);
     }
-    public void publishFilePost(String date,String dataIdent, Path target, Settings settings,Path tempFolder,List<Path> modelFiles) 
+    private void publishFilePost(Date date,String dataIdent, Path target, Settings settings,Path tempFolder,List<Path> modelFiles,List<String> publishedRegions,SimiSvcApi simiSvc) 
             throws Exception 
     {
         Path targetRootPath=target;
@@ -447,7 +454,8 @@ public class PublisherStep {
         if(Files.exists(targetCurrentPath)) {
             currentPublishdate=readPublishDate(targetCurrentPath);
         }
-        Path targetDatePath=targetPath.resolve("."+date);
+        String dateTag=getDateTag(date);
+        Path targetDatePath=targetPath.resolve("."+dateTag);
         // meta erzeugen
         Path targetMetaPath=targetDatePath.resolve(PATH_ELE_META);
         Files.createDirectories(targetMetaPath);
@@ -456,11 +464,17 @@ public class PublisherStep {
            Files.copy(modelFile, targetMetaPath.resolve(modelFile.getFileName().toString()));
         }
         // publishdate.json erzeugen
-        writePublishDate(targetDatePath,date);
+        writePublishDate(targetDatePath,dateTag);
+        // Beipackzettel erzeugen
+        if(simiSvc!=null) {
+            String leaflet=simiSvc.getLeaflet(dataIdent,date);
+            Path leafletPath=getLeafletPath(targetDatePath);
+            Files.write(leafletPath, leaflet.getBytes(StandardCharsets.UTF_8));
+        }
         // aktuell umbenennen auf Ordnername gemaess Datum in publishdate.json
         if(Files.exists(targetCurrentPath)) {
             if(currentPublishdate!=null) {
-                if(currentPublishdate.equals(date)) {
+                if(currentPublishdate.equals(dateTag)) {
                     deleteFileTree(targetCurrentPath);
                 }else {
                     Files.createDirectories(targetHistPath);
@@ -472,8 +486,14 @@ public class PublisherStep {
         Files.move(targetDatePath,targetCurrentPath);
         
         // Publikationsdatum in KGDI-Metadaten nachfuehren
+        if(simiSvc!=null) {
+            simiSvc.notifyPublication(dataIdent, date, publishedRegions);
+        }
         // ausduennen
         
+    }
+    public static String getDateTag(Date date) {
+        return new java.text.SimpleDateFormat("yyyy-MM-dd").format(date);
     }
     private void copyFilesFromFolderToZip(ZipOutputStream out,Path sourceFolder) throws IOException {
         //ZipOutputStream out=null;
@@ -571,5 +591,10 @@ public class PublisherStep {
         Path targetMetaPath=targetPath.resolve(PATH_ELE_META);
         Path publishdatePath=targetMetaPath.resolve(PATH_ELE_PUBLISHDATE_JSON);
         return publishdatePath;
+    }
+    private static Path getLeafletPath(Path targetPath) {
+        Path targetMetaPath=targetPath.resolve(PATH_ELE_META);
+        Path leafletPath=targetMetaPath.resolve(PATH_ELE_LEAFLET_HTML);
+        return leafletPath;
     }
 }

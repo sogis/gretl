@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.interlis2.validator.Validator;
@@ -50,7 +51,7 @@ public class PublisherStepDb2LocalTest {
     @Category(DbTest.class)
     @Test
     public void db_allNew() throws Exception {
-        final String SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
+        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
         Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         String datasetName="av";
@@ -95,7 +96,7 @@ public class PublisherStepDb2LocalTest {
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,false, targetPath,null,null,null,null,settings,localTestOut);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,false, targetPath,null,null,null,null,settings,localTestOut,null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -114,13 +115,13 @@ public class PublisherStepDb2LocalTest {
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
     @Category(DbTest.class)
     @Test
     public void db_UserFormats() throws Exception {
-        final String SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
+        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
         Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         final String datasetName="simple";
@@ -165,7 +166,7 @@ public class PublisherStepDb2LocalTest {
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,true, targetPath,null,null,null,null,settings,localTestOut);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,true, targetPath,null,null,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -184,13 +185,13 @@ public class PublisherStepDb2LocalTest {
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
     @Category(DbTest.class)
     @Test
     public void db_UserFormats_AV() throws Exception {
-        final String SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
+        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
         Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         String datasetName="av";
@@ -235,7 +236,7 @@ public class PublisherStepDb2LocalTest {
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,true, targetPath,null,null,null,null,settings,localTestOut);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,true, targetPath,null,null,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -254,13 +255,13 @@ public class PublisherStepDb2LocalTest {
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
     @Category(DbTest.class)
     @Test
     public void db_regions() throws Exception {
-        final String SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
+        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
         Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         List<String> publishedRegions=new ArrayList<String>();
@@ -305,7 +306,7 @@ public class PublisherStepDb2LocalTest {
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,false, targetPath,"[0-9][0-9][0-9][0-9]",publishedRegions,null,null,settings,localTestOut);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,false, targetPath,"[0-9][0-9][0-9][0-9]",publishedRegions,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -328,13 +329,13 @@ public class PublisherStepDb2LocalTest {
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
     @Category(DbTest.class)
     @Test
     public void db_regions_UserFormats() throws Exception {
-        final String SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
+        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
         Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         List<String> publishedRegions=new ArrayList<String>();
@@ -379,7 +380,7 @@ public class PublisherStepDb2LocalTest {
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,true, targetPath,"SimpleCoord23[a-z]",publishedRegions,null,null,settings,localTestOut);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,true, targetPath,"SimpleCoord23[a-z]",publishedRegions,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -405,13 +406,13 @@ public class PublisherStepDb2LocalTest {
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
     @Category(DbTest.class)
     @Test
     public void db_regions_UserFormats_AV() throws Exception {
-        final String SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
+        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
         Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         List<String> publishedRegions=new ArrayList<String>();
@@ -456,7 +457,7 @@ public class PublisherStepDb2LocalTest {
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,true, targetPath,"[0-9][0-9][0-9][0-9]",publishedRegions,null,null,settings,localTestOut);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,true, targetPath,"[0-9][0-9][0-9][0-9]",publishedRegions,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -482,7 +483,7 @@ public class PublisherStepDb2LocalTest {
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
             Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(SRC_DATA_DATE, PublisherStep.readPublishDate(targetFolderAktuell));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
 }

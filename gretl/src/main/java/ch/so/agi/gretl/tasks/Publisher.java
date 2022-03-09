@@ -11,6 +11,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.gradle.api.DefaultTask;
@@ -30,6 +31,8 @@ import ch.so.agi.gretl.api.Endpoint;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.PublisherStep;
+import ch.so.agi.gretl.util.SimiSvcApi;
+import ch.so.agi.gretl.util.SimiSvcClient;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class Publisher extends DefaultTask {
@@ -82,7 +85,7 @@ public class Publisher extends DefaultTask {
     public Integer proxyPort=null;    // Proxy Port fuer den Zugriff auf Modell Repositories
     @Input
     @Optional
-    public String versionTag=null;
+    public Date version=null;
 
     
     @TaskAction
@@ -164,8 +167,13 @@ public class Publisher extends DefaultTask {
         if (proxyPort != null) {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
         }
-        if(versionTag==null) {
-            versionTag=new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+        SimiSvcApi simiSvc=null;
+        if(kgdiService!=null) {
+            simiSvc=new SimiSvcClient();
+            simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
+        }
+        if(version==null) {
+            version=new Date();
         }
         try {
             Files.createDirectories(getProject().getBuildDir().toPath());
@@ -173,9 +181,9 @@ public class Publisher extends DefaultTask {
                 publishedRegions=new ArrayList<String>();
             }
             if(database!=null) {
-                step.publishDatasetFromDb(versionTag, dataIdent, database.connect(), dbSchema,dataset,exportModels,userFormats,targetFile, region,publishedRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath());
+                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,exportModels,userFormats,targetFile, region,publishedRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }else {
-                step.publishFromFile(versionTag, dataIdent, sourceFile, targetFile, region, publishedRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath());
+                step.publishDatasetFromFile(version, dataIdent, sourceFile, targetFile, region, publishedRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }
         } catch (Exception e) {
             log.error("failed to run Publisher", e);
