@@ -60,7 +60,7 @@ public class PublisherStep {
     public PublisherStep() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-    public void publishDatasetFromDb(Date date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String exportModels,boolean userFormats, Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
+    public void publishDatasetFromDb(Date date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String exportModels,boolean userFormats, Path target, String regionRegEx,List<String> regionsToPublish,List<String> publishedRegions, Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
             throws Exception 
     {
         ch.ehi.ili2db.gui.Config config=cloneSettings(new ch.ehi.ili2db.gui.Config(),settings);
@@ -68,9 +68,15 @@ public class PublisherStep {
         config.setDbschema(dbSchema);
         config.setExportModels(exportModels);
         String dateTag=getDateTag(date);
-        if(regionRegEx!=null && datasetName==null){
+        if((regionRegEx!=null || regionsToPublish!=null) && datasetName==null){
+            if(regionRegEx!=null) {
+                log.info("regionRegEx <"+regionRegEx+">");
+            }else {
+                log.info("regionsToPublish "+regionsToPublish);
+            }
             boolean isDM01=false;
             List<String> regions=getRegionsFromDb(conn, config,regionRegEx);
+            filterRegions(regions,regionsToPublish);
             if(regions.size()>0){
                 ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
                 String dtName = regions.get(0);
@@ -129,7 +135,7 @@ public class PublisherStep {
                 }
             }
             publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc);
-        }else if(datasetName!=null && regionRegEx==null){
+        }else if(datasetName!=null && regionRegEx==null && regionsToPublish==null){
             boolean isDM01=false;
             {
                 ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
@@ -188,7 +194,12 @@ public class PublisherStep {
                 deleteFileTree(dxfFolder);
             }
         }else{
-            throw new IllegalArgumentException("regionRegEx==null && datasetName==null");
+            throw new IllegalArgumentException("regionRegEx==null && regionsToPublish==null && datasetName==null ");
+        }
+    }
+    private static void filterRegions(List<String> regions, List<String> regionsToPublish) {
+        if(regionsToPublish!=null) {
+            regions.retainAll(regionsToPublish);
         }
     }
     private void deleteFile(Path file) throws IOException {
@@ -318,21 +329,27 @@ public class PublisherStep {
         List<String> datasets=Ili2db.getDatasets(conn, config);
         List<String> regions=new ArrayList<String>();
         for(String dataset:datasets) {
-            if(dataset.matches(regionRegEx)) {
+            if(regionRegEx==null || dataset.matches(regionRegEx)) {
                 regions.add(dataset);
             }
         }
         return regions;
     }
-    public void publishDatasetFromFile(Date date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
+    public void publishDatasetFromFile(Date date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> regionsToPublish,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
             throws Exception 
     {
         String dateTag=getDateTag(date);
-        if(regionRegEx!=null) {
+        if(regionRegEx!=null || regionsToPublish!=null) {
+            if(regionRegEx!=null) {
+                log.info("regionRegEx <"+regionRegEx+">");
+            }else {
+                log.info("regionsToPublish "+regionsToPublish);
+            }
             String sourceName=sourcePath.getFileName().toString();
             String sourceExt=GenericFileFilter.getFileExtension(sourceName);
             Path sourceParent=sourcePath.getParent();
             List<String> regions=listRegions(sourceParent, regionRegEx, sourceExt);
+            filterRegions(regions,regionsToPublish);
             publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
             List<Path> modelFiles=new ArrayList<Path>();
             for(String region:regions) {
@@ -560,9 +577,15 @@ public class PublisherStep {
               throws IOException {
                 if (!Files.isDirectory(file)) {
                     String fileName=file.getFileName().toString();
-                    //String fileExt="."+GenericFileFilter.getFileExtension(fileName);
-                    if(fileName.matches(pattern+"\\."+ext)) {
-                        fileList.add(fileName.substring(0,fileName.length()-ext.length()-1));
+                    if(pattern==null) {
+                        String fileExt=GenericFileFilter.getFileExtension(fileName);
+                        if(ext.equals(fileExt)) {
+                            fileList.add(fileName.substring(0,fileName.length()-ext.length()-1));
+                        }
+                    }else {
+                        if(fileName.matches(pattern+"\\."+ext)) {
+                            fileList.add(fileName.substring(0,fileName.length()-ext.length()-1));
+                        }
                     }
                 }
                 return FileVisitResult.CONTINUE;

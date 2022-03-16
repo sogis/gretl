@@ -6,7 +6,6 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 ## ToDos
 
 - Regionen update/ergänzen
-- explizite Liste der Regionen als Input
 - Archiv aufräumen
 
 ## Einbindung in einen typischen GRETL-Publikationsjob
@@ -219,6 +218,23 @@ kann der Parameter publishedRegions des Tasks Publisher verwendet werden.
       }
     }
 
+Der Publisher lässt sich somit auch über die zu publizierenden Regionen verketten.
+
+    task publishFile0(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung.edit"
+      target = [project.buildDir]
+      sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
+      modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      region="[0-9][0-9][0-9][0-9]"
+    }
+    task publishFile1(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung.pub"
+      target = [project.buildDir]
+      sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
+      modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      regions=publishFile0.publishedRegions
+    }
+
     
 ## Validierung
 
@@ -251,6 +267,7 @@ Der Service wird benutzt, um:
 
 - den Beipackzettel (im Unterordner meta) zu erstellen/beziehen
 - das Publikationsdatum in den Metadaten nachzuführen
+
 
     task publishFile(type: Publisher){
       ...
@@ -298,7 +315,8 @@ sourcePath | Quelldatei z.B. file("/path/file.xtf")
 database  | Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
 dbSchema  | Schema in der Datenbank z.B. "av"
 dataset   | ili2db-Datasetname der Quelldaten "dataset" (Das ili2db-Schema muss also immer mit --createBasketCol erstellt werden)
-region    | Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"	  
+region    | Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]". Alternative zum Parameter regions	  
+regions   | Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen), falls die Publikation Regionen-weise erfolgen soll. Alternative zum Parameter region	  
 publishedRegions | Liste der effektiv publizierten Regionen	  
 validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
 userFormats | Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default ist false

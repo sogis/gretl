@@ -2,8 +2,8 @@ package ch.so.agi.gretl.steps;
 
 import java.nio.file.Path;
 
-public class PublisherStepLocalTest extends AbstractPublisherStepTest {
-    public PublisherStepLocalTest() {
+public class PublisherStepFile2LocalTest extends AbstractPublisherStepTest {
+    public PublisherStepFile2LocalTest() {
         super();
     }
     @Override

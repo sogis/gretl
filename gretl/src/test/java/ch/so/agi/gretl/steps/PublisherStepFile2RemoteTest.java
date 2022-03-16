@@ -16,7 +16,7 @@ import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
 import ch.so.agi.gretl.testutil.SftpTest;
 
 @Category(SftpTest.class)
-public class PublisherStepRemoteTest extends AbstractPublisherStepTest {
+public class PublisherStepFile2RemoteTest extends AbstractPublisherStepTest {
     private static FileSystem fileSystem=null;
     static String ftpurl=System.getProperty("ftpurl"); 
     static String ftpusr=System.getProperty("ftpusr");
@@ -50,7 +50,7 @@ public class PublisherStepRemoteTest extends AbstractPublisherStepTest {
             }
         }
     }
-    public PublisherStepRemoteTest() {
+    public PublisherStepFile2RemoteTest() {
         super();
     }
     @Override

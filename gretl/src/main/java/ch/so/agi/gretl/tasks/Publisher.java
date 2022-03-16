@@ -16,6 +16,9 @@ import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
@@ -57,8 +60,15 @@ public class Publisher extends DefaultTask {
     @Input
     @Optional
     public String region=null; // Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"     
+    @Input
     @Optional
-    public List<String> publishedRegions=null; // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen     
+    public ListProperty<String> regions=null; // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll     
+    private ListProperty<String> _publishedRegions=getProject().getObjects().listProperty(String.class);
+    @Optional
+    public ListProperty<String> getPublishedRegions()
+    {
+        return _publishedRegions;
+    } // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen     
     @InputFile
     @Optional
     public Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
@@ -101,10 +111,10 @@ public class Publisher extends DefaultTask {
             if(dbSchema==null) {
                 throw new IllegalArgumentException("dbSchema must be set");
             }
-            if(dataset==null && region==null) {
-                throw new IllegalArgumentException("dataset OR region must be set");
-            }else if(dataset!=null && region!=null) {
-                throw new IllegalArgumentException("only dataset OR region can be set");
+            if(dataset==null && (region==null || regions==null)) {
+                throw new IllegalArgumentException("dataset OR region OR regions must be set");
+            }else if(dataset!=null && (region!=null || regions!=null)) {
+                throw new IllegalArgumentException("only dataset OR (region OR regions) can be set");
             }
         }else {
             throw new IllegalArgumentException("one of sourcePath OR database must be set");
@@ -177,13 +187,17 @@ public class Publisher extends DefaultTask {
         }
         try {
             Files.createDirectories(getProject().getBuildDir().toPath());
-            if(region!=null) {
-                publishedRegions=new ArrayList<String>();
+            List<String> pubRegions=null;
+            if(region!=null || regions!=null) {
+                pubRegions=new ArrayList<String>();
             }
             if(database!=null) {
-                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,exportModels,userFormats,targetFile, region,publishedRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,exportModels,userFormats,targetFile, region,regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }else {
-                step.publishDatasetFromFile(version, dataIdent, sourceFile, targetFile, region, publishedRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+                step.publishDatasetFromFile(version, dataIdent, sourceFile, targetFile, region, regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+            }
+            if(pubRegions!=null) {
+                getPublishedRegions().set(pubRegions);
             }
         } catch (Exception e) {
             log.error("failed to run Publisher", e);
