@@ -4,6 +4,8 @@ CMD ["gretl"]
 
 WORKDIR /home/gradle
 
+RUN apk add --no-cache bash
+
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 ENV GRADLE_HOME /opt/gradle
 ENV GRADLE_VERSION 4.2.1
