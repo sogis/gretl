@@ -62,7 +62,9 @@ oc process -f openshift/templates/jenkins-agent-is-template.yaml \
 ```
 Parameters:
 * JENKINS_AGENT_IMAGE_TAG: Docker image tag of Jenkins agent to be pulled from Quay.io.
-* IMPORT_POLICY_SCHEDULED: Regularly check for changed image; defaults to "false"
+* IMPORT_POLICY_SCHEDULED: Regularly check for changed image;
+  defaults to "true"
+  because it seems that Quay.io immediately deletes any image that has no more tag
 
 #### Create a ConfigMap that configures the Jenkins agent
 
