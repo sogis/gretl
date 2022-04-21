@@ -68,9 +68,7 @@ Parameters:
 
 #### Create a ConfigMap that configures the Jenkins agent
 
-Adapt the OpenShift project name (and maybe the image tag) in the ConfigMap
-`openshift/templates/gretl-pod-template-configmap.yaml`,
-then apply the ConfigMap:
+Apply the ConfigMap that defines the GRETL pod (i.e. the Jenkins agent):
 ```
 oc apply -f openshift/templates/gretl-pod-template-configmap.yaml
 ```
