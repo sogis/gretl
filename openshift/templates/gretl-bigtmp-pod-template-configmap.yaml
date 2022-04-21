@@ -28,7 +28,7 @@ data:
           <name>jnlp</name>
           <image>jenkins-agent:latest</image>
           <privileged>false</privileged>
-          <alwaysPullImage>true</alwaysPullImage>
+          <alwaysPullImage>false</alwaysPullImage>
           <workingDir>/workspace</workingDir>
           <command></command>
           <args>${computer.jnlpmac} ${computer.name}</args>
@@ -43,7 +43,7 @@ data:
           <name>gretl</name>
           <image>gretl:latest</image>
           <privileged>false</privileged>
-          <alwaysPullImage>true</alwaysPullImage>
+          <alwaysPullImage>false</alwaysPullImage>
           <workingDir>/workspace</workingDir>
           <command>sleep</command>
           <args>24h</args>

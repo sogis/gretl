@@ -28,4 +28,4 @@ parameters:
   value: latest
 - name: IMPORT_POLICY_SCHEDULED
   description: Regularly check for changed image
-  value: "false"
+  value: "true"
