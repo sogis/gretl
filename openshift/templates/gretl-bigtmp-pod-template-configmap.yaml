@@ -33,10 +33,6 @@ data:
           <command></command>
           <args>${computer.jnlpmac} ${computer.name}</args>
           <ttyEnabled>false</ttyEnabled>
-          <resourceRequestCpu>200m</resourceRequestCpu>
-          <resourceRequestMemory>256Mi</resourceRequestMemory>
-          <resourceLimitCpu>1</resourceLimitCpu>
-          <resourceLimitMemory>512Mi</resourceLimitMemory>
           <envVars/>
         </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
@@ -48,10 +44,6 @@ data:
           <command>sleep</command>
           <args>24h</args>
           <ttyEnabled>false</ttyEnabled>
-          <resourceRequestCpu>200m</resourceRequestCpu>
-          <resourceRequestMemory>1Gi</resourceRequestMemory>
-          <resourceLimitCpu>1</resourceLimitCpu>
-          <resourceLimitMemory>3.5Gi</resourceLimitMemory>
           <envVars>
             <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
               <key>HOME</key>
@@ -71,7 +63,22 @@ data:
       <yaml>
     spec:
       containers:
+      - name: jnlp
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 512Mi
       - name: gretl
+        resources:
+          requests:
+            cpu: 200m
+            memory: 1Gi
+          limits:
+            cpu: "1"
+            memory: 3.5Gi
         envFrom:
           - configMapRef:
               name: gretl-resources
