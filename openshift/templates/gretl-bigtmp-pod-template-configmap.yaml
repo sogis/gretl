@@ -69,8 +69,6 @@ data:
       <imagePullSecrets/>
       <nodeProperties/>
       <yaml>
-    apiVersion: v1
-    kind: Pod
     spec:
       containers:
         - name: gretl
