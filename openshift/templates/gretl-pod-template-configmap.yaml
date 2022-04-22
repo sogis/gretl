@@ -63,11 +63,11 @@ data:
       <yaml>
     spec:
       containers:
-        - name: gretl
-          envFrom:
-            - configMapRef:
-                name: gretl-resources
-            - secretRef:
-                name: gretl-secrets
+      - name: gretl
+        envFrom:
+          - configMapRef:
+              name: gretl-resources
+          - secretRef:
+              name: gretl-secrets
       </yaml>
     </org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
