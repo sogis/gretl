@@ -1303,6 +1303,7 @@ Parameter | Beschreibung
 ----------|-------------------
 inputFile   | Name der zu transformierenden ITF-Datei.
 outputDirectory  | Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
+modeldir | INTERLIS-Modellablage. String separiert mit Semikolon (analog ili2db, ilivalidator).
 zip | Die zu erstellende Datei wird gezippt (Default: false).
 
 ### DatabaseDocumentExport (Experimental)

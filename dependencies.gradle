@@ -10,7 +10,7 @@ ext {
     
     //oerebIconizerVersion = '1.0.36'
     oerebIconizerVersion = '2.0.20'
-    av2chVersion = '1.1.6'
+    av2chVersion = '1.1.8'
     av2geobauVersion = '1.0.2-SNAPSHOT'
     
     //awsSdkVersion = '2.15.64'

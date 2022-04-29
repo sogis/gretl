@@ -32,6 +32,10 @@ public class Av2ch extends DefaultTask {
     
     @Input
     @Optional
+    public String modeldir = null;
+    
+    @Input
+    @Optional
     public String language = "de";
     
     @Input
@@ -48,6 +52,7 @@ public class Av2ch extends DefaultTask {
         if (outputDirectory == null) {
             throw new IllegalArgumentException("outputDirectory must not be null");
         }
+        
         if (!language.equalsIgnoreCase("de") && !language.equalsIgnoreCase("it")) {
             throw new IllegalArgumentException("language '" + language + "' is not supported.");
         }
@@ -79,6 +84,11 @@ public class Av2ch extends DefaultTask {
                 String outputFileName = this.getProject().file(itf).getName();
                 
                 ch.so.agi.av.Av2ch av2ch = new ch.so.agi.av.Av2ch();
+
+                if (modeldir != null) {
+                    av2ch.setModeldir(modeldir);
+                }
+       
                 av2ch.convert(inputFileName, outputPath, outputFileName, language);
                 
                 if (zip) {
