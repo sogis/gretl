@@ -70,8 +70,8 @@ configurations {
 dependencies {
     api gradleApi()
   
-    //api ilivalidatorDependency
-    api 'ch.interlis:ilivalidator:1.11.13+'
+    api ilivalidatorDependency
+    //api 'ch.interlis:ilivalidator:1.11.13+'
     api ilivalidatorCustomFunctionsDependency
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
