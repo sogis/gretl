@@ -48,6 +48,7 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.SimiSvcApi;
 
 public class PublisherStep {
+    public static final String FILE_EXT_ZIP = "zip";
     public static final String PATH_ELE_HISTORY = "hist";
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
@@ -90,7 +91,7 @@ public class PublisherStep {
                 config.setItfTransferfile(iliFile.getIliVersion()<2.0);
                 isDM01=((ch.interlis.ili2c.modelscan.IliModel)(iliFile.iteratorModel().next())).getName().equals(MODEL_DM01);
             }
-            publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
+            publishFilePre(dateTag,dataIdent,target,settings,tempFolder,regions);
             List<Path> modelFiles=null;
             for(String region:regions) {
                 String filename=region+"."+dataIdent;
@@ -170,7 +171,7 @@ public class PublisherStep {
                 settings.setValue(Config.PREFIX+".defaultSrsCode",config.getDefaultSrsCode());
                 Ili2db.run(config, null);
                 List<Path> modelFiles=new ArrayList<Path>();
-                publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
+                publishFilePre(dateTag,dataIdent,target,settings,tempFolder,null);
                 publishFile(dateTag,dataIdent,xtfFile,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
                 if(userFormats) {
                     writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
@@ -256,7 +257,7 @@ public class PublisherStep {
         try{
             String sourceName=sourcePath.getFileName().toString();
             String sourceExt="."+GenericFileFilter.getFileExtension(sourceName);
-            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+".zip");
+            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+"."+FILE_EXT_ZIP);
             out = new ZipOutputStream(Files.newOutputStream(targetFile));
             copyFileToZip(out,regionPrefix+dataIdent+sourceExt,sourcePath);
             copyFileToZip(out,"validation.log",validationLog);
@@ -289,7 +290,7 @@ public class PublisherStep {
         try{
             String sourceName=sourceFolder.getFileName().toString();
             String sourceExt="."+GenericFileFilter.getFileExtension(sourceName);
-            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+".zip");
+            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+"."+FILE_EXT_ZIP);
             out = new ZipOutputStream(Files.newOutputStream(targetFile));
             // copy all files from sourceFolder to zip
             copyFilesFromFolderToZip(out, sourceFolder);
@@ -350,7 +351,7 @@ public class PublisherStep {
             Path sourceParent=sourcePath.getParent();
             List<String> regions=listRegions(sourceParent, regionRegEx, sourceExt);
             filterRegions(regions,regionsToPublish);
-            publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
+            publishFilePre(dateTag,dataIdent,target,settings,tempFolder,regions);
             List<Path> modelFiles=new ArrayList<Path>();
             for(String region:regions) {
                 Path xtfFile=sourceParent.resolve(region+"."+sourceExt);
@@ -364,7 +365,7 @@ public class PublisherStep {
             }
             publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc);
         }else {
-            publishFilePre(dateTag,dataIdent,target,settings,tempFolder);
+            publishFilePre(dateTag,dataIdent,target,settings,tempFolder,null);
             List<Path> modelFiles=new ArrayList<Path>();
             Path validationLog=tempFolder.resolve(dataIdent+".log");
             publishFile(dateTag,dataIdent,sourcePath,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
@@ -398,7 +399,7 @@ public class PublisherStep {
         try{
             String sourceName=sourcePath.getFileName().toString();
             String sourceExt="."+GenericFileFilter.getFileExtension(sourceName);
-            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+".zip");
+            Path targetFile = targetDatePath.resolve(regionPrefix+dataIdent+sourceExt+"."+FILE_EXT_ZIP);
             out = new ZipOutputStream(Files.newOutputStream(targetFile));
             copyFileToZip(out,regionPrefix+dataIdent+sourceExt,sourcePath);
             copyFileToZip(out,"validation.log",logFile);
@@ -431,7 +432,7 @@ public class PublisherStep {
             }
         }
     }
-    private void publishFilePre(String date,String dataIdent, Path target, Settings settings,Path tempFolder) 
+    private void publishFilePre(String date,String dataIdent, Path target, Settings settings,Path tempFolder,List<String>  regions) 
             throws Exception 
     {
         Path targetRootPath=target;
@@ -459,6 +460,19 @@ public class PublisherStep {
         // .{date} erzeugen
         Path targetDatePath=targetPath.resolve("."+date);
         Files.createDirectories(targetDatePath);
+        // regionen update
+        if(regions!=null) {
+            // Verzeichnis "aktuell" existiert?
+            if(currentPublishdate!=null) {
+                // Daten aus "aktuell" in neues Zielverzeichnis kopieren
+                for(Path file:Files.newDirectoryStream(targetCurrentPath)) {
+                    Path zipFilename=file.getFileName();
+                    if(FILE_EXT_ZIP.equals(GenericFileFilter.getFileExtension(zipFilename.toString()))) {
+                        Files.copy(file, targetDatePath.resolve(zipFilename));
+                    }
+                }
+            }
+        }
     }
     private void publishFilePost(Date date,String dataIdent, Path target, Settings settings,Path tempFolder,List<Path> modelFiles,List<String> publishedRegions,SimiSvcApi simiSvc) 
             throws Exception 

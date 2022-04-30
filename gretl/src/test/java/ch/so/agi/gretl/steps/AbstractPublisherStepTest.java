@@ -33,6 +33,7 @@ public abstract class AbstractPublisherStepTest {
     final public static String SRC_TEST_DATA_ILI = SRC_TEST_DATA+"/ili";
     final protected static String SRC_DATA_IDENT = "ch.so.agi.vermessung.edit";
     final protected static Date SRC_DATA_DATE_0=new GregorianCalendar(2021,11,02).getTime();
+    final protected static Date SRC_DATA_DATE_1=new GregorianCalendar(2021,11,03).getTime();
     final protected static String SRC_DATA_SIMPLE_FILENAME="SimpleCoord23a.xtf";
     final protected static String SRC_DATA_AV_FILENAME="av_test.itf";
     final protected static String SRC_ILI_SIMPLE_FILENAME="SimpleCoord23.ili";
@@ -159,6 +160,75 @@ public abstract class AbstractPublisherStepTest {
             Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
+    @Test
+    public void file_regionsUpdate() throws Exception {
+        final Date SRC_DATA_DATE_INITIAL=SRC_DATA_DATE_0;
+        final Date SRC_DATA_DATE_UPDATE=SRC_DATA_DATE_1;
+        Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
+        // prepare
+        {
+            // delete output folder
+            if(Files.exists(targetFolder)) {
+                PublisherStep.deleteFileTree(targetFolder);
+            }
+        }
+        Path targetPath = getTargetPath().toAbsolutePath();
+        Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_AV_FILENAME);
+        // first publication
+        {
+            PublisherStep step=new PublisherStep();
+            Settings settings=new Settings();
+            settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
+            settings.setValue(Validator.SETTING_CONFIGFILE, null);
+            List<String> regions=new ArrayList<String>();
+            regions.add("2501");
+            List<String> publishedRegions=new ArrayList<String>();
+            step.publishDatasetFromFile(SRC_DATA_DATE_INITIAL,SRC_DATA_IDENT,sourcePath,targetPath,null,regions,publishedRegions,null,null,settings,localTestOut, null);
+            Assert.assertEquals(1,publishedRegions.size());
+        }
+        // incremental second publication
+        List<String> publishedRegions=new ArrayList<String>();
+        {
+            PublisherStep step=new PublisherStep();
+            Settings settings=new Settings();
+            settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
+            settings.setValue(Validator.SETTING_CONFIGFILE, null);
+            List<String> regions=new ArrayList<String>();
+            regions.add("2502");
+            step.publishDatasetFromFile(SRC_DATA_DATE_UPDATE,SRC_DATA_IDENT,sourcePath,targetPath,null,regions,publishedRegions,null,null,settings,localTestOut, null);
+        }
+        
+        // verify
+        {
+            Assert.assertTrue(Files.exists(targetFolder));
+            final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
+            Assert.assertTrue(Files.exists(targetFolderAktuell));
+            Assert.assertTrue(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            Assert.assertEquals(1,publishedRegions.size()); // nur die neu publizierte Region! (Nicht: alle nun publizierten Regionen)
+            Assert.assertEquals("2502",publishedRegions.get(0));
+            for(String controlRegion:new String[] {"2501","2502"}) {
+                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+SRC_DATA_IDENT+".itf.zip")));
+            }
+            final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_1), PublisherStep.readPublishDate(targetFolderAktuell));
+        }
+        // verify history
+        {
+            Assert.assertTrue(Files.exists(targetFolder));
+            final Path targetFolderHistoryRoot = targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY);
+            final Path targetFolderHistory = targetFolderHistoryRoot.resolve(PublisherStep.getDateTag(SRC_DATA_DATE_0));
+            Assert.assertTrue(Files.exists(targetFolderHistory));
+            Assert.assertTrue(Files.exists(targetFolderHistory.resolve("2501."+SRC_DATA_IDENT+".itf.zip")));
+            final Path targetFolderAktuellMeta = targetFolderHistory.resolve(PublisherStep.PATH_ELE_META);
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderHistory));
+        }
+    }
     
     @Test
     public void file_firstHistory() throws Exception {
@@ -171,7 +241,7 @@ public abstract class AbstractPublisherStepTest {
             }
         }
         file_allNew();
-        final Date SRC_DATA_DATE=new GregorianCalendar(2021,11,03).getTime();
+        final Date SRC_DATA_DATE=SRC_DATA_DATE_1;
         final Path targetPath = getTargetPath().toAbsolutePath();
         final Path sourceFile = Paths.get(SRC_TEST_DATA_FILES).resolve(SRC_DATA_AV_FILENAME);
         PublisherStep step=new PublisherStep();

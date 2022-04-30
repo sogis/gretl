@@ -5,7 +5,6 @@ bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
 ## ToDos
 
-- Regionen update/ergänzen
 - Archiv aufräumen
 
 ## Einbindung in einen typischen GRETL-Publikationsjob
@@ -235,6 +234,11 @@ Der Publisher lässt sich somit auch über die zu publizierenden Regionen verket
       regions=publishFile0.publishedRegions
     }
 
+Enthält das aktuelle Verzeichnis schon Daten (von Regionen), werden diese (wie sonst auch historisiert),
+und danach mit den neuen Regionen ergänzt. Der Parameter publishedRegions enthält nur die neu 
+publizierten Regionen (und nicht alle publizierten Regionen). Auch an den KGDI-Service werden nur die neu 
+publizierten Regionen notifiziert (und nicht alle publizierten Regionen).
+Die Dateien im meta Unterverzeichnis werden neu erstellt.
     
 ## Validierung
 
