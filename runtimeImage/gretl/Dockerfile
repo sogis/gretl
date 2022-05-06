@@ -3,6 +3,7 @@ FROM bellsoft/liberica-openjdk-alpine:8u322-6
 CMD ["gretl"]
 
 WORKDIR /home/gradle
+RUN chmod g+w .
 
 RUN apk add --no-cache bash
 
@@ -24,14 +25,12 @@ RUN set -o errexit -o nounset \
     && ln -s "${GRADLE_HOME}/bin/gradle" /usr/bin/gradle \
     \
     && echo "Testing Gradle installation" \
-    && gradle --version
+    && (umask 0002 && gradle --version)
 
 ENV ILI_CACHE=/home/gradle/.ilicache
 COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
 COPY init.gradle /home/gradle/
-
-RUN chmod -R g+w /home/gradle
 
 RUN apk add --no-cache curl
 
@@ -40,5 +39,6 @@ RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle/libs
 
 WORKDIR /home/gradle/project
+RUN chmod g+w .
 
 USER 1001
