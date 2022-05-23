@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.steps;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -23,6 +25,8 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 public class Gpkg2ShpStep {
     private GretlLogger log;
     private String taskName;
+    
+    private static final String PRJ_CONTENT = "PROJCS[\"CH1903+_LV95\",GEOGCS[\"GCS_CH1903+\",DATUM[\"D_CH1903+\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Hotine_Oblique_Mercator_Azimuth_Center\"],PARAMETER[\"False_Easting\",2600000.0],PARAMETER[\"False_Northing\",1200000.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Azimuth\",90.0],PARAMETER[\"Longitude_Of_Center\",7.43958333333333],PARAMETER[\"Latitude_Of_Center\",46.9524055555556],UNIT[\"Meter\",1.0]]";
 
     public Gpkg2ShpStep() {
         this(null);
@@ -37,7 +41,7 @@ public class Gpkg2ShpStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
-    public void execute(String gpkgFile, String outputDir) throws IoxException {
+    public void execute(String gpkgFile, String outputDir) throws IoxException, FileNotFoundException {
         log.lifecycle(String.format("Start Gpgk2ShpStep(Name: %s GpkgFileName: %s OutputDir: %s)", taskName, gpkgFile,
                 outputDir));
 
@@ -84,6 +88,15 @@ public class Gpkg2ShpStep {
                 reader.close();
                 reader = null;
             }
+            
+            /* QGIS kann die Shapefiles nicht anzeigen. Sie können zwar geladen werden aber man sieht 
+            * die Geometrien nie (die Attribute schon). Es liegt an einer prj-File-Inkompatibilität.
+            * Aus diesem Grund wird es überschrieben mit einem Inhalt, der von einem QGIS-Shapefile 
+            * stammt.
+            */
+            PrintWriter prw = new PrintWriter(Paths.get(outputDir, tableName + ".prj").toFile().getAbsolutePath());
+            prw.println(PRJ_CONTENT);          
+            prw.close();
         }
     }
 }
