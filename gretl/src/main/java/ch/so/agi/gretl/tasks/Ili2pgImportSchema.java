@@ -76,6 +76,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public boolean coalesceJson = false;    
     @Input
     @Optional
+    public boolean coalesceArray = false;    
+    @Input
+    @Optional
     public boolean createFk = false;
     @Input
     @Optional
@@ -218,6 +221,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (coalesceJson) {
             settings.setJsonTrafo(settings.JSON_TRAFO_COALESCE);
+        }
+        if (coalesceArray) {
+            settings.setArrayTrafo(settings.ARRAY_TRAFO_COALESCE);
         }
         if (createFk) {
             settings.setCreateFk(settings.CREATE_FK_YES);
