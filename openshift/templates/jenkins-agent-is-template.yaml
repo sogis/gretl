@@ -9,7 +9,7 @@ objects:
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
   metadata:
-    name: gretl
+    name: jenkins-agent
   spec:
     lookupPolicy:
       local: true
@@ -17,15 +17,15 @@ objects:
     - annotations: null
       from:
         kind: DockerImage
-        name: sogis/gretl:${GRETL_IMAGE_TAG}
+        name: quay.io/openshift/origin-jenkins-agent-base:${JENKINS_AGENT_IMAGE_TAG}
       name: latest
       importPolicy:
         scheduled: ${{IMPORT_POLICY_SCHEDULED}}
 parameters:
-- name: GRETL_IMAGE_TAG
-  description: GRETL image tag to be pulled from Docker Hub.
-  displayName: GRETL image tag
+- name: JENKINS_AGENT_IMAGE_TAG
+  description: Docker image tag of Jenkins agent to be pulled from external registry
+  displayName: Docker image tag of Jenkins agent
   value: latest
 - name: IMPORT_POLICY_SCHEDULED
   description: Regularly check for changed image
-  value: "false"
+  value: "true"

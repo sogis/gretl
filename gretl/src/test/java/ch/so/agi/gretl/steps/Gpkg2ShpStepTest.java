@@ -37,13 +37,13 @@ public class Gpkg2ShpStepTest {
             FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(TEST_OUT, "nachfuehrngskrise_gemeinde.shp"));
             SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
             assertEquals(109, featuresSource.getFeatures().size()); 
-            assertEquals("EPSG:CH1903+ / LV95", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
+            assertEquals("CH1903+_LV95", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
         }
         {
             FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(TEST_OUT, "grundbuchkreise_grundbuchkreis.shp"));
             SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
             assertEquals(127, featuresSource.getFeatures().size()); 
-            assertEquals("EPSG:CH1903+ / LV95", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
+            assertEquals("CH1903+_LV95", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
         }
     }
 }

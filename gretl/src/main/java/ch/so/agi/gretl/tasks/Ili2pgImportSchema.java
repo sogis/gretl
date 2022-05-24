@@ -14,6 +14,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @InputFile
     @Optional
     public Object iliFile = null;
+    @InputFile
+    @Optional
+    public Object iliMetaAttrs = null;
     @Input
     @Optional
     public boolean oneGeomPerTable = false;
@@ -74,6 +77,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @Input
     @Optional
     public boolean coalesceJson = false;    
+    @Input
+    @Optional
+    public boolean coalesceArray = false; 
+    @Input
+    @Optional
+    public boolean createTypeConstraint = false;
     @Input
     @Optional
     public boolean createFk = false;
@@ -150,6 +159,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
             }
         }
         settings.setXtffile(iliFilename);
+        
+        if (iliMetaAttrs != null) {
+            String iliMetaAttrsFilename = this.getProject().file(iliMetaAttrs).getPath();
+            settings.setIliMetaAttrsFile(iliMetaAttrsFilename);
+        }
+        
         init(settings);
         run(function, settings);
     }
@@ -218,6 +233,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (coalesceJson) {
             settings.setJsonTrafo(settings.JSON_TRAFO_COALESCE);
+        }
+        if (coalesceArray) {
+            settings.setArrayTrafo(settings.ARRAY_TRAFO_COALESCE);
+        }
+        if (createTypeConstraint) {
+            settings.setCreateTypeConstraint(true);
         }
         if (createFk) {
             settings.setCreateFk(settings.CREATE_FK_YES);

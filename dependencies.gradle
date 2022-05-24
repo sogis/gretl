@@ -2,7 +2,7 @@ ext {
     // dependencies version
     ioxIliVersion = '1.21.10'
     ilivalidatorVersion = '1.11.14'
-    ilivalidatorCustomFunctions = '1.1.47'
+    ilivalidatorCustomFunctions = '1.1.50'
     ili2pgVersion = '4.8.0'
     ili2gpkgVersion = '4.8.0'
     ioxWkfVersion = '1.0.2'
@@ -10,7 +10,7 @@ ext {
     
     //oerebIconizerVersion = '1.0.36'
     oerebIconizerVersion = '2.0.20'
-    av2chVersion = '1.1.6'
+    av2chVersion = '1.1.8'
     av2geobauVersion = '1.0.2-SNAPSHOT'
     
     //awsSdkVersion = '2.15.64'

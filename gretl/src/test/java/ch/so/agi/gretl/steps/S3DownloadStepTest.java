@@ -59,7 +59,7 @@ public class S3DownloadStepTest {
         String key = "download.txt";
         File downloadDir = folder.newFolder("downloadFile_Ok");  
         
-        // Upload a single file.
+        // Download a single file.
         S3DownloadStep s3DownloadStep = new S3DownloadStep();
         s3DownloadStep.execute(s3AccessKey, s3SecretKey, s3BucketName, key, s3EndPoint, s3Region, downloadDir);
         
