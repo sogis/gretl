@@ -305,10 +305,10 @@ In der Datei grooming.json wird konfiguriert, wie ausgedünnt wird.
     }
 
 Die ``to`` Angabe muss mit der ``from`` Angabe der nächsthöheren Stufe identisch sein (also z.B daily.to=weekly.from). 
-Einzelne Stufen können weggelassen werden. Bei der niedrigsten Stufe (i.D.R. ``daily``) muss ``from=0`` sein. Bei der 
+Einzelne Stufen können weggelassen werden. Bei der niedrigsten Stufe (i.d.R. ``daily``) muss ``from=0`` sein. Bei der 
 höchsten Stufe (i.d.R. ``yearly``) kann ``to`` definiert oder ``null`` sein. Falls ``to`` definiert ist, wird 
 der älteste Stand beim Erreichen des ``to`` Alters gelöscht. 
-Falls bei der höchsten Stufe ``to=null``, wird der ältests Stand nicht gelöscht.
+Falls bei der höchsten Stufe ``to=null``, wird der älteste Stand nicht gelöscht.
 
 ## Parameter
 
