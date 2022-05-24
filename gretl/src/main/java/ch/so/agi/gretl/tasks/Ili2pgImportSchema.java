@@ -14,6 +14,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @InputFile
     @Optional
     public Object iliFile = null;
+    @InputFile
+    @Optional
+    public Object iliMetaAttrs = null;
     @Input
     @Optional
     public boolean oneGeomPerTable = false;
@@ -156,6 +159,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
             }
         }
         settings.setXtffile(iliFilename);
+        
+        if (iliMetaAttrs != null) {
+            String iliMetaAttrsFilename = this.getProject().file(iliMetaAttrs).getPath();
+            settings.setIliMetaAttrsFile(iliMetaAttrsFilename);
+        }
+        
         init(settings);
         run(function, settings);
     }
