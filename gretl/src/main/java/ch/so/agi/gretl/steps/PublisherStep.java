@@ -28,8 +28,10 @@ import org.interlis2.validator.Validator;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import ch.ehi.basics.settings.Settings;
 import ch.ehi.basics.view.GenericFileFilter;
@@ -45,6 +47,7 @@ import ch.interlis.models.DM01AVCH24LV95D_;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.util.Grooming;
 import ch.so.agi.gretl.util.SimiSvcApi;
 
 public class PublisherStep {
@@ -69,6 +72,10 @@ public class PublisherStep {
         config.setDbschema(dbSchema);
         config.setExportModels(exportModels);
         String dateTag=getDateTag(date);
+        Grooming grooming=null;
+        if(groomingJson!=null) {
+            grooming=readGrooming(groomingJson);
+        }
         if((regionRegEx!=null || regionsToPublish!=null) && datasetName==null){
             if(regionRegEx!=null) {
                 log.info("regionRegEx <"+regionRegEx+">");
@@ -135,7 +142,7 @@ public class PublisherStep {
                     deleteFileTree(dxfFolder);
                 }
             }
-            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc);
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc,grooming);
         }else if(datasetName!=null && regionRegEx==null && regionsToPublish==null){
             boolean isDM01=false;
             {
@@ -186,7 +193,7 @@ public class PublisherStep {
                         publishUserFormatFolder(dateTag,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
                     }
                 }
-                publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc);
+                publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc,grooming);
             }finally {
                 deleteFile(xtfFile);
                 deleteFile(gpkgFile);
@@ -340,6 +347,10 @@ public class PublisherStep {
             throws Exception 
     {
         String dateTag=getDateTag(date);
+        Grooming grooming=null;
+        if(groomingJson!=null) {
+            grooming=readGrooming(groomingJson);
+        }
         if(regionRegEx!=null || regionsToPublish!=null) {
             if(regionRegEx!=null) {
                 log.info("regionRegEx <"+regionRegEx+">");
@@ -363,13 +374,13 @@ public class PublisherStep {
                 }
                 Files.delete(validationLog);
             }
-            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc);
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc,grooming);
         }else {
             publishFilePre(dateTag,dataIdent,target,settings,tempFolder,null);
             List<Path> modelFiles=new ArrayList<Path>();
             Path validationLog=tempFolder.resolve(dataIdent+".log");
             publishFile(dateTag,dataIdent,sourcePath,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles);
-            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc);
+            publishFilePost(date,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc,grooming);
             Files.delete(validationLog);
         }
     }
@@ -474,7 +485,7 @@ public class PublisherStep {
             }
         }
     }
-    private void publishFilePost(Date date,String dataIdent, Path target, Settings settings,Path tempFolder,List<Path> modelFiles,List<String> publishedRegions,SimiSvcApi simiSvc) 
+    private void publishFilePost(Date date,String dataIdent, Path target, Settings settings,Path tempFolder,List<Path> modelFiles,List<String> publishedRegions,SimiSvcApi simiSvc,Grooming grooming) 
             throws Exception 
     {
         Path targetRootPath=target;
@@ -521,10 +532,29 @@ public class PublisherStep {
             simiSvc.notifyPublication(dataIdent, date, publishedRegions);
         }
         // ausduennen
-        
+        if(grooming!=null) {
+            // get list of folders from targetHistPath
+            List<Date> allHistory=listHistory(targetHistPath);
+            // get list of folders to delete
+            List<Date> deleteDates=new ArrayList<Date>();
+            grooming.getFilesToDelete(date,allHistory,deleteDates);
+            // delete folders
+            for(Date deleteDate:deleteDates) {
+                String deleteName=getDateTag(deleteDate);
+                Path folderToDelete=targetHistPath.resolve(deleteName);
+                try {
+                    deleteFileTree(folderToDelete);
+                }catch(IOException ex) {
+                    log.error("failed to delete history folder "+deleteName,ex);
+                }
+            }
+        }
     }
     public static String getDateTag(Date date) {
         return new java.text.SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+    public static Date parseDateTag(String value) throws ParseException {
+        return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value);
     }
     private void copyFilesFromFolderToZip(ZipOutputStream out,Path sourceFolder) throws IOException {
         //ZipOutputStream out=null;
@@ -607,6 +637,39 @@ public class PublisherStep {
         });
         return fileList;
     }    
+    public static List<Date> listHistory(Path dir) throws IOException {
+        List<Date> fileList = new ArrayList<Date>();
+        Path ret=Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs)
+              throws IOException {
+                String fileName=file.getFileName().toString();
+                if(fileName.equals(PATH_ELE_HISTORY)) {
+                    return FileVisitResult.CONTINUE;
+                }
+                if(fileName.matches("[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]")) {
+                    try {
+                        Date date=parseDateTag(fileName);
+                        fileList.add(date);
+                    } catch (ParseException e) {
+                        // ignore folder
+                    }
+                }
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+        });
+        return fileList;
+    }    
+    public static Grooming readGrooming(Path groomingJson) throws IOException {
+        if(!Files.exists(groomingJson)) {
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
+        Grooming grooming = mapper.readValue(Files.newInputStream(groomingJson), Grooming.class);
+        grooming.isValid();
+        return grooming;
+    }
     public static void writePublishDate(Path targetPath, String date) throws IOException {
         Path publishdatePath = getPublishdatePath(targetPath);
         java.util.Map<String, Object> map = new java.util.HashMap<>();

@@ -3,10 +3,6 @@
 GRETL-Task, welcher für Vektordaten die aktuellsten Geodaten-Dateien 
 bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
-## ToDos
-
-- Archiv aufräumen
-
 ## Einbindung in einen typischen GRETL-Publikationsjob
 
 In den heute vorliegenden Publikationsjobs werden häufig die Daten vom relational aufgebauten Edit-Schema 
@@ -101,7 +97,7 @@ Namenskonvention für die Dateien: \[Datenbereitstellungs-Identifier\].\[Format-
 >        * publishdate.json      
 >        * datenbeschreibung.html
 >   * hist/
->     * 2021.04.12/ -- intern identisch aufgebaut wie Ordner aktuell/ aber ohne Benutzerformate
+>     * 2021-04-12/ -- intern identisch aufgebaut wie Ordner aktuell/ aber ohne Benutzerformate
 >       * ch.so.avt.verkehrszaehlstellen.xtf.zip
 >         * ch.so.avt.verkehrszaehlstellen.xtf
 >         * validation.log
@@ -110,7 +106,7 @@ Namenskonvention für die Dateien: \[Datenbereitstellungs-Identifier\].\[Format-
 >         * SO_AVT_Verkehrszaehlstellen_Publikation_20190206.ili
 >         * publishdate.json      
 >         * datenbeschreibung.html
->     * 2021.03.14/
+>     * 2021-03-14/
 >     * ...
 > * ch.so.avt.verkehrszaehlstellen.edit/
 >   * aktuell/
@@ -308,6 +304,11 @@ In der Datei grooming.json wird konfiguriert, wie ausgedünnt wird.
       }
     }
 
+Die ``to`` Angabe muss mit der ``from`` Angabe der nächsthöheren Stufe identisch sein (also z.B daily.to=weekly.from). 
+Einzelne Stufen können weggelassen werden. Bei der niedrigsten Stufe (i.D.R. ``daily``) muss ``from=0`` sein. Bei der 
+höchsten Stufe (i.d.R. ``yearly``) kann ``to`` definiert oder ``null`` sein. Falls ``to`` definiert ist, wird 
+der älteste Stand beim Erreichen des ``to`` Alters gelöscht. 
+Falls bei der höchsten Stufe ``to=null``, wird der ältests Stand nicht gelöscht.
 
 ## Parameter
 
@@ -325,7 +326,7 @@ publishedRegions | Liste der effektiv publizierten Regionen
 validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
 userFormats | Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default ist false
 kgdiService | Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]
-grooming | Konfiguration für die Ausdünnung z.B. "grooming.json"
+grooming | Konfiguration für die Ausdünnung z.B. "grooming.json". Ohne Angabe wird nicht aufgeräumt.
 exportModels | Das Export-Modell, indem die Daten exportiert werden. Der Parameter wird nur bei der Ausdünnung benötigt. Als Export-Modelle sind Basis-Modelle zulässig. 
 modeldir     | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%ITF_DIR;http://models.interlis.ch/``. ``%ITF_DIR`` ist ein Platzhalter für das Verzeichnis mit der ITF-Datei.
 proxy        | Proxy Server für den Zugriff auf Modell Repositories

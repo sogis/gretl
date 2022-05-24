@@ -34,8 +34,10 @@ public abstract class AbstractPublisherStepTest {
     final protected static String SRC_DATA_IDENT = "ch.so.agi.vermessung.edit";
     final protected static Date SRC_DATA_DATE_0=new GregorianCalendar(2021,11,02).getTime();
     final protected static Date SRC_DATA_DATE_1=new GregorianCalendar(2021,11,03).getTime();
+    final protected static Date SRC_DATA_DATE_2=new GregorianCalendar(2021,11,04).getTime();
     final protected static String SRC_DATA_SIMPLE_FILENAME="SimpleCoord23a.xtf";
     final protected static String SRC_DATA_AV_FILENAME="av_test.itf";
+    final protected static String SRC_GROOM_FILENAME="groomTest.json";
     final protected static String SRC_ILI_SIMPLE_FILENAME="SimpleCoord23.ili";
     final protected static String SRC_ILI_AV_FILENAME="DM.01-AV-CH_LV95_24d_ili1.ili";
     final protected static String ILI_DIRS=new File(SRC_TEST_DATA_ILI).getAbsolutePath();
@@ -266,6 +268,55 @@ public abstract class AbstractPublisherStepTest {
         {
             Assert.assertTrue(Files.exists(targetFolder));
             final Path targetFolderHistoryRoot = targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY);
+            final Path targetFolderHistory = targetFolderHistoryRoot.resolve(PublisherStep.getDateTag(SRC_DATA_DATE_0));
+            Assert.assertTrue(Files.exists(targetFolderHistory));
+            Assert.assertTrue(Files.exists(targetFolderHistory.resolve(SRC_DATA_IDENT+".itf.zip")));
+            final Path targetFolderAktuellMeta = targetFolderHistory.resolve(PublisherStep.PATH_ELE_META);
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderHistory));
+        }
+    }
+    @Test
+    public void file_groomHistory() throws Exception {
+        Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
+        // prepare
+        {
+            // delete output folder
+            if(Files.exists(targetFolder)) {
+                PublisherStep.deleteFileTree(targetFolder);
+            }
+        }
+        file_firstHistory();
+        final Date SRC_DATA_DATE=SRC_DATA_DATE_2;
+        final Path targetPath = getTargetPath().toAbsolutePath();
+        final Path sourceFile = Paths.get(SRC_TEST_DATA_FILES).resolve(SRC_DATA_AV_FILENAME);
+        final Path groomFile = Paths.get(SRC_TEST_DATA).resolve(SRC_GROOM_FILENAME);
+        PublisherStep step=new PublisherStep();
+        Settings settings=new Settings();
+        settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
+        settings.setValue(Validator.SETTING_CONFIGFILE, null);
+        step.publishDatasetFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourceFile,targetPath,null,null,null,null,groomFile,settings,localTestOut, null);
+        // verify
+        {
+            Assert.assertTrue(Files.exists(targetFolder));
+            final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
+            Assert.assertTrue(Files.exists(targetFolderAktuell));
+            Assert.assertTrue(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip")));
+            final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+        }
+        // verify history
+        {
+            Assert.assertTrue(Files.exists(targetFolder));
+            final Path targetFolderHistoryRoot = targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY);
+            final Path targetFolderHistory1 = targetFolderHistoryRoot.resolve(PublisherStep.getDateTag(SRC_DATA_DATE_1));
+            Assert.assertFalse(Files.exists(targetFolderHistory1));
             final Path targetFolderHistory = targetFolderHistoryRoot.resolve(PublisherStep.getDateTag(SRC_DATA_DATE_0));
             Assert.assertTrue(Files.exists(targetFolderHistory));
             Assert.assertTrue(Files.exists(targetFolderHistory.resolve(SRC_DATA_IDENT+".itf.zip")));
