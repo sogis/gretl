@@ -129,7 +129,7 @@ jobs:
       #       gretl/build/reports/tests/
 
       - name: Publish plugin
-        run: ./gradlew gretl:publishPlugins -i
+        run: ./gradlew gretl:publishPlugins -s
         if: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
         env:
           gradlePublishKey: ${{ secrets.GRADLEPUBLISHKEY }}
