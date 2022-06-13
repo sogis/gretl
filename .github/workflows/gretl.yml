@@ -89,7 +89,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-        if: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
+        if: ${{ ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/V2_1_x')) && (github.event_name != 'pull_request') && !env.ACT }}
 
       - name: Single-platform build 
         uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229  # v2.7.0 (2021-10-22)
@@ -137,4 +137,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           pull: true
-          push: ${{ ((github.ref == 'refs/heads/master') ||  (github.ref == 'refs/heads/V2_1_x')) && (github.event_name != 'pull_request') && !env.ACT }}
+          push: ${{ ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/V2_1_x')) && (github.event_name != 'pull_request') && !env.ACT }}
