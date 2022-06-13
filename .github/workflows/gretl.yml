@@ -59,10 +59,10 @@ jobs:
       #     name: reports-jar
       #     path: gretl/build/reports/tests/
 
-      - name: Stage jar files
-        run: |
-          ./gradlew stageJars
-          ls -la runtimeImage/gretl/__jars4image
+      # - name: Stage jar files
+      #   run: |
+      #     ./gradlew stageJars
+      #     ls -la runtimeImage/gretl/__jars4image
 
       - name: Debug1
         run: |
