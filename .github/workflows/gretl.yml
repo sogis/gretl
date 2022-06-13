@@ -83,7 +83,6 @@ jobs:
             type=raw,value=2.1.${{ github.run_number }},enable=true,priority=200
             type=raw,value=2.1,enable=true,priority=200
             type=raw,value=2,enable=true,priority=200
-            type=raw,value=latest,enable=true,priority=200
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9  # v1.10.0 (2021-10-22)
@@ -138,4 +137,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           pull: true
-          push: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
+          push: ${{ ((github.ref == 'refs/heads/master') ||  (github.ref == 'refs/heads/V2_1_x')) && (github.event_name != 'pull_request') && !env.ACT }}
