@@ -24,7 +24,6 @@ public class IliValidator extends AbstractValidatorTask {
 
     @TaskAction
     public void validate() {
-        System.out.println("Hallo Welt.");
         log = LogEnvironment.getLogger(IliValidator.class);
 
         if (dataFiles == null) {
