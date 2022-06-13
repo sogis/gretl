@@ -109,7 +109,9 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @Input
     @Optional
     public Range<Integer> datasetSubstring = null;
-
+    @Input
+    @Optional
+    public java.util.Map<String, String> sqlParameters = null;
 
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
@@ -152,6 +154,10 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             settings.setImportBid(true);
         }
         if (preScript != null) {
+            if (sqlParameters != null) {
+                
+            }
+            
             settings.setPreScript(this.getProject().file(preScript).getPath());
         }
         if (postScript != null) {
