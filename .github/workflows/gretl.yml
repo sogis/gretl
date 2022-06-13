@@ -35,92 +35,94 @@ jobs:
         run: ./gradlew clean gretl:classes 
 
       - name: Unit Tests 
+        # run: |
+        #   ./gradlew gretl:test gretl:dbTest
+        #   ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+        #   ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
         run: |
-          ./gradlew gretl:test gretl:dbTest
-          ./gradlew clean gretl:s3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
           ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
         env:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
-      - name: Integration Test (Jar)
-        run: |
-          ./gradlew gretl:jarTest
-          ./gradlew gretl:jarS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
-        env:
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      # - name: Integration Test (Jar)
+      #   run: |
+      #     ./gradlew gretl:jarTest
+      #     ./gradlew gretl:jarS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+      #   env:
+      #     S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      #     S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
 
-      - uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
-        with:
-          name: reports-jar
-          path: gretl/build/reports/tests/
+      # - uses: actions/upload-artifact@v2
+      #   if: ${{ failure() }}
+      #   with:
+      #     name: reports-jar
+      #     path: gretl/build/reports/tests/
 
       - name: Stage jar files
         run: |
           ./gradlew stageJars
           ls -la runtimeImage/gretl/__jars4image
 
-      - name: Set up QEMU for amd64 and arm64
-        uses: docker/setup-qemu-action@27d0a4f181a40b142cce983c5393082c365d1480  # v1.2.0 (2021-10-22)
-        with:
-          platforms: linux/amd64,linux/arm64
+      # - name: Set up QEMU for amd64 and arm64
+      #   uses: docker/setup-qemu-action@27d0a4f181a40b142cce983c5393082c365d1480  # v1.2.0 (2021-10-22)
+      #   with:
+      #     platforms: linux/amd64,linux/arm64
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@94ab11c41e45d028884a99163086648e898eed25  # v1.6.0 (2021-10-22)
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@94ab11c41e45d028884a99163086648e898eed25  # v1.6.0 (2021-10-22)
 
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@3a3bb3a81753dc99f090d24ee7e5343838b73a96  # v3.5.0 (2021-10-22)
-        with:
-          images: sogis/gretl
-          labels: |
-            org.opencontainers.image.title=gretl
-            org.opencontainers.image.version=2.1.${{ github.run_number }}
-            org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-alpine-musl:8u312-7
-          tags: |
-            type=raw,value=2.2.${{ github.run_number }},enable=true,priority=200
-            type=raw,value=2.2,enable=true,priority=200
-            type=raw,value=2,enable=true,priority=200
-            type=raw,value=latest,enable=true,priority=200
+      # - name: Docker meta
+      #   id: meta
+      #   uses: docker/metadata-action@3a3bb3a81753dc99f090d24ee7e5343838b73a96  # v3.5.0 (2021-10-22)
+      #   with:
+      #     images: sogis/gretl
+      #     labels: |
+      #       org.opencontainers.image.title=gretl
+      #       org.opencontainers.image.version=2.2.${{ github.run_number }}
+      #       org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-alpine-musl:8u312-7
+      #     tags: |
+      #       type=raw,value=2.2.${{ github.run_number }},enable=true,priority=200
+      #       type=raw,value=2.2,enable=true,priority=200
+      #       type=raw,value=2,enable=true,priority=200
+      #       type=raw,value=latest,enable=true,priority=200
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9  # v1.10.0 (2021-10-22)
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-        if: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9  # v1.10.0 (2021-10-22)
+      #   with:
+      #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      #   if: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
 
-      - name: Single-platform build 
-        uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229  # v2.7.0 (2021-10-22)
-        with:
-          platforms: linux/amd64
-          context: ./runtimeImage/gretl
-          file: ./runtimeImage/gretl/Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          load: true
-          pull: true 
+      # - name: Single-platform build 
+      #   uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229  # v2.7.0 (2021-10-22)
+      #   with:
+      #     platforms: linux/amd64
+      #     context: ./runtimeImage/gretl
+      #     file: ./runtimeImage/gretl/Dockerfile
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     load: true
+      #     pull: true 
 
-      - name: List images
-        run: |
-          docker images
+      # - name: List images
+      #   run: |
+      #     docker images
 
-      - name: Integration Test (Docker Image)
-        run: |
-          ./gradlew gretl:imageTest 
-          ./gradlew gretl:imageS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
-        env:
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      # - name: Integration Test (Docker Image)
+      #   run: |
+      #     ./gradlew gretl:imageTest 
+      #     ./gradlew gretl:imageS3Test -Ds3AccessKey=$S3_ACCESS_KEY -Ds3SecretKey=$S3_SECRET_KEY -Ds3BucketName=ch.so.agi.gretl.test
+      #   env:
+      #     S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      #     S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
       
-      - uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
-        with:
-          name: reports-docker
-          path: |
-            gretl/build/reports/tests/
+      # - uses: actions/upload-artifact@v2
+      #   if: ${{ failure() }}
+      #   with:
+      #     name: reports-docker
+      #     path: |
+      #       gretl/build/reports/tests/
 
       - name: Publish plugin
         run: ./gradlew gretl:publishPlugins
@@ -129,13 +131,13 @@ jobs:
           gradlePublishKey: ${{ secrets.GRADLEPUBLISHKEY }}
           gradlePublishSecret: ${{ secrets.GRADLEPUBLISHSECRET }}
 
-      - name: Multi-platform build 
-        uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229  # v2.7.0 (2021-10-22)
-        with:
-          platforms: linux/amd64,linux/arm64
-          context: ./runtimeImage/gretl
-          file: ./runtimeImage/gretl/Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          pull: true
-          push: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
+      # - name: Multi-platform build 
+      #   uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229  # v2.7.0 (2021-10-22)
+      #   with:
+      #     platforms: linux/amd64,linux/arm64
+      #     context: ./runtimeImage/gretl
+      #     file: ./runtimeImage/gretl/Dockerfile
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     pull: true
+      #     push: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
