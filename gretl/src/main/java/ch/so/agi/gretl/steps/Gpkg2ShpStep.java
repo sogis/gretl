@@ -89,9 +89,9 @@ public class Gpkg2ShpStep {
                 reader = null;
             }
             
-            /* QGIS kann die Shapefiles nicht anzeigen. Sie können zwar geladen werden aber man sieht 
-            * die Geometrien nie (die Attribute schon). Es liegt an einer prj-File-Inkompatibilität.
-            * Aus diesem Grund wird es überschrieben mit einem Inhalt, der von einem QGIS-Shapefile 
+            /* QGIS kann die Shapefiles nicht anzeigen. Sie koennen zwar geladen werden aber man sieht 
+            * die Geometrien nie (die Attribute schon). Es liegt an einer prj-File-Inkompatibilitaet.
+            * Aus diesem Grund wird es ueberschrieben mit einem Inhalt, der von einem QGIS-Shapefile 
             * stammt.
             */
             PrintWriter prw = new PrintWriter(Paths.get(outputDir, tableName + ".prj").toFile().getAbsolutePath());
