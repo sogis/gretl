@@ -14,11 +14,11 @@ configurations {
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:iox-ili:1.20.15'
-        force 'ch.interlis:ili2c-tool:5.0.2'
-        force 'ch.interlis:ili2c-core:5.0.2'
-        force 'ch.interlis:ili2pg:4.3.2'
-        force 'ch.interlis:ili2gpkg:4.3.2'
+        //force 'ch.interlis:iox-ili:1.20.15'
+        //force 'ch.interlis:ili2c-tool:5.0.2'
+        //force 'ch.interlis:ili2c-core:5.0.2'
+        //force 'ch.interlis:ili2pg:4.3.2'
+        //force 'ch.interlis:ili2gpkg:4.3.2'
     }
 }
 

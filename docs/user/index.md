@@ -1284,6 +1284,12 @@ typeCodeListValue | Wert der Artcodeliste in der Tabelle, dem das Symbol zugeord
 symbolAttrName | Name des Symbolattributes in der Tabelle. Dieses Attribut wird upgedatet.
 substringMode | Ob in der Update-Query Substrings verglichen werden, damit z.B. kommunale Codes mit (aggregierten) kantonalen Symbolen verwendet werden können.
 
+### Publisher
+
+Stellt für Vektordaten die aktuellsten Geodaten-Dateien bereit und pflegt das Archiv der vorherigen Zeitstände.
+
+[Details](Publisher.md)
+
 ### Av2ch
 
 Transformiert eine INTERLIS1-Transferdatei im kantonalen AV-DM01-Modell in das Bundesmodell. Unterstützt werden die Sprachen _Deutsch_ und _Italienisch_ und der Bezugrahmen _LV95_. Getestet mit Daten aus den Kantonen Solothurn, Glarus und Tessin. Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/sogis/av2ch](https://github.com/sogis/av2ch).

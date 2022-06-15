@@ -8,18 +8,37 @@ plugins {
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8 
+compileJava.options.encoding = 'US-ASCII'
 
 apply from: '../dependencies.gradle'
 apply from: 'integration-test.gradle'
 
+// to get the latest SNAPSHOT uncomment the following lines
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+Properties properties = new Properties()
+File propFile=project.file('user.properties')
+if(propFile.exists()){
+	properties.load(propFile.newDataInputStream())
+}
+def dburl = System.getProperty('dburl',properties.get('dburl'))
+def dbusr = System.getProperty('dbusr',properties.get('dbusr'))
+def dbpwd = System.getProperty('dbpwd',properties.get('dbpwd'))
+def ftpurl = System.getProperty('ftpurl',properties.get('ftpurl'))
+def ftpusr = System.getProperty('ftpusr',properties.get('ftpusr'))
+def ftppwd = System.getProperty('ftppwd',properties.get('ftppwd'))
+
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:iox-ili:1.20.15'
-        force 'ch.interlis:iox-wkf:1.0.2'
-        force 'ch.interlis:ili2c-tool:5.0.2'
-        force 'ch.interlis:ili2c-core:5.0.2'
-        force 'ch.interlis:ili2pg:4.3.2'
-        force 'ch.interlis:ili2gpkg:4.3.2'
+        //force 'ch.interlis:iox-ili:1.20.15'
+        //force 'ch.interlis:iox-wkf:1.0.2'
+        //force 'ch.interlis:ili2c-tool:5.0.2'
+        //force 'ch.interlis:ili2c-core:5.0.2'
+        //force 'ch.interlis:ili2pg:4.3.2'
+        //force 'ch.interlis:ili2gpkg:4.3.2'
     }
 }
 
@@ -43,12 +62,16 @@ configurations {
     
     all*.exclude module: 'spring-boot-starter-logging'
     
+    all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
+    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
+    
 }
 
 dependencies {
     api gradleApi()
   
     api ilivalidatorDependency
+    //api 'ch.interlis:ilivalidator:1.11.13+'
     api ilivalidatorCustomFunctionsDependency
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
@@ -70,6 +93,9 @@ dependencies {
     
     api jacksonCoreDependency
     api jacksonDatabindDependency
+    //api 'com.jcraft:jsch:0.1.55'
+    //api 'com.pastdev:jsch-nio:1.0.14'
+	api 'com.github.robtimus:sftp-fs:2.0.4'
     
     runtimeOnly postgresqlDependency
     runtimeOnly sqliteJdbcDependency
@@ -156,6 +182,7 @@ test {
     useJUnit{
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
         excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
+        excludeCategories 'ch.so.agi.gretl.testutil.SftpTest'
         excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }
 }
@@ -165,6 +192,13 @@ task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     description = 'Runs all unit tests with dependency to a db server (pg, oracle, ...).'
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    }
+}
+task sftpTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = 'Runs all unit tests with dependency to a SFTP server'
+    useJUnit {
+        includeCategories 'ch.so.agi.gretl.testutil.SftpTest'
     }
 }
 

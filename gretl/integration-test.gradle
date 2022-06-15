@@ -20,6 +20,7 @@ task jarTest(type: Test) {
 
     useJUnit {
         excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
+        excludeCategories 'ch.so.agi.gretl.testutil.QgisReachableTest'
         excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }
 

@@ -148,7 +148,9 @@ public class Gpkg2DxfStep {
                         IomObject iomGeom = iomObj.getattrobj(geomColumnName, 0);
                                                 
                         Geometry jtsGeom;
-                        if (iomGeom.getobjecttag().equals(MULTISURFACE)) {
+                        if (iomGeom==null) {
+                            //continue;
+                        }else if (iomGeom.getobjecttag().equals(MULTISURFACE)) {
                             jtsGeom = Iox2jts.multisurface2JTS(iomGeom, 0, crs);
                             
                             for (int i=0; i<jtsGeom.getNumGeometries(); i++) {

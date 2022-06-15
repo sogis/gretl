@@ -1,0 +1,35 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+defaultTasks 'printPublishedRegions'
+
+//configurations.all {
+    // check for updates every build
+    //resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+//}
+
+task publishFile0(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung.edit"
+      target = [project.buildDir]
+      sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
+      modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      region="[0-9][0-9][0-9][0-9]"
+}
+
+task publishFile1(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung.pub"
+      target = [project.buildDir]
+      sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
+      modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      regions=publishFile0.publishedRegions
+}
+
+task printPublishedRegions(dependsOn: [publishFile0,publishFile1]){
+	doLast(){
+		println publishFile0.publishedRegions.get()
+		println publishFile1.publishedRegions.get()
+	}
+}
+
+
