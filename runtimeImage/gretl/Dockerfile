@@ -6,6 +6,9 @@ WORKDIR /home/gradle
 RUN chmod g+w .
 
 RUN apk add --no-cache bash ca-certificates curl
+# Add more CA certificates
+COPY ca-certificates/ /usr/local/share/ca-certificates/
+RUN update-ca-certificates
 
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 ENV GRADLE_HOME /opt/gradle
