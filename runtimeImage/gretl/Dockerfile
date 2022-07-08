@@ -5,7 +5,7 @@ CMD ["gretl"]
 WORKDIR /home/gradle
 RUN chmod g+w .
 
-RUN apk add --no-cache bash curl
+RUN apk add --no-cache bash ca-certificates curl
 
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 ENV GRADLE_HOME /opt/gradle
