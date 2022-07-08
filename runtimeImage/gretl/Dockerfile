@@ -9,8 +9,8 @@ RUN apk add --no-cache bash
 
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 ENV GRADLE_HOME /opt/gradle
-ENV GRADLE_VERSION 4.2.1
-ARG GRADLE_DOWNLOAD_SHA256=b551cc04f2ca51c78dd14edb060621f0e5439bdfafa6fd167032a09ac708fbc0
+ENV GRADLE_VERSION 5.1.1
+ARG GRADLE_DOWNLOAD_SHA256=4953323605c5d7b89e97d0dc7779e275bccedefcdac090aec123375eae0cc798
 RUN set -o errexit -o nounset \
     && echo "Downloading Gradle" \
     && wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" \
