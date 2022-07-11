@@ -5,7 +5,9 @@ CMD ["gretl"]
 WORKDIR /home/gradle
 RUN chmod g+w .
 
-RUN apk add --no-cache bash
+COPY ca-certificates/ /usr/local/share/ca-certificates/
+RUN apk add --no-cache bash ca-certificates java-cacerts curl \
+    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/jre/lib/security/cacerts
 
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
 ENV GRADLE_HOME /opt/gradle
@@ -31,8 +33,6 @@ ENV ILI_CACHE=/home/gradle/.ilicache
 COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
 COPY init.gradle /home/gradle/
-
-RUN apk add --no-cache curl
 
 RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
