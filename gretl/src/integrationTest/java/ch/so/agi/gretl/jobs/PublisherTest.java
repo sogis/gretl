@@ -18,8 +18,8 @@ public class PublisherTest {
     public void simple() throws Exception {
         String jobDirectory = "src/integrationTest/jobs/Publisher";
         
-        copyFileFromResourcesToJob(jobDirectory, "av_test.itf");
-        copyFileFromResourcesToJob(jobDirectory, "DM.01-AV-CH_LV95_24d_ili1.ili");
+        copyFileFromResourcesToJob(jobDirectory, "files", "av_test.itf");
+        copyFileFromResourcesToJob(jobDirectory, "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
         
         GradleVariable[] gvs = null;
         IntegrationTestUtil.runJob(jobDirectory, gvs);
@@ -28,18 +28,18 @@ public class PublisherTest {
     public void regions() throws Exception {
         String jobDirectory = "src/integrationTest/jobs/PublisherRegions";
         
-        copyFileFromResourcesToJob(jobDirectory, "av_test.itf");
-        copyFileFromResourcesToJob(jobDirectory, "2501.itf");
-        copyFileFromResourcesToJob(jobDirectory, "2502.itf");
-        copyFileFromResourcesToJob(jobDirectory, "DM.01-AV-CH_LV95_24d_ili1.ili");
+        copyFileFromResourcesToJob(jobDirectory, "files", "av_test.itf");
+        copyFileFromResourcesToJob(jobDirectory, "files", "2501.itf");
+        copyFileFromResourcesToJob(jobDirectory, "files", "2502.itf");
+        copyFileFromResourcesToJob(jobDirectory, "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
 
         GradleVariable[] gvs = null;
         IntegrationTestUtil.runJob(jobDirectory, gvs);
     }
     
-    private Path copyFileFromResourcesToJob(String jobDirectory, String filename) throws IOException {
+    private Path copyFileFromResourcesToJob(String jobDirectory, String resourceSubDirectory, String filename) throws IOException {
         String resourceDirectory = "src/test/resources/data/publisher/";
-        Path from = Paths.get(resourceDirectory, filename);
+        Path from = Paths.get(resourceDirectory, resourceSubDirectory, filename);
         Path to = Paths.get(jobDirectory, filename);
         Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
         return to;
