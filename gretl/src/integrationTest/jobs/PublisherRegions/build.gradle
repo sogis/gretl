@@ -12,16 +12,16 @@ defaultTasks 'printPublishedRegions'
 task publishFile0(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [project.buildDir]
-      sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
-      modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      sourcePath = file("av_test.itf")
+      modeldir= file(".")
       region="[0-9][0-9][0-9][0-9]"
 }
 
 task publishFile1(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.pub"
       target = [project.buildDir]
-      sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
-      modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      sourcePath = file("av_test.itf")
+      modeldir= file(".")
       regions=publishFile0.publishedRegions
 }
 

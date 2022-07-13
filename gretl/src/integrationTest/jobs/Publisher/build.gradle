@@ -7,8 +7,8 @@ defaultTasks 'publishFile'
 task publishFile(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [project.buildDir]
-      sourcePath = file("../../../../src/test/resources/data/publisher/files/av_test.itf")
-      modeldir= file("../../../../src/test/resources/data/publisher/ili")
+      sourcePath = file("av_test.itf")
+      modeldir= file(".")
       //kgdiService=["http://localhost:8080/simi-svc/rest","admin","admin"]
 }
 
