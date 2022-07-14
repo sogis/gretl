@@ -88,6 +88,9 @@ If you use a Jenkins-Docker-Image for your CI/CD pipeline you will probably run 
 ### S3 tests
 Instead of using a mocking library we to some real world testing with S3. Therefore a bucket must exist and the access key and secret key must be known. The keys used for CI belong to the user `gretl` (group: `gretl-group`, policy: `gretl-s3`).
 
+### Github Action
+The pipeline cannot run parallel since some tests write to S3 buckets. If something goes wrong they need to be cleaned manually (needs to be fixed...).
+
 ## Release management / Versioning
 
 It uses a simple release management and versioning mechanism: Local builds are tagged as `2.2.9999`. Builds on Github Action will append the build number, e.g. `2.2.230`. Major version will be increased after "major" changes. After every commit to the repository a docker image will be build and pushed to `hub.docker.com`. It will be tagged as `latest` and with the build number (`2.2.230`).
