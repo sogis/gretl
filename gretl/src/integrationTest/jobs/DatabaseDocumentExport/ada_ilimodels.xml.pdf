@@ -9084,7 +9084,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004201">
       <Name>WZVV_Codelisten_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/WZVV_V1_2.ili</File>
+      <File>BAFU/replaced/WZVV_V1_2.ili</File>
       <Version>2017-02-02</Version>
       <publishingDate>2017-04-28</publishingDate>
       <dependsOnModel>
@@ -9105,7 +9105,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004202">
       <Name>WZVV_LV03_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/WZVV_V1_2.ili</File>
+      <File>BAFU/replaced/WZVV_V1_2.ili</File>
       <Version>2017-02-02</Version>
       <publishingDate>2017-04-28</publishingDate>
       <dependsOnModel>
@@ -9132,7 +9132,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004203">
       <Name>WZVV_LV95_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/WZVV_V1_2.ili</File>
+      <File>BAFU/replaced/WZVV_V1_2.ili</File>
       <Version>2017-02-02</Version>
       <publishingDate>2017-04-28</publishingDate>
       <dependsOnModel>
@@ -11386,7 +11386,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004293">
       <Name>Amphibien_Laichgebiete_Codelisten_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Amphibien_Laichgebiete_V1_1.ili</File>
+      <File>BAFU/replaced/Amphibien_Laichgebiete_V1_1.ili</File>
       <Version>2017-04-05</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11407,7 +11407,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004294">
       <Name>Amphibien_Laichgebiete_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Amphibien_Laichgebiete_V1_1.ili</File>
+      <File>BAFU/replaced/Amphibien_Laichgebiete_V1_1.ili</File>
       <Version>2017-04-05</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11431,7 +11431,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004295">
       <Name>Amphibien_Laichgebiete_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Amphibien_Laichgebiete_V1_1.ili</File>
+      <File>BAFU/replaced/Amphibien_Laichgebiete_V1_1.ili</File>
       <Version>2017-04-05</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11455,7 +11455,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004296">
       <Name>Amphibien_Wanderobjekte_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Amphibien_Wanderobjekte_V1_1.ili</File>
+      <File>BAFU/replaced/Amphibien_Wanderobjekte_V1_1.ili</File>
       <Version>2017-04-05</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11476,7 +11476,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004297">
       <Name>Amphibien_Wanderobjekte_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Amphibien_Wanderobjekte_V1_1.ili</File>
+      <File>BAFU/replaced/Amphibien_Wanderobjekte_V1_1.ili</File>
       <Version>2017-04-05</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11566,7 +11566,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004301">
       <Name>BLN_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/BLN_V1_1.ili</File>
+      <File>BAFU/replaced/BLN_V1_1.ili</File>
       <Version>2017-04-11</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11584,7 +11584,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004302">
       <Name>BLN_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/BLN_V1_1.ili</File>
+      <File>BAFU/replaced/BLN_V1_1.ili</File>
       <Version>2017-04-11</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11602,7 +11602,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004303">
       <Name>Flachmoore_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Flachmoore_V1_1.ili</File>
+      <File>BAFU/replaced/Flachmoore_V1_1.ili</File>
       <Version>2017-04-11</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11623,7 +11623,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004304">
       <Name>Flachmoore_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Flachmoore_V1_1.ili</File>
+      <File>BAFU/replaced/Flachmoore_V1_1.ili</File>
       <Version>2017-04-11</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11644,7 +11644,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004305">
       <Name>Hochmoore_Codelisten_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Hochmoore_V1_1.ili</File>
+      <File>BAFU/replaced/Hochmoore_V1_1.ili</File>
       <Version>2017-05-09</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11665,7 +11665,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004306">
       <Name>Hochmoore_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Hochmoore_V1_1.ili</File>
+      <File>BAFU/replaced/Hochmoore_V1_1.ili</File>
       <Version>2017-05-09</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11707,7 +11707,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004308">
       <Name>Moorlandschaften_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Moorlandschaften_V1_1.ili</File>
+      <File>BAFU/replaced/Moorlandschaften_V1_1.ili</File>
       <Version>2017-03-27</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11725,7 +11725,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004309">
       <Name>Moorlandschaften_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Moorlandschaften_V1_1.ili</File>
+      <File>BAFU/replaced/Moorlandschaften_V1_1.ili</File>
       <Version>2017-03-27</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11791,7 +11791,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004312">
       <Name>Trockenwiesen_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Trockenwiesen_V1_1.ili</File>
+      <File>BAFU/replaced/Trockenwiesen_V1_1.ili</File>
       <Version>2017-09-05</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -11809,7 +11809,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004313">
       <Name>Trockenwiesen_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Trockenwiesen_V1_1.ili</File>
+      <File>BAFU/replaced/Trockenwiesen_V1_1.ili</File>
       <Version>2017-09-05</Version>
       <publishingDate>2018-08-13</publishingDate>
       <dependsOnModel>
@@ -12329,7 +12329,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004334">
       <Name>LBK_Haupt_uebrigeStrassen_Codelisten_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LBK_Haupt_uebrigeStrassen_V1_1.ili</File>
+      <File>BAFU/replaced/LBK_Haupt_uebrigeStrassen_V1_1.ili</File>
       <Version>2018-09-12</Version>
       <publishingDate>2018-10-01</publishingDate>
       <dependsOnModel>
@@ -12350,7 +12350,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004335">
       <Name>LBK_Haupt_uebrigeStrassen_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LBK_Haupt_uebrigeStrassen_V1_1.ili</File>
+      <File>BAFU/replaced/LBK_Haupt_uebrigeStrassen_V1_1.ili</File>
       <Version>2018-09-12</Version>
       <publishingDate>2018-10-01</publishingDate>
       <dependsOnModel>
@@ -12371,7 +12371,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004336">
       <Name>LBK_Haupt_uebrigeStrassen_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LBK_Haupt_uebrigeStrassen_V1_1.ili</File>
+      <File>BAFU/replaced/LBK_Haupt_uebrigeStrassen_V1_1.ili</File>
       <Version>2018-09-12</Version>
       <publishingDate>2018-10-01</publishingDate>
       <dependsOnModel>
@@ -12392,7 +12392,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004337">
       <Name>Hochmoore_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Hochmoore_V1_1.ili</File>
+      <File>BAFU/replaced/Hochmoore_V1_1.ili</File>
       <Version>2018-12-04</Version>
       <publishingDate>2018-12-05</publishingDate>
       <dependsOnModel>
@@ -12414,7 +12414,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004338">
       <Name>Paerke_Codelisten_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Paerke_V1_2.ili</File>
+      <File>BAFU/replaced/Paerke_V1_2.ili</File>
       <Version>2018-10-09</Version>
       <publishingDate>2019-01-15</publishingDate>
       <dependsOnModel>
@@ -12435,7 +12435,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004339">
       <Name>Paerke_LV03_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Paerke_V1_2.ili</File>
+      <File>BAFU/replaced/Paerke_V1_2.ili</File>
       <Version>2018-10-09</Version>
       <publishingDate>2019-01-15</publishingDate>
       <dependsOnModel>
@@ -12459,7 +12459,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004340">
       <Name>Paerke_LV95_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Paerke_V1_2.ili</File>
+      <File>BAFU/replaced/Paerke_V1_2.ili</File>
       <Version>2018-10-09</Version>
       <publishingDate>2019-01-15</publishingDate>
       <dependsOnModel>
@@ -12900,7 +12900,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004358">
       <Name>Steinbockkolonien_Codelisten_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Steinbockkolonien_V1.ili</File>
+      <File>BAFU/replaced/Steinbockkolonien_V1.ili</File>
       <Version>2019-06-11</Version>
       <publishingDate>2019-08-06</publishingDate>
       <dependsOnModel>
@@ -12921,7 +12921,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004359">
       <Name>Steinbockkolonien_LV03_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Steinbockkolonien_V1.ili</File>
+      <File>BAFU/replaced/Steinbockkolonien_V1.ili</File>
       <Version>2019-06-11</Version>
       <publishingDate>2019-08-06</publishingDate>
       <dependsOnModel>
@@ -12942,7 +12942,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004360">
       <Name>Steinbockkolonien_LV95_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Steinbockkolonien_V1.ili</File>
+      <File>BAFU/replaced/Steinbockkolonien_V1.ili</File>
       <Version>2019-06-11</Version>
       <publishingDate>2019-08-06</publishingDate>
       <dependsOnModel>
@@ -13512,7 +13512,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004382">
       <Name>Auengebiete_Codelisten_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Auengebiete_V1_1.ili</File>
+      <File>BAFU/replaced/Auengebiete_V1_1.ili</File>
       <Version>2019-11-14</Version>
       <publishingDate>2019-11-18</publishingDate>
       <dependsOnModel>
@@ -13534,7 +13534,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004383">
       <Name>Auengebiete_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Auengebiete_V1_1.ili</File>
+      <File>BAFU/replaced/Auengebiete_V1_1.ili</File>
       <Version>2019-11-14</Version>
       <publishingDate>2019-11-18</publishingDate>
       <dependsOnModel>
@@ -13559,7 +13559,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004384">
       <Name>Auengebiete_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Auengebiete_V1_1.ili</File>
+      <File>BAFU/replaced/Auengebiete_V1_1.ili</File>
       <Version>2019-11-14</Version>
       <publishingDate>2019-11-18</publishingDate>
       <dependsOnModel>
@@ -13620,7 +13620,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004387">
       <Name>Fliessgewaessertypisierung_LV95_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Fliessgewaessertypisierung_V1.ili</File>
+      <File>BAFU/replaced/Fliessgewaessertypisierung_V1.ili</File>
       <Version>2019-10-08</Version>
       <publishingDate>2019-12-10</publishingDate>
       <dependsOnModel>
@@ -13638,7 +13638,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004388">
       <Name>Fliessgewaessertypisierung_LV03_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Fliessgewaessertypisierung_V1.ili</File>
+      <File>BAFU/replaced/Fliessgewaessertypisierung_V1.ili</File>
       <Version>2019-10-08</Version>
       <publishingDate>2019-12-10</publishingDate>
       <dependsOnModel>
@@ -16275,6 +16275,288 @@
       <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
       <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
       <md5>baa65428bd255949d41af0a6565bf23c</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004496">
+      <Name>LBK_Haupt_uebrigeStrassen_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/LBK_Haupt_uebrigeStrassen_V1_2.ili</File>
+      <Version>2022-03-09</Version>
+      <publishingDate>2022-06-13</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>144.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>685b323de4647ccd426e0928ae3c7265</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004497">
+      <Name>Fliessgewaessertypisierung_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Fliessgewaessertypisierung_V1_1.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-06-27</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>135.6</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>003d4865f107d3508dfd709dee03054f</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004498">
+      <Name>BLN_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/BLN_V1_2.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>18.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>176894e84a7f994d8a9e2f12dc052517</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004499">
+      <Name>Auengebiete_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Auengebiete_V1_2.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>19.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>66373f27fd4dd4860f884a57ce42f291</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004500">
+      <Name>Hochmoore_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Hochmoore_V1_2.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>20.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>8cd77a3c090389557b1a9171eee4e21d</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004501">
+      <Name>Flachmoore_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Flachmoore_V1_2.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>21.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>f12515555b7084092cb11f718cfe9570</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004502">
+      <Name>Amphibien_Laichgebiete_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Amphibien_Laichgebiete_V1_2.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>22.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>fe961d6a65a280fedfa1572ac0c5e0b4</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004503">
+      <Name>Amphibien_Wanderobjekte_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Amphibien_Wanderobjekte_V1_2.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>22.2</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>70e700af6a157b72c788628a29ca6db9</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004504">
+      <Name>Moorlandschaften_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Moorlandschaften_V1_2.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>24.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>369bc420dcfbd5f9d16ed09462bdd325</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004505">
+      <Name>Paerke_V1_3</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Paerke_V1_3.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>31.1,187.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>401c7dc75174e40ec87e07a6e1aa9f64</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004506">
+      <Name>Steinbockkolonien_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Steinbockkolonien_V1_1.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>169.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>558ea2dd0eeafcf03d0d4619df314fb8</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004507">
+      <Name>WZVV_V1_4</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/WZVV_V1_4.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>171.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>ab47eb5884cd8f0ae820e1325ad927e4</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004508">
+      <Name>Trockenwiesen_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Trockenwiesen_V1_2.ili</File>
+      <Version>2022-06-02</Version>
+      <publishingDate>2022-07-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>186.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>94e8f79622825497770c461199ee51f2</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
@@ -20196,6 +20478,30 @@
       <technicalContact>mailto:gis@bazl.admin.ch</technicalContact>
       <furtherInformation>https://www.bazl.admin.ch/geoinformation</furtherInformation>
       <md5>9fba891e8c153cf2a3ce31449657b38e</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="009046">
+      <Name>CadastreOfObstacleLimitationSurfaces_V2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAZL/CadastreOfObstacleLimitationSurfaces_V2.ili</File>
+      <Version>2022-03-29</Version>
+      <publishingDate>2022-05-06</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>INTERLIS_ext</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>WithLatestModification_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>106.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAZL/</Issuer>
+      <technicalContact>mailto:gis@bazl.admin.ch</technicalContact>
+      <furtherInformation>https://www.bazl.admin.ch/geoinformation</furtherInformation>
+      <md5>d61c3dc35ce9f1c84e5076fb9ef7292c</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->

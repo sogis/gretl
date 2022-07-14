@@ -44,9 +44,9 @@ There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC 
 ./gradlew gretl:test gretl:dbTest 
 ./gradlew gretl:s3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
 ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal gretl:publishGretlPluginPluginMarkerMavenPublicationToMavenLocal -x test
-cd runtimeImage/
-./build-gretl.sh
-cd ..
+./gradlew stageJars
+cd runtimeImage/gretl
+docker build -t sogis/gretl .
 ./gradlew gretl:jarTest 
 ./gradlew gretl:jarS3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
 ./gradlew gretl:imageTest 
