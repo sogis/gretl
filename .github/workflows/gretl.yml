@@ -84,7 +84,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=gretl
             org.opencontainers.image.version=2.2.${{ github.run_number }}
-            org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-alpine-musl:8u312-7
+            org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-alpine:8u333-2
           tags: |
             type=raw,value=2.2.${{ github.run_number }},enable=true,priority=200
             type=raw,value=2.2,enable=true,priority=200
