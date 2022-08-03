@@ -40,6 +40,10 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
     @Input
     @Optional
     public boolean createMetaInfo = false;
+    
+    @Input
+    @Optional
+    public boolean createGeomIdx = false;
 
     @TaskAction
     public void importData() {
@@ -97,6 +101,10 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
         
         if (createMetaInfo) {
             settings.setCreateMetaInfo(true);
+        }
+        
+        if (createGeomIdx) {
+            settings.setValue(Config.CREATE_GEOM_INDEX, Config.TRUE);
         }
 
         int function = Config.FC_IMPORT;
