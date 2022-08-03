@@ -18,6 +18,10 @@ public class Ili2pgExport extends Ili2pgAbstractTask {
     @Input
     @Optional
     public boolean export3 = false;
+    
+    @Input
+    @Optional
+    public String exportModels = null;
 
     @OutputFile
     public Object dataFile = null;
@@ -31,6 +35,9 @@ public class Ili2pgExport extends Ili2pgAbstractTask {
         }
         if (export3) {
             settings.setVer3_export(true);
+        }
+        if (exportModels != null) {
+            settings.setExportModels(exportModels);
         }
         FileCollection dataFilesCollection=null;
         if(dataFile instanceof FileCollection) {
