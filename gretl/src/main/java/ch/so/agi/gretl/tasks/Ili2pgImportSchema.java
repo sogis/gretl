@@ -97,6 +97,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public boolean createNumChecks = false;
     @Input
     @Optional
+    public boolean createTextChecks = false;
+    @Input
+    @Optional
+    public boolean createDateTimeChecks = false;
+    @Input
+    @Optional
     public boolean createStdCols = false;
     @Input
     @Optional
@@ -251,6 +257,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (createNumChecks) {
             settings.setCreateNumChecks(true);
+        }
+        if (createTextChecks) {
+            settings.setCreateTextChecks(true);
+        }
+        if (createDateTimeChecks) {
+            settings.setCreateTextChecks(true);
         }
         if (createStdCols) {
             settings.setCreateStdCols(settings.CREATE_STD_COLS_ALL);
