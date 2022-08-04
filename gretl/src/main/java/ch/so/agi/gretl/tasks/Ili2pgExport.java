@@ -23,10 +23,6 @@ public class Ili2pgExport extends Ili2pgAbstractTask {
     @Optional
     public String exportModels = null;
 
-    @Input
-    @Optional
-    public boolean configReadFromDb = true;
-
     @OutputFile
     public Object dataFile = null;
 
@@ -42,9 +38,6 @@ public class Ili2pgExport extends Ili2pgAbstractTask {
         }
         if (exportModels != null) {
             settings.setExportModels(exportModels);
-        }
-        if (configReadFromDb) {
-            settings.setConfigReadFromDb(configReadFromDb);
         }
         FileCollection dataFilesCollection=null;
         if(dataFile instanceof FileCollection) {
