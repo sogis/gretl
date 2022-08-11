@@ -37,41 +37,26 @@ Parameter:
 
 ### Jenkins agent
 
-The configuration of the Jenkins agent,
-including the definition of which Docker image to pull from Docker Hub.
+The following command creates a ConfigMap
+that defines the GRETL Pod Template.
+This contains the definition of the pod
+that is actually running the GRETL job.
 
-#### Create the gretl image stream providing the GRETL image
-
-Add the *gretl* image stream to pull the newest GRETL image:
+Additionally two image streams are created:
+The _jenkins-agent_ image stream that references the Jenkins agent image,
+and the _gretl_ image stream that references the GRETL image.
 ```
-oc process -f openshift/templates/gretl-is-template.yaml \
-  -p GRETL_IMAGE_TAG="latest" \
-  | oc apply -f -
-```
-Parameters:
-* GRETL_IMAGE_TAG: GRETL image tag to be pulled from Docker Hub.
-* IMPORT_POLICY_SCHEDULED: Regularly check for changed image; defaults to "false"
-
-#### Create the jenkins-agent image stream providing the Jenkins agent image
-
-Add the *jenkins-agent* image stream to pull a Jenkins agent image:
-```
-oc process -f openshift/templates/jenkins-agent-is-template.yaml \
+oc process -f openshift/templates/gretl-pod-template.yaml \
   -p JENKINS_AGENT_IMAGE_TAG=4.7 \
+  -p GRETL_IMAGE_TAG=2.1.241 \
+  -p GRETL_IMAGE_IMPORT_POLICY_SCHEDULED=false \
   | oc apply -f -
 ```
 Parameters:
-* JENKINS_AGENT_IMAGE_TAG: Docker image tag of Jenkins agent to be pulled from Quay.io.
-* IMPORT_POLICY_SCHEDULED: Regularly check for changed image;
-  defaults to "true"
-  because it seems that Quay.io immediately deletes any image that has no more tag
+* JENKINS_AGENT_IMAGE_TAG: Jenkins agent image tag to be pulled from Quay.io
+* GRETL_IMAGE_TAG: GRETL image tag to be pulled from Docker Hub
+* GRETL_IMAGE_IMPORT_POLICY_SCHEDULED: Regularly check for changed GRETL image; defaults to "false"
 
-#### Create a ConfigMap that configures the Jenkins agent
-
-Apply the ConfigMap that defines the GRETL pod (i.e. the Jenkins agent):
-```
-oc apply -f openshift/templates/gretl-pod-template-configmap.yaml
-```
 Note: When editing the ConfigMap any further, pay close attention
 to the indentation of the lines inside the `<yaml>` XML tags.
 
@@ -207,21 +192,10 @@ The database connection string can then be combined with the protocol, url and d
 Update an existing system.
 
 ### Update GRETL image
-There are several ways to change the GRETL image version.
 
-Either apply the `gretl-is-template.yaml` template again with the desired image tag.
-
-Or set the image tag with a command like this:
-```
-oc tag --source=docker sogis/gretl:2.1.119 gretl:latest
-```
-
-Or edit the Image Stream manually inside the OpenShift web console:
-1. go to the project
-1. select Builds -> Images
-1. click on the Image Stream with name *gretl*
-1. select *Edit YAML* on the Actions button
-1. change the image tag name to the desired version and save it. 
+For updating the GRETL image tag,
+apply the `gretl-pod-template.yaml` template again,
+with the desired image tag.
 
 ### Update Jenkins
 Follow the steps below for updating Jenkins:
