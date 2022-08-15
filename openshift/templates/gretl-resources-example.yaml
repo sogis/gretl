@@ -1,5 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
+metadata:
+  name: gretl-resources
+  labels:
+    app: gretl-platform
 data:
   ORG_GRADLE_PROJECT_dbUriEdit: jdbc:postgresql://localhost/edit?sslmode=require&ApplicationName=GRETL
   ORG_GRADLE_PROJECT_dbUriPub: jdbc:postgresql://localhost/pub?sslmode=require&ApplicationName=GRETL
@@ -7,7 +11,3 @@ data:
   ORG_GRADLE_PROJECT_ilivalidatorModeldir: '%ITF_DIR;https://geo.so.ch/models/;%JAR_DIR'
   ORG_GRADLE_PROJECT_geoservicesHostName: geo-t.so.ch
   ORG_GRADLE_PROJECT_gretlEnvironment: test
-metadata:
-  labels:
-    app: gretl-platform
-  name: gretl-resources
