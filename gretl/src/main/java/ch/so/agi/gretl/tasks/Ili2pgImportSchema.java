@@ -262,7 +262,7 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
             settings.setCreateTextChecks(true);
         }
         if (createDateTimeChecks) {
-            settings.setCreateTextChecks(true);
+            settings.createDateTimeChecks(true);
         }
         if (createStdCols) {
             settings.setCreateStdCols(settings.CREATE_STD_COLS_ALL);

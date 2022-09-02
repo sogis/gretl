@@ -12,6 +12,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.interlis.iom.IomObject;
+import ch.interlis.iom_j.Iom_jObject;
 import ch.interlis.iox.IoxEvent;
 import ch.interlis.iox.IoxException;
 import ch.interlis.iox.ObjectEvent;
