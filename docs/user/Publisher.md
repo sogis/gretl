@@ -165,7 +165,8 @@ Die Daten können alternativ zu SFTP in ein lokales Verzeichnis publiziert werde
 
 ## DB -> XTF
 
-Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss die Datenbank angegeben werden.
+Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss die Datenbank angegeben werden und welche Daten (Parameter dataset, regions, region) 
+aus der Datenbank exportiert werden sollen.
 
     task publishFromDb(type: Publisher){
       dataIdent = "ch.so.agi.vermessung"
@@ -256,6 +257,7 @@ Kann nur ab DB erstellt werden.
       target = [ "sftp://ftp.server.ch/data", "user", "password" ]
       database = ["uri","user","password"]
       dbSchema "av"
+      dataset = "dataset"
       userFormats = true
     }
     
@@ -267,7 +269,6 @@ Der Service wird benutzt, um:
 
 - den Beipackzettel (im Unterordner meta) zu erstellen/beziehen
 - das Publikationsdatum in den Metadaten nachzuführen
-
 
     task publishFile(type: Publisher){
       ...
