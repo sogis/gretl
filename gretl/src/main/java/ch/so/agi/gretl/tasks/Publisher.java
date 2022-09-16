@@ -114,10 +114,10 @@ public class Publisher extends DefaultTask {
             if(dbSchema==null) {
                 throw new IllegalArgumentException("dbSchema must be set");
             }
-            if((modelsToPublish==null || dataset==null) && (region==null || regions==null)) {
-                throw new IllegalArgumentException("models OR dataset OR region OR regions must be set");
-            }else if((modelsToPublish!=null || dataset!=null) && (region!=null || regions!=null)) {
-                throw new IllegalArgumentException("only (models OR dataset) OR (region OR regions) can be set");
+            if(modelsToPublish==null && dataset==null && region==null && regions==null) {
+                throw new IllegalArgumentException("modelsToPublish OR dataset OR region OR regions must be set");
+            }else if((modelsToPublish!=null?1:0) + (dataset!=null?1:0) + (region!=null?1:0) + (regions!=null?1:0) > 1) {
+                throw new IllegalArgumentException("only one of modelsToPublish OR dataset OR region OR regions can be set");
             }
         }else {
             throw new IllegalArgumentException("one of sourcePath OR database must be set");
