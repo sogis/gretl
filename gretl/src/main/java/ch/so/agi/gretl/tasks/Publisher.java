@@ -59,6 +59,9 @@ public class Publisher extends DefaultTask {
     public String dataset=null; //  ili2db-Datasetname der Quelldaten "dataset"
     @Input
     @Optional
+    public String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
+    @Input
+    @Optional
     public String region=null; // Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"     
     @Input
     @Optional
@@ -111,10 +114,10 @@ public class Publisher extends DefaultTask {
             if(dbSchema==null) {
                 throw new IllegalArgumentException("dbSchema must be set");
             }
-            if(dataset==null && (region==null || regions==null)) {
-                throw new IllegalArgumentException("dataset OR region OR regions must be set");
-            }else if(dataset!=null && (region!=null || regions!=null)) {
-                throw new IllegalArgumentException("only dataset OR (region OR regions) can be set");
+            if((modelsToPublish==null || dataset==null) && (region==null || regions==null)) {
+                throw new IllegalArgumentException("models OR dataset OR region OR regions must be set");
+            }else if((modelsToPublish!=null || dataset!=null) && (region!=null || regions!=null)) {
+                throw new IllegalArgumentException("only (models OR dataset) OR (region OR regions) can be set");
             }
         }else {
             throw new IllegalArgumentException("one of sourcePath OR database must be set");
@@ -192,7 +195,7 @@ public class Publisher extends DefaultTask {
                 pubRegions=new ArrayList<String>();
             }
             if(database!=null) {
-                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,exportModels,userFormats,targetFile, region,regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,modelsToPublish,exportModels,userFormats,targetFile, region,regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }else {
                 step.publishDatasetFromFile(version, dataIdent, sourceFile, targetFile, region, regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }

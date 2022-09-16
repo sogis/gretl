@@ -165,7 +165,8 @@ Die Daten können alternativ zu SFTP in ein lokales Verzeichnis publiziert werde
 
 ## DB -> XTF
 
-Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss die Datenbank angegeben werden und welche Daten (Parameter dataset, regions, region) 
+Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss die Datenbank angegeben werden und 
+welche Daten (Parameter dataset, modelsToPublish, regions, region) 
 aus der Datenbank exportiert werden sollen.
 
     task publishFromDb(type: Publisher){
@@ -174,6 +175,17 @@ aus der Datenbank exportiert werden sollen.
       database = ["uri","user","password"]
       dbSchema "av"
       dataset = "dataset"
+    }
+
+Nur bei einfachen Modellen (falls das DB Schema ohne createBasketCol erstellt werden kann) kann der Export alternativ via Angabe 
+des INTERLIS-Modellnames (Parameter modelsToPublish) erfolgen:
+
+    task publishFromDb(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung"
+      target = [ "sftp://ftp.server.ch/data", "user", "password" ]
+      database = ["uri","user","password"]
+      dbSchema "av"
+      modelsToPublish = "DM01AVCH24LV95D"
     }
 
 ## Regionen
@@ -321,6 +333,7 @@ sourcePath | Quelldatei z.B. file("/path/file.xtf")
 database  | Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
 dbSchema  | Schema in der Datenbank z.B. "av"
 dataset   | ili2db-Datasetname der Quelldaten "dataset" (Das ili2db-Schema muss also immer mit --createBasketCol erstellt werden)
+modelsToPublish   | Interlis-Modellnamen der Quelldaten in der DB (Das ili2db-Schema muss darf nicht mit --createBasketCol erstellt werden)
 region    | Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]". Alternative zum Parameter regions	  
 regions   | Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen), falls die Publikation Regionen-weise erfolgen soll. Alternative zum Parameter region	  
 publishedRegions | Liste der effektiv publizierten Regionen	  

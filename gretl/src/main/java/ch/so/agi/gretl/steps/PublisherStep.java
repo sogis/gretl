@@ -64,7 +64,7 @@ public class PublisherStep {
     public PublisherStep() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-    public void publishDatasetFromDb(Date date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String exportModels,boolean userFormats, Path target, String regionRegEx,List<String> regionsToPublish,List<String> publishedRegions, Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
+    public void publishDatasetFromDb(Date date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String modelsToPublish,String exportModels,boolean userFormats, Path target, String regionRegEx,List<String> regionsToPublish,List<String> publishedRegions, Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
             throws Exception 
     {
         ch.ehi.ili2db.gui.Config config=cloneSettings(new ch.ehi.ili2db.gui.Config(),settings);
@@ -78,7 +78,7 @@ public class PublisherStep {
         }
         Path targetTmpPath=target.resolve("."+dateTag);
         try {
-            if((regionRegEx!=null || regionsToPublish!=null) && datasetName==null){
+            if((regionRegEx!=null || regionsToPublish!=null) && (datasetName==null && modelsToPublish==null)){
                 if(regionRegEx!=null) {
                     log.info("regionRegEx <"+regionRegEx+">");
                 }else {
@@ -145,24 +145,44 @@ public class PublisherStep {
                     }
                 }
                 publishFilePost(date,targetTmpPath,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc,grooming);
-            }else if(datasetName!=null && regionRegEx==null && regionsToPublish==null){
+            }else if((datasetName!=null || modelsToPublish!=null) && regionRegEx==null && regionsToPublish==null){
                 boolean isDM01=false;
-                {
-                    ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
-                    String datasetNames[] = datasetName.split(ch.interlis.ili2c.Main.MODELS_SEPARATOR);
-                    for (String dtName : datasetNames) {
-                        Long datasetId=Ili2db.getDatasetId(dtName, conn, config);
-                        if(datasetId==null){
-                            throw new Ili2dbException("dataset <"+dtName+"> doesn't exist");
+                String filename=null;
+                if(datasetName!=null) {
+                    log.info("datasetName <"+datasetName+">");
+                    {
+                        ch.interlis.ili2c.config.Configuration modelv=new ch.interlis.ili2c.config.Configuration();
+                        String datasetNames[] = datasetName.split(ch.interlis.ili2c.Main.MODELS_SEPARATOR);
+                        for (String dtName : datasetNames) {
+                            Long datasetId=Ili2db.getDatasetId(dtName, conn, config);
+                            if(datasetId==null){
+                                throw new Ili2dbException("dataset <"+dtName+"> doesn't exist");
+                            }
+                            Ili2db.getBasketSqlIdsFromDatasetId(datasetId,modelv,conn,config);
                         }
-                        Ili2db.getBasketSqlIdsFromDatasetId(datasetId,modelv,conn,config);
+                        ch.interlis.ilirepository.IliFiles iliFiles=TransferFromIli.readIliFiles(conn,config.getDbschema(),new PgCustomStrategy(),config.isVer3_export());
+                        ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
+                        config.setItfTransferfile(iliFile.getIliVersion()<2.0);
+                        isDM01=((ch.interlis.ili2c.modelscan.IliModel)(iliFile.iteratorModel().next())).getName().equals(MODEL_DM01);
                     }
+                    filename=datasetName;
+                }else {
+                    log.info("modelsToPublish "+modelsToPublish);
+                    String modelNames[] = modelsToPublish.split(ch.interlis.ili2c.Main.MODELS_SEPARATOR);
                     ch.interlis.ilirepository.IliFiles iliFiles=TransferFromIli.readIliFiles(conn,config.getDbschema(),new PgCustomStrategy(),config.isVer3_export());
-                    ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
-                    config.setItfTransferfile(iliFile.getIliVersion()<2.0);
-                    isDM01=((ch.interlis.ili2c.modelscan.IliModel)(iliFile.iteratorModel().next())).getName().equals(MODEL_DM01);
+                    {
+                        ch.interlis.ili2c.modelscan.IliFile iliFile=iliFiles.iteratorFile().next();
+                        config.setItfTransferfile(iliFile.getIliVersion()<2.0);
+                        isDM01=((ch.interlis.ili2c.modelscan.IliModel)(iliFile.iteratorModel().next())).getName().equals(MODEL_DM01);
+                    }
+                    // verify requested models exist in DB
+                    for(String modelName:modelNames) {
+                        if(!modelExists(modelName,iliFiles)) {
+                            throw new Ili2dbException("model <"+modelName+"> doesn't exist in DB");
+                        }
+                    }
+                    filename=modelNames[0];
                 }
-                String filename=datasetName;
                 Path xtfFile=tempFolder.resolve(filename+(config.isItfTransferfile()?".itf":".xtf"));
                 Path validationLog=tempFolder.resolve(filename+".log");
                 Path gpkgFile=tempFolder.resolve(filename+".gpkg");
@@ -172,10 +192,17 @@ public class PublisherStep {
                     config.setXtffile(xtfFile.toString());
                     config.setModeldir(Ili2db.ILI_FROM_DB);
                     config.setFunction(Config.FC_EXPORT);
-                    config.setDatasetName(datasetName);
+                    if(datasetName!=null) {
+                        config.setDatasetName(datasetName);
+                    }else {
+                        config.setModels(modelsToPublish);
+                    }
                     config.setValidation(false);
                     config.setJdbcConnection(conn);
                     Ili2db.readSettingsFromDb(config);
+                    if(Config.BASKET_HANDLING_READWRITE.equals(config.getBasketHandling()) && modelsToPublish!=null) {
+                        throw new IllegalArgumentException("modelsToPublish <"+modelsToPublish+"> can only be used with simple models");
+                    }
                     settings.setValue(Config.PREFIX+".defaultSrsAuthority",config.getDefaultSrsAuthority());
                     settings.setValue(Config.PREFIX+".defaultSrsCode",config.getDefaultSrsCode());
                     Ili2db.run(config, null);
@@ -204,11 +231,23 @@ public class PublisherStep {
                     deleteFileTree(dxfFolder);
                 }
             }else{
-                throw new IllegalArgumentException("regionRegEx==null && regionsToPublish==null && datasetName==null ");
+                throw new IllegalArgumentException("regionRegEx==null && regionsToPublish==null && datasetName==null && modelsToPublish==null");
             }
         }finally{
             deleteFileTree(targetTmpPath);
         }
+    }
+    private boolean modelExists(String modelName, ch.interlis.ilirepository.IliFiles iliFiles) {
+        for(Iterator<ch.interlis.ili2c.modelscan.IliFile> fileIt=iliFiles.iteratorFile();fileIt.hasNext();) {
+            ch.interlis.ili2c.modelscan.IliFile iliFile=fileIt.next();
+            for(Iterator<ch.interlis.ili2c.modelscan.IliModel> modelIt=iliFile.iteratorModel();modelIt.hasNext();) {
+                ch.interlis.ili2c.modelscan.IliModel model=modelIt.next();
+                if(model.getName().equals(modelName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     private static void filterRegions(List<String> regions, List<String> regionsToPublish) {
         if(regionsToPublish!=null) {
