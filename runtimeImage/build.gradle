@@ -14,9 +14,9 @@ configurations {
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.2.8' // AbstractEnumerationType wird benötigt. Mir nicht ganz klar wer das verlangt (ili2db)
+        force 'ch.interlis:ili2c-tool:5.2.8' 
         force 'ch.interlis:ili2c-core:5.2.8'
-        force 'ch.interlis:ili2gpkg:4.8.1-SNAPSHOT'
+        force 'ch.interlis:ili2gpkg:4.9.0'
     }
 }
 
