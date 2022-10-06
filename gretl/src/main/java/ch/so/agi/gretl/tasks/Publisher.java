@@ -10,6 +10,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.interlis2.validator.Validator;
 
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
+import com.github.robtimus.filesystems.sftp.SFTPFileSystemProvider;
 
 import ch.ehi.basics.settings.Settings;
 import ch.so.agi.gretl.api.Connector;
@@ -150,7 +152,7 @@ public class Publisher extends DefaultTask {
                             .withKnownHosts(new File(System.getProperty("user.home"),".ssh/known_hosts"));
                     FileSystem fileSystem=null;
                     try {
-                        fileSystem = FileSystems.newFileSystem( host, environment );
+                        fileSystem = FileSystems.newFileSystem( host, environment, SFTPFileSystemProvider.class.getClassLoader() );
                     } catch (IOException e) {
                         throw new IllegalArgumentException(e);
                     }
