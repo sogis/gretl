@@ -1,8 +1,13 @@
 package ch.so.agi.gretl.util;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+
+import ch.so.agi.gretl.steps.PublisherStep;
+import ch.so.agi.gretl.util.publisher.PublicationLog;
+import ch.so.agi.gretl.util.publisher.PublishedRegion;
 
 public class SimiSvcClientMock implements SimiSvcApi {
 
@@ -34,12 +39,19 @@ public class SimiSvcClientMock implements SimiSvcApi {
     }
 
     @Override
-    public void notifyPublication(String dataIdent, Date publishDate, List<String> publishedRegions)
+    public void notifyPublication(PublicationLog pub)
             throws IOException {
-        notifiedDataIdent=dataIdent;
-        notifiedPublishDate=new Date(publishDate.getTime());
-        if(publishedRegions!=null) {
-            notifiedRegions=new java.util.ArrayList<String>(publishedRegions);
+        notifiedDataIdent=pub.getDataIdent();
+        try {
+            notifiedPublishDate=PublisherStep.parsePublicationTimestamp(pub.getPublished());
+        } catch (ParseException e) {
+            throw new IOException(e);
+        }
+        if(pub.getPublishedRegions()!=null) {
+            notifiedRegions=new java.util.ArrayList<String>();
+            for(PublishedRegion pubRegion:pub.getPublishedRegions()) {
+                notifiedRegions.add(pubRegion.getRegion());
+            }
         }
     }
 

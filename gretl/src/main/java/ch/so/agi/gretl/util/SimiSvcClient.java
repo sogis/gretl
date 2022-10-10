@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.steps.PublisherStep;
+import ch.so.agi.gretl.util.publisher.PublicationLog;
 
 public class SimiSvcClient implements SimiSvcApi {
     private String endpoint=null;
@@ -80,25 +82,14 @@ public class SimiSvcClient implements SimiSvcApi {
     }
     // curl -X PUT -H "Content-Type: application/json" --data "{\"dataIdent\":\"ch.so.afu.gewaesserschutz\",\"published\":\"2021-12-23T14:54:49.050062\", \"partIdentifiers\":[\"224\",\"225\"]}" "http://localhost:8080/simi-svc/rest/pubsignal"
     @Override
-    public void notifyPublication(String dataIdent,java.util.Date publishDate,List<String> publishedRegions) throws IOException
+    public void notifyPublication(PublicationLog pub) throws IOException
     {
         if(usr!=null && token==null) {
             token=getAccessToken();
         }
-        java.util.Map<String, Object> map = new java.util.HashMap<>();
-        map.put("dataIdent", dataIdent);
-        String versionTag=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(publishDate);
-        map.put("published", versionTag);
-        if(publishedRegions!=null) {
-            map.put("partIdentifiers", publishedRegions);
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        java.io.StringWriter request=new java.io.StringWriter();
-        mapper.writeValue(request, map);
-        request.flush();
-        request.close();
+        String request=PublisherStep.publicationToString(pub);
         StringBuilder response=new StringBuilder();
-        int status=doHttpRequest(response,"PUT",endpoint+"/pubsignal",request.toString(),"application/json",null,null);
+        int status=doHttpRequest(response,"PUT",endpoint+"/pubsignal",request,"application/json",null,null);
         if(status!=HttpURLConnection.HTTP_OK) {
             if(response.length()>0) {
                 log.info(response.toString());

@@ -1,7 +1,7 @@
 ext {
     // dependencies version
-    ioxIliVersion = '1.21.11+'
-    ilivalidatorVersion = '1.11.15-SNAPSHOT'
+    ioxIliVersion = '1.21.13+'
+    ilivalidatorVersion = '1.12.1-SNAPSHOT'
     ilivalidatorCustomFunctions = '1.1.50'
     ili2pgVersion = '4.8.1-SNAPSHOT'
     ili2gpkgVersion = '4.8.1-SNAPSHOT'
