@@ -385,7 +385,6 @@ Beispiel, Umwandlung Rechtswert/Hochwertspalten in eine PostGIS-Geometrie
 
 ```
 new TransferSet('untersuchungseinheit.sql', 'afu_qrcat_v1.onlinerisk_untersuchungseinheit', true, (String[])["geom:wkt:2056"])
-
 ```
 
 "geom" ist der Geometrie-Spalten-Name der verwendet wird.
