@@ -377,6 +377,23 @@ Eine ``TransferSet`` ist
 - eine SQL-Datei (mit SQL-Anweisungen zum Lesen der Daten aus der sourceDb), 
 - dem Namen der Ziel-Tabelle in der targetDb, und 
 - der Angabe ob in der Ziel-Tabelle vor dem INSERT zuerst alle Records gelöscht werden sollen.
+- einem optionalen vierten Parameter, der verwendet werden kann um den zu erzeugenden SQL-Insert-String
+  zu beeinflussen, u.a. um einen WKT-Geometrie-String in eine PostGIS-Geometrie umzuwandeln
+
+Beispiel, Umwandlung Rechtswert/Hochwertspalten in eine PostGIS-Geometrie
+(siehe auch Gretl-Job [afu_onlinerisk_transfer](https://github.com/sogis/gretljobs/tree/main/afu_onlinerisk_transfer) der eine Punktgeometriespalten aus einer Nicht-Postgis-DB übernimmt):
+
+```
+new TransferSet('untersuchungseinheit.sql', 'afu_qrcat_v1.onlinerisk_untersuchungseinheit', true, (String[])["geom:wkt:2056"])
+```
+
+"geom" ist der Geometrie-Spalten-Name der verwendet wird.
+
+Dazugehöriger Auszug aus SQL-Datei zur Erzeugung des WKT-Strings mit Hilfe von concatenation:
+
+```
+'Point(' || ue.koordinate_x::text || ' ' || ue.koordinate_y::text || ')' AS geom
+```
 
 Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
 

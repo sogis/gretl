@@ -33,12 +33,9 @@ def ftppwd = System.getProperty('ftppwd',properties.get('ftppwd'))
 
 configurations.all {
     resolutionStrategy { 
-        //force 'ch.interlis:iox-ili:1.20.15'
-        //force 'ch.interlis:iox-wkf:1.0.2'
-        force 'ch.interlis:ili2c-tool:5.2.8' // AbstractEnumerationType wird benötigt. Mir nicht ganz klar wer das verlangt (ili2db)
+        force 'ch.interlis:ili2c-tool:5.2.8' 
         force 'ch.interlis:ili2c-core:5.2.8'
-        //force 'ch.interlis:ili2pg:4.3.2'
-        force 'ch.interlis:ili2gpkg:4.8.1-SNAPSHOT'
+        force 'ch.interlis:ili2gpkg:4.9.0'
     }
 }
 
