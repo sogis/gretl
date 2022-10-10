@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.util.publisher;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -19,6 +21,11 @@ public class PublicationLogTest {
     public PublicationLogTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
+        try {
+            Files.createDirectories(localTestOut);
+        } catch (IOException e) {
+            log.error("failed to creat test output directory", e);
+        }
     }
     @Test
     public void readMinimalFile() throws Exception {
