@@ -36,6 +36,7 @@ RUN set -o errexit -o nounset \
 COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
 COPY init.gradle /home/gradle/
+COPY known_hosts ${HOME}/.ssh/
 
 RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
