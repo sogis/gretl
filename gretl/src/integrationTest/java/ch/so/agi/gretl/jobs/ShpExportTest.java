@@ -49,8 +49,8 @@ public class ShpExportTest {
             con = IntegrationTestUtilSql.connectPG(postgres);
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
-            s1.execute("CREATE TABLE "+schemaName+".exportdata(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, atimestamp timestamp, aboolean boolean,geom_so geometry(POINT,2056))");
-            s1.execute("INSERT INTO "+schemaName+".exportdata(t_id, \"Aint\", adec, atext, adate, atimestamp, aboolean,geom_so) VALUES (1,2,3.4,'abc','2013-10-21','2015-02-16T08:35:45.000','true',ST_GeomFromText('POINT(2638000.0 1175250.0)',2056))");
+            s1.execute("CREATE TABLE "+schemaName+".exportdata(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, atimstamp timestamp, aboolean boolean,geom_so geometry(POINT,2056))");
+            s1.execute("INSERT INTO "+schemaName+".exportdata(t_id, \"Aint\", adec, atext, adate, atimstamp, aboolean,geom_so) VALUES (1,2,3.4,'abc','2013-10-21','2015-02-16T08:35:45.000','true',ST_GeomFromText('POINT(2638000.0 1175250.0)',2056))");
             s1.execute("INSERT INTO "+schemaName+".exportdata(t_id) VALUES (2)");
             s1.close();
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
@@ -84,7 +84,7 @@ public class ShpExportTest {
                     Object attr6=shapeObj.getAttribute("aboolean");
                     assertEquals(String.class.getName(),attr6.getClass().getName());
                     assertEquals("true",attr6);
-                    Object attr7=shapeObj.getAttribute("atimestamp");
+                    Object attr7=shapeObj.getAttribute("atimstamp");
                     assertEquals(String.class.getName(),attr7.getClass().getName());
                     assertEquals("2015-02-16T08:35:45.000",attr7);
                 }
