@@ -1,10 +1,6 @@
 # GRETL runtime
-Docker image based on [Jenkins maven slave](https://hub.docker.com/r/openshift/jenkins-slave-maven-centos7/)
-This base image contains Java and Gradle.
-
-The GRETL plugin with all dependencies is also packed into the image.
-
-The image was chosen because the GRETL runtime will be run as a Jenkins slave.
+Docker image based on bellsoft/liberica-openjdk-alpine.
+The GRETL plugin with all dependencies is packed into the image.
 
 ## Local build and execution
 
