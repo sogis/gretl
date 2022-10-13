@@ -376,7 +376,11 @@ public class PublisherStep {
         config.setDbfile(gpkgFile.toString());
         //config.setDburl(gpkgMain.getDbUrlConverter().makeUrl(config));
         config.setDburl("jdbc:sqlite:"+config.getDbfile());
-        config.setModeldir(settings.getValue(Validator.SETTING_ILIDIRS));
+        String modeldir=settings.getValue(Validator.SETTING_ILIDIRS);
+        if(modeldir==null) {
+            modeldir=ch.interlis.ili2c.gui.UserSettings.DEFAULT_ILIDIRS;
+        }
+        config.setModeldir(modeldir);
         config.setFunction(Config.FC_IMPORT);
         config.setDoImplicitSchemaImport(true);
         config.setValidation(false);
