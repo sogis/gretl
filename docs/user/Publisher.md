@@ -287,6 +287,53 @@ Der Service wird benutzt, um:
       kgdiService = ["http://api.kgdi.ch/metadata","user","pwd"]
     }
     
+### Beipackzettel beziehen
+
+    HTTP GET: endpoint+"/doc?dataident="+dataIdent+"&published="+versionTag
+### Publikationsdatum nachführen
+
+    HTTP PUT: endpoint+"/pubsignal",request
+
+Der Request-Body "Ohne Regionen":
+```
+{
+	"dataIdent": "ch.so.afu.gewaesserschutz",
+	"published": "2021-12-23T14:54:49.050062",
+	"publishedBaskets": [{
+		"model": "SO_AGI_MOpublic_20201009",
+		"topic": "Bodenbedeckung",
+		"basket": "oltenBID"
+	}, {
+		"model": "DM01",
+		"topic": "Liegenschaften",
+		"basket": "wangenBID"
+	}]
+}
+```
+
+Der Request-Body "Mit Regionen":
+```
+{
+	"dataIdent": "ch.so.afu.gewaesserschutz",
+	"published": "2021-12-23T14:54:49.050062",
+	"publishedRegions": [{
+		"region": "olten",
+		"publishedBaskets": [{
+			"model": "SO_AGI_MOpublic_20201009",
+			"topic": "Bodenbedeckung",
+			"basket": "oltenBID"
+		}]
+	}, {
+		"region": "wangen",
+		"publishedBaskets": [{
+			"model": "SO_AGI_MOpublic_20201009",
+			"topic": "Bodenbedeckung",
+			"basket": "wangenBID"
+		}]
+	}]
+}
+```    
+    
 ## Archiv aufräumen
 
     task publishFile(type: Publisher){
