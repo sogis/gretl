@@ -71,7 +71,7 @@ public class SimiSvcClient implements SimiSvcApi {
         if(usr!=null && token==null) {
             token=getAccessToken();
         }
-        int status=doHttpRequest(response,"GET",endpoint+"/doc?dataident="+dataIdent+"&published="+versionTag,null,null,null,null);
+        int status=doHttpRequest(response,"GET",endpoint+"/doc?dataident="+dataIdent+"&published="+versionTag,null,"text/html",null,null);
         if(status!=HttpURLConnection.HTTP_OK) {
             if(response.length()>0) {
                 log.info(response.toString());
