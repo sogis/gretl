@@ -266,8 +266,8 @@ Export mit region aus lokaler DB (Nutzungsplanung mit 3 Datasets: 2580, 2581, 25
       region = 2580                                                         exportiert Dataset 2580
       region = "[0-9][0-9][0-9][0-9]"                                       exportiert alle 3 Datasets
       region = ".*"                                                         exportiert alle 3 Datasets
-    userFormats = true
-    kgdiService = ["http://localhost:8080/app/rest","admin","admin"]
+      userFormats = true
+      kgdiService = ["http://localhost:8080/app/rest","admin","admin"]
 }
 
 
