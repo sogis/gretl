@@ -1,6 +1,6 @@
 # Publisher-Task
 
-GRETL-Task, welcher für Vektordaten die aktuellsten Geodaten-Dateien 
+GRETL-Task, welcher für Vektordaten die aktuellen Geodaten-Dateien 
 bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
 ## Einbindung in einen typischen GRETL-Publikationsjob
@@ -60,7 +60,7 @@ Der Publisher arbeitet die folgenden Hauptschritte ab:
 
 ### Gängiger Fall: Zwei Modelle, keine Regionen
 
-Publikation in den beiden Datenbereitstelungen ch.so.avt.verkehrszaehlstellen und ch.so.avt.verkehrszaehlstellen.edit
+Publikation in den beiden Datenbereitstellungen ch.so.avt.verkehrszaehlstellen und ch.so.avt.verkehrszaehlstellen.edit
 
 Namenskonvention für die Dateien: \[Datenbereitstellungs-Identifier\].\[Format-Identifier\].zip
 
@@ -177,8 +177,8 @@ aus der Datenbank exportiert werden sollen.
       dataset = "dataset"
     }
 
-Nur bei einfachen Modellen (falls das DB Schema ohne createBasketCol erstellt werden kann) kann der Export alternativ via Angabe 
-des INTERLIS-Modellnames (Parameter modelsToPublish) erfolgen:
+Nur bei einfachen Modellen (falls das DB Schema ohne createBasketCol erstellt worden ist), kann der Export alternativ 
+mit dem Parameter modelsToPublish mit Angabe des INTERLIS-Modellnamens erfolgen:
 
     task publishFromDb(type: Publisher){
       dataIdent = "ch.so.agi.vermessung"
@@ -248,7 +248,41 @@ und danach mit den neuen Regionen ergänzt. Der Parameter publishedRegions enth�
 publizierten Regionen (und nicht alle publizierten Regionen). Auch an den KGDI-Service werden nur die neu 
 publizierten Regionen notifiziert (und nicht alle publizierten Regionen).
 Die Dateien im meta Unterverzeichnis werden neu erstellt.
+
+### Beispiele für die Verwendung von Regionen
+
+Es können eindeutige Namen oder auch regular expressions verwendet werden.
+
+Export mit region aus lokaler DB (Nutzungsplanung mit 3 Datasets: 2580, 2581, 2582)
+
+    task publishFromDb2(type: Publisher){
+      dataIdent = "ch.so.arp.nutzungsplanung.publishFromDb2"
+      database = [dbUriPub, dbUserPub, dbPwdPub]
+      dbSchema = "arp_nutzungsplanung_pub_v1"
+      target = [project.buildDir]
     
+      region = "[2][5][8][0]"                                               exportiert Dataset 2580
+      region = "2580"                                                       exportiert Dataset 2580
+      region = 2580                                                         exportiert Dataset 2580
+      region = "[0-9][0-9][0-9][0-9]"                                       exportiert alle 3 Datasets
+      region = ".*"                                                         exportiert alle 3 Datasets
+      userFormats = true
+      kgdiService = ["http://localhost:8080/app/rest","admin","admin"]
+}
+
+
+4 xtf-Files: a2581.xtf, c2582.xtf, b2583.xtf, d2584.xtf, lokal im Job-Verzeichnis
+
+    task publishFile2(type: Publisher){
+      dataIdent = "publishFile2"
+      sourcePath = file("a2581.xtf")                                        Angabe zum Ablageort eines der zu publizierenden Files
+      target = [project.buildDir]
+      
+      region = "[a-d][0-9][0-9][0-9][0-9]"                                  alle 4 Files werden publiziert
+      region = "[2][5][8][4]"                                               d2584.xtf wird publiziert
+      kgdiService = ["http://localhost:8080/app/rest","admin","admin"]
+    }
+
 ## Validierung
 
 Die Validierung kann mit einer ilivalidator Konfigurationsdatei konfiguriert werden.
@@ -262,7 +296,7 @@ Die Validierung kann mit einer ilivalidator Konfigurationsdatei konfiguriert wer
 
 Optional können Benutzerformate (Geopackage, Shapefile, Dxf) erstellt werden. Die Daten müssen in einer
 entsprechend flachen Struktur vorliegen.
-Kann nur ab DB erstellt werden.
+Kann nur aus der DB erstellt werden.
 
     task publishDb(type: Publisher){
       dataIdent = "ch.so.agi.vermessung"
