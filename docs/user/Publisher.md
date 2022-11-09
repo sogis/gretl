@@ -249,7 +249,7 @@ publizierten Regionen (und nicht alle publizierten Regionen). Auch an den KGDI-S
 publizierten Regionen notifiziert (und nicht alle publizierten Regionen).
 Die Dateien im meta Unterverzeichnis werden neu erstellt.
 
-### Beispiele für region
+### Beispiele für die Verwendung von Regionen
 
 Es können eindeutige Namen oder auch regular expressions verwendet werden.
 
