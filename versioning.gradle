@@ -9,7 +9,15 @@ if (System.env.BUILD_NUMBER) {
     buildNumber = System.env.GITHUB_RUN_NUMBER
 }
 
-version = new ProjectVersion(2, 2, buildNumber)
+// Weil auf plugins.gradle.org eine 2.9999.x Version vorliegt,
+// müssen wir hier irgendwie hinkriegen, dass lokal eine
+// aktueller Version liegt.
+if (buildNumber.equalsIgnoreCase('LOCALBUILD')) {
+    version = new ProjectVersion(2, 999999, buildNumber)
+} else {
+    version = new ProjectVersion(2, 2, buildNumber)
+}
+
 
 class ProjectVersion {
     Integer major
