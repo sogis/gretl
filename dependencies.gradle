@@ -19,6 +19,8 @@ ext {
     apacheCommonsCodeVersion = '1.11'
     
     jacksonVersion = '2.10.0'
+    
+    saxonVersion = '11.4'
 
     postgresqlVersion = '42.2.5'
     sqliteJdbcVersion = '3.8.11.2'
@@ -51,6 +53,8 @@ ext {
     jacksonCoreDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion ]
     jacksonDatabindDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion ]
     
+    saxonDependency = [ group: 'net.sf.saxon', name: 'Saxon-HE', version: saxonVersion]
+    
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
     derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
@@ -62,4 +66,3 @@ ext {
     testContainersPostgresDependency = [ group: 'org.testcontainers', name: 'postgresql', version: testContainersVersion]
     testContainersOracleDependency = [ group: 'org.testcontainers', name: 'oracle-xe', version: testContainersVersion]
 }
-
