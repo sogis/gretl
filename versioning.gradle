@@ -12,6 +12,10 @@ if (System.env.BUILD_NUMBER) {
 // Weil auf plugins.gradle.org eine 2.9999.x Version vorliegt,
 // müssen wir hier irgendwie hinkriegen, dass lokal eine
 // aktueller Version liegt.
+// Beim lokalen Testen (und v.a. Builden) des Docker Images
+// muss man im build.gradle von 2.2.+ auf 2.+ umstellen.
+// Unbedingt vor dem Pushen zurückstellen, da sonst auf
+// GH Action der alte 2.9999-Relase verwendet wird.
 if (buildNumber.equalsIgnoreCase('LOCALBUILD')) {
     version = new ProjectVersion(2, 999999, buildNumber)
 } else {

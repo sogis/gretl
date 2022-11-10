@@ -28,7 +28,7 @@ dependencies {
     // Warum weiss ich nicht wirklich. Weil es trotzdem wie ein 
     // Maven-Repo ist? Aus diesem Grund verwende ich nun nicht
     // mehr latest integration, sondern eine dynamische Version.
-    api 'ch.so.agi:gretl:2.+'
+    api 'ch.so.agi:gretl:2.2.+'
 
     // Add 3rd party libs which we want in the docker image.
     api 'de.undercouch:gradle-download-task:3.4.1'
