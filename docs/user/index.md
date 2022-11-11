@@ -109,13 +109,13 @@ dem Job mitgegeben werden, also z.B.
     cd gretldemo
     gradle -Pdataset=Olten
 
-## System Anforderungen
+## Systemanforderungen
 Um die aktuelle Version von gretl auszuführen, muss 
 
- - die JAVA-Laufzeitumgebung (JRE), Version 1.8 oder neuer, und 
- - gradle, Version 3.4 oder neuer, auf Ihrem System installiert sein.
+ - die Java-Laufzeitumgebung (JRE), Version 1.8 oder neuer, und 
+ - gradle, Version 5.1 oder neuer, auf Ihrem System installiert sein.
  
-Die JAVA-Laufzeitumgebung (JRE) kann auf der Website http://www.java.com/ gratis bezogen werden.
+Die Java-Laufzeitumgebung (JRE) kann auf der Website http://www.java.com/ gratis bezogen werden.
 
 Die gradle-Software kann auf der Website http://www.gradle.org/ gratis bezogen werden.
 
