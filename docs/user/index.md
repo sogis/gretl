@@ -1502,8 +1502,18 @@ task transform(type: XslTransformer) {
 }
 ```
 
+```
+task transform(type: XslTransformer) {
+    xslFileName = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
+    xmlFile = fileTree(".").matching {
+        include "*.xml"
+    }
+    outDirectory = file(".")
+}
+```
+
 Parameter | Beschreibung
 ----------|-------------------
 xslFileName | Name der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss.
-xmlFile | Datei, die transformiert werden soll.
+xmlFile | Datei oder FileTree., die transformiert werden soll(en).
 outDirectory | Verzeichnis, in das die transformierte Datei gespeichert wird. Der Name der transformierten Datei entspricht dem Namen der Inpuzt-Datei mit Endung `.xtf`.
