@@ -1487,3 +1487,26 @@ Parameter | Beschreibung
 ----------|-------------------
 dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
 outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
+
+### XslTransformer
+
+**TODO:** Signatur des Tasks. Muss wohl noch andere Möglichkeiten unterstützen: z.B. ganzes Verzeichnis. Wie sieht es mit der Endung aus? Immer XTF (wohl auch nicht)
+
+Transformiert eine Datei mittels einer XSL-Transformation ein eine andere Datei. Die XSL-Transformation muss im `src/main/resources/xslt`-Verzeichnis vorliegen.
+
+```
+task transform(type: XslTransformer) {
+    xslFileName = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
+    xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
+    outDirectory = file(".")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+xslFileName | Name der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss.
+xmlFile | Datei, die transformiert werden soll.
+outDirectory | Verzeichnis, in das die transformierte Datei gespeichert wird. Der Name der transformierten Datei entspricht dem Namen der Inpuzt-Datei mit Endung `.xtf`.
+
+
+
