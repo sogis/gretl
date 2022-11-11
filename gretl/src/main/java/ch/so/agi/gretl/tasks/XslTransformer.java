@@ -1,9 +1,12 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
@@ -19,7 +22,7 @@ public class XslTransformer extends DefaultTask {
     public String xslFileName;
     
     @Input
-    public File xmlFile;
+    public Object xmlFile;
             
     @Input
     public File outDirectory;
@@ -38,9 +41,27 @@ public class XslTransformer extends DefaultTask {
             throw new IllegalArgumentException("outDirectory must not be null");
         }
 
+        FileCollection xmlFilesCollection = null;
+        if(xmlFile instanceof FileCollection) {
+            xmlFilesCollection = (FileCollection)xmlFile;
+        } else {
+            xmlFilesCollection = getProject().files(xmlFile);
+        }
+        if (xmlFilesCollection == null || xmlFilesCollection.isEmpty()) {
+            // TODO: passt das? Job geht weiter.
+            return;
+        }
+        List<String> files = new ArrayList<String>();
+        for (File fileObj : xmlFilesCollection) {
+            String fileName = fileObj.getAbsolutePath();
+            files.add(fileName);
+        }
+        
         try {
-            XslTransformerStep xslTransformerStep = new XslTransformerStep();
-            xslTransformerStep.execute(xslFileName, xmlFile, outDirectory);
+            for(String dataFile : files) {
+                XslTransformerStep xslTransformerStep = new XslTransformerStep();
+                xslTransformerStep.execute(xslFileName, new File(dataFile), outDirectory);
+            }
         } catch (Exception e) {
             log.error("Exception in XslTransformer task.", e);
             GradleException ge = TaskUtil.toGradleException(e);

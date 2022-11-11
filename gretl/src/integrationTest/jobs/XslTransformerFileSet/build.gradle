@@ -1,0 +1,13 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+defaultTasks 'transform'
+
+task transform(type: XslTransformer) {
+    xslFileName = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
+    xmlFile = fileTree(".").matching {
+        include "*.xml"
+    }
+    outDirectory = file(".")
+}

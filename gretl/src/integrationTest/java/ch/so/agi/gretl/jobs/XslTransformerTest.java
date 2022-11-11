@@ -2,6 +2,7 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -24,5 +25,16 @@ public class XslTransformerTest {
 
         assertTrue(fileContent.contains("<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\"SO_AGI_SGV_Meldungen_20221109.Meldungen\">"));
         assertTrue(fileContent.contains("<Grundstuecksnummer>2979</Grundstuecksnummer>"));        
+    }
+    
+    @Test
+    public void transformFileSet_Ok() throws Exception {
+        // Transform xml file
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformerFileSet", gvs);
+
+        // Check result
+        assertTrue(new File("src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_G-0111102_20221103_145001.xtf").exists());
+        assertTrue(new File("src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_G-0111752_20221103_230002.xtf").exists());
     }
 }
