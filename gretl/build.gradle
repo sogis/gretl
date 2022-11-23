@@ -134,6 +134,9 @@ dependencies {
      */
     integrationTestImplementation configurations.runtime
     integrationTestImplementation configurations.testRuntime
+    
+    testImplementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.69'
+    
 }
 
 gradlePlugin {

@@ -56,11 +56,9 @@ public class SimiSvcClient implements SimiSvcApi {
             }
             throw new IOException("failed to get oauth token from service at "+endpoint);
         }
-        log.info(response.toString());
         ObjectMapper mapper = new ObjectMapper();
         java.util.Map map = mapper.readValue(new java.io.StringReader(response.toString()), java.util.Map.class);
         String accessToken=(String)map.get("access_token");
-        log.info("accessToken <"+accessToken+">");
         return accessToken;
     }
     // curl -X GET -H "Content-Type: text/html" "http://localhost:8080/simi-svc/rest/doc?dataident=ch.so.agi.mopublic&published=2021-12-23T14:50:59.825849"
@@ -138,13 +136,11 @@ public class SimiSvcClient implements SimiSvcApi {
         }else if(token!=null) {
             authHeaderValue = "Bearer " + token;
         }
+        conn.setRequestProperty("Content-Type",contentType);
+        if(authHeaderValue!=null) {
+            conn.setRequestProperty("Authorization", authHeaderValue);
+        }
         if(request!=null) {
-            conn.setRequestProperty("Content-Type",contentType);
-            // Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-            if(authHeaderValue!=null) {
-                log.info("authHeaderValue <"+authHeaderValue+">");
-                conn.setRequestProperty("Authorization", authHeaderValue);
-            }
             try {
                 conn.getOutputStream().write(request.getBytes("UTF-8"));
             } catch (UnsupportedEncodingException e) {
