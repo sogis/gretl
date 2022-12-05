@@ -58,6 +58,13 @@ import ch.so.agi.gretl.util.publisher.PublishedRegion;
 
 public class PublisherStep {
     public static final String FILE_EXT_ZIP = "zip";
+    public static final String FILE_EXT_LOG = "log";
+    public static final String FILE_EXT_INI = "ini";
+    public static final String FILE_EXT_ITF = "itf";
+    public static final String FILE_EXT_XTF = "xtf";
+    public static final String FILE_EXT_SHP = "shp";
+    public static final String FILE_EXT_GPKG = "gpkg";
+    public static final String FILE_EXT_DXF = "dxf";
     public static final String PATH_ELE_HISTORY = "hist";
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
@@ -111,11 +118,11 @@ public class PublisherStep {
                 PublicationLog publicationDetails=new PublicationLog(dataIdent,date);
                 for(String region:regions) {
                     String filename=region+"."+dataIdent;
-                    Path xtfFile=tempFolder.resolve(filename+(config.isItfTransferfile()?".itf":".xtf"));
-                    Path validationLog=tempFolder.resolve(filename+".log");
-                    Path gpkgFile=tempFolder.resolve(filename+".gpkg");
-                    Path shpFolder=tempFolder.resolve(filename+".shp");
-                    Path dxfFolder=tempFolder.resolve(filename+".dxf");
+                    Path xtfFile=tempFolder.resolve(filename+(config.isItfTransferfile()?"."+FILE_EXT_ITF:"."+FILE_EXT_XTF));
+                    Path validationLog=tempFolder.resolve(filename+"."+FILE_EXT_LOG);
+                    Path gpkgFile=tempFolder.resolve(filename+"."+FILE_EXT_GPKG);
+                    Path shpFolder=tempFolder.resolve(filename+"."+FILE_EXT_SHP);
+                    Path dxfFolder=tempFolder.resolve(filename+"."+FILE_EXT_DXF);
                     try {
                         config.setXtffile(xtfFile.toString());
                         config.setModeldir(Ili2db.ILI_FROM_DB);
@@ -191,11 +198,11 @@ public class PublisherStep {
                     filename=modelNames[0];
                 }
                 PublicationLog publicationDetails=new PublicationLog(dataIdent,date);
-                Path xtfFile=tempFolder.resolve(filename+(config.isItfTransferfile()?".itf":".xtf"));
-                Path validationLog=tempFolder.resolve(filename+".log");
-                Path gpkgFile=tempFolder.resolve(filename+".gpkg");
-                Path shpFolder=tempFolder.resolve(filename+".shp");
-                Path dxfFolder=tempFolder.resolve(filename+".dxf");
+                Path xtfFile=tempFolder.resolve(filename+(config.isItfTransferfile()?"."+FILE_EXT_ITF:"."+FILE_EXT_XTF));
+                Path validationLog=tempFolder.resolve(filename+"."+FILE_EXT_LOG);
+                Path gpkgFile=tempFolder.resolve(filename+"."+FILE_EXT_GPKG);
+                Path shpFolder=tempFolder.resolve(filename+"."+FILE_EXT_SHP);
+                Path dxfFolder=tempFolder.resolve(filename+"."+FILE_EXT_DXF);
                 try {
                     config.setXtffile(xtfFile.toString());
                     config.setModeldir(Ili2db.ILI_FROM_DB);
@@ -318,9 +325,9 @@ public class PublisherStep {
             Path targetFile = targetTmpPath.resolve(regionPrefix+dataIdent+sourceExt+"."+FILE_EXT_ZIP);
             out = new ZipOutputStream(Files.newOutputStream(targetFile));
             copyFileToZip(out,regionPrefix+dataIdent+sourceExt,sourcePath);
-            copyFileToZip(out,"validation.log",validationLog);
+            copyFileToZip(out,"validation."+FILE_EXT_LOG,validationLog);
             if(validationConfig!=null) {
-                copyFileToZip(out,"validation.ini",validationConfig);
+                copyFileToZip(out,"validation."+FILE_EXT_INI,validationConfig);
             }
         }finally {
             if(out!=null){
@@ -351,9 +358,9 @@ public class PublisherStep {
             out = new ZipOutputStream(Files.newOutputStream(targetFile));
             // copy all files from sourceFolder to zip
             copyFilesFromFolderToZip(out, sourceFolder);
-            copyFileToZip(out,"validation.log",validationLog);
+            copyFileToZip(out,"validation."+FILE_EXT_LOG,validationLog);
             if(validationConfig!=null) {
-                copyFileToZip(out,"validation.ini",validationConfig);
+                copyFileToZip(out,"validation."+FILE_EXT_INI,validationConfig);
             }
         }finally {
             if(out!=null){
@@ -423,7 +430,7 @@ public class PublisherStep {
                 PublicationLog publicationDetails=new PublicationLog(dataIdent,date);
                 for(String region:regions) {
                     Path xtfFile=sourceParent.resolve(region+"."+sourceExt);
-                    Path validationLog=tempFolder.resolve(region+"."+dataIdent+".log");
+                    Path validationLog=tempFolder.resolve(region+"."+dataIdent+"."+FILE_EXT_LOG);
                     modelFiles=new ArrayList<Path>();
                     publishFile(dateTag,targetTmpPath,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles,publicationDetails);
                     if(publishedRegions!=null) {
@@ -436,7 +443,7 @@ public class PublisherStep {
                 PublicationLog publicationDetails=new PublicationLog(dataIdent,date);
                 publishFilePre(dateTag,targetTmpPath,dataIdent,target,settings,tempFolder,null);
                 List<Path> modelFiles=new ArrayList<Path>();
-                Path validationLog=tempFolder.resolve(dataIdent+".log");
+                Path validationLog=tempFolder.resolve(dataIdent+"."+FILE_EXT_LOG);
                 publishFile(dateTag,targetTmpPath,dataIdent,sourcePath,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles,publicationDetails);
                 publishFilePost(date,targetTmpPath,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc,grooming,publicationDetails);
                 Files.delete(validationLog);
@@ -492,9 +499,9 @@ public class PublisherStep {
             Path targetFile = targetTmpPath.resolve(regionPrefix+dataIdent+sourceExt+"."+FILE_EXT_ZIP);
             out = new ZipOutputStream(Files.newOutputStream(targetFile));
             copyFileToZip(out,regionPrefix+dataIdent+sourceExt,sourcePath);
-            copyFileToZip(out,"validation.log",logFile);
+            copyFileToZip(out,"validation."+FILE_EXT_LOG,logFile);
             if(validationConfig!=null) {
-                copyFileToZip(out,"validation.ini",validationConfig);
+                copyFileToZip(out,"validation."+FILE_EXT_INI,validationConfig);
             }
             // ilis merken
             Iterator<Model> modeli=validator.getModel().iterator();
@@ -569,7 +576,7 @@ public class PublisherStep {
         Path targetRootPath=target;
         Path targetPath=targetRootPath.resolve(dataIdent);
         Path targetCurrentPath=targetPath.resolve(PATH_ELE_AKTUELL);
-        Path targetHistPath=targetPath.resolve(PATH_ELE_HISTORY);
+        Path targetHistPathRoot=targetPath.resolve(PATH_ELE_HISTORY);
         String currentPublishdate=null;
         if(Files.exists(targetCurrentPath)) {
             currentPublishdate=readPublishDate(targetCurrentPath);
@@ -596,8 +603,22 @@ public class PublisherStep {
                 if(currentPublishdate.equals(dateTag)) {
                     deleteFileTree(targetCurrentPath);
                 }else {
-                    Files.createDirectories(targetHistPath);
-                    Files.move(targetCurrentPath,targetHistPath.resolve(currentPublishdate));
+                    Files.createDirectories(targetHistPathRoot);
+                    final Path targetHistPathCurrent = targetHistPathRoot.resolve(currentPublishdate);
+                    Files.move(targetCurrentPath,targetHistPathCurrent);
+                    // remove user format files
+                    List<String> files=getUserFormatFiles(targetHistPathCurrent,FILE_EXT_SHP);
+                    for(String userFormatFile:files) {
+                        Files.deleteIfExists(targetHistPathCurrent.resolve(userFormatFile));
+                    }
+                    files=getUserFormatFiles(targetHistPathCurrent,FILE_EXT_GPKG);
+                    for(String userFormatFile:files) {
+                        Files.deleteIfExists(targetHistPathCurrent.resolve(userFormatFile));
+                    }
+                    files=getUserFormatFiles(targetHistPathCurrent,FILE_EXT_DXF);
+                    for(String userFormatFile:files) {
+                        Files.deleteIfExists(targetHistPathCurrent.resolve(userFormatFile));
+                    }
                 }
             }
         }
@@ -611,14 +632,14 @@ public class PublisherStep {
         // ausduennen
         if(grooming!=null) {
             // get list of folders from targetHistPath
-            List<Date> allHistory=listHistory(targetHistPath);
+            List<Date> allHistory=listHistory(targetHistPathRoot);
             // get list of folders to delete
             List<Date> deleteDates=new ArrayList<Date>();
             grooming.getFilesToDelete(date,allHistory,deleteDates);
             // delete folders
             for(Date deleteDate:deleteDates) {
                 String deleteName=getDateTag(deleteDate);
-                Path folderToDelete=targetHistPath.resolve(deleteName);
+                Path folderToDelete=targetHistPathRoot.resolve(deleteName);
                 try {
                     deleteFileTree(folderToDelete);
                 }catch(IOException ex) {
@@ -710,6 +731,24 @@ public class PublisherStep {
                         if(fileName.matches(pattern+"\\."+ext)) {
                             fileList.add(fileName.substring(0,fileName.length()-ext.length()-1));
                         }
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return fileList;
+    }    
+    public static List<String> getUserFormatFiles(Path dir,String ext1) throws IOException {
+        String ext=ext1+"."+FILE_EXT_ZIP;
+        List<String> fileList = new ArrayList<String>();
+        Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
+                if (!Files.isDirectory(file)) {
+                    String fileName=file.getFileName().toString();
+                    if(fileName.endsWith(ext)) {
+                        fileList.add(fileName);
                     }
                 }
                 return FileVisitResult.CONTINUE;
