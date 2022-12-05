@@ -309,6 +309,8 @@ Kann nur aus der DB erstellt werden.
     
 Falls das Datenmodell der Quelldaten ``DM01AVCH24LV95D`` ist, wird das DXF automatisch in der Geobau-Struktur erstellt. 
 
+Die Benutzerformate werden beim Verschieben in den Archiv-Ordner entfernt.
+
 ## KGDI-Service
 
 Der Service wird benutzt, um:
@@ -318,6 +320,7 @@ Der Service wird benutzt, um:
 
     task publishFile(type: Publisher){
       ...
+      kgdiTokenService = ["http://api.kgdi.ch/metadata","superuser","superpwd"]
       kgdiService = ["http://api.kgdi.ch/metadata","user","pwd"]
     }
     
@@ -420,6 +423,7 @@ regions   | Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen),
 publishedRegions | Liste der effektiv publizierten Regionen	  
 validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
 userFormats | Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default ist false
+kgdiTokenService | Endpunkt des Authentifizierung-Services, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]
 kgdiService | Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]
 grooming | Konfiguration für die Ausdünnung z.B. "grooming.json". Ohne Angabe wird nicht aufgeräumt.
 exportModels | Das Export-Modell, indem die Daten exportiert werden. Der Parameter wird nur bei der Ausdünnung benötigt. Als Export-Modelle sind Basis-Modelle zulässig. 

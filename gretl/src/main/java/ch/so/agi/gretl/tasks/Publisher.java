@@ -83,6 +83,9 @@ public class Publisher extends DefaultTask {
     @Input
     @Optional
     public Endpoint kgdiService=null; // Endpunkt des SIMI-Services
+    @Input
+    @Optional
+    public Endpoint kgdiTokenService=null; // Endpunkt des Authentifizierung-Services
     @InputFile
     @Optional
     public Object grooming=null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
@@ -186,6 +189,9 @@ public class Publisher extends DefaultTask {
         if(kgdiService!=null) {
             simiSvc=new SimiSvcClient();
             simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
+            if(kgdiTokenService!=null) {
+                simiSvc.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
+            }
         }
         if(version==null) {
             version=new Date();

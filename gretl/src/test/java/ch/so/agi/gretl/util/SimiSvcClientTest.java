@@ -26,8 +26,8 @@ import ch.so.agi.gretl.util.publisher.PublishedRegion;
 public class SimiSvcClientTest {
     public final static String OAUTH_TOKEN_GRANT_USR="admin";
     public final static String OAUTH_TOKEN_GRANT_PWD="admin";
-    public final static String OAUTH_TOKEN_USR="restid";
-    public final static String OAUTH_TOKEN_PWD="restpass";
+    public final static String OAUTH_TOKEN_USR="restid2";
+    public final static String OAUTH_TOKEN_PWD="restpass2";
     public final static String OAUTH_TOKEN="n0rri21Kxbuekf2wuSPj0NSuMQw";
     public final static String DOC_LEAFLET="<html/>";
     
@@ -108,6 +108,7 @@ public class SimiSvcClientTest {
         setupServer();
         SimiSvcApi svc=new SimiSvcClient();
         svc.setup("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_GRANT_USR,OAUTH_TOKEN_GRANT_PWD);
+        svc.setupTokenService("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_USR,OAUTH_TOKEN_PWD);
         final String expected_dataIdent = "ch.so.agi.mopublic";
         final String expected_published = "2022-03-08T00:00:00.000";
         String leaflet=svc.getLeaflet(expected_dataIdent, new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(expected_published));
@@ -122,6 +123,7 @@ public class SimiSvcClientTest {
         setupServer();
         SimiSvcApi svc=new SimiSvcClient();
         svc.setup("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_GRANT_USR,OAUTH_TOKEN_GRANT_PWD);
+        svc.setupTokenService("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_USR,OAUTH_TOKEN_PWD);
         String token=svc.getAccessToken();
         Assert.assertEquals(OAUTH_TOKEN,token);
         {
@@ -149,6 +151,7 @@ public class SimiSvcClientTest {
         setupServer();
         SimiSvcApi svc=new SimiSvcClient();
         svc.setup("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_GRANT_USR,OAUTH_TOKEN_GRANT_PWD);
+        svc.setupTokenService("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_USR,OAUTH_TOKEN_PWD);
         final PublicationLog data = new PublicationLog("ch.so.agi.mopublic", new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2022-03-08"));
         svc.notifyPublication(data);
         Assert.assertEquals("application/json", servlet.pubsignal_contentType);
@@ -163,6 +166,7 @@ public class SimiSvcClientTest {
         regions.add("22");
         regions.add("33");
         svc.setup("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_GRANT_USR,OAUTH_TOKEN_GRANT_PWD);
+        svc.setupTokenService("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_USR,OAUTH_TOKEN_PWD);
         PublicationLog pub=new PublicationLog("ch.so.agi.mopublic", new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2022-03-08"));
         pub.addPublishedRegion(new PublishedRegion("22"));
         pub.addPublishedRegion(new PublishedRegion("33"));

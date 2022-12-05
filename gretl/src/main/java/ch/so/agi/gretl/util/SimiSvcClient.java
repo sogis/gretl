@@ -21,6 +21,9 @@ public class SimiSvcClient implements SimiSvcApi {
     private String endpoint=null;
     private String usr=null;
     private String pwd=null;
+    private String tokenEndpoint=null;
+    private String tokenUsr="restid";
+    private String tokenPwd="restpass";
     private String token=null;
     private GretlLogger log;
     
@@ -28,8 +31,15 @@ public class SimiSvcClient implements SimiSvcApi {
     public void setup(String endpoint,String usr,String pwd) {
         this.log = LogEnvironment.getLogger(this.getClass());
         this.endpoint=endpoint;
+        this.tokenEndpoint=endpoint;
         this.usr=usr;
         this.pwd=pwd;
+    }
+    @Override
+    public void setupTokenService(String endpoint,String usr,String pwd) {
+        this.tokenEndpoint=endpoint;
+        this.tokenUsr=usr;
+        this.tokenPwd=pwd;
     }
     /*
     curl -X POST \
@@ -49,12 +59,12 @@ public class SimiSvcClient implements SimiSvcApi {
         }
         StringBuilder response=new StringBuilder();
 
-        int status=doHttpRequest(response,"POST",endpoint+"/v2/oauth/token","grant_type=password&username="+usr+"&password="+pwd,"application/x-www-form-urlencoded","restid","restpass");
+        int status=doHttpRequest(response,"POST",tokenEndpoint+"/v2/oauth/token","grant_type=password&username="+usr+"&password="+pwd,"application/x-www-form-urlencoded",tokenUsr,tokenPwd);
         if(status!=HttpURLConnection.HTTP_OK) {
             if(response.length()>0) {
                 log.info(response.toString());
             }
-            throw new IOException("failed to get oauth token from service at "+endpoint);
+            throw new IOException("failed to get oauth token from service at "+tokenEndpoint);
         }
         ObjectMapper mapper = new ObjectMapper();
         java.util.Map map = mapper.readValue(new java.io.StringReader(response.toString()), java.util.Map.class);

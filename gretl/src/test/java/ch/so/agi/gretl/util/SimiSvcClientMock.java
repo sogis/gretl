@@ -18,6 +18,9 @@ public class SimiSvcClientMock implements SimiSvcApi {
     @Override
     public void setup(String endpoint, String usr, String pwd) {
     }
+    @Override
+    public void setupTokenService(String endpoint, String usr, String pwd) {
+    }
 
     @Override
     public String getAccessToken() throws IOException {
