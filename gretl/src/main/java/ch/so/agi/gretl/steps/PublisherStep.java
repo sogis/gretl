@@ -780,7 +780,9 @@ public class PublisherStep {
         return fileList;
     }    
     public static Grooming readGrooming(Path groomingJson) throws IOException {
+        log.info("Reading grooming conf: " groomingJson);
         if(!Files.exists(groomingJson)) {
+            log.info("Configured grooming file is not readable: " groomingJson);
             return null;
         }
         ObjectMapper mapper = new ObjectMapper();
