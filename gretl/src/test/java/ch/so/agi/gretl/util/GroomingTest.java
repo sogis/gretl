@@ -37,6 +37,26 @@ public class GroomingTest {
         Assert.assertEquals(null, grooming.getYearly().getTo());
     }
     @Test
+    public void readMissingFile() throws Exception {
+        try {
+            Grooming grooming=PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("missingGrooming.json"));
+            Assert.fail("exception expected");
+        }catch(IOException ex) {
+            ; // ok
+            log.error("readMissingFile", ex);
+        }
+    }
+    @Test
+    public void readWrongFile() throws Exception {
+        try {
+            Grooming grooming=PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("wrongGrooming.json"));
+            Assert.fail("exception expected");
+        }catch(IOException ex) {
+            ; // ok
+            log.error("readWrongFile", ex);
+        }
+    }
+    @Test
     public void dailyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
         grooming.setDaily(new GroomingRange(0,null));

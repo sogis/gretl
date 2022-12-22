@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.steps;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -122,6 +123,33 @@ public abstract class AbstractPublisherStepTest {
             Assert.assertEquals(SRC_DATA_DATE, simiSvc.getNotifiedPublishDate());
             Assert.assertNull(simiSvc.getNotifiedRegions());
             Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+        }
+    }
+    @Test
+    public void file_allNew_noGroomFile_fail() throws Exception {
+        final Date SRC_DATA_DATE=SRC_DATA_DATE_0;
+        Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
+        // prepare
+        {
+            // delete output folder
+            if(Files.exists(targetFolder)) {
+                PublisherStep.deleteFileTree(targetFolder);
+            }
+        }
+        Path targetPath = getTargetPath().toAbsolutePath();
+        Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_AV_FILENAME);
+        final Path groomFile = Paths.get(SRC_TEST_DATA).resolve(SRC_GROOM_FILENAME+"-missing");
+        PublisherStep step=new PublisherStep();
+        Settings settings=new Settings();
+        settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
+        settings.setValue(Validator.SETTING_CONFIGFILE, null);
+        SimiSvcClientMock simiSvc=new SimiSvcClientMock();
+        try {
+            step.publishDatasetFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,groomFile,settings,localTestOut, simiSvc);
+            Assert.fail();
+        }catch(IOException ex){
+            ; // ok, expected
+            log.error("file_allNew_noGroomFile_fail", ex);
         }
     }
     @Test

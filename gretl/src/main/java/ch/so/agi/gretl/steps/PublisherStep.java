@@ -784,7 +784,7 @@ public class PublisherStep {
         return fileList;
     }    
     public static Grooming readGrooming(Path groomingJson) throws IOException {
-        if(!Files.exists(groomingJson)) {
+        if(groomingJson==null) {
             return null;
         }
         ObjectMapper mapper = new ObjectMapper();

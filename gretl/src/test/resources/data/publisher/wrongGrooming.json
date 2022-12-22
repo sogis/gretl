@@ -1,0 +1,20 @@
+{
+  "groomingWrong": {
+	"daily": {
+	   "from": 0,
+	   "to": 1
+	},
+	"weekly": {
+	   "from": 1,
+	   "to": 4
+	},
+	"monthly": {
+	   "from": 4,
+	   "to": 52
+	},
+	"yearly": {
+	   "from": 52,
+	   "to": null
+	}
+  }
+}
