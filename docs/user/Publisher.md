@@ -423,8 +423,8 @@ regions   | Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen),
 publishedRegions | Liste der effektiv publizierten Regionen	  
 validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
 userFormats | Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default ist false
-kgdiTokenService | Endpunkt des Authentifizierung-Services, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]
-kgdiService | Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]
+kgdiTokenService | Endpunkt des Authentifizierung-Services, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]. Publisher ergänzt die URL mit /v2/oauth/token.
+kgdiService | Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]. Publisher ergänzt die URL fallabhängig mit /pubsignal respektive /doc.
 grooming | Konfiguration für die Ausdünnung z.B. "grooming.json". Ohne Angabe wird nicht aufgeräumt.
 exportModels | Das Export-Modell, indem die Daten exportiert werden. Der Parameter wird nur bei der Ausdünnung benötigt. Als Export-Modelle sind Basis-Modelle zulässig. 
 modeldir     | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%ITF_DIR;http://models.interlis.ch/``. ``%ITF_DIR`` ist ein Platzhalter für das Verzeichnis mit der ITF-Datei.

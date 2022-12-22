@@ -86,7 +86,8 @@ public class PublisherStep {
         config.setExportModels(exportModels);
         String dateTag=getDateTag(date);
         Grooming grooming=null;
-        if(groomingJson!=null) {
+        if(groomingJson!=null) {      
+            log.info("Reading grooming conf: " + groomingJson);    
             grooming=readGrooming(groomingJson);
         }
         Path targetTmpPath=target.resolve("."+dateTag);
@@ -410,6 +411,7 @@ public class PublisherStep {
         String dateTag=getDateTag(date);
         Grooming grooming=null;
         if(groomingJson!=null) {
+            log.info("Reading grooming conf: " + groomingJson);
             grooming=readGrooming(groomingJson);
         }
         Path targetTmpPath=target.resolve("."+dateTag);
