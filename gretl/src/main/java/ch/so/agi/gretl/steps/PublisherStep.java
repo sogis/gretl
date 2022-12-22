@@ -593,12 +593,17 @@ public class PublisherStep {
         }
         // publishdate.json erzeugen
         writePublishDate(targetTmpPath,dateTag);
-        // Beipackzettel erzeugen
+        
+        
         if(simiSvc!=null) {
+            // Publikation in KGDI-Metadaten nachfuehren
+            simiSvc.notifyPublication(publicationDetails); // muss wegen simi vor getLeaflet() sein
+            // Beipackzettel erzeugen
             String leaflet=simiSvc.getLeaflet(dataIdent,date);
             Path leafletPath=getLeafletPath(targetTmpPath);
             Files.write(leafletPath, leaflet.getBytes(StandardCharsets.UTF_8));
         }
+        
         // aktuell umbenennen auf Ordnername gemaess Datum in publishdate.json
         if(Files.exists(targetCurrentPath)) {
             if(currentPublishdate!=null) {
@@ -627,10 +632,6 @@ public class PublisherStep {
         // .{date} in aktuell umbennen
         Files.move(targetTmpPath,targetCurrentPath);
         
-        // Publikation in KGDI-Metadaten nachfuehren
-        if(simiSvc!=null) {
-            simiSvc.notifyPublication(publicationDetails);
-        }
         // ausduennen
         if(grooming!=null) {
             // get list of folders from targetHistPath
