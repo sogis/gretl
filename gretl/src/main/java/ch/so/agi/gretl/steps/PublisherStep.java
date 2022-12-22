@@ -138,14 +138,14 @@ public class PublisherStep {
                         modelFiles=new ArrayList<Path>();
                         publishFile(dateTag,targetTmpPath,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles,publicationDetails);
                         if(userFormats) {
-                            writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
-                            publishUserFormatFile(dateTag,targetTmpPath,dataIdent,gpkgFile,target,region,validationLog,validationConfig,settings,tempFolder);
-                            writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
-                            publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,shpFolder,target,region,validationLog,validationConfig,settings,tempFolder);
                             if(isDM01) {
                                 writeGeobauDxfFile(xtfFile,dxfFolder,settings,tempFolder);
                                 publishUserFormatFile(dateTag,targetTmpPath,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
                             }else {
+                                writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
+                                publishUserFormatFile(dateTag,targetTmpPath,dataIdent,gpkgFile,target,region,validationLog,validationConfig,settings,tempFolder);
+                                writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
+                                publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,shpFolder,target,region,validationLog,validationConfig,settings,tempFolder);
                                 writeDxfFile(gpkgFile,dxfFolder,settings,tempFolder);
                                 publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
                             }
