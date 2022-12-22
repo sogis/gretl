@@ -152,7 +152,10 @@ public class SimiSvcClientTest {
         SimiSvcApi svc=new SimiSvcClient();
         svc.setup("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_GRANT_USR,OAUTH_TOKEN_GRANT_PWD);
         svc.setupTokenService("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_USR,OAUTH_TOKEN_PWD);
-        final PublicationLog data = new PublicationLog("ch.so.agi.mopublic", new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2022-03-08"));
+        final String expected_dataIdent = "ch.so.agi.mopublic";
+        final String expected_published = "2022-03-08T00:00:00.000";
+        final PublicationLog data = new PublicationLog(expected_dataIdent, new java.text.SimpleDateFormat("yyyy-MM-dd").parse(expected_published));
+        //String leaflet=svc.getLeaflet(expected_dataIdent, new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(expected_published));
         svc.notifyPublication(data);
         Assert.assertEquals("application/json", servlet.pubsignal_contentType);
         Assert.assertEquals("Bearer " + OAUTH_TOKEN, servlet.pubsignal_authHeaderValue);
