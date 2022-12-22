@@ -758,25 +758,27 @@ public class PublisherStep {
     }    
     public static List<Date> listHistory(Path dir) throws IOException {
         List<Date> fileList = new ArrayList<Date>();
-        Path ret=Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs)
-              throws IOException {
-                String fileName=file.getFileName().toString();
-                if(fileName.equals(PATH_ELE_HISTORY)) {
-                    return FileVisitResult.CONTINUE;
-                }
-                if(fileName.matches("[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]")) {
-                    try {
-                        Date date=parseDateTag(fileName);
-                        fileList.add(date);
-                    } catch (ParseException e) {
-                        // ignore folder
+        if(Files.exists(dir)) {
+            Path ret=Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path file, BasicFileAttributes attrs)
+                  throws IOException {
+                    String fileName=file.getFileName().toString();
+                    if(fileName.equals(PATH_ELE_HISTORY)) {
+                        return FileVisitResult.CONTINUE;
                     }
+                    if(fileName.matches("[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]")) {
+                        try {
+                            Date date=parseDateTag(fileName);
+                            fileList.add(date);
+                        } catch (ParseException e) {
+                            // ignore folder
+                        }
+                    }
+                    return FileVisitResult.SKIP_SUBTREE;
                 }
-                return FileVisitResult.SKIP_SUBTREE;
-            }
-        });
+            });
+        }
         return fileList;
     }    
     public static Grooming readGrooming(Path groomingJson) throws IOException {

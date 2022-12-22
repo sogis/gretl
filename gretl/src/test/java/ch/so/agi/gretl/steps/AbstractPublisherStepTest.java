@@ -87,6 +87,44 @@ public abstract class AbstractPublisherStepTest {
         }
     }
     @Test
+    public void file_allNew_groom() throws Exception {
+        final Date SRC_DATA_DATE=SRC_DATA_DATE_0;
+        Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
+        // prepare
+        {
+            // delete output folder
+            if(Files.exists(targetFolder)) {
+                PublisherStep.deleteFileTree(targetFolder);
+            }
+        }
+        Path targetPath = getTargetPath().toAbsolutePath();
+        Path sourcePath = Paths.get(SRC_TEST_DATA).resolve("files").resolve(SRC_DATA_AV_FILENAME);
+        final Path groomFile = Paths.get(SRC_TEST_DATA).resolve(SRC_GROOM_FILENAME);
+        PublisherStep step=new PublisherStep();
+        Settings settings=new Settings();
+        settings.setValue(Validator.SETTING_ILIDIRS, ILI_DIRS);
+        settings.setValue(Validator.SETTING_CONFIGFILE, null);
+        SimiSvcClientMock simiSvc=new SimiSvcClientMock();
+        step.publishDatasetFromFile(SRC_DATA_DATE,SRC_DATA_IDENT,sourcePath,targetPath,null,null,null,null,groomFile,settings,localTestOut, simiSvc);
+        // verify
+        {
+            Assert.assertTrue(Files.exists(targetFolder));
+            final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
+            Assert.assertTrue(Files.exists(targetFolderAktuell));
+            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(SRC_DATA_IDENT+".itf.zip")));
+            final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(SRC_ILI_AV_FILENAME)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_LEAFLET_HTML)));
+            Assert.assertEquals(SRC_DATA_IDENT, simiSvc.getNotifiedDataIdent());
+            Assert.assertEquals(SRC_DATA_DATE, simiSvc.getNotifiedPublishDate());
+            Assert.assertNull(simiSvc.getNotifiedRegions());
+            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+        }
+    }
+    @Test
     public void file_regionsRegEx() throws Exception {
         final Date SRC_DATA_DATE=SRC_DATA_DATE_0;
         Path targetFolder=getTargetPath().resolve(SRC_DATA_IDENT);
