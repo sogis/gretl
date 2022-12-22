@@ -127,9 +127,6 @@ public class Publisher extends DefaultTask {
         }else {
             throw new IllegalArgumentException("one of sourcePath OR database must be set");
         }
-        if(userFormats && database==null) {
-            throw new IllegalArgumentException("userFormats requires a database as source");
-        }
         Path targetFile=null;
         if(target!=null) {
             log.info("target "+target.toString());
@@ -205,7 +202,7 @@ public class Publisher extends DefaultTask {
             if(database!=null) {
                 step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,modelsToPublish,exportModels,userFormats,targetFile, region,regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }else {
-                step.publishDatasetFromFile(version, dataIdent, sourceFile, targetFile, region, regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+                step.publishDatasetFromFile(version, dataIdent, sourceFile, userFormats,targetFile, region, regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }
             if(pubRegions!=null) {
                 getPublishedRegions().set(pubRegions);

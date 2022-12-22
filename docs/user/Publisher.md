@@ -296,7 +296,6 @@ Die Validierung kann mit einer ilivalidator Konfigurationsdatei konfiguriert wer
 
 Optional können Benutzerformate (Geopackage, Shapefile, Dxf) erstellt werden. Die Daten müssen in einer
 entsprechend flachen Struktur vorliegen.
-Kann nur aus der DB erstellt werden.
 
     task publishDb(type: Publisher){
       dataIdent = "ch.so.agi.vermessung"
@@ -307,7 +306,8 @@ Kann nur aus der DB erstellt werden.
       userFormats = true
     }
     
-Falls das Datenmodell der Quelldaten ``DM01AVCH24LV95D`` ist, wird das DXF automatisch in der Geobau-Struktur erstellt. 
+Falls das Datenmodell der Quelldaten ``DM01AVCH24LV95D`` ist, wird das DXF automatisch in der Geobau-Struktur erstellt 
+und kein Geopackage und kein Shapefile erstellt. 
 
 Die Benutzerformate werden beim Verschieben in den Archiv-Ordner entfernt.
 

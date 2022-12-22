@@ -226,14 +226,14 @@ public class PublisherStep {
                     publishFilePre(dateTag,targetTmpPath,dataIdent,target,settings,tempFolder,null);
                     publishFile(dateTag,targetTmpPath,dataIdent,xtfFile,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles,publicationDetails);
                     if(userFormats) {
-                        writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
-                        publishUserFormatFile(dateTag,targetTmpPath,dataIdent,gpkgFile,target,null,validationLog,validationConfig,settings,tempFolder);
-                        writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
-                        publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,shpFolder,target,null,validationLog,validationConfig,settings,tempFolder);
                         if(isDM01) {
                             writeGeobauDxfFile(xtfFile,dxfFolder,settings,tempFolder);
                             publishUserFormatFile(dateTag,targetTmpPath,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
                         }else {
+                            writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
+                            publishUserFormatFile(dateTag,targetTmpPath,dataIdent,gpkgFile,target,null,validationLog,validationConfig,settings,tempFolder);
+                            writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
+                            publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,shpFolder,target,null,validationLog,validationConfig,settings,tempFolder);
                             writeDxfFile(gpkgFile,dxfFolder,settings,tempFolder);
                             publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
                         }
@@ -405,7 +405,7 @@ public class PublisherStep {
         }
         return regions;
     }
-    public void publishDatasetFromFile(Date date,String dataIdent, Path sourcePath, Path target, String regionRegEx,List<String> regionsToPublish,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
+    public void publishDatasetFromFile(Date date,String dataIdent, Path sourcePath, boolean userFormats, Path target, String regionRegEx,List<String> regionsToPublish,List<String> publishedRegions,Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
             throws Exception 
     {
         String dateTag=getDateTag(date);
@@ -431,28 +431,95 @@ public class PublisherStep {
                 List<Path> modelFiles=new ArrayList<Path>();
                 PublicationLog publicationDetails=new PublicationLog(dataIdent,date);
                 for(String region:regions) {
+                    String filename=region+"."+dataIdent;
                     Path xtfFile=sourceParent.resolve(region+"."+sourceExt);
-                    Path validationLog=tempFolder.resolve(region+"."+dataIdent+"."+FILE_EXT_LOG);
+                    Path validationLog=tempFolder.resolve(filename+"."+FILE_EXT_LOG);
+                    Path gpkgFile=tempFolder.resolve(filename+"."+FILE_EXT_GPKG);
+                    Path shpFolder=tempFolder.resolve(filename+"."+FILE_EXT_SHP);
+                    Path dxfFolder=tempFolder.resolve(filename+"."+FILE_EXT_DXF);
                     modelFiles=new ArrayList<Path>();
-                    publishFile(dateTag,targetTmpPath,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles,publicationDetails);
-                    if(publishedRegions!=null) {
-                        publishedRegions.add(region);
+                    try {
+                        publishFile(dateTag,targetTmpPath,dataIdent,xtfFile,target,region,validationLog,validationConfig,settings,tempFolder,modelFiles,publicationDetails);
+                        if(userFormats) {
+                            if(isDM01(publicationDetails)) {
+                                writeGeobauDxfFile(xtfFile,dxfFolder,settings,tempFolder);
+                                publishUserFormatFile(dateTag,targetTmpPath,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                            }else {
+                                writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
+                                publishUserFormatFile(dateTag,targetTmpPath,dataIdent,gpkgFile,target,region,validationLog,validationConfig,settings,tempFolder);
+                                writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
+                                publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,shpFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                                writeDxfFile(gpkgFile,dxfFolder,settings,tempFolder);
+                                publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,dxfFolder,target,region,validationLog,validationConfig,settings,tempFolder);
+                            }
+                        }
+                        if(publishedRegions!=null) {
+                            publishedRegions.add(region);
+                        }
+                    }finally {
+                        deleteFile(gpkgFile);
+                        deleteFile(validationLog);
+                        deleteFileTree(shpFolder);
+                        deleteFileTree(dxfFolder);
                     }
-                    Files.delete(validationLog);
                 }
                 publishFilePost(date,targetTmpPath,dataIdent,target,settings,tempFolder,modelFiles,regions,simiSvc,grooming,publicationDetails);
             }else {
                 PublicationLog publicationDetails=new PublicationLog(dataIdent,date);
                 publishFilePre(dateTag,targetTmpPath,dataIdent,target,settings,tempFolder,null);
                 List<Path> modelFiles=new ArrayList<Path>();
-                Path validationLog=tempFolder.resolve(dataIdent+"."+FILE_EXT_LOG);
-                publishFile(dateTag,targetTmpPath,dataIdent,sourcePath,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles,publicationDetails);
-                publishFilePost(date,targetTmpPath,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc,grooming,publicationDetails);
-                Files.delete(validationLog);
+                String filename=dataIdent;
+                Path xtfFile=sourcePath;
+                Path validationLog=tempFolder.resolve(filename+"."+FILE_EXT_LOG);
+                Path gpkgFile=tempFolder.resolve(filename+"."+FILE_EXT_GPKG);
+                Path shpFolder=tempFolder.resolve(filename+"."+FILE_EXT_SHP);
+                Path dxfFolder=tempFolder.resolve(filename+"."+FILE_EXT_DXF);
+                try {
+                    publishFile(dateTag,targetTmpPath,dataIdent,xtfFile,target,null,validationLog,validationConfig,settings,tempFolder,modelFiles,publicationDetails);
+                    if(userFormats) {
+                        if(isDM01(publicationDetails)) {
+                            writeGeobauDxfFile(xtfFile,dxfFolder,settings,tempFolder);
+                            publishUserFormatFile(dateTag,targetTmpPath,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                        }else {
+                            writeGpkgFile(xtfFile,gpkgFile,settings,tempFolder);
+                            publishUserFormatFile(dateTag,targetTmpPath,dataIdent,gpkgFile,target,null,validationLog,validationConfig,settings,tempFolder);
+                            writeShpFile(gpkgFile,shpFolder,settings,tempFolder);
+                            publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,shpFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                            writeDxfFile(gpkgFile,dxfFolder,settings,tempFolder);
+                            publishUserFormatFolder(dateTag,targetTmpPath,dataIdent,dxfFolder,target,null,validationLog,validationConfig,settings,tempFolder);
+                        }
+                    }
+                    publishFilePost(date,targetTmpPath,dataIdent,target,settings,tempFolder,modelFiles,null,simiSvc,grooming,publicationDetails);
+                }finally {
+                    deleteFile(gpkgFile);
+                    deleteFile(validationLog);
+                    deleteFileTree(shpFolder);
+                    deleteFileTree(dxfFolder);
+                }
             }
         }finally {
             deleteFileTree(targetTmpPath);
         }
+    }
+    private boolean isDM01(PublicationLog log) {
+        if(log.getPublishedRegions()!=null) {
+            for(PublishedRegion region:log.getPublishedRegions()) {
+                for(PublishedBasket basket:region.getPublishedBaskets()) {
+                    if(!basket.getModel().equals(MODEL_DM01)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }else if(log.getPublishedBaskets()!=null){
+            for(PublishedBasket basket:log.getPublishedBaskets()) {
+                if(!basket.getModel().equals(MODEL_DM01)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
     private void publishFile(String date,Path targetTmpPath,String dataIdent, Path sourcePath, Path target, String region,Path logFile,Path validationConfig,Settings settings,Path tempFolder,List<Path> modelFiles,PublicationLog publicationDetails) 
             throws Exception 
