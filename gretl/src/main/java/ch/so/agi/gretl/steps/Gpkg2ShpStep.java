@@ -9,8 +9,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.interlis.iom.IomObject;
 import ch.interlis.iom_j.Iom_jObject;
@@ -21,6 +24,22 @@ import ch.interlis.iox_j.EndBasketEvent;
 import ch.interlis.iox_j.EndTransferEvent;
 import ch.interlis.ioxwkf.gpkg.GeoPackageReader;
 import ch.interlis.ioxwkf.shp.ShapeWriter;
+
+import org.geotools.feature.AttributeTypeBuilder;
+import org.geotools.referencing.CRS;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CRSAuthorityFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
@@ -46,20 +65,107 @@ public class Gpkg2ShpStep {
     public void execute(String gpkgFile, String outputDir) throws IoxException, FileNotFoundException {
         log.lifecycle(String.format("Start Gpgk2ShpStep(Name: %s GpkgFileName: %s OutputDir: %s)", taskName, gpkgFile,
                 outputDir));
-
+        
         // Get all geopackage tables that will be converted to shape file.
         List<String> tableNames = new ArrayList<String>();
         String url = "jdbc:sqlite:" + gpkgFile;
-        try (Connection conn = DriverManager.getConnection(url); Statement stmt = conn.createStatement()) {
-            try (ResultSet rs = stmt
-                    .executeQuery("SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'")) {
-                while (rs.next()) {
-                    tableNames.add(rs.getString("tablename"));
-                    log.lifecycle("tablename: " + rs.getString("tablename"));
-                }
-            } catch (SQLException e) {
+        Map<String, AttributeDescriptor[]> shpAttrsDescMap = new HashMap<String,AttributeDescriptor[]>();
+        try (Connection conn = DriverManager.getConnection(url)) {
+            try (Statement stmt = conn.createStatement()) {
+                ResultSet rs = stmt.executeQuery("SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'"); 
+                    while (rs.next()) {
+                        tableNames.add(rs.getString("tablename"));
+                        log.lifecycle("tablename: " + rs.getString("tablename"));
+                    }
+            }  catch (SQLException e) {
                 e.printStackTrace();
                 throw new IllegalArgumentException(e.getMessage());
+            }
+         
+            // Mapping von GPKG-Attribut-Descriptor zu SHP-Attribut-Descriptor.
+            for (String tableName : tableNames) {
+                List<GpkgAttributeDescriptor> gpkgAttrsDesc = GpkgAttributeDescriptor.getAttributeDescriptors(null, tableName, conn);  
+                
+                AttributeDescriptor shpAttrsDesc[] = new AttributeDescriptor[gpkgAttrsDesc.size()];
+                for (int i=0; i<gpkgAttrsDesc.size(); i++) {
+                    GpkgAttributeDescriptor gpkgAttrDesc = gpkgAttrsDesc.get(i);
+                    AttributeTypeBuilder attributeBuilder = new AttributeTypeBuilder();
+                    String attrName = gpkgAttrDesc.getIomAttributeName();
+                    attributeBuilder.setName(attrName);
+                    int dbColType = gpkgAttrDesc.getDbColumnType();
+
+                    if(gpkgAttrDesc.isGeometry()) {
+                        String geoColumnTypeName = gpkgAttrDesc.getDbColumnGeomTypeName();
+                        if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_POINT)) {
+                            attributeBuilder.setBinding(Point.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTIPOINT)) {
+                            attributeBuilder.setBinding(MultiPoint.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_LINESTRING) || geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_COMPOUNDCURVE)) {
+                            attributeBuilder.setBinding(LineString.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTILINESTRING) || geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTICURVE)) {
+                            attributeBuilder.setBinding(MultiLineString.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_POLYGON) || geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_CURVEPOLYGON)) {
+                            attributeBuilder.setBinding(Polygon.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTIPOLYGON) || geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTISURFACE)) {
+                            attributeBuilder.setBinding(MultiPolygon.class);
+                        } else {
+                            throw new IllegalStateException("unexpected geometry type "+geoColumnTypeName);
+                        }
+
+                        CoordinateReferenceSystem crs = null;
+                        
+                        int srsId = gpkgAttrDesc.getSrId();
+                        CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
+                        try {
+                            crs = factory.createCoordinateReferenceSystem("EPSG:"+srsId);
+                        } catch (NoSuchAuthorityCodeException e) {
+                            throw new IoxException("coordinate reference: EPSG:"+srsId+" not found",e);
+                        } catch (FactoryException e) {
+                            throw new IoxException(e);
+                        }
+                        attributeBuilder.setCRS(crs);
+                    } else if (dbColType == Types.INTEGER && gpkgAttrDesc.getDbColumnTypeName().equalsIgnoreCase("BOOLEAN")) {
+                        // QGIS/OGR macht aus einem Boolean einen Integer.
+                        // Geotools anscheinend einen Text (T/F).
+                        // Verhalten muesste im ShpWriter geaendert werden.
+                        attributeBuilder.setBinding(Boolean.class);
+                    } else if(dbColType == Types.SMALLINT) {
+                        attributeBuilder.setBinding(Integer.class);
+                    } else if(dbColType == Types.TINYINT) {
+                        attributeBuilder.setBinding(Integer.class);
+                    } else if(dbColType == Types.INTEGER && !gpkgAttrDesc.getDbColumnTypeName().equalsIgnoreCase("BOOLEAN")) {
+                        attributeBuilder.setBinding(Integer.class);
+                    } else if(dbColType == Types.NUMERIC) {
+                        attributeBuilder.setBinding(Double.class);
+                    } else if(dbColType == Types.BIGINT) {
+                        attributeBuilder.setBinding(Double.class);
+                    } else if(dbColType == Types.FLOAT) {
+                        attributeBuilder.setBinding(Double.class);
+                    } else if(dbColType == Types.DOUBLE) {
+                        attributeBuilder.setBinding(Double.class);
+                    } else if(dbColType == Types.DATE || gpkgAttrDesc.getDbColumnTypeName().equalsIgnoreCase("DATE") || gpkgAttrDesc.getDbColumnTypeName().equalsIgnoreCase("DATETIME")) {
+                        // In Sqlite ist DATE/DATETIME Text.
+                        attributeBuilder.setBinding(java.util.Date.class);
+                    } else {
+                        attributeBuilder.setBinding(String.class);
+                    }
+                    attributeBuilder.setMinOccurs(0);
+                    attributeBuilder.setMaxOccurs(1);
+                    attributeBuilder.setNillable(true);
+                    shpAttrsDesc[i] = attributeBuilder.buildDescriptor(attrName.toLowerCase());
+                    shpAttrsDescMap.put(tableName, shpAttrsDesc);
+                }
+//                for (GpkgAttributeDescriptor attr : gpkgAttrsDesc) {
+//                    System.out.println(attr.getDbColumnName());
+//                    System.out.println(attr.getIomAttributeName());
+//                    System.out.println(attr.getDbColumnTypeName());
+//                    System.out.println(attr.getDbColumnGeomTypeName());
+//                    System.out.println(attr.getCoordDimension());
+//                    System.out.println(attr.getSrId());
+//                    System.out.println(attr.isGeometry());
+//                    System.out.println(attr.getDbColumnType());
+//                    System.out.println("--------------------------------");
+//                }
             }
         } catch (SQLException e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -69,7 +175,10 @@ public class Gpkg2ShpStep {
         for (String tableName : tableNames) {
             ShapeWriter writer = new ShapeWriter(Paths.get(outputDir, tableName + ".shp").toFile());
             writer.setDefaultSridCode("2056");
-
+            
+            AttributeDescriptor[] attrsDesc = shpAttrsDescMap.get(tableName);
+            writer.setAttributeDescriptors(attrsDesc);
+            
             GeoPackageReader reader = new GeoPackageReader(new File(gpkgFile), tableName);
             IoxEvent event = reader.read();
             while (event instanceof IoxEvent) {

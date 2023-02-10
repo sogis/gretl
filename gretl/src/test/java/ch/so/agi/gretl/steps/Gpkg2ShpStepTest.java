@@ -3,6 +3,8 @@ package ch.so.agi.gretl.steps;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.Date;
+import java.util.List;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -10,6 +12,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opengis.feature.type.AttributeDescriptor;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
@@ -44,6 +47,37 @@ public class Gpkg2ShpStepTest {
             SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
             assertEquals(127, featuresSource.getFeatures().size()); 
             assertEquals("CH1903+_LV95", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
+            
+            assertEquals(19, featuresSource.getSchema().getAttributeCount());
+
+            AttributeDescriptor attrDesc = featuresSource.getSchema().getDescriptor("plz");
+            assertEquals("java.lang.Integer", attrDesc.getType().getBinding().getName());
+        }
+    }
+    
+    @Test
+    public void export_more_attribute_types_Ok() throws Exception {
+        String TEST_OUT = folder.newFolder().getAbsolutePath();
+        //String TEST_OUT = "/Users/stefan/tmp/shp/";
+
+        File gpkgFile = new File("src/test/resources/data/gpkg2shp/ch.so.afu.abbaustellen.gpkg");
+
+        Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
+        gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
+
+        // Check results
+        {
+            FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(TEST_OUT, "abbaustelle.shp"));
+            SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
+            assertEquals(98, featuresSource.getFeatures().size());
+            assertEquals("CH1903+_LV95",
+                    featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
+
+            // 14 Sachattribute plus die Geometrie
+            assertEquals(15, featuresSource.getSchema().getAttributeCount());
+
+            AttributeDescriptor attrDesc = featuresSource.getSchema().getDescriptor("rrb_datum");
+            assertEquals("java.util.Date", attrDesc.getType().getBinding().getName());
         }
     }
 }
