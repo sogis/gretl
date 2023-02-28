@@ -33,7 +33,7 @@ Bei Problemen mit der Datenqualität der Originaldaten schlägt der Task "pubEdi
 
 Der Publisher arbeitet die folgenden Hauptschritte ab:
 
-1) Verstecktes Verzeichnis für den Datenstand via FTPS erstellen (.yyyy-MM-dd/). Kein Abbruch, falls das Verzeichnis vorhanden ist.
+1) Verstecktes Verzeichnis für den Datenstand via FTPS erstellen (.yyyy-MM-dd-UUID/). Kein Abbruch, falls das Verzeichnis vorhanden ist.
 2) XTFs in Verzeichnis ablegen.
    1) Für Datenthemen mit Quelle=Datenbank: XTF-Transferdateien exportieren.
       1) Mit ili2pg das xtf erzeugen

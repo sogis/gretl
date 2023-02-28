@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -90,7 +91,7 @@ public class PublisherStep {
             log.info("Reading grooming conf: " + groomingJson);    
             grooming=readGrooming(groomingJson);
         }
-        Path targetTmpPath=target.resolve("."+dateTag);
+        Path targetTmpPath=getTargetTmpPath(target, dateTag);
         try {
             if((regionRegEx!=null || regionsToPublish!=null) && (datasetName==null && modelsToPublish==null)){
                 if(regionRegEx!=null) {
@@ -414,7 +415,7 @@ public class PublisherStep {
             log.info("Reading grooming conf: " + groomingJson);
             grooming=readGrooming(groomingJson);
         }
-        Path targetTmpPath=target.resolve("."+dateTag);
+        Path targetTmpPath=getTargetTmpPath(target, dateTag);
         try {
             if(regionRegEx!=null || regionsToPublish!=null) {
                 if(regionRegEx!=null) {
@@ -500,6 +501,9 @@ public class PublisherStep {
         }finally {
             deleteFileTree(targetTmpPath);
         }
+    }
+    private Path getTargetTmpPath(Path target, String dateTag) {
+        return target.resolve("."+dateTag+"-"+UUID.randomUUID().toString());
     }
     private boolean isDM01(PublicationLog log) {
         if(log.getPublishedRegions()!=null) {
