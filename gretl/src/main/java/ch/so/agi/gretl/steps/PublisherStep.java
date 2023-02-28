@@ -92,6 +92,7 @@ public class PublisherStep {
             grooming=readGrooming(groomingJson);
         }
         Path targetTmpPath=getTargetTmpPath(target, dateTag);
+        log.info("targetTmpPath <" + targetTmpPath.toString()+">");
         try {
             if((regionRegEx!=null || regionsToPublish!=null) && (datasetName==null && modelsToPublish==null)){
                 if(regionRegEx!=null) {
@@ -126,6 +127,7 @@ public class PublisherStep {
                     Path shpFolder=tempFolder.resolve(filename+"."+FILE_EXT_SHP);
                     Path dxfFolder=tempFolder.resolve(filename+"."+FILE_EXT_DXF);
                     try {
+                        log.info("export from db dataset <"+region+"> to xtf <" + xtfFile.toString()+">...");
                         config.setXtffile(xtfFile.toString());
                         config.setModeldir(Ili2db.ILI_FROM_DB);
                         config.setFunction(Config.FC_EXPORT);
@@ -279,17 +281,20 @@ public class PublisherStep {
         }
     }
     private void writeDxfFile(Path gpkgFile, Path dxfFolder, Settings settings, Path tempFolder) throws Exception {
+        log.info("writeDxfFile <"+dxfFolder.toString()+">...");
         Files.createDirectories(dxfFolder);
         Gpkg2DxfStep converter=new Gpkg2DxfStep();
         converter.execute(gpkgFile.toString(),dxfFolder.toString());
     }
     private void writeGeobauDxfFile(Path itfFile, Path dxfFile, Settings settings, Path tempFolder) throws Exception {
+        log.info("writeGeobauDxfFile <"+dxfFile.toString()+">...");
         boolean ok = org.interlis2.av2geobau.Av2geobau.convert(itfFile.toFile(),dxfFile.toFile(),settings);
         if(!ok) {
             throw new Exception("Av2geobau failed");
         }
     }
     private void writeShpFile(Path gpkgFile, Path shpFolder, Settings settings, Path tempFolder) throws IoxException, IOException {
+        log.info("writeShpFile <"+shpFolder.toString()+">...");
         Files.createDirectories(shpFolder);
         Gpkg2ShpStep converter=new Gpkg2ShpStep();
         converter.execute(gpkgFile.toString(),shpFolder.toString());
@@ -377,6 +382,7 @@ public class PublisherStep {
         }
     }
     private void writeGpkgFile(Path xtfFile, Path gpkgFile, Settings settings, Path tempFolder) throws Ili2dbException {
+        log.info("writeGpkgFile <"+gpkgFile.toString()+">...");
         ch.ehi.ili2db.gui.Config config=cloneSettings(new ch.ehi.ili2db.gui.Config(),settings);
         ch.ehi.ili2gpkg.GpkgMain gpkgMain=new ch.ehi.ili2gpkg.GpkgMain();
         gpkgMain.initConfig(config);
@@ -416,6 +422,7 @@ public class PublisherStep {
             grooming=readGrooming(groomingJson);
         }
         Path targetTmpPath=getTargetTmpPath(target, dateTag);
+        log.info("targetTmpPath <" + targetTmpPath.toString()+">");
         try {
             if(regionRegEx!=null || regionsToPublish!=null) {
                 if(regionRegEx!=null) {
@@ -608,6 +615,7 @@ public class PublisherStep {
         Path targetRootPath=target;
         // {dataIdent} erzeugen
         Path targetPath=targetRootPath.resolve(dataIdent);
+        log.info("create <"+targetPath.toString()+">...");
         Files.createDirectories(targetPath);
         Path targetCurrentPath=targetPath.resolve(PATH_ELE_AKTUELL);
         Path targetHistPath=targetPath.resolve(PATH_ELE_HISTORY);
@@ -634,6 +642,7 @@ public class PublisherStep {
             // Verzeichnis "aktuell" existiert?
             if(currentPublishdate!=null) {
                 // Daten aus "aktuell" in neues Zielverzeichnis kopieren
+                log.info("copy data from existing "+currentPublishdate+"...");
                 for(Path file:Files.newDirectoryStream(targetCurrentPath)) {
                     Path zipFilename=file.getFileName();
                     if(FILE_EXT_ZIP.equals(GenericFileFilter.getFileExtension(zipFilename.toString()))) {
@@ -657,21 +666,26 @@ public class PublisherStep {
         String dateTag=getDateTag(date);
         // meta erzeugen
         Path targetMetaPath=targetTmpPath.resolve(PATH_ELE_META);
+        log.info("create meta folder "+targetMetaPath.toString()+"...");
         Files.createDirectories(targetMetaPath);
         // ilis kopieren
+        log.info("copy ili files...");
         for(Path modelFile:modelFiles) {
            Files.copy(modelFile, targetMetaPath.resolve(modelFile.getFileName().toString()));
         }
         // publishdate.json erzeugen
+        log.info("write publishdate.json...");
         writePublishDate(targetTmpPath,dateTag);
         
         
         if(simiSvc!=null) {
             // Publikation in KGDI-Metadaten nachfuehren
+            log.info("notifyPublication...");
             simiSvc.notifyPublication(publicationDetails); // muss wegen simi vor getLeaflet() sein
             // Beipackzettel erzeugen
-            String leaflet=simiSvc.getLeaflet(dataIdent,date);
             Path leafletPath=getLeafletPath(targetTmpPath);
+            log.info("create leaflet <"+leafletPath.toString()+">...");
+            String leaflet=simiSvc.getLeaflet(dataIdent,date);
             Files.write(leafletPath, leaflet.getBytes(StandardCharsets.UTF_8));
         }
         
@@ -679,12 +693,15 @@ public class PublisherStep {
         if(Files.exists(targetCurrentPath)) {
             if(currentPublishdate!=null) {
                 if(currentPublishdate.equals(dateTag)) {
+                    log.info("delete existing <"+targetCurrentPath.toString()+">...");
                     deleteFileTree(targetCurrentPath);
                 }else {
                     Files.createDirectories(targetHistPathRoot);
                     final Path targetHistPathCurrent = targetHistPathRoot.resolve(currentPublishdate);
+                    log.info("move existing <"+targetCurrentPath.toString()+"> to <"+targetHistPathCurrent.toString()+">...");
                     Files.move(targetCurrentPath,targetHistPathCurrent);
                     // remove user format files
+                    log.info("remove user format files in <"+targetHistPathCurrent.toString()+">...");
                     List<String> files=getUserFormatFiles(targetHistPathCurrent,FILE_EXT_SHP);
                     for(String userFormatFile:files) {
                         Files.deleteIfExists(targetHistPathCurrent.resolve(userFormatFile));
@@ -701,16 +718,19 @@ public class PublisherStep {
             }
         }
         // .{date} in aktuell umbennen
+        log.info("move targetTmpPath to current <"+targetTmpPath.toString()+"> to <"+targetCurrentPath.toString()+">...");
         Files.move(targetTmpPath,targetCurrentPath);
         
         // ausduennen
         if(grooming!=null) {
+            log.info("groom...");
             // get list of folders from targetHistPath
             List<Date> allHistory=listHistory(targetHistPathRoot);
             // get list of folders to delete
             List<Date> deleteDates=new ArrayList<Date>();
             grooming.getFilesToDelete(date,allHistory,deleteDates);
             // delete folders
+            log.info("remove dates <"+deleteDates+">...");
             for(Date deleteDate:deleteDates) {
                 String deleteName=getDateTag(deleteDate);
                 Path folderToDelete=targetHistPathRoot.resolve(deleteName);
