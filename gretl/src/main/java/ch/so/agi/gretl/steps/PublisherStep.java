@@ -675,7 +675,7 @@ public class PublisherStep {
            Files.copy(modelFile, targetMetaPath.resolve(modelFile.getFileName().toString()));
         }
         // publishdate.json erzeugen
-        log.info("write publishdate.json...");
+        log.info("write "+PATH_ELE_PUBLISHDATE_JSON+"...");
         writePublishDate(targetTmpPath,dateTag);
         
         
@@ -731,7 +731,7 @@ public class PublisherStep {
             List<Date> deleteDates=new ArrayList<Date>();
             grooming.getFilesToDelete(date,allHistory,deleteDates);
             // delete folders
-            log.info("remove dates <"+deleteDates+">...");
+            log.info("remove history folders <"+getDateTags(deleteDates)+">...");
             for(Date deleteDate:deleteDates) {
                 String deleteName=getDateTag(deleteDate);
                 Path folderToDelete=targetHistPathRoot.resolve(deleteName);
@@ -745,6 +745,16 @@ public class PublisherStep {
     }
     public static String getDateTag(Date date) {
         return new java.text.SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+    public static String getDateTags(List<Date> dates) {
+        StringBuffer ret=new StringBuffer();
+        String sep="";
+        for(Date date:dates) {
+            ret.append(sep);
+            ret.append(getDateTag(date));
+            sep=", ";
+        }
+        return ret.toString();
     }
     public static Date parseDateTag(String value) throws ParseException {
         return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value);

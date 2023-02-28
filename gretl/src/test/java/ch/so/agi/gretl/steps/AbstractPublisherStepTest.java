@@ -48,6 +48,11 @@ public abstract class AbstractPublisherStepTest {
     public AbstractPublisherStepTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
+//        java.util.logging.Logger logger = java.util.logging.Logger.getGlobal().getParent();
+//        logger.setLevel(java.util.logging.Level.ALL);
+//        java.util.logging.Handler handler = new java.util.logging.ConsoleHandler();
+//        handler.setLevel(java.util.logging.Level.ALL);
+//        logger.addHandler(handler);        
     }
     protected abstract Path getTargetPath();
     @Test
