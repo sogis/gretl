@@ -188,11 +188,10 @@ public class Gpkg2ShpStep {
         // Convert (read -> write) tables
         for (String tableName : tableNames) {
            
-//            Settings settings = new Settings();
-//            settings.setValue(ShapeReader.ENCODING, "UTF8");
-//            
-//          ShapeWriter writer = new ShapeWriter(Paths.get(outputDir, tableName + ".shp").toFile(), settings);
-            ShapeWriter writer = new ShapeWriter(Paths.get(outputDir, tableName + ".shp").toFile());
+            Settings settings = new Settings();
+            settings.setValue(ShapeReader.ENCODING, "UTF8");
+            
+            ShapeWriter writer = new ShapeWriter(Paths.get(outputDir, tableName + ".shp").toFile(), settings);
             writer.setDefaultSridCode("2056");
             
             AttributeDescriptor[] attrsDesc = shpAttrsDescMap.get(tableName);
