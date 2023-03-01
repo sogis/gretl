@@ -27,6 +27,34 @@ public class Gpkg2ShpStepTest {
     public TemporaryFolder folder = new TemporaryFolder();
     private GretlLogger log;
     
+//    @Test
+//    public void dummy() throws Exception {
+//        String TEST_OUT = "/Users/stefan/tmp/shapefix/";
+//        File gpkgFile = new File("src/test/resources/data/gpkg2shp/verkehrszaehlstellen_edit.gpkg");
+//        
+//        Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
+//        gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
+//
+//    }
+    
+    @Test 
+    public void export_no_Geometry_Ok() throws Exception {
+        String TEST_OUT = folder.newFolder().getAbsolutePath();
+        File gpkgFile = new File("src/test/resources/data/gpkg2shp/aggloprogramme.gpkg");
+        
+        Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
+        gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
+
+        // Check results
+        {
+            FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(TEST_OUT, "massnahmen.shp"));
+            SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
+            assertEquals(451, featuresSource.getFeatures().size()); 
+
+            assertEquals(35, featuresSource.getSchema().getAttributeCount());
+        }
+    }
+    
     @Test
     public void export_Ok() throws Exception {
         String TEST_OUT = folder.newFolder().getAbsolutePath();

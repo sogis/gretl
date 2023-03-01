@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.ehi.basics.settings.Settings;
 import ch.interlis.iom.IomObject;
 import ch.interlis.iom_j.Iom_jObject;
 import ch.interlis.iox.IoxEvent;
@@ -23,6 +24,7 @@ import ch.interlis.iox.ObjectEvent;
 import ch.interlis.iox_j.EndBasketEvent;
 import ch.interlis.iox_j.EndTransferEvent;
 import ch.interlis.ioxwkf.gpkg.GeoPackageReader;
+import ch.interlis.ioxwkf.shp.ShapeReader;
 import ch.interlis.ioxwkf.shp.ShapeWriter;
 
 import org.geotools.feature.AttributeTypeBuilder;
@@ -83,8 +85,29 @@ public class Gpkg2ShpStep {
             }
          
             // Mapping von GPKG-Attribut-Descriptor zu SHP-Attribut-Descriptor.
-            for (String tableName : tableNames) {
+            for (String tableName : tableNames) {                
                 List<GpkgAttributeDescriptor> gpkgAttrsDesc = GpkgAttributeDescriptor.getAttributeDescriptors(null, tableName, conn);  
+                
+                // Ganz klar im Vergleich zur komplett schemalosen Variante (also Geometrie und String)
+                // ist es mir hier nicht. Jedenfalls scheint es nicht zu funktionieren, wenn es kein
+                // Geometrie-Attribut gibt. Aus diesem Grund faken wir eins. 
+                boolean geomColumnFound = false;
+                for (GpkgAttributeDescriptor attrDescr : gpkgAttrsDesc) {
+                    if (attrDescr.isGeometry()) {
+                        geomColumnFound = true;
+                    }                
+                }
+                
+                if (!geomColumnFound) {
+                    GpkgAttributeDescriptor attr=new GpkgAttributeDescriptor();
+                    attr.setDbColumnName("the_geom");
+                    attr.setDbColumnType(Types.BLOB); // Es braucht einen DbColumnType. Weil aber "isGeometry()=true", spielt das im Ablauf keine Rolle. Siehe Code unten.
+                    attr.setDbColumnTypeName("POINT"); 
+                    attr.setCoordDimension(2);
+                    attr.setSrId(2056);
+                    attr.setDbColumnGeomTypeName("POINT"); // Braucht es, damit isGeometry()=true wird.
+                    gpkgAttrsDesc.add(attr);
+                }
                 
                 AttributeDescriptor shpAttrsDesc[] = new AttributeDescriptor[gpkgAttrsDesc.size()];
                 for (int i=0; i<gpkgAttrsDesc.size(); i++) {
@@ -96,6 +119,7 @@ public class Gpkg2ShpStep {
 
                     if(gpkgAttrDesc.isGeometry()) {
                         String geoColumnTypeName = gpkgAttrDesc.getDbColumnGeomTypeName();
+
                         if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_POINT)) {
                             attributeBuilder.setBinding(Point.class);
                         } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTIPOINT)) {
@@ -153,19 +177,9 @@ public class Gpkg2ShpStep {
                     attributeBuilder.setMaxOccurs(1);
                     attributeBuilder.setNillable(true);
                     shpAttrsDesc[i] = attributeBuilder.buildDescriptor(attrName.toLowerCase());
-                    shpAttrsDescMap.put(tableName, shpAttrsDesc);
                 }
-//                for (GpkgAttributeDescriptor attr : gpkgAttrsDesc) {
-//                    System.out.println(attr.getDbColumnName());
-//                    System.out.println(attr.getIomAttributeName());
-//                    System.out.println(attr.getDbColumnTypeName());
-//                    System.out.println(attr.getDbColumnGeomTypeName());
-//                    System.out.println(attr.getCoordDimension());
-//                    System.out.println(attr.getSrId());
-//                    System.out.println(attr.isGeometry());
-//                    System.out.println(attr.getDbColumnType());
-//                    System.out.println("--------------------------------");
-//                }
+                
+                shpAttrsDescMap.put(tableName, shpAttrsDesc);
             }
         } catch (SQLException e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -173,13 +187,19 @@ public class Gpkg2ShpStep {
 
         // Convert (read -> write) tables
         for (String tableName : tableNames) {
+           
+//            Settings settings = new Settings();
+//            settings.setValue(ShapeReader.ENCODING, "UTF8");
+//            
+//          ShapeWriter writer = new ShapeWriter(Paths.get(outputDir, tableName + ".shp").toFile(), settings);
             ShapeWriter writer = new ShapeWriter(Paths.get(outputDir, tableName + ".shp").toFile());
             writer.setDefaultSridCode("2056");
             
             AttributeDescriptor[] attrsDesc = shpAttrsDescMap.get(tableName);
             writer.setAttributeDescriptors(attrsDesc);
-            
+                      
             GeoPackageReader reader = new GeoPackageReader(new File(gpkgFile), tableName);
+
             IoxEvent event = reader.read();
             while (event instanceof IoxEvent) {
                 if (event instanceof ObjectEvent) {
