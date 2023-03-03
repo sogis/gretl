@@ -37,9 +37,29 @@
             </MODELS>
         </HEADERSECTION>
 
+        <!-- TODO 
+        * Versicherungsbeginn: falsch im XML (metaDataName) oder fehlt gänzlich. Sollte mandatory sein.
+        * Umgang mit den verschiednene eventType in der Transformation: sind die immer sehr ähnlich? fehlt einfach was? (-> zusätliche if prüfung)
+        -->
+
+        <!-- Bemerkungen
+        * Pro Meldung (z.B. newInsuranceValue) sind mehrere "buidlingInformationType" möglich. Dort sind dann wieder mehrere Grundstücke möglich. 
+          Wie mache ich das grundsätzlich und wie mit XSLT? (-> TID? position()?)
+          - pro building und pro Grundstück ein INTERLIS-Objekt?
+          - jedoch werden immer alle Eingänge (buildingEntranceInformation) allen INTERLIS-Objekte zugewiesen
+          -> Ich nehme nur jeweils das erste Element? Nachfragen bei SGV.
+        * Fehlt EGID? Gemäss SGV führen sie diesen nicht.
+
+        * Gemeinde wird nicht geliefert. Dünkt mich. Wir könntes sie mit einem Update updaten (nache dem Import oder beim Transfer in Pub)
+        -->
+
         <DATASECTION>
             <SO_AGI_SGV_Meldungen_20221109.Meldungen BID="SO_AGI_SGV_Meldungen_20221109.Meldungen">
+
+                <xsl:message>Hallo Delivery</xsl:message>
+
                 <xsl:apply-templates select="eCH-0132:newInsuranceValue | eCH-0132:cancellation" /> 
+
             </SO_AGI_SGV_Meldungen_20221109.Meldungen>
 
         </DATASECTION>
@@ -47,6 +67,8 @@
     </xsl:template>
 
     <xsl:template match="eCH-0132:newInsuranceValue | eCH-0132:cancellation">
+        <xsl:message>Hallo newInsuranceValue or cancellation</xsl:message>
+
         <SO_AGI_SGV_Meldungen_20221109.Meldungen.Meldung xmlns="http://www.interlis.ch/INTERLIS2.3" TID="1">
             <xsl:if test="eCH-0132:buildingInformation[1]/eCH-0132:building[1]/eCH-0129:coordinates">
                 <Lage xmlns="http://www.interlis.ch/INTERLIS2.3">
@@ -110,14 +132,21 @@
             </Verwalter>
 
             <Eigentuemer xmlns="http://www.interlis.ch/INTERLIS2.3">
-                <xsl:for-each select="eCH-0132:policyholder/eCH-0132:mailAddress">
-                    <xsl:call-template name="custodianOrPolicyholder">
-                        <xsl:with-param name="address" select="." />
-                    </xsl:call-template>
-                    <xsl:if test="position() != last()">
-                        <xsl:text>&#x20;/&#x20;</xsl:text>
-                    </xsl:if>
-                </xsl:for-each>
+                <xsl:choose>
+                    <xsl:when test="eCH-0132:policyholder/eCH-0132:mailAddress">
+                        <xsl:for-each select="eCH-0132:policyholder/eCH-0132:mailAddress">
+                            <xsl:call-template name="custodianOrPolicyholder">
+                                <xsl:with-param name="address" select="." />
+                            </xsl:call-template>
+                            <xsl:if test="position() != last()">
+                                <xsl:text>&#x20;/&#x20;</xsl:text>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>DUMMY</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
             </Eigentuemer>
 
             <Baulicher_Mehrwert xmlns="http://www.interlis.ch/INTERLIS2.3">
@@ -152,6 +181,9 @@
                 <xsl:value-of select="$address/eCH-0010:person/eCH-0010:lastName" />
                 <xsl:text>,&#x20;</xsl:text>
             </xsl:when>
+            <xsl:otherwise>
+                <xsl:text>DUMMY</xsl:text>
+            </xsl:otherwise>
         </xsl:choose>
         <xsl:value-of select="$address/eCH-0010:addressInformation/eCH-0010:street" />
         <xsl:text>&#x20;</xsl:text>
