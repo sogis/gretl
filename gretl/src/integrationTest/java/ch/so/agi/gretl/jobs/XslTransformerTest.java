@@ -20,11 +20,12 @@ public class XslTransformerTest {
         IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformer", gvs);
         
         // Check result
-        byte[] bytes = Files.readAllBytes(Paths.get("src/integrationTest/jobs/XslTransformer", "MeldungAnGeometer_G-0111102_20221103_145001.xtf"));
+        byte[] bytes = Files.readAllBytes(Paths.get("src/integrationTest/jobs/XslTransformer", "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
         String fileContent = new String (bytes);
 
         assertTrue(fileContent.contains("<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\"SO_AGI_SGV_Meldungen_20221109.Meldungen\">"));
-        assertTrue(fileContent.contains("<Grundstuecksnummer>2979</Grundstuecksnummer>"));        
+        assertTrue(fileContent.contains("<Grundstuecksnummer>1505</Grundstuecksnummer>"));
+        assertTrue(fileContent.contains("<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>"));
     }
     
     @Test
@@ -34,7 +35,7 @@ public class XslTransformerTest {
         IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformerFileSet", gvs);
 
         // Check result
-        assertTrue(new File("src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_G-0111102_20221103_145001.xtf").exists());
-        assertTrue(new File("src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_G-0111752_20221103_230002.xtf").exists());
+        assertTrue(new File("src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf").exists());
+        assertTrue(new File("src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_mehrere_gebaeude_mehrere_grundstuecke.xtf").exists());
     }
 }
