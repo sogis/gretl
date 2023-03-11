@@ -24,7 +24,7 @@ _GRETL_ is in stable state.
 
 ## System requirements
 
-For the current version of _GRETL_, you will need a JRE (Java Runtime Environment) installed on your system, version 1.8 or later and gradle, version 3.4 or later.
+For the current version of _GRETL_, you will need a JRE (Java Runtime Environment) installed on your system, version 1.8 or later and Gradle, version 5.1.1 or later.
 For convenience use the gradle wrapper.
 
 ## Subprojects
