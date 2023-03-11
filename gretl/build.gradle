@@ -77,7 +77,6 @@ dependencies {
     api ioxIliDependency
     api ehiSqlgenDependency
 
-    api oerebIconizerDependency
     api av2chDependency
     api av2geobauDependency
     
