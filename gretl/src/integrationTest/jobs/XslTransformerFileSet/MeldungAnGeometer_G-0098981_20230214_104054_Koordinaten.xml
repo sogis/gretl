@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<delivery xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.ech.ch/xmlns/eCH-0132/3">
+  <deliveryHeader>
+    <senderId xmlns="http://www.ech.ch/xmlns/eCH-0058/5">ie4g59</senderId>
+    <messageId xmlns="http://www.ech.ch/xmlns/eCH-0058/5">06d35ab7-c125-41f8-8429-f1518fbf586e</messageId>
+    <messageType xmlns="http://www.ech.ch/xmlns/eCH-0058/5">fj987ejk</messageType>
+    <sendingApplication xmlns="http://www.ech.ch/xmlns/eCH-0058/5">
+      <manufacturer>Gemdat AG</manufacturer>
+      <product>gemdat versicherung</product>
+      <productVersion>7.16.2</productVersion>
+    </sendingApplication>
+    <messageDate xmlns="http://www.ech.ch/xmlns/eCH-0058/5">2023-02-14T10:40:54.728213+01:00</messageDate>
+    <action xmlns="http://www.ech.ch/xmlns/eCH-0058/5">1</action>
+    <testDeliveryFlag xmlns="http://www.ech.ch/xmlns/eCH-0058/5">1</testDeliveryFlag>
+  </deliveryHeader>
+  <newInsuranceValue>
+    <event>4</event>
+    <insuranceObject>
+      <localID xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+        <IdCategory>Building</IdCategory>
+        <Id>a9adc73a-fa84-4778-9b4f-6e32c173f4d1</Id>
+      </localID>
+      <insuranceNumber xmlns="http://www.ech.ch/xmlns/eCH-0129/6">G-0098981</insuranceNumber>
+    </insuranceObject>
+    <insuranceValue>
+      <localID xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+        <IdCategory>EventId</IdCategory>
+        <Id>02f1a223-0375-47f0-ac5d-86259c6ceb0b</Id>
+      </localID>
+      <validFrom xmlns="http://www.ech.ch/xmlns/eCH-0129/6">2023-02-13</validFrom>
+      <changeReason xmlns="http://www.ech.ch/xmlns/eCH-0129/6">1005</changeReason>
+      <insuranceSum xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+        <amount>2611448</amount>
+      </insuranceSum>
+    </insuranceValue>
+    <custodian>
+      <mailAddress>
+        <organisation xmlns="http://www.ech.ch/xmlns/eCH-0010/6">
+          <organisationName>Novavest Real Estate AG</organisationName>
+        </organisation>
+        <addressInformation xmlns="http://www.ech.ch/xmlns/eCH-0010/6">
+          <street>Feldeggstrasse</street>
+          <houseNumber>26</houseNumber>
+          <town>Zürich</town>
+          <swissZipCode>8008</swissZipCode>
+          <country>
+            <countryNameShort>Schweiz</countryNameShort>
+          </country>
+        </addressInformation>
+      </mailAddress>
+    </custodian>
+    <policyholder>
+      <mailAddress>
+        <organisation xmlns="http://www.ech.ch/xmlns/eCH-0010/6">
+          <organisationName>Novavest Real Estate AG</organisationName>
+        </organisation>
+        <addressInformation xmlns="http://www.ech.ch/xmlns/eCH-0010/6">
+          <street>Feldeggstrasse</street>
+          <houseNumber>26</houseNumber>
+          <town>Zürich</town>
+          <swissZipCode>8008</swissZipCode>
+          <country>
+            <countryNameShort>Schweiz</countryNameShort>
+          </country>
+        </addressInformation>
+      </mailAddress>
+    </policyholder>
+    <buildingInformation>
+      <building>
+        <dateOfConstruction xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+          <year>2009</year>
+        </dateOfConstruction>
+        <buildingCategory xmlns="http://www.ech.ch/xmlns/eCH-0129/6">1020</buildingCategory>
+        <coordinates xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+          <east>2630732</east>
+          <north>1241297</north>
+          <originOfCoordinates>902</originOfCoordinates>
+        </coordinates>
+        <volume xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+          <volume>3441</volume>
+          <norm>961</norm>
+        </volume>
+        <namedMetaData xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+          <metaDataName>DateOfValuation</metaDataName>
+          <metaDataValue>13.02.2023</metaDataValue>
+        </namedMetaData>
+      </building>
+      <realestate>
+        <realestateIdentification xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+          <EGRID>CH940632814686</EGRID>
+          <number>1505</number>
+        </realestateIdentification>
+        <realestateType xmlns="http://www.ech.ch/xmlns/eCH-0129/6">1</realestateType>
+        <namedMetaData xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+          <metaDataName>NBIdent</metaDataName>
+          <metaDataValue>SO0200002580</metaDataValue>
+        </namedMetaData>
+      </realestate>
+      <buildingEntranceInformation>
+        <buildingEntrance>
+          <buildingEntranceNo xmlns="http://www.ech.ch/xmlns/eCH-0129/6">44</buildingEntranceNo>
+          <localID xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+            <IdCategory>BuildingEntrance</IdCategory>
+            <Id>bec2995c-1e06-48b0-8281-251f9daba8f4</Id>
+          </localID>
+          <isOfficialAddress xmlns="http://www.ech.ch/xmlns/eCH-0129/6">1</isOfficialAddress>
+        </buildingEntrance>
+        <localisationInformation>
+          <locality>
+            <swissZipCode xmlns="http://www.ech.ch/xmlns/eCH-0129/6">4616</swissZipCode>
+            <swissZipCodeAddOn xmlns="http://www.ech.ch/xmlns/eCH-0129/6">00</swissZipCodeAddOn>
+            <name xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+              <nameLong>Kappel SO</nameLong>
+            </name>
+          </locality>
+          <street>
+            <description xmlns="http://www.ech.ch/xmlns/eCH-0129/6">
+              <language>9901</language>
+              <descriptionLong>Grossmatt</descriptionLong>
+            </description>
+          </street>
+        </localisationInformation>
+      </buildingEntranceInformation>
+    </buildingInformation>
+  </newInsuranceValue>
+</delivery>
