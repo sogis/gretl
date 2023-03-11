@@ -27,8 +27,7 @@ public class XslTransformerStepTest {
     
     @Test
     public void transformFile_Ok() throws IOException, SaxonApiException {
-//        File outDirectory = folder.newFolder("transformFile_Ok");
-        File outDirectory = new File("/Users/stefan/tmp/");
+        File outDirectory = folder.newFolder("transformFile_Ok");
         File sourceFile = new File("src/test/resources/data/xsltransformer/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml");
 
         // Transform File
