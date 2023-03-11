@@ -27,18 +27,19 @@ public class XslTransformerStepTest {
     
     @Test
     public void transformFile_Ok() throws IOException, SaxonApiException {
-        File outDirectory = folder.newFolder("transformFile_Ok");
-        File sourceFile = new File("src/test/resources/data/xsltransformer/MeldungAnGeometer_G-0111102_20221103_145001.xml");
+//        File outDirectory = folder.newFolder("transformFile_Ok");
+        File outDirectory = new File("/Users/stefan/tmp/");
+        File sourceFile = new File("src/test/resources/data/xsltransformer/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml");
 
         // Transform File
         XslTransformerStep xslTransformerStep = new XslTransformerStep();
         xslTransformerStep.execute("eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl", sourceFile, outDirectory);
         
         // Check result
-        byte[] bytes = Files.readAllBytes(Paths.get(outDirectory.getAbsolutePath(), "MeldungAnGeometer_G-0111102_20221103_145001.xtf"));
+        byte[] bytes = Files.readAllBytes(Paths.get(outDirectory.getAbsolutePath(), "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
         String fileContent = new String (bytes);
         
         assertTrue(fileContent.contains("<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\"SO_AGI_SGV_Meldungen_20221109.Meldungen\">"));
-        assertTrue(fileContent.contains("<Grundstuecksnummer>2979</Grundstuecksnummer>"));
+        assertTrue(fileContent.contains("<Grundstuecksnummer>1505</Grundstuecksnummer>"));
     }
 }
