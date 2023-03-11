@@ -139,6 +139,28 @@ Argument verwenden:
 
 ## Tasks
 
+### Av2ch
+
+Transformiert eine INTERLIS1-Transferdatei im kantonalen AV-DM01-Modell in das Bundesmodell. Unterstützt werden die Sprachen _Deutsch_ und _Italienisch_ und der Bezugrahmen _LV95_. Getestet mit Daten aus den Kantonen Solothurn, Glarus und Tessin. Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/sogis/av2ch](https://github.com/sogis/av2ch).
+
+Das Bundes-ITF hat denselben Namen wie das Kantons-ITF.
+
+Aufgrund der sehr vielen Logging-Messages einer verwendeten Bibliothek, wird der `System.err`-Ouput nach `dev/null` [https://github.com/sogis/av2ch/blob/master/src/main/java/ch/so/agi/av/Av2ch.java#L75](gemappt).
+
+```
+task transform(type: Av2ch) {
+    inputFile = file("254900.itf")
+    outputDirectory = file("output")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+inputFile   | Name der zu transformierenden ITF-Datei.
+outputDirectory  | Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
+modeldir | INTERLIS-Modellablage. String separiert mit Semikolon (analog ili2db, ilivalidator).
+zip | Die zu erstellende Datei wird gezippt (Default: false).
+
 ### Av2geobau
 
 Av2geobau konvertiert eine Interlis-Transferdatei (itf) in eine DXF-Geobau Datei. 
@@ -177,8 +199,6 @@ logFile      | Schreibt die log-Meldungen der Konvertierung in eine Text-Datei.
 proxy        | Proxy Server für den Zugriff auf Modell Repositories
 proxyPort    | Proxy Port für den Zugriff auf Modell Repositories
 zip          | Die zu erstellende Datei wird gezippt und es werden zusätzliche Dateien (Musterplan, Layerbeschreibung, Hinweise) hinzugefügt (Default: false).
-
-
 
 ### CsvExport
 Daten aus einer bestehenden Datenbanktabelle werden in eine CSV-Datei exportiert.
@@ -295,6 +315,42 @@ die die selbe Anzahl Attribute hat. Wird keine solche Klasse gefunden,
 gilt das als Validierungsfehler.
 
 Die Prüfung von gleichzeitig mehreren CSV-Dateien führt zu Fehlermeldungen wie `OID o3158 of object <Modelname>.<Topicname>.<Klassenname> already exists in ...`. Beim Öffnen und Lesen einer CSV-Datei wird immer der Zähler, der die interne (in der CSV-Datei nicht vorhandene) `OID` generiert, zurückgesetzt. Somit kann immer nur eine CSV-Datei pro Task geprüft werden.
+
+### DatabaseDocumentExport (Experimental)
+
+Speichert Dokumente, deren URL in einer Spalte einer Datenbanktabelle gespeichert sind, in einem lokalen Verzeichnis. Zukünftig und bei Bedarf kann der Task so erweitert werden, dass auch BLOBs aus der Datenbank gespeichert werden können.
+
+Redirect von HTTP nach HTTPS funktionieren nicht. Dies [korrekterweise](https://stackoverflow.com/questions/1884230/httpurlconnection-doesnt-follow-redirect-from-http-to-https) (?) wegen der verwendeten Java-Bibliothek.
+
+Wegen der vom Kanton Solothurn eingesetzten self-signed Zertifikate muss ein unschöner Handstand gemacht werden. Leider kann dieser Usecase schlecht getestet werden, da die Links nur in der privaten Zone verfügbar sind und die zudem noch häufig ändern können. Manuell getestet wurde es jedoch.
+
+Als Dateiname wird der letzte Teil des URL-Pfades verwendet, z.B. `https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis` wird mit den Prefix und Extension zu `ada_2W8v0qRZQBC0ahDnZGut3Q.pdf`.
+
+Es wird `DISTINCT ON (<documentColumn>)` und ein Filter `WHERE <documentColumn> IS NOT NULL` verwendet.
+
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task exportDocuments(type: DatabaseDocumentExport){
+    database = [db_uri, db_user, db_pass]
+    qualifiedTableName = "ada_denkmalschutz.fachapplikation_rechtsvorschrift_link"
+    documentColumn = "multimedia_link"
+    targetDir = file(".")
+    fileNamePrefix = "ada_"
+    fileNameExtension = "pdf"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank aus der die Dokumente exportiert werden sollen.
+qualifiedTableName  | Qualifizierter Tabellenname
+documentColumn | DB-Tabellenspalte mit dem Dokument resp. der URL zum Dokument.
+targetDir | Verzeichnis in das die Dokumente exportiert werden sollen.
+fileNamePrefix | Prefix für Dateinamen (optional)
+fileNameExtension | Dateinamen-Extension (optional)
 
 ### Db2Db
 
@@ -920,6 +976,50 @@ validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
 
 Zusatzfunktionen (Custom Functions): Die `pluginFolder`-Option ist zum jetzigen Zeitpunkt ohne Wirkung. Die Zusatzfunktionen werden als normale Abhängigkeit definiert und in der ilivalidator-Task-Implementierung registriert. Das Laden der Klassen zur Laufzeit in _iox-ili_ hat nicht funktioniert (`NoClassDefFoundError`...). Der Plugin-Mechanismus von _ilivalidator_ wird momentan ohnehin geändert ("Ahead-Of-Time-tauglich" gemacht).
 
+### Gpkg2Dxf 
+
+Exportiert alle Tabellen einer GeoPackage-Datei in DXF-Dateien. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt.
+
+Es werden alle INTERLIS-Klassen exportier (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Der eigentliche SELECT-Befehl ist komplizierter weil für das Layern der einzelnen DXF-Objekte das INTERLIS-Metaattribut `!!@dxflayer="true"` ausgelesen wird. Gibt es kein solches Metaattribut wird alles in den gleichen DXF-Layer (`default`) geschrieben.
+ 
+**Encoding**: Die DXF-Dateien sind `ISO-8859-1` encodiert.
+
+**Achtung**: Task sollte verbessert werden (siehe E-Mail Claude im Rahmen des Publisher-Projektes).
+
+```
+task gpkg2dxf(type: Gpkg2Dxf) {
+    dataFile = file("data.gpkg")
+    outputDir = file("./out/")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
+outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
+
+### Gpkg2Shp 
+
+Exportiert alle Tabellen einer GeoPackage-Datei in Shapefiles. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt. 
+
+Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Je nach, bei der Erstellung der GeoPackage-Datei, verwendeten Parametern, muss die Query angepasst werden. Es muss jedoch darauf geachtet werden, dass es nur eine Query gibt (für alle Datensätze). Für den vorgesehenen Anwendungsfall (sehr einfache, flache Modelle) dürfte das kein Problem darstellen.
+
+**Encoding**: Die Shapefiles sind neu `UTF-8` encodiert. Standard ist `ISO-8859-1`, scheint aber v.a. in QGIS nicht standardmässig zu funktionieren (keine Umlaute). 
+
+**Achtung**: Task sollte verbessert werden (siehe E-Mail Claude im Rahmen des Publisher-Projektes).
+
+```
+task gpkg2shp(type: Gpkg2Shp) {
+    dataFile = file("data.gpkg")
+    outputDir = file("./out/")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dataFile | GeoPackage-Datei, die nach Shapefile transformiert werden soll.
+outputDir | Verzeichnis, in das die Shapefile gespeichert werden.
+
 ### GpkgImport
 **Achtung:** Fetch-Size ist nicht implementiert.
 
@@ -1307,65 +1407,7 @@ Stellt für Vektordaten die aktuellsten Geodaten-Dateien bereit und pflegt das A
 
 [Details](Publisher.md)
 
-### Av2ch
-
-Transformiert eine INTERLIS1-Transferdatei im kantonalen AV-DM01-Modell in das Bundesmodell. Unterstützt werden die Sprachen _Deutsch_ und _Italienisch_ und der Bezugrahmen _LV95_. Getestet mit Daten aus den Kantonen Solothurn, Glarus und Tessin. Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/sogis/av2ch](https://github.com/sogis/av2ch).
-
-Das Bundes-ITF hat denselben Namen wie das Kantons-ITF.
-
-Aufgrund der sehr vielen Logging-Messages einer verwendeten Bibliothek, wird der `System.err`-Ouput nach `dev/null` [https://github.com/sogis/av2ch/blob/master/src/main/java/ch/so/agi/av/Av2ch.java#L75](gemappt).
-
-```
-task transform(type: Av2ch) {
-    inputFile = file("254900.itf")
-    outputDirectory = file("output")
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-inputFile   | Name der zu transformierenden ITF-Datei.
-outputDirectory  | Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
-modeldir | INTERLIS-Modellablage. String separiert mit Semikolon (analog ili2db, ilivalidator).
-zip | Die zu erstellende Datei wird gezippt (Default: false).
-
-### DatabaseDocumentExport (Experimental)
-
-Speichert Dokumente, deren URL in einer Spalte einer Datenbanktabelle gespeichert sind, in einem lokalen Verzeichnis. Zukünftig und bei Bedarf kann der Task so erweitert werden, dass auch BLOBs aus der Datenbank gespeichert werden können.
-
-Redirect von HTTP nach HTTPS funktionieren nicht. Dies [korrekterweise](https://stackoverflow.com/questions/1884230/httpurlconnection-doesnt-follow-redirect-from-http-to-https) (?) wegen der verwendeten Java-Bibliothek.
-
-Wegen der vom Kanton Solothurn eingesetzten self-signed Zertifikate muss ein unschöner Handstand gemacht werden. Leider kann diesr Usecase schlecht getestet werden, da die Links nur in der privaten Zone verfügbar sind und die zudem noch häufig ändern können. Manuel getestet wurde es jedoch.
-
-Als Dateiname wird der letzte Teil des URL-Pfades verwendet, z.B. `https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis` wird mit den Prefix und Extension zu `ada_2W8v0qRZQBC0ahDnZGut3Q.pdf`.
-
-Es wird `DISTINCT ON (<documentColumn>)` und ein Filter `WHERE <documentColumn> IS NOT NULL` verwendet.
-
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task exportDocuments(type: DatabaseDocumentExport){
-    database = [db_uri, db_user, db_pass]
-    qualifiedTableName = "ada_denkmalschutz.fachapplikation_rechtsvorschrift_link"
-    documentColumn = "multimedia_link"
-    targetDir = file(".")
-    fileNamePrefix = "ada_"
-    fileNameExtension = "pdf"
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank aus der die Dokumente exportiert werden sollen.
-qualifiedTableName  | Qualifizierter Tabellenname
-documentColumn | DB-Tabellenspalte mit dem Dokument resp. der URL zum Dokument.
-targetDir | Verzeichnis in das die Dokumente exportiert werden sollen.
-fileNamePrefix | Prefix für Dateinamen (optional)
-fileNameExtension | Dateinamen-Extension (optional)
-
-### S3Download (Experimental)
+### S3Download
 
 Lädt eine Datei aus einem S3-Bucket herunter.
 
@@ -1391,7 +1433,7 @@ key | Name der Datei
 endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
 region | S3-Region (default: `eu-central-1`). 
 
-### S3Upload (Experimental)
+### S3Upload
 
 Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch. 
 
@@ -1424,7 +1466,7 @@ acl | Access Control Layer `[private, public-read, public-read-write, authentica
 contentType | Content-Type
 metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
-### S3Bucket2Bucket (Experimental)
+### S3Bucket2Bucket
 
 Kopiert Objekte von einem Bucket in einen anderen. Die Buckets müssen in der gleichen Region sein. Die Permissions werden nicht mitkopiert und müssen explizit gesetzt werden. 
 
@@ -1447,48 +1489,7 @@ targetBucket  | Bucket in den die Objekte kopiert werden.
 acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
 metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
-
-### Gpkg2Shp (Experimental)
-
-Exportiert alle Tabellen einer GeoPackage-Datei in Shapefiles. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt. 
-
-Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Je nach, bei der Erstellung der GeoPackage-Datei, verwendeten Parametern, muss die Query angepasst werden. Es muss jedoch darauf geachtet werden, dass es nur eine Query gibt (für alle Datensätze). Für den vorgesehenen Anwendungsfall (sehr einfache, flache Modelle) dürfte das kein Problem darstellen.
-
-**Encoding**: Die Shapefiles sind `ISO-8859-1` encodiert. `UTF-8` wäre möglich, ist aber nicht wirklich klar, ob das genügend standardisiert ist.
-
-```
-task gpkg2shp(type: Gpkg2Shp) {
-    dataFile = file("data.gpkg")
-    outputDir = file("./out/")
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-dataFile | GeoPackage-Datei, die nach Shapefile transformiert werden soll.
-outputDir | Verzeichnis, in das die Shapefile gespeichert werden.
-
-### Gpkg2Dxf (Experimental)
-
-Exportiert alle Tabellen einer GeoPackage-Datei in DXF-Dateien. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt.
-
-Es werden alle INTERLIS-Klassen exportier (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Der eigentliche SELECT-Befehl ist komplizierter weil für das Layern der einzelnen DXF-Objekte das INTERLIS-Metaattribut `!!@dxflayer="true"` ausgelesen wird. Gibt es kein solches Metaattribut wird alles in den gleichen DXF-Layer (`default`) geschrieben.
- 
-**Encoding**: Die DXF-Dateien sind `ISO-8859-1` encodiert.
-
-```
-task gpkg2dxf(type: Gpkg2Dxf) {
-    dataFile = file("data.gpkg")
-    outputDir = file("./out/")
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
-outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
-
-### XslTransformer
+### XslTransformer (Experimental)
 
 **TODO:** Signatur des Tasks. Muss wohl noch andere Möglichkeiten unterstützen: z.B. ganzes Verzeichnis. Wie sieht es mit der Endung aus? Immer XTF (wohl auch nicht)
 
@@ -1515,5 +1516,5 @@ task transform(type: XslTransformer) {
 Parameter | Beschreibung
 ----------|-------------------
 xslFileName | Name der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss.
-xmlFile | Datei oder FileTree., die transformiert werden soll(en).
+xmlFile | Datei oder FileTree, die/der transformiert werden soll.
 outDirectory | Verzeichnis, in das die transformierte Datei gespeichert wird. Der Name der transformierten Datei entspricht dem Namen der Inpuzt-Datei mit Endung `.xtf`.
