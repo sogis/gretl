@@ -1,0 +1,88 @@
+INTERLIS 2.3;
+
+/** !!------------------------------------------------------------------------------
+ * !! Version | wer | Aenderung
+ * !!------------------------------------------------------------------------------
+ * !! 2019-02-12 | Martin Schweizer  | Erstfassung
+ * !! 2019-10.15 | Martin Schweizer  | Komplettueberarbeitung
+ * !!==============================================================================
+ */
+!!@ technicalContact=mailto:agi@bd.so.ch
+MODEL SO_AWJF_Seltene_Baumarten_Publikation_20191015 (de)
+AT "http://geo.so.ch/models/AWJF"
+VERSION "2019-10-15"  =
+  IMPORTS GeometryCHLV95_V1;
+
+  TOPIC seltene_Baumarten =
+    OID AS INTERLIS.UUIDOID;
+
+    /** Seltene Baumarten
+     */
+    CLASS Seltene_Baumarten (ABSTRACT) =
+      /** ID pro Forstrevier. Jeder Baum hat eine ID, welche aus dem Kuerzel fuer das Forstrevier und einer Nummer besteht.
+       */
+      ID_Forstrevier : MANDATORY TEXT*10;
+      /** Handelt es sich um eine Pflanzung? Ja / nein
+       */
+      Pflanzung : MANDATORY BOOLEAN;
+      /** Jahr der Erfassung des Baumes
+       */
+      Erfassungsjahr : INTERLIS.GregorianYear;
+      /** Waldgesellschaft, der der Baum / die Pflanzung angehoert.
+       */
+      Waldgesellschaft : TEXT*10;
+      /** Eigentuemer des Baumes / der Pflanzung
+       */
+      Eigentuemer : TEXT*50;
+      /** Sponsor des Baumes / der Pflanzung
+       */
+      Sponsor : TEXT*50;
+      /** Gemeinde 
+       */
+      Gemeinde : TEXT*50;
+      /** Forstbetrieb (Forstrevier)  
+       */
+      Forstbetrieb : TEXT*50;
+      /** Forstkreis 
+       */
+      Forstkreis : TEXT*50;
+      /** Bemerkung
+       */
+      Bemerkung : TEXT*200;
+      /** Gesuchnummer aus einer Datenbank des AWJF
+       */
+      Gesuchnummer : 100 .. 9999;
+      /** Erfolgte die Auszahlung? Ja /  Nein?
+       */
+      Auszahlung_erfolgte : MANDATORY BOOLEAN;
+      /** Jahr, in welchem die Auszahlung erfolgte
+       */
+      Auszahlungsjahr : INTERLIS.GregorianYear;
+    END Seltene_Baumarten;
+
+    CLASS Freistellung
+    EXTENDS Seltene_Baumarten =
+      Bauminfo : MANDATORY TEXT*10000;
+      /** Durchmesser des Baumes auf Brusthoehe
+       */
+      Brusthoehendurchmesser : TEXT*100;
+      /** Geometrie
+       */
+      Geometrie : MANDATORY GeometryCHLV95_V1.Coord2;
+    END Freistellung;
+
+    /** Pflanzungen
+     */
+    CLASS Pflanzung
+    EXTENDS Seltene_Baumarten =
+      /** Information zu den Baumarten der Pflanzung 
+       */
+      Bauminfo : TEXT*10000;
+      /** Geometrie
+       */
+      Geometrie : MANDATORY GeometryCHLV95_V1.Surface;
+    END Pflanzung;
+
+  END seltene_Baumarten;
+
+END SO_AWJF_Seltene_Baumarten_Publikation_20191015.

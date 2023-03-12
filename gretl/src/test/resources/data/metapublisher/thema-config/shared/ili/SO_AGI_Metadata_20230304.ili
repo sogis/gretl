@@ -1,0 +1,139 @@
+INTERLIS 2.3;
+
+/** !!------------------------------------------------------------------------------
+ *  !! Version    | wer | Änderung
+ *  !!------------------------------------------------------------------------------
+ *  !! 2023-03-04 | sz  | Ersterfassung
+ *  !!==============================================================================
+ */
+!!@ technicalContact=mailto:agi@bd.so.ch
+!!@ furtherInformation=http://geo.so.ch/models/AGI/SO_AGI_Metadata_20230304.uml
+
+MODEL SO_AGI_Metadata_20230304 (de)
+AT "https://agi.so.ch"
+VERSION "2023-03-04" =
+  DOMAIN
+
+    SOOID = OID TEXT*255;
+
+    LanguageCode_ISO639_1 = TEXT*2;
+
+    AbsoluteLocation = URI;
+
+    GlobalDataId = TEXT;
+
+    LocalBasketId = TEXT;
+
+    Code = URI;
+
+    /** Any identification of a version, for example a name, number or date.
+     */
+    DataVersion = TEXT;
+
+    RelativeFilePath = TEXT;
+
+    WebService = URI;
+
+    WebSite = URI;
+
+  STRUCTURE Code_ = value : MANDATORY Code; END Code_;
+  STRUCTURE WebService_ = value : MANDATORY WebService; END WebService_;
+  STRUCTURE WebSite_ = value : MANDATORY WebSite; END WebSite_;
+
+  STRUCTURE File =
+    path : MANDATORY RelativeFilePath;
+    md5 : TEXT*32;
+  END File;
+
+  /** a link to dataset or a link to a basket.
+   * If it is a link to a basket, this might be by the globalId of the basket or
+   * by the combination of the datasetId and the localBasketId.
+   */
+  STRUCTURE DataLink =
+    basketId : GlobalDataId;
+    datasetId : GlobalDataId;
+    localBasketId : LocalBasketId;
+    MANDATORY CONSTRAINT (DEFINED(basketId) AND NOT(DEFINED(localBasketId))) OR DEFINED(datasetId);
+  END DataLink;
+
+  STRUCTURE ModelLink =
+    name : MANDATORY TEXT;  !! Name or Namespace
+    locationHint : URI; !! repo
+    versionHint : TEXT;
+  END ModelLink;
+
+  STRUCTURE DataFile =
+    /** Mimetype of file format
+     */
+    fileFormat : MANDATORY TEXT;
+    /** path of data-file, as it is in the repository e.g. "BFE/91.1_TypeOfReactorCatalogue_12-09-10.xml".
+     *  More than one entry if it is split into multiple parts.
+     */
+    file : LIST {1..*} OF SO_AGI_Metadata_20230304.File;
+  END DataFile;
+
+  STRUCTURE BoundingBox = 
+    westlimit: MANDATORY 2421750..2898750;
+    southlimit: MANDATORY 1033000..1350000;
+    eastlimit: MANDATORY 2421750..2898750;
+    northlimit: MANDATORY 1033000..1350000;
+  END BoundingBox;
+
+  STRUCTURE Office_ =
+    agencyName : TEXT;
+    abbreviation : TEXT;
+    division : TEXT;
+    officeAtWeb : URI;
+    email : URI;
+    phone : TEXT;
+  END Office_;
+
+  STRUCTURE AttributeDescription = 
+    name : TEXT; !! so wie er im Modell steht
+    shortDescription : MTEXT;
+    dataType : TEXT;
+    isMandatory : BOOLEAN;
+  END AttributeDescription;
+
+  STRUCTURE ClassDescription = 
+    name : TEXT; !! entspricht originalem Klassennamen.
+    title : TEXT; !! mittels ilidoc
+    shortDescription : MTEXT;
+    attributeDescription : BAG {0..*} OF SO_AGI_Metadata_20230304.AttributeDescription;
+  END ClassDescription;
+
+  TOPIC Offices =
+    OID AS SO_AGI_Metadata_20230304.SOOID;
+
+    CLASS Office EXTENDS SO_AGI_Metadata_20230304.Office_ = 
+
+    !! Constraint: Kombi Abkürzung und Abteilung nur einmal.
+
+    END Office;
+
+  END Offices;
+
+  TOPIC ThemePublications =
+
+    CLASS ThemePublication =
+      identifier : MANDATORY TEXT;
+      model : SO_AGI_Metadata_20230304.ModelLink;
+      lastPublishingDate : FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
+      secondToLastPublishingDate : FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
+      title : TEXT;
+      shortDescription : MTEXT;
+      licence : URI;
+      furtherInformation : URI;
+      keywords : TEXT;
+      synonyms : TEXT;
+      owner : MANDATORY SO_AGI_Metadata_20230304.Office_;
+      servicer : SO_AGI_Metadata_20230304.Office_;
+      boundary : BoundingBox;
+      classDescription : BAG {0..*} OF SO_AGI_Metadata_20230304.ClassDescription;
+
+      UNIQUE identifier;
+    END ThemePublication;
+
+  END ThemePublications;
+
+END SO_AGI_Metadata_20230304.

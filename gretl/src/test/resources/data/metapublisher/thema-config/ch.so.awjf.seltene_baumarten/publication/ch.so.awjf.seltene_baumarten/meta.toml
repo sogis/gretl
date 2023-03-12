@@ -1,0 +1,22 @@
+[basic]
+identifier = "ch.so.awjf.seltene_baumarten"
+title = "Seltene Baumarten"
+description = "Freistellung und Pflanzungen von für Jura- und Mittellandstandorte typischen, aber selten gewordenen Nebenbestandesbaumarten. Die seltenen Baumarten tragen zur Vielfalt und Struktur des Ökosystems Wald bei."
+keywords = "Wald,selten,Baum,Bäume"
+synonyms = "foo,bar"
+model = "SO_AWJF_Seltene_Baumarten_Publikation_20191015"
+owner = "ch.so.awjf"
+servicer = "ch.so.agi"
+licence = "https://files.geo.so.ch/nutzungsbedingungen.html"
+
+[formats]
+# Hier wohl was zum Output / zu den Outputformaten?
+# formats?
+
+[SO_AWJF_Seltene_Baumarten_Publikation_20191015.seltene_Baumarten.Freistellung]
+title = "Freistellung (schöner Titel)"
+description = "Freistellung von Nebenbestandesbaumarten"
+
+[SO_AWJF_Seltene_Baumarten_Publikation_20191015.seltene_Baumarten.Pflanzung]
+description = "Pflanzung von seltenen Baumarten (Übersteuern oder nicht vorhanden)"
+
