@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
@@ -75,11 +76,16 @@ public class MetaPublisherStep {
     private GretlLogger log;
     private String taskName;
     
+    public static final String PATH_ELE_AKTUELL = "aktuell";
+    public static final String PATH_ELE_META = "meta";
+    public static final String PATH_ELE_PUBLISHDATE_JSON="publishdate.json";
+
     private static final List<String> META_TOML_CONFIG_SECTIONS = new ArrayList<String>() {{
         add("basic");
         add("formats");
     }};
     
+    // TODO doch Bestandteil des Codes? Müsste ja eh Code anpassen, wenn ich Modell ändere. 
     private static final String ILI_MODEL_METADATA = "SO_AGI_Metadata_20230304.ili";
     private static final String XSL_HTML_METADATA = "xtf2html.xsl";
 
@@ -115,6 +121,9 @@ public class MetaPublisherStep {
     // (3) XTF schreiben
     // (4) HTML aus XTF ableiten
     
+    
+    // Parameter nochmals über die Bücher. Wenn es als GRETL-Task läuft, weiss ich implizit ja sehr viel bereits.
+    
     /**
      * Erstellt XTF- Und HTML-Datenblatt zu einer Themenpublikation. Aus der XTF-Datei wird das HTML-Datenblatt mittels XSL-Transformation erstellt.
      * Die beiden Dateien werden an den Ablageort kopiert (SFTP oder lokales Verzeichnis). 
@@ -124,7 +133,7 @@ public class MetaPublisherStep {
      * @throws IOException
      * @throws SaxonApiException
      */
-    public void execute(File themeRootDirectory, String themePublication) { 
+    public void execute(File themeRootDirectory, String themePublication, Path target) { 
         log.lifecycle(String.format("Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s )", taskName, themeRootDirectory, themePublication));
         
         File tomlFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, "meta.toml").toFile();
