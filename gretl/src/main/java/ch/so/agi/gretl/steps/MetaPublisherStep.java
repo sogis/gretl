@@ -136,6 +136,10 @@ public class MetaPublisherStep {
     public void execute(File themeRootDirectory, String themePublication, Path target) { 
         log.lifecycle(String.format("Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s )", taskName, themeRootDirectory, themePublication));
         
+        // Annahme: target-Subordner existieren. So falsch ist das nicht, oder? Warum Meta-Infos publizieren, wenn es nichts herunterzuladen gibt.
+        // Ausser für den Fall "Datenblatt anschauen" beim Entwickeln. Ok. Dann doch erstellen, wenn nicht vorhanden.
+        // Siehe circa Z 671 "Post". Weil alles ins Hist kopiert wird ausser, was vorher gelöscht wird, würde das auch reinkopiert.
+        
         File tomlFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, "meta.toml").toFile();
 
         try {
@@ -247,6 +251,7 @@ public class MetaPublisherStep {
             trans.setDestination(outFileSerializer);
             trans.transform();
             trans.close();
+            
 
             
         } catch (IOException | Ili2cException | IoxException | SaxonApiException e) {

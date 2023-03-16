@@ -1,0 +1,29 @@
+[basic]
+identifier = "ch.so.afu.abbaustellen"
+title = "Abbaustellen"
+description = """
+Die Abbaustellen umfassen die Flächen folgender Objekte: <br/>
+<ul>
+<li>sämtliche grösseren Abbaugebiete (Kiesgruben, Kalksteinbrüche sowie Tongruben), für welche ein Gestaltungsplan vorliegt. Die dargestellten Flächen umfassen jeweils den gesamten Perimeter der genehmigten Gestaltungspläne, und nicht einzelne Abbauetappen.</li>
+<li>Kleinabbaustellen. Es handelt sich üblicherweise um kleinere, gemeindeeigene Mergelgruben, in welchen Material für den Bau und Unterhalt von Wald- und Flurwegen abgebaut wird. Kleinabbaustellen erfordern keinen Gestaltungsplan. Die dargestellten Flächen umfassen hier jeweils den auf Stufe Bau-, bzw. Abbaubewilligung genehmigten Perimeter.</li>
+<li>alle künftigen Erweiterungs- und Ersatzstandorte, welche im kantonalen Richtplan (Kap. E-3.1 bis E-3.4) enthalten sind.</li>
+</ul>
+<br>
+Die Flächen wurden von verschiedenen Planvorlagen und bestehenden Flächendaten mit unterschiedlichem Massstab digitalisiert, bzw. übernommen.
+"""
+keywords = "unverschmutztes Aushubmaterial"
+synonyms = "Abbaugebiet,Kiesabbau,Kiesgrube,Steinbruch,Kalksteinbruch,Kalksteinbrüche,Tongrube,Kleinabbaustelle,Mergelgrube"
+model = "SO_AFU_ABBAUSTELLEN_Publikation_20221103"
+owner = "ch.so.afu"
+servicer = "ch.so.agi"
+licence = "https://files.geo.so.ch/nutzungsbedingungen.html"
+furtherInformation = "https://so.ch/verwaltung/bau-und-justizdepartement/amt-fuer-umwelt/boden-untergrund-geologie/rohstoffe-abbau/"
+
+[formats]
+# Hier wohl was zum Output / zu den Outputformaten?
+# formats?
+
+[SO_AFU_ABBAUSTELLEN_Publikation_20221103.Abbaustelle.Abbaustelle]
+title = "Standorte Abbaustellen"
+description = "Umfasst die Flächenobjekte der Abbaugebiete, Kleinabbaustellen und künftigen Standorte. Er enthält u.a. Angaben zum abgebauten Material und zur Abstimmungskategorie im Richtplan."
+
