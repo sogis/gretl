@@ -85,7 +85,7 @@ public class MetaPublisherStep {
         add("formats");
     }};
     
-    // TODO doch Bestandteil des Codes? Müsste ja eh Code anpassen, wenn ich Modell ändere. 
+    // TODO doch Bestandteil des Codes? Muesste ja eh Code anpassen, wenn ich Modell aendere. 
     private static final String ILI_MODEL_METADATA = "SO_AGI_Metadata_20230304.ili";
     private static final String XSL_HTML_METADATA = "xtf2html.xsl";
 
@@ -122,7 +122,7 @@ public class MetaPublisherStep {
     // (4) HTML aus XTF ableiten
     
     
-    // Parameter nochmals über die Bücher. Wenn es als GRETL-Task läuft, weiss ich implizit ja sehr viel bereits.
+    // Parameter nochmals ueber die Buecher. Wenn es als GRETL-Task laeuft, weiss ich implizit ja sehr viel bereits.
     
     /**
      * Erstellt XTF- Und HTML-Datenblatt zu einer Themenpublikation. Aus der XTF-Datei wird das HTML-Datenblatt mittels XSL-Transformation erstellt.
@@ -137,8 +137,8 @@ public class MetaPublisherStep {
         log.lifecycle(String.format("Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s )", taskName, themeRootDirectory, themePublication));
         
         // Annahme: target-Subordner existieren. So falsch ist das nicht, oder? Warum Meta-Infos publizieren, wenn es nichts herunterzuladen gibt.
-        // Ausser für den Fall "Datenblatt anschauen" beim Entwickeln. Ok. Dann doch erstellen, wenn nicht vorhanden.
-        // Siehe circa Z 671 "Post". Weil alles ins Hist kopiert wird ausser, was vorher gelöscht wird, würde das auch reinkopiert.
+        // Ausser fuer den Fall "Datenblatt anschauen" beim Entwickeln. Ok. Dann doch erstellen, wenn nicht vorhanden.
+        // Siehe circa Z 671 "Post". Weil alles ins Hist kopiert wird ausser, was vorher geloescht wird, wuerde das auch reinkopiert.
         
         File tomlFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, "meta.toml").toFile();
 
