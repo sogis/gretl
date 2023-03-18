@@ -78,20 +78,22 @@ public class MetaPublisherStep {
     
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
-    public static final String PATH_ELE_PUBLISHDATE_JSON="publishdate.json";
+    public static final String PATH_ELE_CONFIG = "config";
 
     private static final List<String> META_TOML_CONFIG_SECTIONS = new ArrayList<String>() {{
         add("basic");
         add("formats");
     }};
     
-    // TODO doch Bestandteil des Codes? Muesste ja eh Code anpassen, wenn ich Modell aendere. 
     private static final String ILI_MODEL_METADATA = "SO_AGI_Metadata_20230304.ili";
     private static final String XSL_HTML_METADATA = "xtf2html.xsl";
 
     private static final String ILI_TOPIC = "SO_AGI_Metadata_20230304.ThemePublications";
     private static final String BID = "SO_AGI_Metadata_20230304.ThemePublications";
     private static final String TAG = "SO_AGI_Metadata_20230304.ThemePublications.ThemePublication";
+    private static final String CLASS_DESCRIPTION_TAG = "SO_AGI_Metadata_20230304.ClassDescription";
+    private static final String ATTRIBUTE_DESCRIPTION_TAG = "SO_AGI_Metadata_20230304.AttributeDescription";
+    private static final String OFFICE_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.Office_";
     
     private static final String PUBLICATION_DIR_NAME = "publication";
     private static final String ILI_DIR_NAME = "ili";
@@ -111,160 +113,160 @@ public class MetaPublisherStep {
     public MetaPublisherStep() {
         this(null);
     }
-    
-    // TODO: Parameter fuer Ablageort fehlt noch. Siehe Publisher.
-    
-    // (0) Modellnamen aus Toml-Datei lesen.
-    // (1) Zuerst wird das Modell geparsed.
-    // (2) Anschliessend die Toml-Datei mit zusaetzlichen Informationen lesen und ggf. 
+
+    // (1) Ordner im Zielverzeichnis erstellen.
+    // (2) Modellnamen aus Toml-Datei lesen.
+    // (3) Zuerst wird das Modell geparsed.
+    // (4) Anschliessend die Toml-Datei mit zusaetzlichen Informationen lesen und ggf. 
     // die aus (1) eruierten Infos ueberschreiben.
-    // (3) XTF schreiben
-    // (4) HTML aus XTF ableiten
-    
-    
-    // Parameter nochmals ueber die Buecher. Wenn es als GRETL-Task laeuft, weiss ich implizit ja sehr viel bereits.
-    
+    // (5) XTF schreiben
+    // (6) HTML aus XTF ableiten
+    // (7) XTF in spezielle config-Verzeichnis im Zielverzeichnis kopieren
+        
     /**
-     * Erstellt XTF- Und HTML-Datenblatt zu einer Themenpublikation. Aus der XTF-Datei wird das HTML-Datenblatt mittels XSL-Transformation erstellt.
-     * Die beiden Dateien werden an den Ablageort kopiert (SFTP oder lokales Verzeichnis). 
      * 
-     * @param themeRootDirectory Root-Verzeichnis des Themas
-     * @param themePublicationPath
+     * @param themeRootDirectory the root directory of the theme
+     * @param themePublication the ident of the publication that is published (= dataIdent of PublisherTask)
+     * @param target the target root directory where the meta/config files will be saved
      * @throws IOException
+     * @throws IoxException
+     * @throws Ili2cException
      * @throws SaxonApiException
      */
-    public void execute(File themeRootDirectory, String themePublication, Path target) { 
-        log.lifecycle(String.format("Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s )", taskName, themeRootDirectory, themePublication));
+    public void execute(File themeRootDirectory, String themePublication, Path target) throws IOException, IoxException, Ili2cException, SaxonApiException { 
+        log.lifecycle(String.format("Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s target: %s)", taskName, themeRootDirectory, themePublication, target));
         
-        // Annahme: target-Subordner existieren. So falsch ist das nicht, oder? Warum Meta-Infos publizieren, wenn es nichts herunterzuladen gibt.
-        // Ausser fuer den Fall "Datenblatt anschauen" beim Entwickeln. Ok. Dann doch erstellen, wenn nicht vorhanden.
-        // Siehe circa Z 671 "Post". Weil alles ins Hist kopiert wird ausser, was vorher geloescht wird, wuerde das auch reinkopiert.
+        // (1) Ordner erstellen im Zielverzeichnis, falls er nicht existiert.
+        Path targetRootPath = target;
+        Path targetPath = targetRootPath.resolve(themePublication).resolve(PATH_ELE_AKTUELL);
+
+        log.lifecycle("create <"+targetPath.toString()+">...");
+        Files.createDirectories(targetPath);
         
         File tomlFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, "meta.toml").toFile();
 
-        try {
-            TomlParseResult metaTomlResult = Toml.parse(tomlFile.toPath());
+        TomlParseResult metaTomlResult = Toml.parse(tomlFile.toPath());
 
-            // (0) Modellnamen wird auch fuer (1) benoetigt.
-            String modelName = metaTomlResult.getString("basic.model");
-            
-            // TODO: if model == null
-
-            // (1) Informationen aus ILI-Modell lesen.
-            Map<String, ClassDescription> classDescriptions = getModelDescription(modelName, themeRootDirectory.getAbsolutePath());
+        // (2) Modellnamen wird auch fuer (1) benoetigt.
+        String modelName = metaTomlResult.getString("basic.model");
         
-            // (2) Weitere Informationen aus Toml-Datei lesen und ggf. Modellinformationen uebersteuern.
-            String identifier = metaTomlResult.getString("basic.identifier");
-            String title = metaTomlResult.getString("basic.title");
-            String description = metaTomlResult.getString("basic.description");
-            String keywords = metaTomlResult.getString("basic.keywords");
-            String synonyms = metaTomlResult.getString("basic.synonyms");
-            String owner = metaTomlResult.getString("basic.owner");
-            String servicer = metaTomlResult.getString("basic.servicer");
-            String licence = metaTomlResult.getString("basic.licence");
-            String furtherInformation = metaTomlResult.getString("basic.furtherInformation");
-            
-            overrideModelDescription(classDescriptions, metaTomlResult);
+        // TODO: if model == null
 
-            IomObject servicerIomObject = getOfficeById(servicer, themeRootDirectory.getParentFile().getAbsolutePath());
-            IomObject ownerIomObject = getOfficeById(owner, themeRootDirectory.getParentFile().getAbsolutePath());
+        // (3) Informationen aus ILI-Modell lesen.
+        Map<String, ClassDescription> classDescriptions = getModelDescription(modelName, themeRootDirectory.getAbsolutePath());
+    
+        // (4) Weitere Informationen aus Toml-Datei lesen und ggf. Modellinformationen uebersteuern.
+        String identifier = metaTomlResult.getString("basic.identifier");
+        String title = metaTomlResult.getString("basic.title");
+        String description = metaTomlResult.getString("basic.description");
+        String keywords = metaTomlResult.getString("basic.keywords");
+        String synonyms = metaTomlResult.getString("basic.synonyms");
+        String owner = metaTomlResult.getString("basic.owner");
+        String servicer = metaTomlResult.getString("basic.servicer");
+        String licence = metaTomlResult.getString("basic.licence");
+        String furtherInformation = metaTomlResult.getString("basic.furtherInformation");
+        
+        overrideModelDescription(classDescriptions, metaTomlResult);
 
-            // (3) XTF schreiben.
-            String outputDirectory = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication).toFile().getAbsolutePath();
-            File xtfFile = Paths.get(outputDirectory, "meta-"+identifier+".xtf").toFile();
-            IoxWriter ioxWriter = createMetaIoxWriter(themeRootDirectory, xtfFile);
-            ioxWriter.write(new StartTransferEvent("SOGIS-20230305", "", null));
-            ioxWriter.write(new StartBasketEvent(ILI_TOPIC,BID));
+        IomObject servicerIomObject = getOfficeById(servicer, themeRootDirectory.getParentFile().getAbsolutePath());
+        IomObject ownerIomObject = getOfficeById(owner, themeRootDirectory.getParentFile().getAbsolutePath());
 
-            Iom_jObject iomObj = new Iom_jObject(TAG, String.valueOf(1));
-            iomObj.setattrvalue("identifier", identifier);
-            
-            Iom_jObject modelObj = new Iom_jObject("SO_AGI_Metadata_20230304.ModelLink", null); 
-            modelObj.setattrvalue("name", modelName);
-            modelObj.setattrvalue("locationHint", "https://geo.so.ch/models");
-            iomObj.addattrobj("model", modelObj);
-            
-            iomObj.setattrvalue("title", title);
-            if (description!=null) iomObj.setattrvalue("shortDescription", description); // CDATA wird nicht beruecksichtigt, d.h. auch mit einem CDATA-Block werden die "<"-Zeichen etc. escaped.
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String dateString = sdf.format(new Date());
-            iomObj.setattrvalue("lastPublishingDate", dateString);
-            iomObj.setattrvalue("licence", licence);
-            if (furtherInformation!=null) iomObj.setattrvalue("furtherInformation", furtherInformation);            
-            if (keywords!=null) iomObj.setattrvalue("keywords", keywords);
-            if (synonyms!=null) iomObj.setattrvalue("synonyms", synonyms);
-            
-            if (servicerIomObject!=null) {
-                convertOfficeToStructure(servicerIomObject); 
-                iomObj.addattrobj("servicer", servicerIomObject);
-            }
+        // (5) XTF schreiben.
+        log.lifecycle("writing xtf file");
+        File xtfFile = Paths.get(targetPath.toFile().getAbsolutePath(), "meta-"+identifier+".xtf").toFile();
+        IoxWriter ioxWriter = createMetaIoxWriter(themeRootDirectory, xtfFile);
+        ioxWriter.write(new StartTransferEvent("SOGIS-20230305", "", null));
+        ioxWriter.write(new StartBasketEvent(ILI_TOPIC,BID));
 
-            if (ownerIomObject!=null) {
-                convertOfficeToStructure(ownerIomObject); 
-                iomObj.addattrobj("owner", ownerIomObject);   
-            }
-
-            // TODO: add missing attributes etc.
-            
-            for (Map.Entry<String, ClassDescription> entry : classDescriptions.entrySet()) {
-                Iom_jObject classDescObj = new Iom_jObject("SO_AGI_Metadata_20230304.ClassDescription", null); 
-
-                ClassDescription classDescription = entry.getValue();
-
-                classDescObj.setattrvalue("name", classDescription.getName());
-                classDescObj.setattrvalue("title", classDescription.getTitle());
-                classDescObj.setattrvalue("shortDescription", classDescription.getDescription());
-
-                List<AttributeDescription> attributeDescriptions = classDescription.getAttributes();
-                for (AttributeDescription attributeDescription : attributeDescriptions) {
-                    Iom_jObject attributeDescObj = new Iom_jObject("SO_AGI_Metadata_20230304.AttributeDescription", null); 
-
-                    attributeDescObj.setattrvalue("name", attributeDescription.getName());
-                    if (attributeDescription.getDescription()!=null) attributeDescObj.setattrvalue("shortDescription", attributeDescription.getDescription());
-                    attributeDescObj.setattrvalue("dataType", attributeDescription.getDataType().name());
-                    attributeDescObj.setattrvalue("isMandatory", attributeDescription.isMandatory()?"true":"false");
-                    classDescObj.addattrobj("attributeDescription", attributeDescObj);
-                }
-                iomObj.addattrobj("classDescription", classDescObj);
-            }
-            
-            ioxWriter.write(new ObjectEvent(iomObj));
-            
-            ioxWriter.write(new EndBasketEvent());
-            ioxWriter.write(new EndTransferEvent());
-            ioxWriter.flush();
-            ioxWriter.close();    
-            
-            // (4) HTML-Datei aus XTF ableiten
-            File xsltFile = Paths.get(themeRootDirectory.getParentFile().getAbsolutePath(), SHARED_DIR_NAME, XSL_DIR_NAME, XSL_HTML_METADATA).toFile();
-            
-            Processor proc = new Processor(false);
-            XsltCompiler comp = proc.newXsltCompiler();
-            XsltExecutable exp = comp.compile(new StreamSource(xsltFile));
-            
-            XdmNode source = proc.newDocumentBuilder().build(new StreamSource(xtfFile));
-            
-            File outFile = Paths.get(outputDirectory, FilenameUtils.getBaseName(xtfFile.getName()) + ".html").toFile();
-            Serializer outFileSerializer = proc.newSerializer(outFile);
-            XsltTransformer trans = exp.load();
-            trans.setInitialContextNode(source);
-            trans.setDestination(outFileSerializer);
-            trans.transform();
-            trans.close();
-            
-
-            
-        } catch (IOException | Ili2cException | IoxException | SaxonApiException e) {
-        //} catch (Exception e) {
-            e.printStackTrace();
+        Iom_jObject iomObj = new Iom_jObject(TAG, String.valueOf(1));
+        iomObj.setattrvalue("identifier", identifier);
+        
+        Iom_jObject modelObj = new Iom_jObject("SO_AGI_Metadata_20230304.ModelLink", null); 
+        modelObj.setattrvalue("name", modelName);
+        modelObj.setattrvalue("locationHint", "https://geo.so.ch/models");
+        iomObj.addattrobj("model", modelObj);
+        
+        iomObj.setattrvalue("title", title);
+        if (description!=null) iomObj.setattrvalue("shortDescription", description); // CDATA wird nicht beruecksichtigt, d.h. auch mit einem CDATA-Block werden die "<"-Zeichen etc. escaped.
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = sdf.format(new Date());
+        iomObj.setattrvalue("lastPublishingDate", dateString);
+        iomObj.setattrvalue("licence", licence);
+        if (furtherInformation!=null) iomObj.setattrvalue("furtherInformation", furtherInformation);            
+        if (keywords!=null) iomObj.setattrvalue("keywords", keywords);
+        if (synonyms!=null) iomObj.setattrvalue("synonyms", synonyms);
+        
+        if (servicerIomObject!=null) {
+            convertOfficeToStructure(servicerIomObject); 
+            iomObj.addattrobj("servicer", servicerIomObject);
         }
+
+        if (ownerIomObject!=null) {
+            convertOfficeToStructure(ownerIomObject); 
+            iomObj.addattrobj("owner", ownerIomObject);   
+        }
+
+        // TODO: add missing attributes etc. (??)
+        
+        for (Map.Entry<String, ClassDescription> entry : classDescriptions.entrySet()) {
+            Iom_jObject classDescObj = new Iom_jObject(CLASS_DESCRIPTION_TAG, null); 
+
+            ClassDescription classDescription = entry.getValue();
+
+            classDescObj.setattrvalue("name", classDescription.getName());
+            classDescObj.setattrvalue("title", classDescription.getTitle());
+            classDescObj.setattrvalue("shortDescription", classDescription.getDescription());
+
+            List<AttributeDescription> attributeDescriptions = classDescription.getAttributes();
+            for (AttributeDescription attributeDescription : attributeDescriptions) {
+                Iom_jObject attributeDescObj = new Iom_jObject(ATTRIBUTE_DESCRIPTION_TAG, null); 
+
+                attributeDescObj.setattrvalue("name", attributeDescription.getName());
+                if (attributeDescription.getDescription()!=null) attributeDescObj.setattrvalue("shortDescription", attributeDescription.getDescription());
+                attributeDescObj.setattrvalue("dataType", attributeDescription.getDataType().name());
+                attributeDescObj.setattrvalue("isMandatory", attributeDescription.isMandatory()?"true":"false");
+                classDescObj.addattrobj("attributeDescription", attributeDescObj);
+            }
+            iomObj.addattrobj("classDescription", classDescObj);
+        }
+        
+        ioxWriter.write(new ObjectEvent(iomObj));
+        
+        ioxWriter.write(new EndBasketEvent());
+        ioxWriter.write(new EndTransferEvent());
+        ioxWriter.flush();
+        ioxWriter.close();    
+        
+        // (6) HTML-Datei aus XTF ableiten
+        log.lifecycle("creating html file");
+        
+        File xsltFile = Paths.get(themeRootDirectory.getParentFile().getAbsolutePath(), SHARED_DIR_NAME, XSL_DIR_NAME, XSL_HTML_METADATA).toFile();
+        
+        Processor proc = new Processor(false);
+        XsltCompiler comp = proc.newXsltCompiler();
+        XsltExecutable exp = comp.compile(new StreamSource(xsltFile));
+        
+        XdmNode source = proc.newDocumentBuilder().build(new StreamSource(xtfFile));
+        
+        File outFile = Paths.get(targetPath.toFile().getAbsolutePath(), FilenameUtils.getBaseName(xtfFile.getName()) + ".html").toFile();
+        Serializer outFileSerializer = proc.newSerializer(outFile);
+        XsltTransformer trans = exp.load();
+        trans.setInitialContextNode(source);
+        trans.setDestination(outFileSerializer);
+        trans.transform();
+        trans.close();
+        
+        // (7) XTF in Config-Verzeichnis kopieren. Wird benoetigt, damit fuer z.B. die Datensuche einfacher ist
+        // an die notwendigen einzelnen Config-Dateien zu gelangen.
+        Path targetConfigPath = targetRootPath.resolve(PATH_ELE_CONFIG);
+        log.lifecycle("create <"+targetConfigPath.toString()+">...");
+        Files.createDirectories(targetConfigPath);
+        Files.copy(xtfFile.toPath(), Paths.get(targetConfigPath.toFile().getAbsolutePath(), xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
     }
 
     private IoxWriter createMetaIoxWriter(File themeRootDirectory, File dataFile) throws IOException, Ili2cFailure, IoxException {
         TransferDescription td = getMetadataTransferdescription(themeRootDirectory.getParentFile());
-        
         IoxWriter ioxWriter = new XtfWriter(dataFile, td);
-        
         return ioxWriter;
     }    
     
@@ -300,7 +302,7 @@ public class MetaPublisherStep {
     }
 
     private void convertOfficeToStructure(IomObject officeObj) {
-        officeObj.setobjecttag("SO_AGI_Metadata_20230304.Office_");
+        officeObj.setobjecttag(OFFICE_STRUCTURE_TAG);
         officeObj.setobjectoid(null);
     }
     
@@ -330,13 +332,13 @@ public class MetaPublisherStep {
             String description = classDesc.getString("description");
 
             String qualifiedClassName = modelName + "." + topicName + "." + className;
-            System.out.println("qualifiedClassName: " + qualifiedClassName);
-            System.out.println("className: " + className);
-            System.out.println("title: " + title);
-            System.out.println("description: " + description);
+//            System.out.println("qualifiedClassName: " + qualifiedClassName);
+//            System.out.println("className: " + className);
+//            System.out.println("title: " + title);
+//            System.out.println("description: " + description);
             
             ClassDescription classDescription = classDescriptions.get(qualifiedClassName);
-            System.out.println(classDescription);
+//            System.out.println(classDescription);
             
             if (title != null) {
                 classDescription.setTitle(title);

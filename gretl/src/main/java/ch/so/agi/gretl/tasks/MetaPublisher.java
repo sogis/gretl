@@ -9,6 +9,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
@@ -17,11 +18,15 @@ import org.gradle.api.tasks.TaskAction;
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
 import com.github.robtimus.filesystems.sftp.SFTPFileSystemProvider;
 
+import ch.interlis.ili2c.Ili2cException;
+import ch.interlis.iox.IoxException;
 import ch.so.agi.gretl.api.Endpoint;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
 import ch.so.agi.gretl.steps.MetaPublisherStep;
+import ch.so.agi.gretl.util.TaskUtil;
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class MetaPublisher extends DefaultTask {
     protected GretlLogger log;
@@ -40,7 +45,7 @@ public class MetaPublisher extends DefaultTask {
     
     @TaskAction
     public void publishAll() {
-        log = LogEnvironment.getLogger(XslTransformer.class);
+        log = LogEnvironment.getLogger(MetaPublisher.class);
 
         if (dataIdent ==  null) {
             throw new IllegalArgumentException("dataIdent must not be null");
@@ -84,13 +89,21 @@ public class MetaPublisher extends DefaultTask {
             throw new IllegalArgumentException("target must be set");
         }
         
-        
-        // Step braucht wohl mindestens eine Verzeichnis-Angabe zum Navigieren.
-        // Muss aber nicht im Task als Option exponiert werden.
-        
-        
-        //MetaPublisherStep step = new MetaPublisherStep();
-        //step.execute(getTemporaryDir(), dataIdent, targetFile);
+        // TODO: 
+        // - dokumentieren 
+        // - Sollte ok sein. Im ersten Unterordner von gretl (also im Gretl-Job-Ordner) muss jeweils ein settings file sein.
+        // Dann wird es als Projekt-Root erkannt.
+        File themeRootDirectory = getProject().getRootDir().getParentFile().getParentFile();
+
+        MetaPublisherStep step = new MetaPublisherStep();
+        try {
+            step.execute(themeRootDirectory, dataIdent, targetFile);
+        } catch (IOException | IoxException | Ili2cException | SaxonApiException e) {
+            log.error("failed to run MetaPublisher", e);
+
+            GradleException ge = TaskUtil.toGradleException(e);
+            throw ge;
+        }
         
     }
 

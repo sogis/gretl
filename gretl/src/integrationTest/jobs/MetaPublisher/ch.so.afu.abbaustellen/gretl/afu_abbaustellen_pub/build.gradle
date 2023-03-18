@@ -5,7 +5,7 @@ apply plugin: 'ch.so.agi.gretl'
 defaultTasks 'publishMetaFile'
 
 task publishMetaFile(type: MetaPublisher){
-      dataIdent = "ch.so.afu.abbaustellen"
-      target = [project.buildDir]
+    dataIdent = "ch.so.afu.abbaustellen"
+    target = [project.buildDir]      
 }
 
