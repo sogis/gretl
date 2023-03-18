@@ -30,7 +30,7 @@ public class MetaPublisherTest {
         
         // Check result
         Path target = Paths.get(jobDirectory);
-        File htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve("meta-"+dataIdent+".html").toFile();
+        File htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+dataIdent+".html").toFile();
         assertTrue(htmlFile.exists());
 
         byte[] bytes = Files.readAllBytes(htmlFile.toPath());
@@ -41,5 +41,18 @@ public class MetaPublisherTest {
         File xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf").toFile();
         assertTrue(xtfFile.exists());
     }
+    
+    @Test
+    public void regions() throws Exception {
+        // Prepare
+        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/ch.so.agi.amtliche_vermessung/gretl/agi_dm01so_pub";
+        String dataIdent = "ch.so.agi.av.dm01_so";
+        
+        // Run task
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob(jobDirectory, gvs);
+
+    }
+    
 
 }

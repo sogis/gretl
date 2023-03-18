@@ -113,6 +113,10 @@ public class MetaPublisherStep {
     public MetaPublisherStep() {
         this(null);
     }
+    
+    public void execute(File themeRootDirectory, String themePublication, Path target) throws IOException, IoxException, Ili2cException, SaxonApiException { 
+        execute(themeRootDirectory, themePublication, target, null);
+    }
 
     // (1) Ordner im Zielverzeichnis erstellen.
     // (2) Modellnamen aus Toml-Datei lesen.
@@ -133,12 +137,12 @@ public class MetaPublisherStep {
      * @throws Ili2cException
      * @throws SaxonApiException
      */
-    public void execute(File themeRootDirectory, String themePublication, Path target) throws IOException, IoxException, Ili2cException, SaxonApiException { 
+    public void execute(File themeRootDirectory, String themePublication, Path target, List<String> regions) throws IOException, IoxException, Ili2cException, SaxonApiException { 
         log.lifecycle(String.format("Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s target: %s)", taskName, themeRootDirectory, themePublication, target));
         
         // (1) Ordner erstellen im Zielverzeichnis, falls er nicht existiert.
         Path targetRootPath = target;
-        Path targetPath = targetRootPath.resolve(themePublication).resolve(PATH_ELE_AKTUELL);
+        Path targetPath = targetRootPath.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META);
 
         log.lifecycle("create <"+targetPath.toString()+">...");
         Files.createDirectories(targetPath);
@@ -149,6 +153,7 @@ public class MetaPublisherStep {
 
         // (2) Modellnamen wird auch fuer (1) benoetigt.
         String modelName = metaTomlResult.getString("basic.model");
+        System.out.println("model: " + modelName);
         
         // TODO: if model == null
 
@@ -165,8 +170,9 @@ public class MetaPublisherStep {
         String servicer = metaTomlResult.getString("basic.servicer");
         String licence = metaTomlResult.getString("basic.licence");
         String furtherInformation = metaTomlResult.getString("basic.furtherInformation");
-        
-        overrideModelDescription(classDescriptions, metaTomlResult);
+        boolean printClassDescription = metaTomlResult.getBoolean("config.printClassDescription", () -> true);
+
+        if (printClassDescription) overrideModelDescription(classDescriptions, metaTomlResult);
 
         IomObject servicerIomObject = getOfficeById(servicer, themeRootDirectory.getParentFile().getAbsolutePath());
         IomObject ownerIomObject = getOfficeById(owner, themeRootDirectory.getParentFile().getAbsolutePath());
@@ -208,26 +214,28 @@ public class MetaPublisherStep {
 
         // TODO: add missing attributes etc. (??)
         
-        for (Map.Entry<String, ClassDescription> entry : classDescriptions.entrySet()) {
-            Iom_jObject classDescObj = new Iom_jObject(CLASS_DESCRIPTION_TAG, null); 
+        if (printClassDescription) {
+            for (Map.Entry<String, ClassDescription> entry : classDescriptions.entrySet()) {
+                Iom_jObject classDescObj = new Iom_jObject(CLASS_DESCRIPTION_TAG, null); 
 
-            ClassDescription classDescription = entry.getValue();
+                ClassDescription classDescription = entry.getValue();
 
-            classDescObj.setattrvalue("name", classDescription.getName());
-            classDescObj.setattrvalue("title", classDescription.getTitle());
-            classDescObj.setattrvalue("shortDescription", classDescription.getDescription());
+                classDescObj.setattrvalue("name", classDescription.getName());
+                classDescObj.setattrvalue("title", classDescription.getTitle());
+                if (classDescription.getDescription()!=null) classDescObj.setattrvalue("shortDescription", classDescription.getDescription());
 
-            List<AttributeDescription> attributeDescriptions = classDescription.getAttributes();
-            for (AttributeDescription attributeDescription : attributeDescriptions) {
-                Iom_jObject attributeDescObj = new Iom_jObject(ATTRIBUTE_DESCRIPTION_TAG, null); 
+                List<AttributeDescription> attributeDescriptions = classDescription.getAttributes();
+                for (AttributeDescription attributeDescription : attributeDescriptions) {
+                    Iom_jObject attributeDescObj = new Iom_jObject(ATTRIBUTE_DESCRIPTION_TAG, null); 
 
-                attributeDescObj.setattrvalue("name", attributeDescription.getName());
-                if (attributeDescription.getDescription()!=null) attributeDescObj.setattrvalue("shortDescription", attributeDescription.getDescription());
-                attributeDescObj.setattrvalue("dataType", attributeDescription.getDataType().name());
-                attributeDescObj.setattrvalue("isMandatory", attributeDescription.isMandatory()?"true":"false");
-                classDescObj.addattrobj("attributeDescription", attributeDescObj);
-            }
-            iomObj.addattrobj("classDescription", classDescObj);
+                    attributeDescObj.setattrvalue("name", attributeDescription.getName());
+                    if (attributeDescription.getDescription()!=null) attributeDescObj.setattrvalue("shortDescription", attributeDescription.getDescription());
+                    attributeDescObj.setattrvalue("dataType", attributeDescription.getDataType().name());
+                    attributeDescObj.setattrvalue("isMandatory", attributeDescription.isMandatory()?"true":"false");
+                    classDescObj.addattrobj("attributeDescription", attributeDescObj);
+                }
+                iomObj.addattrobj("classDescription", classDescObj);
+            }            
         }
         
         ioxWriter.write(new ObjectEvent(iomObj));
@@ -256,12 +264,23 @@ public class MetaPublisherStep {
         trans.transform();
         trans.close();
         
-        // (7) XTF in Config-Verzeichnis kopieren. Wird benoetigt, damit fuer z.B. die Datensuche einfacher ist
+        // (7) XTF in Config-Verzeichnis kopieren. Wird benoetigt, damit es fuer z.B. die Datensuche einfacher ist
         // an die notwendigen einzelnen Config-Dateien zu gelangen.
         Path targetConfigPath = targetRootPath.resolve(PATH_ELE_CONFIG);
         log.lifecycle("create <"+targetConfigPath.toString()+">...");
         Files.createDirectories(targetConfigPath);
         Files.copy(xtfFile.toPath(), Paths.get(targetConfigPath.toFile().getAbsolutePath(), xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+        
+        // (8) GeoJSON-Datei nachfuehren zwecks Publikationsdatum einzelner Regionen.
+        // Weil Publisher den Inhalt des meta-Verzeichnisses loescht, ist der Master
+        // im config-Verzeichnis.
+        if (regions != null) {
+            File geojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
+            if (!geojsonFile.exists()) {
+                File sourceGeojsonFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, themePublication + ".json").toFile();
+                Files.copy(sourceGeojsonFile.toPath(), geojsonFile.toPath());
+            }            
+        }
     }
 
     private IoxWriter createMetaIoxWriter(File themeRootDirectory, File dataFile) throws IOException, Ili2cFailure, IoxException {
@@ -339,14 +358,16 @@ public class MetaPublisherStep {
             
             ClassDescription classDescription = classDescriptions.get(qualifiedClassName);
 //            System.out.println(classDescription);
-            
-            if (title != null) {
-                classDescription.setTitle(title);
-            } 
 
-            if (description != null) {
-                classDescription.setDescription(description);
-            }
+            if (classDescription != null) {
+                if (title != null) {
+                    classDescription.setTitle(title);
+                } 
+
+                if (description != null) {
+                    classDescription.setDescription(description);
+                }
+            }               
         }
     }
     
@@ -508,7 +529,7 @@ public class MetaPublisherStep {
         return classTypes;
     }
 
-    private TransferDescription getTransferDescriptionFromModelName(String modelName, String localRepo) throws Ili2cException, IOException {
+    private TransferDescription getTransferDescriptionFromModelName(String modelName, String localRepo) throws  IOException, Ili2cException {
         IliManager manager = new IliManager();
         File ilicacheFolder = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), ".ilicache_").toFile();        
         manager.setCache(ilicacheFolder);
@@ -516,7 +537,13 @@ public class MetaPublisherStep {
         manager.setRepositories(repositories);
         ArrayList<String> modelNames = new ArrayList<String>();
         modelNames.add(modelName);
-        Configuration config = manager.getConfig(modelNames, 2.3);
+        Configuration config;
+        try {
+            config = manager.getConfig(modelNames, 2.3);
+        } catch (Ili2cException e) {
+            config = manager.getConfig(modelNames, 1.0); // bit of a hack
+        }
+        
         TransferDescription td = Ili2c.runCompiler(config);
 
         if (td == null) {
