@@ -103,7 +103,7 @@ public class MetaPublisher extends DefaultTask {
 
         MetaPublisherStep step = new MetaPublisherStep();
         try {
-            step.execute(themeRootDirectory, dataIdent, targetFile, regions.get());
+            step.execute(themeRootDirectory, dataIdent, targetFile, regions!=null?regions.get():null);
         } catch (IOException | IoxException | Ili2cException | SaxonApiException e) {
             log.error("failed to run MetaPublisher", e);
 
