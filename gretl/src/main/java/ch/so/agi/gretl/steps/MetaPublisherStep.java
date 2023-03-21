@@ -174,8 +174,8 @@ public class MetaPublisherStep {
 
         if (printClassDescription) overrideModelDescription(classDescriptions, metaTomlResult);
 
-        IomObject servicerIomObject = getOfficeById(servicer, themeRootDirectory.getParentFile().getAbsolutePath());
-        IomObject ownerIomObject = getOfficeById(owner, themeRootDirectory.getParentFile().getAbsolutePath());
+        IomObject servicerIomObject = getOfficeById(servicer, themeRootDirectory.getAbsolutePath());
+        IomObject ownerIomObject = getOfficeById(owner, themeRootDirectory.getAbsolutePath());
 
         // (5) XTF schreiben.
         log.lifecycle("writing xtf file");
@@ -248,7 +248,7 @@ public class MetaPublisherStep {
         // (6) HTML-Datei aus XTF ableiten
         log.lifecycle("creating html file");
         
-        File xsltFile = Paths.get(themeRootDirectory.getParentFile().getAbsolutePath(), SHARED_DIR_NAME, XSL_DIR_NAME, XSL_HTML_METADATA).toFile();
+        File xsltFile = Paths.get(themeRootDirectory.getAbsolutePath(), SHARED_DIR_NAME, XSL_DIR_NAME, XSL_HTML_METADATA).toFile();
         
         Processor proc = new Processor(false);
         XsltCompiler comp = proc.newXsltCompiler();
@@ -284,7 +284,7 @@ public class MetaPublisherStep {
     }
 
     private IoxWriter createMetaIoxWriter(File themeRootDirectory, File dataFile) throws IOException, Ili2cFailure, IoxException {
-        TransferDescription td = getMetadataTransferdescription(themeRootDirectory.getParentFile());
+        TransferDescription td = getMetadataTransferdescription(themeRootDirectory);
         IoxWriter ioxWriter = new XtfWriter(dataFile, td);
         return ioxWriter;
     }    
