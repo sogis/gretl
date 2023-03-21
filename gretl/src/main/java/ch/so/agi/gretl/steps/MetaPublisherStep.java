@@ -279,7 +279,9 @@ public class MetaPublisherStep {
             if (!geojsonFile.exists()) {
                 File sourceGeojsonFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, themePublication + ".json").toFile();
                 Files.copy(sourceGeojsonFile.toPath(), geojsonFile.toPath());
-            }            
+            }       
+            
+            
         }
     }
 
