@@ -16,6 +16,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
 import org.tomlj.Toml;
+import org.tomlj.TomlArray;
 import org.tomlj.TomlParseResult;
 import org.tomlj.TomlTable;
 
@@ -83,19 +84,24 @@ public class MetaPublisherStep {
     public static final String PATH_ELE_CONFIG = "config";
 
     private static final List<String> META_TOML_CONFIG_SECTIONS = new ArrayList<String>() {{
-        add("basic");
-        add("formats");
+        add("meta");
+        add("config");
     }};
     
     private static final String ILI_MODEL_METADATA = "SO_AGI_Metadata_20230304.ili";
     private static final String XSL_HTML_METADATA = "xtf2html.xsl";
-
+    
+    private static final String CORE_DATA_OFFICES = "offices.xtf";
+    private static final String CORE_DATA_FILEFORMATS = "fileformats.xtf";
+    
     private static final String ILI_TOPIC = "SO_AGI_Metadata_20230304.ThemePublications";
     private static final String BID = "SO_AGI_Metadata_20230304.ThemePublications";
     private static final String TAG = "SO_AGI_Metadata_20230304.ThemePublications.ThemePublication";
     private static final String CLASS_DESCRIPTION_TAG = "SO_AGI_Metadata_20230304.ClassDescription";
     private static final String ATTRIBUTE_DESCRIPTION_TAG = "SO_AGI_Metadata_20230304.AttributeDescription";
     private static final String OFFICE_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.Office_";
+    private static final String MODELLINK_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.ModelLink";
+    private static final String FILEFORMAT_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.FileFormat";
     
     private static final String PUBLICATION_DIR_NAME = "publication";
     private static final String ILI_DIR_NAME = "ili";
@@ -154,8 +160,7 @@ public class MetaPublisherStep {
         TomlParseResult metaTomlResult = Toml.parse(tomlFile.toPath());
 
         // (2) Modellnamen wird auch fuer (1) benoetigt.
-        String modelName = metaTomlResult.getString("basic.model");
-        System.out.println("model: " + modelName);
+        String modelName = metaTomlResult.getString("meta.model");
         
         // TODO: if model == null
 
@@ -163,21 +168,30 @@ public class MetaPublisherStep {
         Map<String, ClassDescription> classDescriptions = getModelDescription(modelName, themeRootDirectory.getAbsolutePath());
     
         // (4) Weitere Informationen aus Toml-Datei lesen und ggf. Modellinformationen uebersteuern.
-        String identifier = metaTomlResult.getString("basic.identifier");
-        String title = metaTomlResult.getString("basic.title");
-        String description = metaTomlResult.getString("basic.description");
-        String keywords = metaTomlResult.getString("basic.keywords");
-        String synonyms = metaTomlResult.getString("basic.synonyms");
-        String owner = metaTomlResult.getString("basic.owner");
-        String servicer = metaTomlResult.getString("basic.servicer");
-        String licence = metaTomlResult.getString("basic.licence");
-        String furtherInformation = metaTomlResult.getString("basic.furtherInformation");
+        String identifier = metaTomlResult.getString("meta.identifier");
+        String title = metaTomlResult.getString("meta.title");
+        String description = metaTomlResult.getString("meta.description");
+        String keywords = metaTomlResult.getString("meta.keywords");
+        String synonyms = metaTomlResult.getString("meta.synonyms");
+        String owner = metaTomlResult.getString("meta.owner");
+        String servicer = metaTomlResult.getString("meta.servicer");
+        String licence = metaTomlResult.getString("meta.licence");
+        String furtherInformation = metaTomlResult.getString("meta.furtherInformation");
+        TomlArray formatsArray = metaTomlResult.getArrayOrEmpty("meta.formats");
+        List<?> formats = formatsArray.toList();
         boolean printClassDescription = metaTomlResult.getBoolean("config.printClassDescription", () -> true);
 
         if (printClassDescription) overrideModelDescription(classDescriptions, metaTomlResult);
 
-        IomObject servicerIomObject = getOfficeById(servicer, themeRootDirectory.getAbsolutePath());
-        IomObject ownerIomObject = getOfficeById(owner, themeRootDirectory.getAbsolutePath());
+        IomObject servicerIomObject = getIomObjectById(servicer, CORE_DATA_OFFICES, themeRootDirectory.getAbsolutePath());
+        IomObject ownerIomObject = getIomObjectById(owner, CORE_DATA_OFFICES, themeRootDirectory.getAbsolutePath());
+        
+        List<IomObject> formatIomObjects = new ArrayList<>();
+        for (Object format : formats) {
+            IomObject formatObj = getIomObjectById(format.toString(), CORE_DATA_FILEFORMATS, themeRootDirectory.getAbsolutePath());
+            convertIomObjectToStructure(formatObj, FILEFORMAT_STRUCTURE_TAG);
+            formatIomObjects.add(formatObj);
+        }
 
         // (5) XTF schreiben.
         log.lifecycle("writing xtf file");
@@ -189,7 +203,7 @@ public class MetaPublisherStep {
         Iom_jObject iomObj = new Iom_jObject(TAG, String.valueOf(1));
         iomObj.setattrvalue("identifier", identifier);
         
-        Iom_jObject modelObj = new Iom_jObject("SO_AGI_Metadata_20230304.ModelLink", null); 
+        Iom_jObject modelObj = new Iom_jObject(MODELLINK_STRUCTURE_TAG, null); 
         modelObj.setattrvalue("name", modelName);
         modelObj.setattrvalue("locationHint", "https://geo.so.ch/models");
         iomObj.addattrobj("model", modelObj);
@@ -205,14 +219,20 @@ public class MetaPublisherStep {
         if (synonyms!=null) iomObj.setattrvalue("synonyms", synonyms);
         
         if (servicerIomObject!=null) {
-            convertOfficeToStructure(servicerIomObject); 
+            convertIomObjectToStructure(servicerIomObject, OFFICE_STRUCTURE_TAG); 
             iomObj.addattrobj("servicer", servicerIomObject);
         }
 
         if (ownerIomObject!=null) {
-            convertOfficeToStructure(ownerIomObject); 
+            convertIomObjectToStructure(ownerIomObject, OFFICE_STRUCTURE_TAG); 
             iomObj.addattrobj("owner", ownerIomObject);   
         }
+        
+        for (IomObject formatStructure : formatIomObjects) {
+            iomObj.addattrobj("fileFormats", formatStructure);
+        }
+        
+      
 
         // TODO: add missing attributes etc. (??)
         
@@ -313,8 +333,8 @@ public class MetaPublisherStep {
         return td;
     }
     
-    private IomObject getOfficeById(String id, String configRootDirectory) throws IOException, IoxException {
-        File xtfFile = Paths.get(configRootDirectory, SHARED_DIR_NAME, CORE_DATA_DIR_NAME, "offices.xtf").toFile();
+    private IomObject getIomObjectById(String id, String coreDataFileName, String configRootDirectory) throws IOException, IoxException {
+        File xtfFile = Paths.get(configRootDirectory, SHARED_DIR_NAME, CORE_DATA_DIR_NAME, coreDataFileName).toFile();
         XtfReader xtfReader = new XtfReader(xtfFile);
         
         IoxEvent event = xtfReader.read();
@@ -331,8 +351,8 @@ public class MetaPublisherStep {
         return null;
     }
 
-    private void convertOfficeToStructure(IomObject officeObj) {
-        officeObj.setobjecttag(OFFICE_STRUCTURE_TAG);
+    private void convertIomObjectToStructure(IomObject officeObj, String tag) {
+        officeObj.setobjecttag(tag);
         officeObj.setobjectoid(null);
     }
     
@@ -384,7 +404,7 @@ public class MetaPublisherStep {
     
     private Map<String, ClassDescription> getModelDescription(String modelName, String themeRootDirectory) throws Ili2cException, IOException {
         String localRepo = Paths.get(themeRootDirectory, ILI_DIR_NAME).toFile().getAbsolutePath();
-        
+                
         TransferDescription td = getTransferDescriptionFromModelName(modelName, localRepo);
         
         Map<String, ClassDescription> classTypes = new HashMap<>();

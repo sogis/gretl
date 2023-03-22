@@ -35,6 +35,7 @@ public class MetaPublisherStepTestFile2LocalTest {
     @Test
     public void publish_simple_meta_Ok() throws Exception {
         // Prepare
+        //Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
         File outDirectory = folder.newFolder("publish_simple_meta_Ok");
         Path target = outDirectory.toPath();
         String themePublication = "ch.so.afu.abbaustellen";
@@ -60,9 +61,9 @@ public class MetaPublisherStepTestFile2LocalTest {
     @Test
     public void publish_regions_meta_Ok() throws Exception {
         // Prepare
-        Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
-        //Path target = outDirectory.toPath();
+        //Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
         File outDirectory = folder.newFolder("publish_regions_meta_Ok");
+        Path target = outDirectory.toPath();
         String themePublication = "ch.so.agi.av.dm01_so";
         List<String> regions = new ArrayList<String>() {{ 
             add("2463"); 

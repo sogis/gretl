@@ -1,4 +1,4 @@
-[basic]
+[meta]
 identifier = "ch.so.agi.av.dm01_so"
 title = "Amtliche Vermessung (DM01 CH + DXF/Geobau)"
 description = """
@@ -12,10 +12,8 @@ model = "DM01AVSO24LV95"
 owner = "ch.so.agi"
 servicer = "ch.so.agi"
 licence = "https://files.geo.so.ch/nutzungsbedingungen.html"
+formats = ["ITF"]
 
 [config]
 printClassDescription = false
 
-[formats]
-# Hier wohl was zum Output / zu den Outputformaten?
-# formats?

@@ -16,61 +16,11 @@ VERSION "2023-03-04" =
 
     SOOID = OID TEXT*255;
 
-    LanguageCode_ISO639_1 = TEXT*2;
-
-    AbsoluteLocation = URI;
-
-    GlobalDataId = TEXT;
-
-    LocalBasketId = TEXT;
-
-    Code = URI;
-
-    /** Any identification of a version, for example a name, number or date.
-     */
-    DataVersion = TEXT;
-
-    RelativeFilePath = TEXT;
-
-    WebService = URI;
-
-    WebSite = URI;
-
-  STRUCTURE Code_ = value : MANDATORY Code; END Code_;
-  STRUCTURE WebService_ = value : MANDATORY WebService; END WebService_;
-  STRUCTURE WebSite_ = value : MANDATORY WebSite; END WebSite_;
-
-  STRUCTURE File =
-    path : MANDATORY RelativeFilePath;
-    md5 : TEXT*32;
-  END File;
-
-  /** a link to dataset or a link to a basket.
-   * If it is a link to a basket, this might be by the globalId of the basket or
-   * by the combination of the datasetId and the localBasketId.
-   */
-  STRUCTURE DataLink =
-    basketId : GlobalDataId;
-    datasetId : GlobalDataId;
-    localBasketId : LocalBasketId;
-    MANDATORY CONSTRAINT (DEFINED(basketId) AND NOT(DEFINED(localBasketId))) OR DEFINED(datasetId);
-  END DataLink;
-
   STRUCTURE ModelLink =
     name : MANDATORY TEXT;  !! Name or Namespace
     locationHint : URI; !! repo
     versionHint : TEXT;
   END ModelLink;
-
-  STRUCTURE DataFile =
-    /** Mimetype of file format
-     */
-    fileFormat : MANDATORY TEXT;
-    /** path of data-file, as it is in the repository e.g. "BFE/91.1_TypeOfReactorCatalogue_12-09-10.xml".
-     *  More than one entry if it is split into multiple parts.
-     */
-    file : LIST {1..*} OF SO_AGI_Metadata_20230304.File;
-  END DataFile;
 
   STRUCTURE BoundingBox = 
     westlimit: MANDATORY 2421750..2898750;
@@ -87,6 +37,13 @@ VERSION "2023-03-04" =
     email : URI;
     phone : TEXT;
   END Office_;
+
+  STRUCTURE FileFormat = 
+    name: MANDATORY TEXT;
+    abbreviation: MANDATORY TEXT;
+    mimeType: MANDATORY TEXT;
+    extension: MANDATORY TEXT;
+  END FileFormat;
 
   STRUCTURE AttributeDescription = 
     name : TEXT; !! so wie er im Modell steht
@@ -106,12 +63,18 @@ VERSION "2023-03-04" =
     OID AS SO_AGI_Metadata_20230304.SOOID;
 
     CLASS Office EXTENDS SO_AGI_Metadata_20230304.Office_ = 
-
-    !! Constraint: Kombi Abkürzung und Abteilung nur einmal.
-
+      UNIQUE abbreviation, division;
     END Office;
-
   END Offices;
+
+  TOPIC FileFormats = 
+    OID AS SO_AGI_Metadata_20230304.SOOID;
+
+    CLASS FileFormat EXTENDS SO_AGI_Metadata_20230304.FileFormat = 
+      UNIQUE name;
+    END FileFormat;
+  END FileFormats;
+
 
   TOPIC ThemePublications =
 
@@ -129,6 +92,7 @@ VERSION "2023-03-04" =
       owner : MANDATORY SO_AGI_Metadata_20230304.Office_;
       servicer : SO_AGI_Metadata_20230304.Office_;
       boundary : BoundingBox;
+      fileFormats: BAG {0..*} OF SO_AGI_Metadata_20230304.FileFormat;
       classDescription : BAG {0..*} OF SO_AGI_Metadata_20230304.ClassDescription;
 
       UNIQUE identifier;

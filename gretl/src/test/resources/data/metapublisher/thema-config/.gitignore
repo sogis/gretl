@@ -1,5 +1,6 @@
 .DS_Store
 **/*.xtf
 !**/offices.xtf
+!**/fileformats.xtf
 **/*.xml
 **/*.html
