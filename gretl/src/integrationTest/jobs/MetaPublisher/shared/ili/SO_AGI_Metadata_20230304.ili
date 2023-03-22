@@ -106,9 +106,7 @@ VERSION "2023-03-04" =
     OID AS SO_AGI_Metadata_20230304.SOOID;
 
     CLASS Office EXTENDS SO_AGI_Metadata_20230304.Office_ = 
-
-    !! Constraint: Kombi Abkürzung und Abteilung nur einmal.
-
+      UNIQUE abbreviation, division;
     END Office;
 
   END Offices;

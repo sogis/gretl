@@ -55,7 +55,7 @@ public class RegionsTest {
         Regions regions = new Regions();
         regions.updateJson(targetJsonFile, regionMap);
         
-        // Validate
+        // Check result
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(targetJsonFile);
        

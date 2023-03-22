@@ -47,12 +47,6 @@ public class MetaPublisher extends DefaultTask {
     public void publishAll() {
         log = LogEnvironment.getLogger(MetaPublisher.class);
 
-//        log.lifecycle("****************");
-//        log.lifecycle(regions.toString());
-//        log.lifecycle(regions.getClass().toString());
-//        log.lifecycle(regions.get().toString());
-//        log.lifecycle("****************");
-
         if (dataIdent ==  null) {
             throw new IllegalArgumentException("dataIdent must not be null");
         }

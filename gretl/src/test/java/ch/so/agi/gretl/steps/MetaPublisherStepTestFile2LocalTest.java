@@ -57,8 +57,6 @@ public class MetaPublisherStepTestFile2LocalTest {
         assertTrue(xtfFile.exists());
     }
     
-    // TODO
-    // TEST ob json vorhanden etc.
     @Test
     public void publish_regions_meta_Ok() throws Exception {
         // Prepare
@@ -101,9 +99,6 @@ public class MetaPublisherStepTestFile2LocalTest {
             String formattedDate = sdf.format(new Date());
 
             assertTrue(fileContent.contains(formattedDate));
-
         }
-
-        
     }
 }
