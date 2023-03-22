@@ -60,9 +60,9 @@ public class MetaPublisherStepTestFile2LocalTest {
     @Test
     public void publish_regions_meta_Ok() throws Exception {
         // Prepare
-        //Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
+        Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
+        //Path target = outDirectory.toPath();
         File outDirectory = folder.newFolder("publish_regions_meta_Ok");
-        Path target = outDirectory.toPath();
         String themePublication = "ch.so.agi.av.dm01_so";
         List<String> regions = new ArrayList<String>() {{ 
             add("2463"); 

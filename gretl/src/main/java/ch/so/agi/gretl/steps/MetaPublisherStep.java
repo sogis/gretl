@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,7 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.metapublisher.AttributeDescription;
 import ch.so.agi.gretl.util.metapublisher.ClassDescription;
 import ch.so.agi.gretl.util.metapublisher.DataType;
+import ch.so.agi.gretl.util.metapublisher.Regions;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
@@ -281,7 +283,14 @@ public class MetaPublisherStep {
                 Files.copy(sourceGeojsonFile.toPath(), geojsonFile.toPath());
             }       
             
-            
+            String formattedDate = sdf.format(new Date());
+            Map<String,String> regionMap = new HashMap<>();
+            for (String regionIdentifier : regions) {
+                regionMap.put(regionIdentifier, formattedDate);
+            }
+
+            Regions regionsUpdtr = new Regions();
+            regionsUpdtr.updateJson(geojsonFile, regionMap);
         }
     }
 
