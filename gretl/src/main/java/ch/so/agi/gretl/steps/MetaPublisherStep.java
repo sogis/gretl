@@ -232,8 +232,6 @@ public class MetaPublisherStep {
             iomObj.addattrobj("fileFormats", formatStructure);
         }
         
-      
-
         // TODO: add missing attributes etc. (??)
         
         if (printClassDescription) {
@@ -312,6 +310,8 @@ public class MetaPublisherStep {
             Regions regionsUpdtr = new Regions();
             regionsUpdtr.updateJson(geojsonFile, regionMap);
         }
+        
+        // (9) Geocat-XML erstellen
     }
 
     private IoxWriter createMetaIoxWriter(File themeRootDirectory, File dataFile) throws IOException, Ili2cFailure, IoxException {
