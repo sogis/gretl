@@ -6,8 +6,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,15 +80,30 @@ public class MetaPublisherStepTestFile2LocalTest {
         File htmlFile = target.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+themePublication+".html").toFile();
         assertTrue(htmlFile.exists());
 
-        byte[] bytes = Files.readAllBytes(htmlFile.toPath());
-        String fileContent = new String (bytes);
-        assertTrue(fileContent.contains("Datenbeschreibung • Amt für Geoinformation Kanton Solothurn"));
-        assertTrue(fileContent.contains("<div id=\"title\">Amtliche Vermessung (DM01 CH + DXF/Geobau)</div>"));
+        {
+            byte[] bytes = Files.readAllBytes(htmlFile.toPath());
+            String fileContent = new String (bytes);
+            assertTrue(fileContent.contains("Datenbeschreibung • Amt für Geoinformation Kanton Solothurn"));
+            assertTrue(fileContent.contains("<div id=\"title\">Amtliche Vermessung (DM01 CH + DXF/Geobau)</div>"));  
+        }
 
         File xtfFile = target.resolve(PATH_ELE_CONFIG).resolve("meta-"+themePublication+".xtf").toFile();
         assertTrue(xtfFile.exists());
         
-        // TODO
-        // TEST ob json vorhanden etc.
+        File jsonFile = target.resolve(PATH_ELE_CONFIG).resolve(themePublication + ".json").toFile();
+        assertTrue(jsonFile.exists()); 
+        
+        {
+            byte[] bytes = Files.readAllBytes(jsonFile.toPath());
+            String fileContent = new String (bytes);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = sdf.format(new Date());
+
+            assertTrue(fileContent.contains(formattedDate));
+
+        }
+
+        
     }
 }
