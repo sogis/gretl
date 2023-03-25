@@ -26,6 +26,7 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 
 import ch.so.agi.gretl.steps.MetaPublisherStep;
 import ch.so.agi.gretl.util.TaskUtil;
+import freemarker.template.TemplateException;
 import net.sf.saxon.s9api.SaxonApiException;
 
 public class MetaPublisher extends DefaultTask {
@@ -36,12 +37,14 @@ public class MetaPublisher extends DefaultTask {
     
     @Input
     public Endpoint target = null; // Zielverzeichnis
-    
-    // TODO geocat Endpoint
 
     @Input
     @Optional
     public ListProperty<String> regions = null; // Publizierte Regionen (aus Publisher-Task)
+
+    @Input
+    @Optional
+    public Endpoint geocatTarget = null; // Geocat-Zielverzeichnis
     
     @TaskAction
     public void publishAll() {
@@ -54,39 +57,15 @@ public class MetaPublisher extends DefaultTask {
         Path targetFile = null;
         if (target != null) {
             log.info("target " + target.toString());
-            {
-                if (target.getUrl().startsWith("sftp:")) {
-                    URI host = null;
-                    URI rawuri = null;
-                    String path = null;
-                    try {
-                        rawuri = new URI(target.getUrl());
-                        path = rawuri.getRawPath();
-                        if (rawuri.getPort() == -1) {
-                            host = new URI(rawuri.getScheme() + "://" + rawuri.getHost());
-                        } else {
-                            host = new URI(rawuri.getScheme() + "://" + rawuri.getHost() + ":" + rawuri.getPort());
-                        }
-                    } catch (URISyntaxException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                    SFTPEnvironment environment = new SFTPEnvironment().withUsername(target.getUser())
-                            .withPassword(target.getPassword().toCharArray())
-                            .withKnownHosts(new File(System.getProperty("user.home"), ".ssh/known_hosts"));
-                    FileSystem fileSystem = null;
-                    try {
-                        fileSystem = FileSystems.newFileSystem(host, environment,
-                                SFTPFileSystemProvider.class.getClassLoader());
-                    } catch (IOException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                    targetFile = fileSystem.getPath(path);
-                } else {
-                    targetFile = getProject().file(target.getUrl()).toPath();
-                }
-            }
+            targetFile = getTargetFile(target);
         } else {
             throw new IllegalArgumentException("target must be set");
+        }
+        
+        Path geocatTargetFile = null;
+        if (geocatTarget != null) {
+            log.info("geocat target " + geocatTarget.toString());
+            geocatTargetFile = getTargetFile(geocatTarget);
         }
         
         // TODO: 
@@ -97,14 +76,50 @@ public class MetaPublisher extends DefaultTask {
 
         MetaPublisherStep step = new MetaPublisherStep();
         try {
-            step.execute(themeRootDirectory, dataIdent, targetFile, regions!=null?regions.get():null);
-        } catch (IOException | IoxException | Ili2cException | SaxonApiException e) {
+            step.execute(themeRootDirectory, dataIdent, targetFile, regions!=null?regions.get():null, geocatTargetFile);
+        } catch (IOException | IoxException | Ili2cException | SaxonApiException | TemplateException e) {
             log.error("failed to run MetaPublisher", e);
 
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         }
-        
+    }
+    
+    // TODO: mit Publisher vereinen
+    // S3 hinzufuegen (falls das Teil funktioniert)
+    private Path getTargetFile(Endpoint target) {
+        Path targetFile;
+        if (target.getUrl().startsWith("sftp:")) {
+            URI host = null;
+            URI rawuri = null;
+            String path = null;
+            try {
+                rawuri = new URI(target.getUrl());
+                path = rawuri.getRawPath();
+                if (rawuri.getPort() == -1) {
+                    host = new URI(rawuri.getScheme() + "://" + rawuri.getHost());
+                } else {
+                    host = new URI(rawuri.getScheme() + "://" + rawuri.getHost() + ":" + rawuri.getPort());
+                }
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException(e);
+            }
+            SFTPEnvironment environment = new SFTPEnvironment().withUsername(target.getUser())
+                    .withPassword(target.getPassword().toCharArray())
+                    .withKnownHosts(new File(System.getProperty("user.home"), ".ssh/known_hosts"));
+            FileSystem fileSystem = null;
+            try {
+                fileSystem = FileSystems.newFileSystem(host, environment,
+                        SFTPFileSystemProvider.class.getClassLoader());
+            } catch (IOException e) {
+                throw new IllegalArgumentException(e);
+            }
+            targetFile = fileSystem.getPath(path);
+        } else {
+            targetFile = getProject().file(target.getUrl()).toPath();
+        }
+        return targetFile;
+  
     }
 
 }

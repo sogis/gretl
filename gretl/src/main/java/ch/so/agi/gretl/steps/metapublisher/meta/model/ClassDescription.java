@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.util.metapublisher;
+package ch.so.agi.gretl.steps.metapublisher.meta.model;
 
 import java.util.List;
 

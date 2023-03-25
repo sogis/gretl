@@ -19,6 +19,8 @@ public class MetaPublisherTest {
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
     public static final String PATH_ELE_CONFIG = "config";
+    public static final String GEOCAT_FTP_DIR = "geocat";
+    public static final String GEOCAT_PATH_ELE_ENV = "int"; // TODO: beim Testen muss ich es wohl eh hardodieren? Hier ja, aber dem Job irgend eine ENV-Variable uebergeben oder so. Andi fragen.
 
     @Test
     public void simple_Ok() throws Exception {
@@ -34,14 +36,26 @@ public class MetaPublisherTest {
         Path target = Paths.get(jobDirectory);
         File htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+dataIdent+".html").toFile();
         assertTrue(htmlFile.exists());
-
-        byte[] bytes = Files.readAllBytes(htmlFile.toPath());
-        String fileContent = new String (bytes);
-        assertTrue(fileContent.contains("Datenbeschreibung • Amt für Geoinformation Kanton Solothurn"));
-        assertTrue(fileContent.contains("<div id=\"title\">Abbaustellen</div>"));
-
+        {
+            byte[] bytes = Files.readAllBytes(htmlFile.toPath());
+            String fileContent = new String (bytes);
+            assertTrue(fileContent.contains("Datenbeschreibung • Amt für Geoinformation Kanton Solothurn"));
+            assertTrue(fileContent.contains("<div id=\"title\">Abbaustellen</div>"));   
+        }
+        
         File xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf").toFile();
         assertTrue(xtfFile.exists());
+        
+        File xmlFile = target.resolve(PATH_ELE_ROOT).resolve(GEOCAT_FTP_DIR).resolve(GEOCAT_PATH_ELE_ENV).resolve(dataIdent+".xml").toFile();
+        System.out.println(xmlFile.getAbsolutePath());
+        assertTrue(xmlFile.exists());
+        {
+            byte[] bytes = Files.readAllBytes(xmlFile.toPath());
+            String fileContent = new String (bytes);
+            assertTrue(fileContent.contains("<gco:CharacterString>Abbaustellen</gco:CharacterString>"));
+        }
+
+        
     }
     
     @Test

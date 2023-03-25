@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.util.metapublisher;
+package ch.so.agi.gretl.steps.metapublisher.meta.model;
 
 public enum DataType {
     BOOLEAN, TEXT, MTEXT, JSON_TEXT, INTEGER, DOUBLE, DATE, DATETIME, ENUMERATION, POLYGON, LINESTRING, POINT, MULTIPOLYGON, MULTILINESTRING, MULTIPOINT, STRUCTURE, UNDEFINED  

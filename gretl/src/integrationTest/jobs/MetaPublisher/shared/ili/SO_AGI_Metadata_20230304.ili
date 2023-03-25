@@ -59,6 +59,16 @@ VERSION "2023-03-04" =
     attributeDescription : BAG {0..*} OF SO_AGI_Metadata_20230304.AttributeDescription;
   END ClassDescription;
 
+  STRUCTURE Item = 
+    identifier : MANDATORY TEXT;
+    title : MANDATORY TEXT;
+    lastPublishingDate : MANDATORY FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
+    secondToLastPublishingDate : FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
+    boundary : BoundingBox;
+    !! geometry TODO: erst bei stac api
+  END Item;
+
+
   TOPIC Offices =
     OID AS SO_AGI_Metadata_20230304.SOOID;
 
@@ -81,7 +91,7 @@ VERSION "2023-03-04" =
     CLASS ThemePublication =
       identifier : MANDATORY TEXT;
       model : SO_AGI_Metadata_20230304.ModelLink;
-      lastPublishingDate : FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
+      lastPublishingDate : MANDATORY FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
       secondToLastPublishingDate : FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
       title : TEXT;
       shortDescription : MTEXT;
@@ -90,9 +100,11 @@ VERSION "2023-03-04" =
       keywords : TEXT;
       synonyms : TEXT;
       owner : MANDATORY SO_AGI_Metadata_20230304.Office_;
-      servicer : SO_AGI_Metadata_20230304.Office_;
+      servicer : MANDATORY SO_AGI_Metadata_20230304.Office_;
       boundary : BoundingBox;
+      items : BAG {0..*} OF SO_AGI_Metadata_20230304.Item;
       fileFormats: BAG {0..*} OF SO_AGI_Metadata_20230304.FileFormat;
+      downloadHostUrl: URI;
       classDescription : BAG {0..*} OF SO_AGI_Metadata_20230304.ClassDescription;
 
       UNIQUE identifier;
