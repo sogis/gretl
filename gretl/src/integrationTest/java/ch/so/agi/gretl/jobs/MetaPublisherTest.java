@@ -47,15 +47,12 @@ public class MetaPublisherTest {
         assertTrue(xtfFile.exists());
         
         File xmlFile = target.resolve(PATH_ELE_ROOT).resolve(GEOCAT_FTP_DIR).resolve(GEOCAT_PATH_ELE_ENV).resolve(dataIdent+".xml").toFile();
-        System.out.println(xmlFile.getAbsolutePath());
         assertTrue(xmlFile.exists());
         {
             byte[] bytes = Files.readAllBytes(xmlFile.toPath());
             String fileContent = new String (bytes);
             assertTrue(fileContent.contains("<gco:CharacterString>Abbaustellen</gco:CharacterString>"));
         }
-
-        
     }
     
     @Test
@@ -95,8 +92,5 @@ public class MetaPublisherTest {
 
             assertTrue(fileContent.contains(formattedDate));
         }
-
     }
-    
-
 }
