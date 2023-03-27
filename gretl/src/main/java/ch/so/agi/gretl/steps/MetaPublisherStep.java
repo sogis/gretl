@@ -354,7 +354,7 @@ public class MetaPublisherStep {
         // an die notwendigen einzelnen Config-Dateien zu gelangen.
         Files.copy(xtfFile.toPath(), Paths.get(targetConfigPath.toFile().getAbsolutePath(), xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
                 
-        // (9) Geocat-XML erstellen
+        // (8) Geocat-XML erstellen
         if (geocatTarget != null) {
             String geocatFtpDir = "int";
             if (gretlEnvironment.equalsIgnoreCase("production")) {
