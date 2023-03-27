@@ -49,12 +49,12 @@ public class FileFormatGC {
         return url;
     }
 
-    private boolean isVectorTheme(){
+    private boolean isVectorTheme() {
         boolean isVec = tpObj.getattrvalue("model") != null && tpObj.getattrvalue("model").length() > 0;
         return isVec;
     }
 
-    public String getName(){
+    public String getName() {
         return ffObj.getattrvalue("name");
     }
     

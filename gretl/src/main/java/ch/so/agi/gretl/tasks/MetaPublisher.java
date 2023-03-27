@@ -31,6 +31,8 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 public class MetaPublisher extends DefaultTask {
     protected GretlLogger log;
+    
+    private static final String GRETL_ENV_STRING = "gretlEnvironment";
 
     @Input
     public String dataIdent = null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
@@ -74,10 +76,15 @@ public class MetaPublisher extends DefaultTask {
         // Dann wird es als Projekt-Root erkannt.
         File themeRootDirectory = getProject().getRootDir().getParentFile().getParentFile();
 
+        String gretlEnvironment = "test";
+        if (getProject().hasProperty(GRETL_ENV_STRING)) {
+            gretlEnvironment = (String) getProject().property(GRETL_ENV_STRING);
+        }
+        
         MetaPublisherStep step = new MetaPublisherStep();
         try {
-            step.execute(themeRootDirectory, dataIdent, targetFile, regions!=null?regions.get():null, geocatTargetFile);
-        } catch (IOException | IoxException | Ili2cException | SaxonApiException | TemplateException e) {
+            step.execute(themeRootDirectory, dataIdent, targetFile, regions!=null?regions.get():null, geocatTargetFile, gretlEnvironment);
+        } catch (IOException | IoxException | Ili2cException | SaxonApiException | TemplateException  e) {
             log.error("failed to run MetaPublisher", e);
 
             GradleException ge = TaskUtil.toGradleException(e);

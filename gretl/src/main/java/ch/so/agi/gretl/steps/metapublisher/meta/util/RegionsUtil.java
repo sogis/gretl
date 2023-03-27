@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class Regions {
+public class RegionsUtil {
     private GretlLogger log = LogEnvironment.getLogger(this.getClass());;
     
     private static final String ITEM_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.Item";

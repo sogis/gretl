@@ -5,6 +5,10 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'publishMetaFile'
 
+ext {
+    gretlEnvironment = "integration"
+}
+
 tasks.register('publishMetaFile', MetaPublisher){
     dataIdent = "ch.so.afu.abbaustellen"
     target = [project.buildDir]      

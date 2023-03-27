@@ -23,31 +23,11 @@ import org.tomlj.TomlTable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 
-import ch.ehi.ili2db.base.Ili2cUtility;
-import ch.ehi.ili2db.metaattr.IliMetaAttrNames;
 import ch.interlis.ili2c.Ili2c;
 import ch.interlis.ili2c.Ili2cException;
 import ch.interlis.ili2c.Ili2cFailure;
-import ch.interlis.ili2c.config.Configuration;
-import ch.interlis.ili2c.metamodel.AttributeDef;
-import ch.interlis.ili2c.metamodel.CompositionType;
-import ch.interlis.ili2c.metamodel.CoordType;
-import ch.interlis.ili2c.metamodel.Domain;
-import ch.interlis.ili2c.metamodel.Element;
-import ch.interlis.ili2c.metamodel.EnumerationType;
-import ch.interlis.ili2c.metamodel.FormattedType;
-import ch.interlis.ili2c.metamodel.Model;
-import ch.interlis.ili2c.metamodel.NumericType;
-import ch.interlis.ili2c.metamodel.PolylineType;
-import ch.interlis.ili2c.metamodel.SurfaceOrAreaType;
-import ch.interlis.ili2c.metamodel.Table;
-import ch.interlis.ili2c.metamodel.TextType;
-import ch.interlis.ili2c.metamodel.Topic;
 import ch.interlis.ili2c.metamodel.TransferDescription;
-import ch.interlis.ili2c.metamodel.Type;
-import ch.interlis.ilirepository.IliManager;
 import ch.interlis.iom.IomObject;
 import ch.interlis.iom_j.Iom_jObject;
 import ch.interlis.iom_j.xtf.XtfReader;
@@ -64,12 +44,13 @@ import ch.interlis.iox_j.StartTransferEvent;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.metapublisher.geocat.Geocat;
+import ch.so.agi.gretl.steps.metapublisher.meta.ModelDescription;
 import ch.so.agi.gretl.steps.metapublisher.meta.model.AttributeDescription;
 import ch.so.agi.gretl.steps.metapublisher.meta.model.ClassDescription;
-import ch.so.agi.gretl.steps.metapublisher.meta.model.DataType;
-import ch.so.agi.gretl.steps.metapublisher.meta.util.Regions;
-import freemarker.template.TemplateException;
+import ch.so.agi.gretl.steps.metapublisher.meta.util.RegionsUtil;
 import ch.so.agi.gretl.steps.metapublisher.geocat.Geocat;
+
+import freemarker.template.TemplateException;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -86,7 +67,6 @@ public class MetaPublisherStep {
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
     public static final String PATH_ELE_CONFIG = "config";
-    public static final String GEOCAT_FTP_DIR = "int"; // TODO FIXME
 
     private static final List<String> META_TOML_CONFIG_SECTIONS = new ArrayList<String>() {{
         add("meta");
@@ -130,33 +110,25 @@ public class MetaPublisherStep {
     }
     
     public void execute(File themeRootDirectory, String themePublication, Path target) throws IOException, IoxException, Ili2cException, SaxonApiException, TemplateException { 
-        execute(themeRootDirectory, themePublication, target, null, null);
+        execute(themeRootDirectory, themePublication, target, null, null, null);
     }
-
-    // (1) Ordner im Zielverzeichnis erstellen.
-    // (2) Modellnamen aus Toml-Datei lesen.
-    // (3) Zuerst wird das Modell geparsed.
-    // (4) Anschliessend die Toml-Datei mit zusaetzlichen Informationen lesen und ggf. 
-    // die aus (1) eruierten Infos ueberschreiben.
-    // (5) XTF schreiben
-    // (6) HTML aus XTF ableiten
-    // (7) XTF in spezielle config-Verzeichnis im Zielverzeichnis kopieren
-    // (8) GeoJSON-Datei der Regionen nachfuehren (falls dynamische Regionen vorhanden)
-    // (9) geocat xml erzeugen
-        
-    /**
-     * 
-     * @param themeRootDirectory the root directory of the theme
-     * @param themePublication the ident of the publication that is published (= dataIdent of PublisherTask)
-     * @param target the target root directory where the meta/config files will be saved
-     * @throws IOException
-     * @throws IoxException
-     * @throws Ili2cException
-     * @throws SaxonApiException
-     * @throws TemplateException 
-     */
-    public void execute(File themeRootDirectory, String themePublication, Path target, List<String> regions, Path geocatTarget) throws IOException, IoxException, Ili2cException, SaxonApiException, TemplateException { 
-        log.lifecycle(String.format("Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s target: %s regions: %s geocatTarget: %s)", taskName, themeRootDirectory, themePublication, target, regions, geocatTarget));
+  
+//    /**
+//     * 
+//     * @param themeRootDirectory the root directory of the theme
+//     * @param themePublication the ident of the publication that is published (= dataIdent of PublisherTask)
+//     * @param target the target root directory where the meta/config files will be saved
+//     * @throws IOException
+//     * @throws IoxException
+//     * @throws Ili2cException
+//     * @throws SaxonApiException
+//     * @throws TemplateException 
+//     */
+    public void execute(File themeRootDirectory, String themePublication, Path target, List<String> regions,
+            Path geocatTarget, String gretlEnvironment) throws IOException, IoxException, Ili2cException, SaxonApiException, TemplateException {
+        log.lifecycle(String.format(
+                "Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s target: %s regions: %s geocatTarget: %s gretlEnvironment)",
+                taskName, themeRootDirectory, themePublication, target, regions, geocatTarget, gretlEnvironment));
         
         // (1) Ordner erstellen im Zielverzeichnis, falls er nicht existiert.
         Path targetRootPath = target;
@@ -166,19 +138,47 @@ public class MetaPublisherStep {
         Files.createDirectories(targetPath);
         
         File tomlFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, "meta.toml").toFile();
-
         TomlParseResult metaTomlResult = Toml.parse(tomlFile.toPath());
 
-        // (2) Modellnamen wird auch fuer (1) benoetigt.
+        // (2) Informationen aus meta.toml lesen, die wir zwingend hier benoetigen.
         String modelName = metaTomlResult.getString("meta.model");
-        
+        String identifier = metaTomlResult.getString("meta.identifier");
+        boolean printClassDescription = metaTomlResult.getBoolean("config.printClassDescription", () -> true);
+
         // TODO: if model == null
 
-        // (3) Informationen aus ILI-Modell lesen.
-        Map<String, ClassDescription> classDescriptions = getModelDescription(modelName, themeRootDirectory.getAbsolutePath());
+        // (3) Informationen aus ILI-Modell lesen und mit Informationen aus meta.toml ergaenzen und ggf. ueberschreiben.
+//        Map<String, ClassDescription> classDescriptions = getModelDescription(modelName, themeRootDirectory.getAbsolutePath());
+        Map<String, ClassDescription> classDescriptions = ModelDescription.getDescriptions(modelName, themeRootDirectory, printClassDescription, metaTomlResult);
     
-        // (4) Weitere Informationen aus Toml-Datei lesen und ggf. Modellinformationen uebersteuern.
-        String identifier = metaTomlResult.getString("meta.identifier");
+        // (4) GeoJSON-Datei nachfuehren zwecks Publikationsdatum einzelner Regionen.
+        // Weil Publisher den Inhalt des meta-Verzeichnisses loescht, ist der Master
+        // im config-Verzeichnis.
+        // Falls die GeoJSON-Datei nicht im Zielverzeichnis vorhanden ist, wird das 
+        // Template dorthin kopiert.
+        Path targetConfigPath = targetRootPath.resolve(PATH_ELE_CONFIG);
+        log.lifecycle("create <"+targetConfigPath.toString()+">...");
+        Files.createDirectories(targetConfigPath);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        if (regions != null) {
+            File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
+            if (!targetGeojsonFile.exists()) {
+                File sourceGeojsonFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, themePublication + ".json").toFile();
+                Files.copy(sourceGeojsonFile.toPath(), targetGeojsonFile.toPath());
+            }       
+            
+            String formattedDate = sdf.format(new Date());
+            Map<String,String> regionMap = new HashMap<>();
+            for (String regionIdentifier : regions) {
+                regionMap.put(regionIdentifier, formattedDate);
+            }
+
+            RegionsUtil.updateJson(targetGeojsonFile, regionMap);
+        }
+
+        // (5) Weitere Informationen aus meta.toml lesen
         String title = metaTomlResult.getString("meta.title");
         String description = metaTomlResult.getString("meta.description");
         String keywords = metaTomlResult.getString("meta.keywords");
@@ -188,52 +188,15 @@ public class MetaPublisherStep {
         String licence = metaTomlResult.getString("meta.licence");
         String furtherInformation = metaTomlResult.getString("meta.furtherInformation");
         TomlArray formatsArray = metaTomlResult.getArrayOrEmpty("meta.formats");
-        List<?> formats = formatsArray.toList();
-        boolean printClassDescription = metaTomlResult.getBoolean("config.printClassDescription", () -> true);
-
-        if (printClassDescription) overrideModelDescription(classDescriptions, metaTomlResult);
-
-        IomObject servicerIomObject = getIomObjectById(servicer, CORE_DATA_OFFICES, themeRootDirectory.getAbsolutePath());
-        IomObject ownerIomObject = getIomObjectById(owner, CORE_DATA_OFFICES, themeRootDirectory.getAbsolutePath());
+        List<?> formats = formatsArray.toList(); 
         
-        List<IomObject> formatIomObjects = new ArrayList<>();
-        for (Object format : formats) {
-            IomObject formatObj = getIomObjectById(format.toString(), CORE_DATA_FILEFORMATS, themeRootDirectory.getAbsolutePath());
-            convertIomObjectToStructure(formatObj, FILEFORMAT_STRUCTURE_TAG);
-            formatIomObjects.add(formatObj);
-        }
-        
-        // Vor XTF, wegen Regionen
-        // (8) GeoJSON-Datei nachfuehren zwecks Publikationsdatum einzelner Regionen.
-        // Weil Publisher den Inhalt des meta-Verzeichnisses loescht, ist der Master
-        // im config-Verzeichnis.
-        Path targetConfigPath = targetRootPath.resolve(PATH_ELE_CONFIG);
-        log.lifecycle("create <"+targetConfigPath.toString()+">...");
-        Files.createDirectories(targetConfigPath);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-        if (regions != null) {
-            File geojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
-            if (!geojsonFile.exists()) {
-                File sourceGeojsonFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, themePublication + ".json").toFile();
-                Files.copy(sourceGeojsonFile.toPath(), geojsonFile.toPath());
-            }       
-            
-            String formattedDate = sdf.format(new Date());
-            Map<String,String> regionMap = new HashMap<>();
-            for (String regionIdentifier : regions) {
-                regionMap.put(regionIdentifier, formattedDate);
-            }
-
-            Regions.updateJson(geojsonFile, regionMap);
-        }
-
-
-        // (5) XTF schreiben.
+        // (6) XTF herstellen
         log.lifecycle("writing xtf file");
+
         File xtfFile = Paths.get(targetPath.toFile().getAbsolutePath(), "meta-"+identifier+".xtf").toFile();
-        IoxWriter ioxWriter = createMetaIoxWriter(themeRootDirectory, xtfFile);
+        TransferDescription td = getMetadataTransferdescription(themeRootDirectory);
+        IoxWriter ioxWriter = new XtfWriter(xtfFile, td);
+
         ioxWriter.write(new StartTransferEvent("SOGIS-20230305", "", null));
         ioxWriter.write(new StartBasketEvent(ILI_TOPIC,BID));
 
@@ -254,6 +217,9 @@ public class MetaPublisherStep {
         if (keywords!=null) iomObj.setattrvalue("keywords", keywords);
         if (synonyms!=null) iomObj.setattrvalue("synonyms", synonyms);
         
+        IomObject servicerIomObject = getIomObjectById(servicer, CORE_DATA_OFFICES, themeRootDirectory.getAbsolutePath());
+        IomObject ownerIomObject = getIomObjectById(owner, CORE_DATA_OFFICES, themeRootDirectory.getAbsolutePath());
+
         if (servicerIomObject!=null) {
             convertIomObjectToStructure(servicerIomObject, OFFICE_STRUCTURE_TAG); 
             iomObj.addattrobj("servicer", servicerIomObject);
@@ -266,7 +232,7 @@ public class MetaPublisherStep {
 
         Iom_jObject bboxObj = new Iom_jObject(BOUNDARY_STRUCTURE_TAG, null);
         if (regions == null) {
-            // Dann machen wir es uns relativ einfach // FIXME: schoenere Koordinaten
+            // Dann machen wir es uns relativ einfach. // FIXME: schoenere Koordinaten
             bboxObj.setattrvalue("westlimit", "2593499");
             bboxObj.setattrvalue("southlimit", "1214279");
             bboxObj.setattrvalue("eastlimit", "2644299");
@@ -274,7 +240,7 @@ public class MetaPublisherStep {
         } else {
             File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
             Map<String,Double> boundary = new HashMap<String,Double>();
-            Regions.getBoundary(jsonFile, boundary);
+            RegionsUtil.getBoundary(jsonFile, boundary);
             
             bboxObj.setattrvalue("westlimit", String.valueOf(boundary.get("westlimit")));
             bboxObj.setattrvalue("southlimit", String.valueOf(boundary.get("southlimit")));
@@ -286,7 +252,7 @@ public class MetaPublisherStep {
         if (regions != null) {
             File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
             List<IomObject> items = new ArrayList<IomObject>();
-            Regions.getItems(jsonFile, items);
+            RegionsUtil.getItems(jsonFile, items);
             
             for (IomObject item : items) {
                 iomObj.addattrobj("items", item);
@@ -299,12 +265,27 @@ public class MetaPublisherStep {
             iomObj.addattrobj("items", itemObj);
         }
         
+        List<IomObject> formatIomObjects = new ArrayList<>();
+        for (Object format : formats) {
+            IomObject formatObj = getIomObjectById(format.toString(), CORE_DATA_FILEFORMATS, themeRootDirectory.getAbsolutePath());
+            convertIomObjectToStructure(formatObj, FILEFORMAT_STRUCTURE_TAG);
+            formatIomObjects.add(formatObj);
+        }
+
         for (IomObject formatStructure : formatIomObjects) {
             iomObj.addattrobj("fileFormats", formatStructure);
         }
         
-        iomObj.setattrvalue("downloadHostUrl", "https://files.geo.so.ch"); // TODO: Umgebungs-aware machen. Wie?
-        iomObj.setattrvalue("appHostUrl", "https://data.geo.so.ch"); // TODO: Umgebungs-aware machen. Wie?
+        if (gretlEnvironment.equalsIgnoreCase("production")) {
+            iomObj.setattrvalue("downloadHostUrl", "https://files.geo.so.ch");
+            iomObj.setattrvalue("appHostUrl", "https://data.geo.so.ch");     
+        } else if (gretlEnvironment.equalsIgnoreCase("integration"))  {
+            iomObj.setattrvalue("downloadHostUrl", "https://files-i.geo.so.ch");
+            iomObj.setattrvalue("appHostUrl", "https://data-i.geo.so.ch");     
+        } else {
+            iomObj.setattrvalue("downloadHostUrl", "https://files-t.geo.so.ch");
+            iomObj.setattrvalue("appHostUrl", "https://data-t.geo.so.ch");     
+        }
         
         // TODO: add missing attributes etc. (??)
         
@@ -364,26 +345,25 @@ public class MetaPublisherStep {
                 
         // (9) Geocat-XML erstellen
         if (geocatTarget != null) {
+            String geocatFtpDir = "int";
+            if (gretlEnvironment.equalsIgnoreCase("production")) {
+                geocatFtpDir = "prod";
+            } 
+            
             String identifer = iomObj.getattrvalue("identifier");
             Path geocatLocalFile = targetConfigPath.resolve(identifier + ".xml");
             
             // Was nur lokal (beim Entwickeln) eintreffen sollte.
-            if (!geocatTarget.resolve(GEOCAT_FTP_DIR).toFile().exists()) {
-                Files.createDirectories(geocatTarget.resolve(GEOCAT_FTP_DIR));
+            if (!geocatTarget.resolve(geocatFtpDir).toFile().exists()) {
+                Files.createDirectories(geocatTarget.resolve(geocatFtpDir));
             }
             
-            Path geocatTargetFile = geocatTarget.resolve(GEOCAT_FTP_DIR).resolve(geocatLocalFile.toFile().getName());
+            Path geocatTargetFile = geocatTarget.resolve(geocatFtpDir).resolve(geocatLocalFile.toFile().getName());
 
             Geocat.export(iomObj, themeRootDirectory, geocatLocalFile);
             Files.copy(geocatLocalFile, geocatTargetFile, StandardCopyOption.REPLACE_EXISTING);   
         }
     }
-
-    private IoxWriter createMetaIoxWriter(File themeRootDirectory, File dataFile) throws IOException, Ili2cFailure, IoxException {
-        TransferDescription td = getMetadataTransferdescription(themeRootDirectory);
-        IoxWriter ioxWriter = new XtfWriter(dataFile, td);
-        return ioxWriter;
-    }    
     
     private TransferDescription getMetadataTransferdescription(File configRootDirectory) throws IOException, Ili2cFailure {        
         File iliFile = Paths.get(configRootDirectory.getAbsolutePath(), SHARED_DIR_NAME, ILI_DIR_NAME, ILI_MODEL_METADATA).toFile();
@@ -419,233 +399,5 @@ public class MetaPublisherStep {
     private void convertIomObjectToStructure(IomObject officeObj, String tag) {
         officeObj.setobjecttag(tag);
         officeObj.setobjectoid(null);
-    }
-    
-    private void overrideModelDescription(Map<String, ClassDescription> classDescriptions, TomlParseResult metaTomlResult) {
-        Map<String, Object> metaTomlMap = metaTomlResult.toMap();
-        for (Map.Entry<String, Object> entry : metaTomlMap.entrySet()) {
-            if (!META_TOML_CONFIG_SECTIONS.contains(entry.getKey())) {
-                String modelName = (String) entry.getKey();
-                parseTopicDesc(classDescriptions, modelName, (TomlTable) entry.getValue());
-            }      
-        }
-    }
-    
-    private void parseTopicDesc(Map<String, ClassDescription> classDescriptions, String modelName, TomlTable topicDescs) {
-        for (Map.Entry<String, Object> entry : topicDescs.entrySet()) {
-            String topicName = (String) entry.getKey();
-            parseClassDesc(classDescriptions, modelName, topicName, (TomlTable) entry.getValue());   
-        }
-    }
-    
-    private void parseClassDesc(Map<String, ClassDescription> classDescriptions, String modelName, String topicName, TomlTable classDescs) {
-        for (Map.Entry<String, Object> entry : classDescs.entrySet()) {
-            String className = (String) entry.getKey();
-            
-            TomlTable classDesc = (TomlTable) entry.getValue();
-            String title = classDesc.getString("title");
-            String description = classDesc.getString("description");
-
-            String qualifiedClassName = modelName + "." + topicName + "." + className;
-//            System.out.println("qualifiedClassName: " + qualifiedClassName);
-//            System.out.println("className: " + className);
-//            System.out.println("title: " + title);
-//            System.out.println("description: " + description);
-            
-            ClassDescription classDescription = classDescriptions.get(qualifiedClassName);
-//            System.out.println(classDescription);
-
-            if (classDescription != null) {
-                if (title != null) {
-                    classDescription.setTitle(title);
-                } 
-
-                if (description != null) {
-                    classDescription.setDescription(description);
-                }
-            }               
-        }
-    }
-    
-    private Map<String, ClassDescription> getModelDescription(String modelName, String themeRootDirectory) throws Ili2cException, IOException {
-        String localRepo = Paths.get(themeRootDirectory, ILI_DIR_NAME).toFile().getAbsolutePath();
-                
-        TransferDescription td = getTransferDescriptionFromModelName(modelName, localRepo);
-        
-        Map<String, ClassDescription> classTypes = new HashMap<>();
-
-        for (Model model : td.getModelsFromLastFile()) {
-            if (!model.getName().equalsIgnoreCase(modelName)) {
-                continue;
-            }
-
-            Iterator<Element> modeli = model.iterator();
-            while (modeli.hasNext()) {
-                Object tObj = modeli.next();
-
-                if (tObj instanceof Domain) {
-                    // Falls ich die Werte will.
-                } else if (tObj instanceof Table) {
-                    Table tableObj = (Table) tObj;
-                    // https://github.com/claeis/ili2c/blob/ccb1331428/ili2c-core/src/main/java/ch/interlis/ili2c/metamodel/Table.java#L30
-                    if (tableObj.isIdentifiable()) {
-                        // Abstrakte Klasse:
-                        // Kann ich ignorieren, da alles was ich wissen will (? Attribute und
-                        // Beschreibung) in den spezialisieren Klassen vorhanden ist.
-                    } else {
-                        // Struktur:
-                        // Momentan nicht von Interesse.
-                    }
-                } else if (tObj instanceof Topic) {
-                    Topic topic = (Topic) tObj;
-                    Iterator<?> iter = topic.getViewables().iterator();
-
-                    while (iter.hasNext()) {
-                        Object obj = iter.next();
-
-                        // Viewable waere "alles". Was ist sinnvoll/notwendig fuer unseren Usecase?
-                        // Domains?
-                        // Momentan nur Table beruecksichtigen.
-                        if (obj instanceof Table) {
-                            Table table = (Table) obj;
-
-                            // Abstrakte Klasse oder Struktur:
-                            // Abstrakte Klasse interessiert uns nicht, da alle
-                            // Attribute in der spezialisierte Klass vorhanden sind.
-                            // Struktur interessiert uns vielleicht spaeter aber
-                            // zum jetzigen Zeitpunkt brauchen wir dieses Wissen
-                            // nicht.
-                            if (table.isAbstract() || !table.isIdentifiable()) {
-                                continue;
-                            }
-
-                            ClassDescription classType = new ClassDescription();
-                            classType.setName(table.getName());
-                            classType.setTitle(table.getMetaValue("title"));
-                            classType.setDescription(table.getDocumentation());
-                            classType.setModelName(modelName);
-                            classType.setTopicName(topic.getName());
-
-                            Iterator<?> attri = table.getAttributes();
-
-                            List<AttributeDescription> attributes = new ArrayList<>();
-                            while (attri.hasNext()) {
-                                Object aObj = attri.next();
-                                AttributeDescription attributeType = new AttributeDescription();
-
-                                if (aObj instanceof AttributeDef) {
-                                    AttributeDef attr = (AttributeDef) aObj;
-                                    attributeType.setName(attr.getName());
-                                    attributeType.setDescription(attr.getDocumentation());
-
-                                    Type type = attr.getDomainResolvingAll();
-                                    attributeType.setMandatory(type.isMandatory() ? true : false);
-
-                                    if (type instanceof TextType) {
-                                        TextType t = (TextType) type; 
-                                        attributeType.setDataType(t.isNormalized() ? DataType.TEXT : DataType.MTEXT);
-                                    } else if (type instanceof NumericType) {
-                                        NumericType n = (NumericType) type;
-                                        attributeType.setDataType(n.getMinimum().getAccuracy() == 0 ? DataType.INTEGER : DataType.DOUBLE);
-                                    } else if (type instanceof EnumerationType) {
-                                        EnumerationType e = (EnumerationType) type;
-                                        // Wenn man selber BOOLEAN definiert muss man hier nachziehen. Dann muessen
-                                        // wohl die Werte ausgelesen werden e.getEnumeration() 
-                                        if (attr.isDomainBoolean()) {
-                                            attributeType.setDataType(DataType.BOOLEAN);
-                                        } else {
-                                            attributeType.setDataType(DataType.ENUMERATION);
-                                        }
-                                    } else if (type instanceof SurfaceOrAreaType) {
-                                        SurfaceOrAreaType s = (SurfaceOrAreaType) type;
-                                        attributeType.setDataType(DataType.POLYGON);
-                                    } else if (type instanceof PolylineType) {
-                                        PolylineType p = (PolylineType) type;
-                                        attributeType.setDataType(DataType.LINESTRING);
-                                    } else if (type instanceof CoordType) {
-                                        CoordType c = (CoordType) type;
-                                        attributeType.setDataType(DataType.POINT);
-                                    } else if (type instanceof FormattedType) {
-                                        FormattedType f = (FormattedType) type;
-                                        String format = f.getFormat();
-                                        if (format.contains("Year") && !format.contains("Hours")) {
-                                            attributeType.setDataType(DataType.DATE);
-                                        } else if (format.contains("Year") && format.contains("Hours")) {
-                                            attributeType.setDataType(DataType.DATETIME);
-                                        }
-                                        // else if...
-                                    } else if (type instanceof CompositionType) {
-                                        CompositionType c = (CompositionType) type;
-
-                                        if (attr.getMetaValue(IliMetaAttrNames.METAATTR_MAPPING)!= null && attr.getMetaValue(IliMetaAttrNames.METAATTR_MAPPING).equals(IliMetaAttrNames.METAATTR_MAPPING_JSON)) {
-                                            attributeType.setDataType(DataType.JSON_TEXT);
-                                        } else {
-                                            Table struct = c.getComponentType();
-
-                                            // Wenn es keine richtigen Multigeometrie-Datentypen
-                                            // gibt, geht es nicht 100% robust.
-                                            if (c.getCardinality().getMaximum() != 1) {
-                                                attributeType.setDataType(DataType.UNDEFINED); // oder DataType.STRUCTURE ?
-                                            } else {
-                                                if (Ili2cUtility.isPureChbaseMultiSuface(td, attr)) {
-                                                    attributeType.setDataType(DataType.MULTIPOLYGON);
-                                                } else if (Ili2cUtility.isPureChbaseMultiLine(td, attr)) {
-                                                    attributeType.setDataType(DataType.MULTILINESTRING);
-                                                } else {
-                                                    String metaValue = struct.getMetaValue(IliMetaAttrNames.METAATTR_MAPPING);
-
-                                                    if (metaValue == null) {
-                                                        attributeType.setDataType(DataType.UNDEFINED);
-                                                    } else if (metaValue
-                                                            .equals(IliMetaAttrNames.METAATTR_MAPPING_MULTISURFACE)) {
-                                                        attributeType.setDataType(DataType.MULTIPOLYGON);
-                                                    } else if (metaValue
-                                                            .equals(IliMetaAttrNames.METAATTR_MAPPING_MULTILINE)) {
-                                                        attributeType.setDataType(DataType.MULTILINESTRING);
-                                                    } else if (metaValue
-                                                            .equals(IliMetaAttrNames.METAATTR_MAPPING_MULTIPOINT)) {
-                                                        attributeType.setDataType(DataType.MULTIPOINT);
-                                                    } else {
-                                                        attributeType.setDataType(DataType.UNDEFINED);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                attributes.add(attributeType);
-                            }
-                            classType.setAttributes(attributes);
-                            classTypes.put(classType.getQualifiedName(), classType);
-                        } // else if... DOMAIN, etc.? DOMAIN nur, falls ich die Werte wirklich ausweisen will.
-                    }
-                }
-            }
-        }
-        return classTypes;
-    }
-
-    private TransferDescription getTransferDescriptionFromModelName(String modelName, String localRepo) throws  IOException, Ili2cException {
-        IliManager manager = new IliManager();
-        File ilicacheFolder = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), ".ilicache_").toFile();        
-        manager.setCache(ilicacheFolder);
-        String repositories[] = new String[] { localRepo, "http://models.interlis.ch/" };
-        manager.setRepositories(repositories);
-        ArrayList<String> modelNames = new ArrayList<String>();
-        modelNames.add(modelName);
-        Configuration config;
-        try {
-            config = manager.getConfig(modelNames, 2.3);
-        } catch (Ili2cException e) {
-            config = manager.getConfig(modelNames, 1.0); // bit of a hack
-        }
-        
-        TransferDescription td = Ili2c.runCompiler(config);
-
-        if (td == null) {
-            throw new IllegalArgumentException("INTERLIS compiler failed"); 
-        }
-        
-        return td;
     }
 }

@@ -52,6 +52,7 @@ public class MetaPublisherTest {
             byte[] bytes = Files.readAllBytes(xmlFile.toPath());
             String fileContent = new String (bytes);
             assertTrue(fileContent.contains("<gco:CharacterString>Abbaustellen</gco:CharacterString>"));
+            assertTrue(fileContent.contains("files-i.geo.so.ch"));
         }
     }
     
