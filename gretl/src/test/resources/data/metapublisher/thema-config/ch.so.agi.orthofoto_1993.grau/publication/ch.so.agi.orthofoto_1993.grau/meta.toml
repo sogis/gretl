@@ -13,4 +13,3 @@ formats = ["GTIFF"]
 
 [config]
 printClassDescription = false
-hasStaticRegionsFile = true
