@@ -22,16 +22,10 @@ public class Geocat {
 
     static {
         cfg = new Configuration(Configuration.VERSION_2_3_31);
-        
-
         cfg.setDefaultEncoding("UTF-8");
-
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-
         cfg.setLogTemplateExceptions(false);
-
         cfg.setWrapUncheckedExceptions(true);
-
         cfg.setFallbackOnNullLoopVariable(false);
     }
     
