@@ -24,8 +24,9 @@ public class MetaPublisherStepTestFile2LocalTest {
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
     public static final String PATH_ELE_CONFIG = "config";
-    public static final String GEOCAT_FTP_DIR = "int"; // TODO / FIXME
-
+    public static final String GEOCAT_FTP_DIR_INT = "int"; 
+    public static final String GEOCAT_FTP_DIR_PROD = "prod"; 
+    
     public MetaPublisherStepTestFile2LocalTest() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
@@ -33,6 +34,30 @@ public class MetaPublisherStepTestFile2LocalTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    @Test
+    public void publish_raster_geocat_Ok() throws Exception {
+        //Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
+        //Path geocatTarget = Paths.get("/Users/stefan/tmp/metapublisher/geocat/");
+        Path target = folder.newFolder("publish_raster_geocat_Ok").toPath();
+        Path geocatTarget = folder.newFolder("publish_raster_geocat_Ok_geocat").toPath();
+        String themePublication = "ch.so.agi.orthofoto_1993.grau";
+
+        // Run step
+        MetaPublisherStep metaPublisherStep = new MetaPublisherStep("publish_simple_meta_Ok");
+        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/thema-config/ch.so.agi.orthofoto_1993.grau"), themePublication, target, null, geocatTarget, "production");
+
+        // Check results
+        File jsonFile = target.resolve(PATH_ELE_CONFIG).resolve(themePublication + ".json").toFile();
+        assertTrue(jsonFile.exists()); 
+        
+        File xtfFile = target.resolve(PATH_ELE_CONFIG).resolve("meta-"+themePublication+".xtf").toFile();
+        assertTrue(xtfFile.exists());
+        
+        byte[] bytes = Files.readAllBytes(xtfFile.toPath());
+        String fileContent = new String (bytes);
+        assertTrue(fileContent.contains("<identifier>2612519_1254998</identifier>"));
+    }
+   
     @Test
     public void publish_simple_meta_Ok() throws Exception {
         // Prepare
@@ -71,7 +96,7 @@ public class MetaPublisherStepTestFile2LocalTest {
         metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/thema-config/ch.so.afu.abbaustellen"), themePublication, target, null, geocatTarget, "integration");
         
         // Check results
-        File xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR).resolve(themePublication+".xml").toFile();
+        File xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR_INT).resolve(themePublication+".xml").toFile();
         assertTrue(xmlFile.exists());
         
         byte[] bytes = Files.readAllBytes(xmlFile.toPath());
@@ -143,7 +168,7 @@ public class MetaPublisherStepTestFile2LocalTest {
         metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/thema-config/ch.so.agi.amtliche_vermessung"), themePublication, target, regions, geocatTarget, "integration");
 
         // Check results
-        File xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR).resolve(themePublication+".xml").toFile();
+        File xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR_INT).resolve(themePublication+".xml").toFile();
         assertTrue(xmlFile.exists());
 
         byte[] bytes = Files.readAllBytes(xmlFile.toPath());

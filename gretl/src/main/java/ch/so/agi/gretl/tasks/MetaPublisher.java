@@ -43,7 +43,7 @@ public class MetaPublisher extends DefaultTask {
     @Input
     @Optional
     public ListProperty<String> regions = null; // Publizierte Regionen (aus Publisher-Task)
-
+    
     @Input
     @Optional
     public Endpoint geocatTarget = null; // Geocat-Zielverzeichnis

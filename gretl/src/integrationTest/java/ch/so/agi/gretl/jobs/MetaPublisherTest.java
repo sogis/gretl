@@ -94,4 +94,31 @@ public class MetaPublisherTest {
             assertTrue(fileContent.contains(formattedDate));
         }
     }
+    
+    @Test
+    public void static_regions_Ok() throws Exception {
+        // Prepare
+        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/ch.so.agi.orthofoto_1993.grau/gretl/agi_orthofoto_1993_meta_pub";
+        String dataIdent = "ch.so.agi.orthofoto_1993.grau";
+        
+        // Run task
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob(jobDirectory, gvs);
+
+        // Check result
+        Path target = Paths.get(jobDirectory);
+        
+        File xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf").toFile();
+        assertTrue(xtfFile.exists());
+        
+        {
+            byte[] bytes = Files.readAllBytes(xtfFile.toPath());
+            String fileContent = new String (bytes);
+            assertTrue(fileContent.contains("<identifier>2612519_1254998</identifier>"));
+        }
+
+        File jsonFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve(dataIdent + ".json").toFile();
+        assertTrue(jsonFile.exists()); 
+    }
+
 }

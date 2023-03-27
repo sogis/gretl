@@ -124,7 +124,7 @@ public class MetaPublisherStep {
 //     * @throws SaxonApiException
 //     * @throws TemplateException 
 //     */
-    public void execute(File themeRootDirectory, String themePublication, Path target, List<String> regions,
+    public void execute(File themeRootDirectory, String themePublication, Path target, List<String> regions, 
             Path geocatTarget, String gretlEnvironment) throws IOException, IoxException, Ili2cException, SaxonApiException, TemplateException {
         log.lifecycle(String.format(
                 "Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s target: %s regions: %s geocatTarget: %s gretlEnvironment)",
@@ -144,12 +144,12 @@ public class MetaPublisherStep {
         String modelName = metaTomlResult.getString("meta.model");
         String identifier = metaTomlResult.getString("meta.identifier");
         boolean printClassDescription = metaTomlResult.getBoolean("config.printClassDescription", () -> true);
-
-        // TODO: if model == null
-
+        
         // (3) Informationen aus ILI-Modell lesen und mit Informationen aus meta.toml ergaenzen und ggf. ueberschreiben.
-//        Map<String, ClassDescription> classDescriptions = getModelDescription(modelName, themeRootDirectory.getAbsolutePath());
-        Map<String, ClassDescription> classDescriptions = ModelDescription.getDescriptions(modelName, themeRootDirectory, printClassDescription, metaTomlResult);
+        Map<String, ClassDescription> classDescriptions = null;
+        if (modelName != null) {
+            classDescriptions = ModelDescription.getDescriptions(modelName, themeRootDirectory, printClassDescription, metaTomlResult);            
+        }
     
         // (4) GeoJSON-Datei nachfuehren zwecks Publikationsdatum einzelner Regionen.
         // Weil Publisher den Inhalt des meta-Verzeichnisses loescht, ist der Master
@@ -162,6 +162,7 @@ public class MetaPublisherStep {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+        boolean staticRegionsFile = false;
         if (regions != null) {
             File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
             if (!targetGeojsonFile.exists()) {
@@ -176,6 +177,16 @@ public class MetaPublisherStep {
             }
 
             RegionsUtil.updateJson(targetGeojsonFile, regionMap);
+        } else {
+            // Es wird immer versucht ein allenfalls vorhandenes GeoJSON-Regionenfile zu deployen.
+            File sourceGeojsonFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, themePublication + ".json").toFile();
+            if (sourceGeojsonFile.exists()) {
+                staticRegionsFile = true;
+                File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
+                if (!targetGeojsonFile.exists()) {
+                    Files.copy(sourceGeojsonFile.toPath(), targetGeojsonFile.toPath());   
+                }
+            }            
         }
 
         // (5) Weitere Informationen aus meta.toml lesen
@@ -203,10 +214,12 @@ public class MetaPublisherStep {
         Iom_jObject iomObj = new Iom_jObject(TAG, String.valueOf(1));
         iomObj.setattrvalue("identifier", identifier);
         
-        Iom_jObject modelObj = new Iom_jObject(MODELLINK_STRUCTURE_TAG, null); 
-        modelObj.setattrvalue("name", modelName);
-        modelObj.setattrvalue("locationHint", "https://geo.so.ch/models");
-        iomObj.addattrobj("model", modelObj);
+        if (modelName != null) {
+            Iom_jObject modelObj = new Iom_jObject(MODELLINK_STRUCTURE_TAG, null); 
+            modelObj.setattrvalue("name", modelName);
+            modelObj.setattrvalue("locationHint", "https://geo.so.ch/models");
+            iomObj.addattrobj("model", modelObj);    
+        }
         
         iomObj.setattrvalue("title", title);
         if (description!=null) iomObj.setattrvalue("shortDescription", description); // CDATA wird nicht beruecksichtigt, d.h. auch mit einem CDATA-Block werden die "<"-Zeichen etc. escaped.
@@ -231,7 +244,7 @@ public class MetaPublisherStep {
         }
 
         Iom_jObject bboxObj = new Iom_jObject(BOUNDARY_STRUCTURE_TAG, null);
-        if (regions == null) {
+        if (regions == null && !staticRegionsFile) {
             // Dann machen wir es uns relativ einfach. // FIXME: schoenere Koordinaten
             bboxObj.setattrvalue("westlimit", "2593499");
             bboxObj.setattrvalue("southlimit", "1214279");
@@ -249,7 +262,7 @@ public class MetaPublisherStep {
         }
         iomObj.addattrobj("boundary", bboxObj);
         
-        if (regions != null) {
+        if (regions != null || staticRegionsFile) {
             File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
             List<IomObject> items = new ArrayList<IomObject>();
             RegionsUtil.getItems(jsonFile, items);
@@ -289,7 +302,7 @@ public class MetaPublisherStep {
         
         // TODO: add missing attributes etc. (??)
         
-        if (printClassDescription) {
+        if (printClassDescription && modelName != null) {
             for (Map.Entry<String, ClassDescription> entry : classDescriptions.entrySet()) {
                 Iom_jObject classDescObj = new Iom_jObject(CLASS_DESCRIPTION_TAG, null); 
 
