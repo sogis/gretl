@@ -3,4 +3,5 @@
 !**/offices.xtf
 !**/fileformats.xtf
 **/*.xml
+!**/geocat_template.xml
 **/*.html
