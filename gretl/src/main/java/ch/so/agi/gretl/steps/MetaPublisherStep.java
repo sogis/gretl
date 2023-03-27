@@ -299,9 +299,7 @@ public class MetaPublisherStep {
             iomObj.setattrvalue("downloadHostUrl", "https://files-t.geo.so.ch");
             iomObj.setattrvalue("appHostUrl", "https://data-t.geo.so.ch");     
         }
-        
-        // TODO: add missing attributes etc. (??)
-        
+                
         if (printClassDescription && modelName != null) {
             for (Map.Entry<String, ClassDescription> entry : classDescriptions.entrySet()) {
                 Iom_jObject classDescObj = new Iom_jObject(CLASS_DESCRIPTION_TAG, null); 
