@@ -10,11 +10,13 @@ def db_pass = "ddluser"
 
 defaultTasks 'ili2pgschemaimport'
 
-task ili2pgschemaimport(type: Ili2pgImportSchema){
+
+task ili2pgschemaimport(type: Ili2pgImportSchema) {
     database = [db_uri, db_user, db_pass]
-    models = "GB2AV"
+    models = "SO_AFU_ABBAUSTELLEN_20210630"
     modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
-    dbschema = "gb2av"
-    coalesceJson = true
-    createBasketCol = true
+    dbschema = "afu_abbaustellen_pub"
+    sqlExtRefCols = true
+    sqlColsAsText = true
 }
+

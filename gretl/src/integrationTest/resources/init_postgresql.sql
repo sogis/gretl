@@ -1,4 +1,5 @@
 CREATE EXTENSION postgis_raster;
+CREATE EXTENSION "uuid-ossp";
 
 GRANT ALL PRIVILEGES ON DATABASE gretl TO ddluser;
 CREATE ROLE dmluser WITH LOGIN PASSWORD 'dmluser';

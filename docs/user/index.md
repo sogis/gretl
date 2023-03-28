@@ -799,6 +799,8 @@ disableNameOptimization | Entspricht der ili2pg Option --disableNameOptimization
 nameByTopic | Entspricht der ili2pg Option --nameByTopic
 maxNameLength | Entspricht der ili2pg Option --maxNameLength
 sqlEnableNull | Entspricht der ili2pg Option --sqlEnableNull
+sqlColsAsText | Entspricht der ili2pg Option --sqlColsAsText
+sqlExtRefCols | Entspricht der ili2pg Option --sqlExtRefCols
 keepAreaRef | Entspricht der ili2pg Option --keepAreaRef
 createTidCol | Entspricht der ili2pg Option --createTidCol
 createBasketCol | Entspricht der ili2pg Option --createBasketCol

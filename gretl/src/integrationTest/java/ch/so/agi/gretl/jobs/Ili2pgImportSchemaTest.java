@@ -69,5 +69,48 @@ public class Ili2pgImportSchemaTest {
             IntegrationTestUtilSql.closeCon(con);
         }
     }
+    
+    @Test
+    public void schemaImport_Options1_Ok() throws Exception {
+        Connection con = null;
+        try {
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema_Options", gvs);
+            
+            // check results
+            // check sqlColsAsText mapping
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement s = con.createStatement();
+            ResultSet rs  = s.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'gemeinde_bfs'");
+            
+            if(!rs.next()) {
+                fail();
+            }
+            
+            assertTrue(rs.getString(1).equalsIgnoreCase("text"));
+
+            if(rs.next()) {
+                fail();
+            }
+            
+            // check sqlExtRefCols mapping
+            s = con.createStatement();
+            rs = s.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'geometrie'");
+            
+            if(!rs.next()) {
+                fail();
+            }
+            
+            assertTrue(rs.getString(1).equalsIgnoreCase("character varying"));
+
+            if(rs.next()) {
+                fail();
+            }
+
+            
+        } finally {
+            IntegrationTestUtilSql.closeCon(con);
+        }
+    }
 
 }
