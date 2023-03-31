@@ -1,0 +1,155 @@
+INTERLIS 2.3;
+
+/** !!------------------------------------------------------------------------------
+ * !! Version    | wer | Änderung
+ * !!------------------------------------------------------------------------------
+ * !! 2015-06-30 | SZ  | Initialversion
+ */
+!!@ technicalContact=mailto:agi@bd.so.ch
+MODEL SO_AGI_AV_GB_Administrative_Einteilungen_20180613 (de)
+AT "http://www.geo.so.ch/models/AGI"
+VERSION "2018-06-13"  =
+  IMPORTS GeometryCHLV95_V1,CHAdminCodes_V1;
+
+  TOPIC Grundbuchkreise =
+    OID AS INTERLIS.UUIDOID;
+
+    /** Vollständie Adresse inkl. Telefonnummer, E-Mail und Internetadresse eines Grundbuchamtes
+     */
+    CLASS Grundbuchamt =
+      /** Name der Amtschreiberei
+       */
+      Amtschreiberei : MANDATORY TEXT*255;
+      /** Abteilung resp. Amt
+       */
+      Amt : TEXT*255;
+      /** Strassenname
+       */
+      Strasse : MANDATORY TEXT*255;
+      /** Postleitzahl
+       */
+      PLZ : MANDATORY 1000 .. 9999;
+      /** Postalische Ortschaft
+       */
+      Ortschaft : MANDATORY TEXT*255;
+      /** Telefonnummer
+       */
+      Telefon : MANDATORY TEXT*255;
+      /** Internetadresse
+       */
+      Web : MANDATORY INTERLIS.URI;
+      /** E-Mail-Adresse
+       */
+      Email : MANDATORY TEXT*255;
+      /** Unternehmens-Identifikationsnummer
+       */
+      UID : TEXT*15;
+      /** Hausnummer
+       */
+      Hausnummer : TEXT*20;
+    END Grundbuchamt;
+
+    /** Grundbuchkreisaufteilung
+     */
+    CLASS Grundbuchkreis =
+      /** Name des Grundbuches
+       */
+      Name : MANDATORY TEXT*255;
+      /** Art des Grundbuches
+       */
+      Art : MANDATORY (
+        eidgenoessisch,
+        kantonal,
+        gemischt,
+        unbekannt
+      );
+      /** Nummerierungsbereich-Identifikator aus der amtlichen Vermessung
+       */
+      NBIdent : MANDATORY TEXT*12;
+      /** Kantonale Nummer des Grundbuchkreises
+       */
+      Grundbuchkreisnummer : 1 .. 99;
+      /** Ehemalige Gemeindenummer des Grundbuches (z.B. vor Gemeindefusion).
+       */
+      Grundbuchkreis_BFSNr : MANDATORY CHAdminCodes_V1.CHMunicipalityCode;
+      /** Perimeter des Grundbuchkreises
+       */
+      BFSNr : MANDATORY CHAdminCodes_V1.CHMunicipalityCode;
+    END Grundbuchkreis;
+
+    ASSOCIATION Kreis_Amt =
+      r_Grundbuchkreis -- {1..*} Grundbuchkreis;
+      r_Grundbuchamt -- {1} Grundbuchamt;
+    END Kreis_Amt;
+
+  END Grundbuchkreise;
+
+  TOPIC Nachfuehrungskreise =
+    OID AS INTERLIS.UUIDOID;
+
+    /** Politische Gemeinde
+     */
+    CLASS Gemeinde =
+      BFSNr : MANDATORY CHAdminCodes_V1.CHMunicipalityCode;
+    END Gemeinde;
+
+    /** Informationen zum Nachfuehrungsgeometer
+     */
+    CLASS Nachfuehrungsgeometer =
+      /** Familienname
+       */
+      Name : MANDATORY TEXT*255;
+      /** Vorname
+       */
+      Vorname : MANDATORY TEXT*255;
+      /** (Akademischer) Titel, z.B. Dr.
+       */
+      Titel : TEXT*255;
+    END Nachfuehrungsgeometer;
+
+    /** Informationen zum Bürostandort
+     */
+    CLASS Standort =
+      /** Name der Firma
+       */
+      Firma : MANDATORY TEXT*255;
+      /** Eventuell Zusatzname der Firma
+       */
+      Firma_Zusatz : TEXT*255;
+      Strasse : MANDATORY TEXT*255;
+      /** Hausnummer
+       */
+      Hausnummer : TEXT*100;
+      /** Postleitzahl
+       */
+      PLZ : MANDATORY 1000 .. 9999;
+      /** Postalische Ortschaft
+       */
+      Ortschaft : MANDATORY TEXT*255;
+      /** Telefonnummer
+       */
+      Telefon : MANDATORY TEXT*255;
+      /** Homepage
+       */
+      Web : MANDATORY INTERLIS.URI;
+      /** E-Mail-Adresse
+       */
+      Email : MANDATORY TEXT*255;
+      /** Unternehmens-Identifikationsnummer
+       */
+      UID : TEXT*15;
+    END Standort;
+
+    ASSOCIATION Gemeinde_Geometer =
+      r_Gemeinde_Geometer -- {1..*} Gemeinde;
+      r_Geometer -- {1} Nachfuehrungsgeometer;
+    END Gemeinde_Geometer;
+
+    ASSOCIATION Gemeinde_Standort =
+      r_Gemeinde_Standort -- {1..*} Gemeinde;
+      r_Standort -- {1} Standort;
+    END Gemeinde_Standort;
+
+  END Nachfuehrungskreise;
+
+END SO_AGI_AV_GB_Administrative_Einteilungen_20180613.
