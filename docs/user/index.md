@@ -890,6 +890,25 @@ task updateData(type: Ili2pgUpdate){
 
 Die Parameter sind analog wie bei Ili2pgImport.
 
+### Ili2pgValidate
+
+Prüft die Daten ohne diese in eine Datei zu exportieren. Der Task ist erfolgreich, wenn keine Fehler gefunden werden und ist nicht erfolgreich, wenn Fehler gefunden werden. Mit der Option `failOnException=false` ist der Task erfolgreich, auch wenn Fehler gefunden werden.
+
+Beispiel:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+tasks.register('validate', Ili2pgValidate) {
+    database = [db_uri, db_user, db_pass]
+    models = "SO_AGI_AV_GB_Administrative_Einteilungen_20180613"
+    modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
+    dbschema = "agi_av_gb_admin_einteilungen_fail"
+    logFile = file("fubar.log")
+}
+```
+
 ### Ili2gpkgImport
 
 Importiert Daten aus einer INTERLIS-Transferdatei in eine GeoPackage-Datei.
