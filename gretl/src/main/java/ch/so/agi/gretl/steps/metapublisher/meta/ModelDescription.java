@@ -47,10 +47,8 @@ public class ModelDescription {
         add("config");
     }};
 
-    public static Map<String, ClassDescription> getDescriptions(String modelName, File themeRootDirectory, boolean override, TomlParseResult metaTomlResult) throws IOException, Ili2cException {
-        String localRepo = Paths.get(themeRootDirectory.getAbsolutePath(), ILI_DIR_NAME).toFile().getAbsolutePath();
-        
-        TransferDescription td = getTransferDescriptionFromModelName(modelName, localRepo);
+    public static Map<String, ClassDescription> getDescriptions(String modelName, boolean override, TomlParseResult metaTomlResult, File iliDir) throws IOException, Ili2cException {
+        TransferDescription td = getTransferDescriptionFromModelName(modelName, iliDir.getAbsolutePath());
         
         Map<String, ClassDescription> classDescriptions = new HashMap<>();
 
@@ -258,7 +256,7 @@ public class ModelDescription {
         IliManager manager = new IliManager();
         File ilicacheFolder = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), ".ilicache_").toFile();        
         manager.setCache(ilicacheFolder);
-        String repositories[] = new String[] { localRepo, "http://models.interlis.ch/" };
+        String repositories[] = new String[] { localRepo, "https://geo.so.ch/models", "http://models.interlis.ch/" };
         manager.setRepositories(repositories);
         ArrayList<String> modelNames = new ArrayList<String>();
         modelNames.add(modelName);
@@ -266,7 +264,7 @@ public class ModelDescription {
         try {
             config = manager.getConfig(modelNames, 2.3);
         } catch (Ili2cException e) {
-            config = manager.getConfig(modelNames, 1.0); // bit of a hack
+            config = manager.getConfig(modelNames, 1.0); // TODO bit of a hack
         }
         
         TransferDescription td = Ili2c.runCompiler(config);

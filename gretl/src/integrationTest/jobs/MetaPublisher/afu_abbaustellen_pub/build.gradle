@@ -10,7 +10,7 @@ ext {
 }
 
 tasks.register('publishMetaFile', MetaPublisher){
-    dataIdent = "ch.so.afu.abbaustellen"
+    metaConfigFile = file("meta.toml")
     target = [project.buildDir]      
     geocatTarget = [Paths.get(project.buildDir.getAbsolutePath(), "geocat").toFile()]
 }

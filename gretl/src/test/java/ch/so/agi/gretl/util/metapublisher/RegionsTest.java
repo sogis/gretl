@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.metapublisher.meta.util.RegionsUtil;
+import ch.so.agi.gretl.steps.metapublisher.meta.RegionsUtil;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;

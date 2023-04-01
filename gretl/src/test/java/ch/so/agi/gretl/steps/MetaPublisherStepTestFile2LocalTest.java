@@ -43,8 +43,8 @@ public class MetaPublisherStepTestFile2LocalTest {
         String themePublication = "ch.so.agi.orthofoto_1993.grau";
 
         // Run step
-        MetaPublisherStep metaPublisherStep = new MetaPublisherStep("publish_simple_meta_Ok");
-        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/thema-config/ch.so.agi.orthofoto_1993.grau"), themePublication, target, null, geocatTarget, "production");
+        MetaPublisherStep metaPublisherStep = new MetaPublisherStep("publish_raster_geocat_Ok");
+        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/agi_orthofoto_1993_meta_pub/meta.toml"), target, null, geocatTarget, "production");
 
         // Check results
         File jsonFile = target.resolve(PATH_ELE_CONFIG).resolve(themePublication + ".json").toFile();
@@ -64,10 +64,10 @@ public class MetaPublisherStepTestFile2LocalTest {
         //Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
         Path target = folder.newFolder("publish_simple_meta_Ok").toPath();
         String themePublication = "ch.so.afu.abbaustellen";
-        
+
         // Run step
         MetaPublisherStep metaPublisherStep = new MetaPublisherStep("publish_simple_meta_Ok");
-        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/thema-config/ch.so.afu.abbaustellen"), themePublication, target, null, null, "integration");
+        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/afu_abbaustellen_pub/meta.toml"), target, null, null, "integration");
         
         // Check results
         File htmlFile = target.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+themePublication+".html").toFile();
@@ -93,7 +93,7 @@ public class MetaPublisherStepTestFile2LocalTest {
         
         // Run step
         MetaPublisherStep metaPublisherStep = new MetaPublisherStep("publish_simple_meta_Ok");
-        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/thema-config/ch.so.afu.abbaustellen"), themePublication, target, null, geocatTarget, "integration");
+        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/afu_abbaustellen_pub/meta.toml"), target, null, geocatTarget, "integration");
         
         // Check results
         File xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR_INT).resolve(themePublication+".xml").toFile();
@@ -119,7 +119,7 @@ public class MetaPublisherStepTestFile2LocalTest {
         
         // Run step
         MetaPublisherStep metaPublisherStep = new MetaPublisherStep("publish_regions_meta_Ok");
-        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/thema-config/ch.so.agi.amtliche_vermessung"), themePublication, target, regions, null, "integration");
+        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/agi_dm01so_pub/meta-dm01_so.toml"), target, regions, null, "integration");
 
         // Check results
         File htmlFile = target.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+themePublication+".html").toFile();
@@ -165,7 +165,7 @@ public class MetaPublisherStepTestFile2LocalTest {
         
         // Run step
         MetaPublisherStep metaPublisherStep = new MetaPublisherStep("publish_regions_meta_Ok");
-        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/thema-config/ch.so.agi.amtliche_vermessung"), themePublication, target, regions, geocatTarget, "integration");
+        metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/agi_dm01so_pub/meta-dm01_so.toml"), target, regions, geocatTarget, "integration");
 
         // Check results
         File xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR_INT).resolve(themePublication+".xml").toFile();

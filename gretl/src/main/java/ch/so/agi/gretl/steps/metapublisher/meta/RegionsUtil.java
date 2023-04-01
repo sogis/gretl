@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.metapublisher.meta.util;
+package ch.so.agi.gretl.steps.metapublisher.meta;
 
 import java.io.File;
 import java.io.FileWriter;

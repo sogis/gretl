@@ -93,18 +93,18 @@ VERSION "2023-03-04" =
       model : SO_AGI_Metadata_20230304.ModelLink;
       lastPublishingDate : MANDATORY FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
       secondToLastPublishingDate : FORMAT INTERLIS.XMLDate "1990-1-1" .. "2100-12-31";
-      title : TEXT;
+      title : MANDATORY TEXT;
       shortDescription : MTEXT;
-      licence : URI;
+      licence : MANDATORY URI;
       furtherInformation : URI;
       keywords : TEXT;
       synonyms : TEXT;
       owner : MANDATORY SO_AGI_Metadata_20230304.Office_;
       servicer : MANDATORY SO_AGI_Metadata_20230304.Office_;
-      boundary : BoundingBox;
-      items : BAG {0..*} OF SO_AGI_Metadata_20230304.Item;
-      fileFormats: BAG {0..*} OF SO_AGI_Metadata_20230304.FileFormat;
-      downloadHostUrl: URI;
+      boundary : MANDATORY BoundingBox;
+      items : BAG {1..*} OF SO_AGI_Metadata_20230304.Item;
+      fileFormats : BAG {1..*} OF SO_AGI_Metadata_20230304.FileFormat;
+      downloadHostUrl : MANDATORY URI;
       classDescription : BAG {0..*} OF SO_AGI_Metadata_20230304.ClassDescription;
 
       UNIQUE identifier;

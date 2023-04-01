@@ -45,9 +45,9 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.metapublisher.geocat.Geocat;
 import ch.so.agi.gretl.steps.metapublisher.meta.ModelDescription;
+import ch.so.agi.gretl.steps.metapublisher.meta.RegionsUtil;
 import ch.so.agi.gretl.steps.metapublisher.meta.model.AttributeDescription;
 import ch.so.agi.gretl.steps.metapublisher.meta.model.ClassDescription;
-import ch.so.agi.gretl.steps.metapublisher.meta.util.RegionsUtil;
 import ch.so.agi.gretl.steps.metapublisher.geocat.Geocat;
 
 import freemarker.template.TemplateException;
@@ -67,11 +67,6 @@ public class MetaPublisherStep {
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
     public static final String PATH_ELE_CONFIG = "config";
-
-    private static final List<String> META_TOML_CONFIG_SECTIONS = new ArrayList<String>() {{
-        add("meta");
-        add("config");
-    }};
     
     private static final String ILI_MODEL_METADATA = "SO_AGI_Metadata_20230304.ili";
     private static final String XSL_HTML_METADATA = "xtf2html.xsl";
@@ -79,22 +74,25 @@ public class MetaPublisherStep {
     private static final String CORE_DATA_OFFICES = "offices.xtf";
     private static final String CORE_DATA_FILEFORMATS = "fileformats.xtf";
     
-    private static final String ILI_TOPIC = "SO_AGI_Metadata_20230304.ThemePublications";
-    private static final String BID = "SO_AGI_Metadata_20230304.ThemePublications";
-    private static final String TAG = "SO_AGI_Metadata_20230304.ThemePublications.ThemePublication";
-    private static final String CLASS_DESCRIPTION_TAG = "SO_AGI_Metadata_20230304.ClassDescription";
-    private static final String ATTRIBUTE_DESCRIPTION_TAG = "SO_AGI_Metadata_20230304.AttributeDescription";
-    private static final String OFFICE_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.Office_";
-    private static final String MODELLINK_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.ModelLink";
-    private static final String BOUNDARY_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.BoundingBox";
-    private static final String FILEFORMAT_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.FileFormat";
-    private static final String ITEM_STRUCTURE_TAG = "SO_AGI_Metadata_20230304.Item";
+    private static final String MODEL_NAME = "SO_AGI_Metadata_20230304";
+    private static final String ILI_TOPIC = MODEL_NAME+".ThemePublications";
+    private static final String BID = MODEL_NAME+".ThemePublications";
+    private static final String TAG = MODEL_NAME+".ThemePublications.ThemePublication";
+    private static final String CLASS_DESCRIPTION_TAG = MODEL_NAME+".ClassDescription";
+    private static final String ATTRIBUTE_DESCRIPTION_TAG = MODEL_NAME+".AttributeDescription";
+    private static final String OFFICE_STRUCTURE_TAG = MODEL_NAME+".Office_";
+    private static final String MODELLINK_STRUCTURE_TAG = MODEL_NAME+".ModelLink";
+    private static final String BOUNDARY_STRUCTURE_TAG = MODEL_NAME+".BoundingBox";
+    private static final String FILEFORMAT_STRUCTURE_TAG = MODEL_NAME+".FileFormat";
+    private static final String ITEM_STRUCTURE_TAG = MODEL_NAME+".Item";
     
     private static final String PUBLICATION_DIR_NAME = "publication";
+    private static final String METAPUBLISHER_RESOURCE_DIR = "metapublisher";
     private static final String ILI_DIR_NAME = "ili";
     private static final String XSL_DIR_NAME = "xsl";
-    private static final String SHARED_DIR_NAME = "shared";
     private static final String CORE_DATA_DIR_NAME = "core_data";
+    private static final String GEOCAT_DIR_NAME = "geocat";
+    private static final String GEOCAT_TEMPLATE_FILENAME = "geocat_template.xml";
 
     public MetaPublisherStep(String taskName) {
         if (taskName == null) {
@@ -109,8 +107,8 @@ public class MetaPublisherStep {
         this(null);
     }
     
-    public void execute(File themeRootDirectory, String themePublication, Path target) throws IOException, IoxException, Ili2cException, SaxonApiException, TemplateException { 
-        execute(themeRootDirectory, themePublication, target, null, null, null);
+    public void execute(File metaConfigFile, Path target) throws IOException, IoxException, Ili2cException, SaxonApiException, TemplateException { 
+        execute(metaConfigFile, target, null, null, null);
     }
   
 //    /**
@@ -124,49 +122,52 @@ public class MetaPublisherStep {
 //     * @throws SaxonApiException
 //     * @throws TemplateException 
 //     */
-    public void execute(File themeRootDirectory, String themePublication, Path target, List<String> regions, 
+    public void execute(File metaConfigFile, Path target, List<String> regions, 
             Path geocatTarget, String gretlEnvironment) throws IOException, IoxException, Ili2cException, SaxonApiException, TemplateException {
         log.lifecycle(String.format(
-                "Start MetaPublisherStep(Name: %s themeRootDirectory: %s themePublication: %s target: %s regions: %s geocatTarget: %s gretlEnvironment)",
-                taskName, themeRootDirectory, themePublication, target, regions, geocatTarget, gretlEnvironment));
+                "Start MetaPublisherStep(Name: %s metaConfigFile: %s target: %s regions: %s geocatTarget: %s gretlEnvironment %s)",
+                taskName, metaConfigFile, target, regions, geocatTarget, gretlEnvironment));
         
-        // (1) Ordner erstellen im Zielverzeichnis, falls er nicht existiert.
+        // (1) dataIdent (themePublication) ermitteln
+        TomlParseResult metaTomlResult = Toml.parse(metaConfigFile.toPath());
+
+        // (2) Informationen aus meta.toml lesen, die wir zwingend hier benoetigen.
+        String modelName = metaTomlResult.getString("meta.model");
+        String dataIdentifier = metaTomlResult.getString("meta.identifier");
+        boolean printClassDescription = metaTomlResult.getBoolean("config.printClassDescription", () -> true);
+        
+        // (3) Informationen aus ILI-Modell lesen und mit Informationen aus meta.toml
+        // ergaenzen und ggf. ueberschreiben.
+        Map<String, ClassDescription> classDescriptions = null;
+        if (modelName != null) {
+            classDescriptions = ModelDescription.getDescriptions(modelName, printClassDescription, metaTomlResult, metaConfigFile.getParentFile());
+        }
+
+        // (4) Ordner erstellen im Zielverzeichnis, falls er nicht existiert.
         Path targetRootPath = target;
-        Path targetPath = targetRootPath.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META);
+        Path targetPath = targetRootPath.resolve(dataIdentifier).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META);
 
         log.lifecycle("create <"+targetPath.toString()+">...");
         Files.createDirectories(targetPath);
         
-        File tomlFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, "meta.toml").toFile();
-        TomlParseResult metaTomlResult = Toml.parse(tomlFile.toPath());
-
-        // (2) Informationen aus meta.toml lesen, die wir zwingend hier benoetigen.
-        String modelName = metaTomlResult.getString("meta.model");
-        String identifier = metaTomlResult.getString("meta.identifier");
-        boolean printClassDescription = metaTomlResult.getBoolean("config.printClassDescription", () -> true);
-        
-        // (3) Informationen aus ILI-Modell lesen und mit Informationen aus meta.toml ergaenzen und ggf. ueberschreiben.
-        Map<String, ClassDescription> classDescriptions = null;
-        if (modelName != null) {
-            classDescriptions = ModelDescription.getDescriptions(modelName, themeRootDirectory, printClassDescription, metaTomlResult);            
-        }
-    
-        // (4) GeoJSON-Datei nachfuehren zwecks Publikationsdatum einzelner Regionen.
+        // (5) GeoJSON-Datei nachfuehren zwecks Publikationsdatum einzelner Regionen.
         // Weil Publisher den Inhalt des meta-Verzeichnisses loescht, ist der Master
         // im config-Verzeichnis.
         // Falls die GeoJSON-Datei nicht im Zielverzeichnis vorhanden ist, wird das 
-        // Template dorthin kopiert.
+        // Template dorthin kopiert. Die GeoJSON-Datei muss im gleichen Verzeichnis wie
+        // die meta-xxx.toml Datei liegen.
         Path targetConfigPath = targetRootPath.resolve(PATH_ELE_CONFIG);
         log.lifecycle("create <"+targetConfigPath.toString()+">...");
         Files.createDirectories(targetConfigPath);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+        // DOCS 
         boolean staticRegionsFile = false;
         if (regions != null) {
-            File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
+            File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
             if (!targetGeojsonFile.exists()) {
-                File sourceGeojsonFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, themePublication + ".json").toFile();
+                File sourceGeojsonFile = Paths.get(metaConfigFile.getParentFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
                 Files.copy(sourceGeojsonFile.toPath(), targetGeojsonFile.toPath());
             }       
             
@@ -179,19 +180,21 @@ public class MetaPublisherStep {
             RegionsUtil.updateJson(targetGeojsonFile, regionMap);
         } else {
             // Es wird immer versucht ein allenfalls vorhandenes GeoJSON-Regionenfile zu deployen.
-            File sourceGeojsonFile = Paths.get(themeRootDirectory.getAbsolutePath(), PUBLICATION_DIR_NAME, themePublication, themePublication + ".json").toFile();
+            // Fuer den Fall, dass eine statische GeoJSON-Datei existiert (z.B. Raster)
+            File sourceGeojsonFile = Paths.get(metaConfigFile.getParentFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
             if (sourceGeojsonFile.exists()) {
                 staticRegionsFile = true;
-                File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
+                File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
                 if (!targetGeojsonFile.exists()) {
                     Files.copy(sourceGeojsonFile.toPath(), targetGeojsonFile.toPath());   
                 }
             }            
         }
 
-        // (5) Weitere Informationen aus meta.toml lesen
+        // (6) Weitere Informationen aus meta.toml lesen
         String title = metaTomlResult.getString("meta.title");
         String description = metaTomlResult.getString("meta.description");
+        String modelLocationHint = metaTomlResult.getString("meta.modelLocationHint", () -> "https://geo.so.ch/models"); // DOCS
         String keywords = metaTomlResult.getString("meta.keywords");
         String synonyms = metaTomlResult.getString("meta.synonyms");
         String owner = metaTomlResult.getString("meta.owner");
@@ -201,28 +204,28 @@ public class MetaPublisherStep {
         TomlArray formatsArray = metaTomlResult.getArrayOrEmpty("meta.formats");
         List<?> formats = formatsArray.toList(); 
         
-        // (6) XTF herstellen
+        // (7) XTF herstellen
         log.lifecycle("writing xtf file");
 
-        File xtfFile = Paths.get(targetPath.toFile().getAbsolutePath(), "meta-"+identifier+".xtf").toFile();
-        TransferDescription td = getMetadataTransferdescription(themeRootDirectory);
+        File xtfFile = Paths.get(targetPath.toFile().getAbsolutePath(), "meta-"+dataIdentifier+".xtf").toFile();
+        TransferDescription td = getMetadataTransferdescription();
         IoxWriter ioxWriter = new XtfWriter(xtfFile, td);
 
         ioxWriter.write(new StartTransferEvent("SOGIS-20230305", "", null));
         ioxWriter.write(new StartBasketEvent(ILI_TOPIC,BID));
 
         Iom_jObject iomObj = new Iom_jObject(TAG, String.valueOf(1));
-        iomObj.setattrvalue("identifier", identifier);
+        iomObj.setattrvalue("identifier", dataIdentifier);
         
         if (modelName != null) {
             Iom_jObject modelObj = new Iom_jObject(MODELLINK_STRUCTURE_TAG, null); 
             modelObj.setattrvalue("name", modelName);
-            modelObj.setattrvalue("locationHint", "https://geo.so.ch/models");
+            modelObj.setattrvalue("locationHint", modelLocationHint); 
             iomObj.addattrobj("model", modelObj);    
         }
         
         iomObj.setattrvalue("title", title);
-        if (description!=null) iomObj.setattrvalue("shortDescription", description); // CDATA wird nicht beruecksichtigt, d.h. auch mit einem CDATA-Block werden die "<"-Zeichen etc. escaped.
+        if (description!=null) iomObj.setattrvalue("shortDescription", description); // DOCS CDATA wird nicht beruecksichtigt, d.h. auch mit einem CDATA-Block werden die "<"-Zeichen etc. escaped.
         String dateString = sdf.format(new Date());
         iomObj.setattrvalue("lastPublishingDate", dateString);
         iomObj.setattrvalue("licence", licence);
@@ -230,17 +233,22 @@ public class MetaPublisherStep {
         if (keywords!=null) iomObj.setattrvalue("keywords", keywords);
         if (synonyms!=null) iomObj.setattrvalue("synonyms", synonyms);
         
-        IomObject servicerIomObject = getIomObjectById(servicer, CORE_DATA_OFFICES, themeRootDirectory.getAbsolutePath());
-        IomObject ownerIomObject = getIomObjectById(owner, CORE_DATA_OFFICES, themeRootDirectory.getAbsolutePath());
+        // DOCS
+        IomObject servicerIomObject = getIomObjectById(servicer, CORE_DATA_OFFICES);
+        IomObject ownerIomObject = getIomObjectById(owner, CORE_DATA_OFFICES);
 
         if (servicerIomObject!=null) {
             convertIomObjectToStructure(servicerIomObject, OFFICE_STRUCTURE_TAG); 
             iomObj.addattrobj("servicer", servicerIomObject);
+        } else {
+            log.lifecycle(servicer + " not found in core data");
         }
 
         if (ownerIomObject!=null) {
             convertIomObjectToStructure(ownerIomObject, OFFICE_STRUCTURE_TAG); 
             iomObj.addattrobj("owner", ownerIomObject);   
+        } else {
+            log.lifecycle(owner + " not found in core data");
         }
 
         Iom_jObject bboxObj = new Iom_jObject(BOUNDARY_STRUCTURE_TAG, null);
@@ -251,7 +259,8 @@ public class MetaPublisherStep {
             bboxObj.setattrvalue("eastlimit", "2644299");
             bboxObj.setattrvalue("northlimit", "1260845");
         } else {
-            File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
+            // Die Extrema werden aus der Json-Datei mit den Regions/Items gerechnet.
+            File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
             Map<String,Double> boundary = new HashMap<String,Double>();
             RegionsUtil.getBoundary(jsonFile, boundary);
             
@@ -263,7 +272,7 @@ public class MetaPublisherStep {
         iomObj.addattrobj("boundary", bboxObj);
         
         if (regions != null || staticRegionsFile) {
-            File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), themePublication + ".json").toFile();
+            File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
             List<IomObject> items = new ArrayList<IomObject>();
             RegionsUtil.getItems(jsonFile, items);
             
@@ -280,15 +289,20 @@ public class MetaPublisherStep {
         
         List<IomObject> formatIomObjects = new ArrayList<>();
         for (Object format : formats) {
-            IomObject formatObj = getIomObjectById(format.toString(), CORE_DATA_FILEFORMATS, themeRootDirectory.getAbsolutePath());
+            IomObject formatObj = getIomObjectById(format.toString(), CORE_DATA_FILEFORMATS);
             convertIomObjectToStructure(formatObj, FILEFORMAT_STRUCTURE_TAG);
             formatIomObjects.add(formatObj);
+        }
+        
+        if (formatIomObjects.size() == 0) {
+            log.lifecycle("No formats found in config file. Validation will fail.");
         }
 
         for (IomObject formatStructure : formatIomObjects) {
             iomObj.addattrobj("fileFormats", formatStructure);
         }
         
+        // DOCS
         if (gretlEnvironment.equalsIgnoreCase("production")) {
             iomObj.setattrvalue("downloadHostUrl", "https://files.geo.so.ch");
             iomObj.setattrvalue("appHostUrl", "https://data.geo.so.ch");     
@@ -331,11 +345,11 @@ public class MetaPublisherStep {
         ioxWriter.flush();
         ioxWriter.close();    
         
-        // (6) HTML-Datei aus XTF ableiten
+        // (8) HTML-Datei aus XTF ableiten
         log.lifecycle("creating html file");
         
-        File xsltFile = Paths.get(themeRootDirectory.getAbsolutePath(), SHARED_DIR_NAME, XSL_DIR_NAME, XSL_HTML_METADATA).toFile();
-        
+        File xsltFile = copyResourceToTmpDir(METAPUBLISHER_RESOURCE_DIR +"/"+ XSL_DIR_NAME + "/" + XSL_HTML_METADATA);
+
         Processor proc = new Processor(false);
         XsltCompiler comp = proc.newXsltCompiler();
         XsltExecutable exp = comp.compile(new StreamSource(xsltFile));
@@ -350,19 +364,20 @@ public class MetaPublisherStep {
         trans.transform();
         trans.close();
         
-        // (7) XTF in Config-Verzeichnis kopieren. Wird benoetigt, damit es fuer z.B. die Datensuche einfacher ist
+        // (9) XTF in Config-Verzeichnis kopieren. Wird benoetigt, damit es fuer z.B. die Datensuche einfacher ist
         // an die notwendigen einzelnen Config-Dateien zu gelangen.
         Files.copy(xtfFile.toPath(), Paths.get(targetConfigPath.toFile().getAbsolutePath(), xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
                 
-        // (8) Geocat-XML erstellen
+        // (10) Geocat-XML erstellen
         if (geocatTarget != null) {
+            // DOCS
             String geocatFtpDir = "int";
             if (gretlEnvironment.equalsIgnoreCase("production")) {
                 geocatFtpDir = "prod";
             } 
             
             String identifer = iomObj.getattrvalue("identifier");
-            Path geocatLocalFile = targetConfigPath.resolve(identifier + ".xml");
+            Path geocatLocalFile = targetConfigPath.resolve(dataIdentifier + ".xml");
             
             // Was nur lokal (beim Entwickeln) eintreffen sollte.
             if (!geocatTarget.resolve(geocatFtpDir).toFile().exists()) {
@@ -370,14 +385,24 @@ public class MetaPublisherStep {
             }
             
             Path geocatTargetFile = geocatTarget.resolve(geocatFtpDir).resolve(geocatLocalFile.toFile().getName());
+            File templateFile = copyResourceToTmpDir(METAPUBLISHER_RESOURCE_DIR +"/"+ GEOCAT_DIR_NAME + "/" + GEOCAT_TEMPLATE_FILENAME);
 
-            Geocat.export(iomObj, themeRootDirectory, geocatLocalFile);
+            Geocat.export(iomObj, templateFile, geocatLocalFile);
             Files.copy(geocatLocalFile, geocatTargetFile, StandardCopyOption.REPLACE_EXISTING);   
         }
     }
     
-    private TransferDescription getMetadataTransferdescription(File configRootDirectory) throws IOException, Ili2cFailure {        
-        File iliFile = Paths.get(configRootDirectory.getAbsolutePath(), SHARED_DIR_NAME, ILI_DIR_NAME, ILI_MODEL_METADATA).toFile();
+    private File copyResourceToTmpDir(String resource) throws IOException {
+        Path exportedFile = null;
+        InputStream is = MetaPublisherStep.class.getClassLoader().getResourceAsStream(resource);
+        Path exportDir = Files.createTempDirectory("metapublisher");
+        exportedFile = exportDir.resolve(new File(resource).getName());
+        Files.copy(is, exportedFile, StandardCopyOption.REPLACE_EXISTING);
+        return exportedFile.toFile();
+    }
+    
+    private TransferDescription getMetadataTransferdescription() throws IOException, Ili2cFailure {        
+        File iliFile = copyResourceToTmpDir(METAPUBLISHER_RESOURCE_DIR +"/"+ ILI_DIR_NAME + "/" + ILI_MODEL_METADATA);
 
         ArrayList<String> filev = new ArrayList<String>() {{ add(iliFile.getAbsolutePath()); }};
         TransferDescription td = Ili2c.compileIliFiles(filev, null);
@@ -389,8 +414,10 @@ public class MetaPublisherStep {
         return td;
     }
     
-    private IomObject getIomObjectById(String id, String coreDataFileName, String configRootDirectory) throws IOException, IoxException {
-        File xtfFile = Paths.get(configRootDirectory, SHARED_DIR_NAME, CORE_DATA_DIR_NAME, coreDataFileName).toFile();
+    private IomObject getIomObjectById(String id, String coreDataFileName) throws IOException, IoxException {
+//        File xtfFile = Paths.get(configRootDirectory, SHARED_DIR_NAME, CORE_DATA_DIR_NAME, coreDataFileName).toFile();
+        File xtfFile = copyResourceToTmpDir(METAPUBLISHER_RESOURCE_DIR + "/" + CORE_DATA_DIR_NAME + "/" + coreDataFileName); 
+        
         XtfReader xtfReader = new XtfReader(xtfFile);
         
         IoxEvent event = xtfReader.read();

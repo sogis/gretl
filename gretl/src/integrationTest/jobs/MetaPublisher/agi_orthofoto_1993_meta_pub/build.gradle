@@ -13,7 +13,7 @@ tasks.register('foo') {
 
 tasks.register('publishMetaFiles', MetaPublisher) {
     dependsOn 'foo'
-    dataIdent = "ch.so.agi.orthofoto_1993.grau"
+    metaConfigFile = file("meta.toml")
     target = [project.buildDir]  
     geocatTarget = [Paths.get(project.buildDir.getAbsolutePath(), "geocat").toFile()]
 }

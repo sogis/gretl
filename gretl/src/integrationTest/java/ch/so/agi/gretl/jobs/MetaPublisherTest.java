@@ -20,12 +20,12 @@ public class MetaPublisherTest {
     public static final String PATH_ELE_META = "meta";
     public static final String PATH_ELE_CONFIG = "config";
     public static final String GEOCAT_FTP_DIR = "geocat";
-    public static final String GEOCAT_PATH_ELE_ENV = "int"; // TODO: beim Testen muss ich es wohl eh hardodieren? Hier ja, aber dem Job irgend eine ENV-Variable uebergeben oder so. Andi fragen.
+    public static final String GEOCAT_PATH_ELE_ENV = "int"; // TODO: beim Testen muss ich es wohl eh hardcodieren? Hier ja, aber dem Job irgend eine ENV-Variable uebergeben oder so. Andi fragen.
 
     @Test
     public void simple_Ok() throws Exception {
         // Prepare
-        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/ch.so.afu.abbaustellen/gretl/afu_abbaustellen_pub";
+        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/afu_abbaustellen_pub";
         String dataIdent = "ch.so.afu.abbaustellen";
                 
         // Run task
@@ -59,7 +59,7 @@ public class MetaPublisherTest {
     @Test
     public void regions_Ok() throws Exception {
         // Prepare
-        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/ch.so.agi.amtliche_vermessung/gretl/agi_dm01so_pub";
+        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/agi_dm01so_pub";
         String dataIdent = "ch.so.agi.av.dm01_so";
         
         // Run task
@@ -98,7 +98,7 @@ public class MetaPublisherTest {
     @Test
     public void static_regions_Ok() throws Exception {
         // Prepare
-        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/ch.so.agi.orthofoto_1993.grau/gretl/agi_orthofoto_1993_meta_pub";
+        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/agi_orthofoto_1993_meta_pub";
         String dataIdent = "ch.so.agi.orthofoto_1993.grau";
         
         // Run task
@@ -120,5 +120,4 @@ public class MetaPublisherTest {
         File jsonFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve(dataIdent + ".json").toFile();
         assertTrue(jsonFile.exists()); 
     }
-
 }

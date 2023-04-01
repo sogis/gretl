@@ -29,11 +29,10 @@ public class Geocat {
         cfg.setFallbackOnNullLoopVariable(false);
     }
     
-    public static void export(IomObject iomObj, File configRootDirectory, Path geocatFile) throws IOException, TemplateException {
-        Path templatePath = Paths.get(configRootDirectory.getAbsolutePath(), SHARED_DIR_NAME, GEOCAT_DIR_NAME);
-        cfg.setDirectoryForTemplateLoading(templatePath.toFile());
+    public static void export(IomObject iomObj, File templateFile, Path geocatFile) throws IOException, TemplateException {
+        cfg.setDirectoryForTemplateLoading(templateFile.getParentFile());
         
-        Template tpl = cfg.getTemplate(TEMPLATE_FILENAME);
+        Template tpl = cfg.getTemplate(templateFile.getName());
         
         try(FileWriter writer = new FileWriter(geocatFile.toFile())) {
             ThemePublicationGC tpCat = new ThemePublicationGC(iomObj);            

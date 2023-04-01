@@ -33,9 +33,9 @@ public class MetaPublisher extends DefaultTask {
     protected GretlLogger log;
     
     private static final String GRETL_ENV_STRING = "gretlEnvironment";
-
+    
     @Input
-    public String dataIdent = null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+    public File metaConfigFile = null; // Meta-Konfigurationsdatei (heute Toml)
     
     @Input
     public Endpoint target = null; // Zielverzeichnis
@@ -52,8 +52,8 @@ public class MetaPublisher extends DefaultTask {
     public void publishAll() {
         log = LogEnvironment.getLogger(MetaPublisher.class);
 
-        if (dataIdent ==  null) {
-            throw new IllegalArgumentException("dataIdent must not be null");
+        if (metaConfigFile == null) {
+            throw new IllegalArgumentException("metaConfigFile must not be null");
         }
         
         Path targetFile = null;
@@ -69,13 +69,8 @@ public class MetaPublisher extends DefaultTask {
             log.info("geocat target " + geocatTarget.toString());
             geocatTargetFile = getTargetFile(geocatTarget);
         }
-        
-        // TODO: 
-        // - dokumentieren 
-        // - Sollte ok sein. Im ersten Unterordner von gretl (also im Gretl-Job-Ordner) muss jeweils ein settings file sein.
-        // Dann wird es als Projekt-Root erkannt.
-        File themeRootDirectory = getProject().getRootDir().getParentFile().getParentFile();
 
+        // Wird fuer geocat-Umgebung benoetigt, damit beim beim Entwickeln/Testen nicht auf die Prod-Umgebung deployed wird.
         String gretlEnvironment = "test";
         if (getProject().hasProperty(GRETL_ENV_STRING)) {
             gretlEnvironment = (String) getProject().property(GRETL_ENV_STRING);
@@ -83,7 +78,7 @@ public class MetaPublisher extends DefaultTask {
         
         MetaPublisherStep step = new MetaPublisherStep();
         try {
-            step.execute(themeRootDirectory, dataIdent, targetFile, regions!=null?regions.get():null, geocatTargetFile, gretlEnvironment);
+            step.execute(metaConfigFile, targetFile, regions!=null?regions.get():null, geocatTargetFile, gretlEnvironment);
         } catch (IOException | IoxException | Ili2cException | SaxonApiException | TemplateException  e) {
             log.error("failed to run MetaPublisher", e);
 
