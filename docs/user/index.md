@@ -1170,6 +1170,35 @@ qualifiedTableName | Qualifizierter Tabellennamen ("schema.tabelle") in die impo
 columnName | Spaltenname der Tabelle in die importiert werden soll
 deleteAllRows | Inhalt der Tabelle vorgängig löschen?
 
+### MetaPublisher (Experimental)
+
+Der MetaPublisher dient zum Publizieren von Metadaten/-dateien. Er erstellt eine INTERLIS-Transferdatei pro Themenpublikation für die Datensuche, falls nötig eine GeoJSON-Datei und die Geocat-XML-Datei. Die GeoJSON-Datei ist entweder statisch (für Raster o.ä.) oder dynamisch (z.B. amtliche Vermessung). Bei einer dynamischen GeoJSON-Datei wird das Datum nachgeführt.
+
+Pro Themenpublikation (also pro Publisher-Task) kann resp. muss es auch einen MetaPublisher-Task geben. Informationen zum Thema sind in einer Toml-Datei gespeichert. Diese dient auch zum Überschreiben von Klassen- und Attributbeschreibungen, die aus der Modelldatei gelesen werden. Die GeoJSON-Datei muss im gleichen Verzeichnis wie die Toml-Datei vorliegen.
+
+Momentan werden die erzeugen Meta-Dateien im jeweiligen Ordner der Themenpublikation im _meta_-Verzeichnis gespeicher und zusätzlich (damit es für die Datensuche leichter fällt) in einem übergeordneten _config_-Verzeichnis.
+
+Beispiele:
+
+```
+tasks.register('publishMetaFile', MetaPublisher){
+    metaConfigFile = file("meta.toml")
+    target = ["sftp://foo.bar.ch", "user", "pwd"]      
+    geocatTarget = [Paths.get(project.buildDir.getAbsolutePath(), "geocat").toFile()]
+}
+```
+
+```
+tasks.register('publishMetaFiles', MetaPublisher) {
+    dependsOn 'publishFiles'
+    metaConfigFile = file("meta-dm01_so.toml")
+    target = [project.buildDir]  
+    regions = publishFiles.publishedRegions
+}
+```
+
+Im zweiten Beispiel werden die Regionen aus dem vorausgegangenen Publisher-Task als Input verwendet. 
+
 ### PostgisRasterExport
 
 Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert.
