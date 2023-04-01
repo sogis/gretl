@@ -584,6 +584,212 @@ fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist de
 passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
 controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
 
+### Gpkg2Dxf 
+
+Exportiert alle Tabellen einer GeoPackage-Datei in DXF-Dateien. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt.
+
+Es werden alle INTERLIS-Klassen exportier (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Der eigentliche SELECT-Befehl ist komplizierter weil für das Layern der einzelnen DXF-Objekte das INTERLIS-Metaattribut `!!@dxflayer="true"` ausgelesen wird. Gibt es kein solches Metaattribut wird alles in den gleichen DXF-Layer (`default`) geschrieben.
+ 
+**Encoding**: Die DXF-Dateien sind `ISO-8859-1` encodiert.
+
+**Achtung**: Task sollte verbessert werden (siehe E-Mail Claude im Rahmen des Publisher-Projektes).
+
+```
+task gpkg2dxf(type: Gpkg2Dxf) {
+    dataFile = file("data.gpkg")
+    outputDir = file("./out/")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
+outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
+
+### GpkgExport
+**Achtung:** Fetch-Size und Batch-Size sind nicht implementiert.
+
+Daten aus einer bestehenden Datenbanktabelle werden in eine GeoPackage-Datei exportiert.
+
+Beispiele:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task gpkgexport(type: GpkgExport){
+    database = [db_uri, db_user, db_pass]
+    schemaName = "gpkgexport"
+    srcTableName = "exportdata"
+    dataFile = "data.gpkg"
+    dstTableName = "exportdata"
+}
+```
+
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task gpkgexport(type: GpkgExport){
+    database = [db_uri, db_user, db_pass]
+    schemaName = "gpkgexport"
+    srcTableName = ["exportTable1", "exportTable2"]
+    dataFile = "data.gpkg"
+    dstTableName = ["exportTable1", "exportTable2"]
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank aus der exportiert werden soll
+dataFile  | Name der GeoPackage-Datei, die erstellt werden soll
+srcTableName | Name der DB-Tabelle(n), die exportiert werden soll(en). String oder List.
+schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
+dstTableName | Name der Tabelle(n) in der GeoPackage-Datei. String oder List.
+
+### GpkgImport
+**Achtung:** Fetch-Size ist nicht implementiert.
+
+Daten aus einer GeoPackage-Datei in eine bestehende Datenbanktabelle importieren.
+
+Beispiel:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task gpkgimport(type: GpkgImport){
+    database = [db_uri, db_user, db_pass]
+    schemaName = "gpkgimport"
+    srcTableName = "Point"
+    dstTableName = "importdata"
+    dataFile = "point.gpkg"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank in die importiert werden soll
+dataFile  | Name der GeoPackage-Datei, die gelesen werden soll
+srcTableName | Name der GeoPackage-Tabelle, die importiert werden soll
+schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
+dstTableName | Name der DB-Tabelle, in die importiert werden soll 
+encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
+
+Die Tabelle kann weitere Spalten enthalten, die in der GeoPackage-Datei nicht vorkommen. Sie müssen
+aber NULLable sein, oder einen Default-Wert definiert haben.
+
+Die Gross-/Kleinschreibung der GeoPckage-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+
+### Gpkg2Shp 
+
+Exportiert alle Tabellen einer GeoPackage-Datei in Shapefiles. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt. 
+
+Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Je nach, bei der Erstellung der GeoPackage-Datei, verwendeten Parametern, muss die Query angepasst werden. Es muss jedoch darauf geachtet werden, dass es nur eine Query gibt (für alle Datensätze). Für den vorgesehenen Anwendungsfall (sehr einfache, flache Modelle) dürfte das kein Problem darstellen.
+
+**Encoding**: Die Shapefiles sind neu `UTF-8` encodiert. Standard ist `ISO-8859-1`, scheint aber v.a. in QGIS nicht standardmässig zu funktionieren (keine Umlaute). 
+
+**Achtung**: Task sollte verbessert werden (siehe E-Mail Claude im Rahmen des Publisher-Projektes).
+
+```
+task gpkg2shp(type: Gpkg2Shp) {
+    dataFile = file("data.gpkg")
+    outputDir = file("./out/")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dataFile | GeoPackage-Datei, die nach Shapefile transformiert werden soll.
+outputDir | Verzeichnis, in das die Shapefile gespeichert werden.
+
+### GpkgValidator
+Prüft eine GeoPackage-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
+
+Beispiel:
+```
+task validate(type: GpkgValidator){
+    models = "GpkgModel"
+    dataFiles = ["attributes.gpkg"]
+    tableName = "Attributes"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dataFiles | Liste der GeoPackage-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
+tableName | Name der Tabelle in den GeoPackage-Dateien.
+models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der SHP-Datei.
+configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
+forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
+disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
+multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
+allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
+logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
+xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
+pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
+proxy | Proxy Server für den Zugriff auf Modell Repositories
+proxyPort | Proxy Port für den Zugriff auf Modell Repositories
+failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
+validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
+
+### Ili2gpkgImport
+
+Importiert Daten aus einer INTERLIS-Transferdatei in eine GeoPackage-Datei.
+
+Die Tabellen werden implizit auch angelegt, falls sie noch nicht vorhanden sind. Falls die Tabellen in der Datenbank 
+schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. bfsnr, datum etc.), welche beim Import leer bleiben.
+
+Falls beim Import ein Datensatz-Identifikator (dataset) definiert wird, darf dieser Datensatz-Identifikator in der 
+Datenbank noch nicht vorhanden sein. 
+
+Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2gpkgReplace (**not yet implemented**) verwendet werden.
+
+Die Option `--doSchemaImport` wird automatisch gesetzt.
+
+Beispiel:
+```
+task importData(type: Ili2gpkgImport) {
+    models = "SO_AGI_AV_GB_Administrative_Einteilungen_20180613"
+    dataFile = file("data.xtf");
+    dbfile = file("data.gpkg")    
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+dbfile | GeoPackage-Datei in die importiert werden soll
+dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein.
+proxy  | Entspricht der ili2gpkg Option --proxy
+proxyPort  | Entspricht der ili2gpkg Option --proxyPort
+modeldir  | Entspricht der ili2gpkg Option --modeldir
+models  | Entspricht der ili2gpkg Option --models
+dataset  | Entspricht der ili2gpkg Option --dataset
+baskets  | Entspricht der ili2gpkg Option --baskets
+topics  | Entspricht der ili2gpkg Option --topics
+preScript  | Entspricht der ili2gpkg Option --preScript
+postScript  | Entspricht der ili2gpkg Option --postScript
+deleteData  | Entspricht der ili2gpkg Option --deleteData
+logFile  | Entspricht der ili2gpkg Option --logFile
+validConfigFile  | Entspricht der ili2gpkg Option --validConfigFile
+disableValidation  | Entspricht der ili2gpkg Option --disableValidation
+disableAreaValidation  | Entspricht der ili2gpkg Option --disableAreaValidation
+forceTypeValidation  | Entspricht der ili2gpkg Option --forceTypeValidation
+strokeArcs  | Entspricht der ili2gpkg Option --strokeArcs
+skipPolygonBuilding  | Entspricht der ili2gpkg Option --skipPolygonBuilding
+skipGeometryErrors  | Entspricht der ili2gpkg Option --skipGeometryErrors
+iligml20  | Entspricht der ili2gpkg Option --iligml20
+coalesceJson  | Entspricht der ili2gpkg Option --coalesceJson
+nameByTopic  | Entspricht der ili2gpkg Option --nameByTopic
+defaultSrsCode  | Entspricht der ili2gpkg Option --defaultSrsCode
+createEnumTabs  | Entspricht der ili2gpkg Option --createEnumTabs
+createMetaInfo  | Entspricht der ili2gpkg Option --createMetaInfo
+
+Für die Beschreibung der einzenen ili2gpkg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+
 ### Ili2pgExport
 
 Exportiert Daten aus der PostgreSQL-Datenbank in eine INTERLIS-Transferdatei.
@@ -909,61 +1115,6 @@ tasks.register('validate', Ili2pgValidate) {
 }
 ```
 
-### Ili2gpkgImport
-
-Importiert Daten aus einer INTERLIS-Transferdatei in eine GeoPackage-Datei.
-
-Die Tabellen werden implizit auch angelegt, falls sie noch nicht vorhanden sind. Falls die Tabellen in der Datenbank 
-schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. bfsnr, datum etc.), welche beim Import leer bleiben.
-
-Falls beim Import ein Datensatz-Identifikator (dataset) definiert wird, darf dieser Datensatz-Identifikator in der 
-Datenbank noch nicht vorhanden sein. 
-
-Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2gpkgReplace (**not yet implemented**) verwendet werden.
-
-Die Option `--doSchemaImport` wird automatisch gesetzt.
-
-Beispiel:
-```
-task importData(type: Ili2gpkgImport) {
-    models = "SO_AGI_AV_GB_Administrative_Einteilungen_20180613"
-    dataFile = file("data.xtf");
-    dbfile = file("data.gpkg")    
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-dbfile | GeoPackage-Datei in die importiert werden soll
-dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein.
-proxy  | Entspricht der ili2gpkg Option --proxy
-proxyPort  | Entspricht der ili2gpkg Option --proxyPort
-modeldir  | Entspricht der ili2gpkg Option --modeldir
-models  | Entspricht der ili2gpkg Option --models
-dataset  | Entspricht der ili2gpkg Option --dataset
-baskets  | Entspricht der ili2gpkg Option --baskets
-topics  | Entspricht der ili2gpkg Option --topics
-preScript  | Entspricht der ili2gpkg Option --preScript
-postScript  | Entspricht der ili2gpkg Option --postScript
-deleteData  | Entspricht der ili2gpkg Option --deleteData
-logFile  | Entspricht der ili2gpkg Option --logFile
-validConfigFile  | Entspricht der ili2gpkg Option --validConfigFile
-disableValidation  | Entspricht der ili2gpkg Option --disableValidation
-disableAreaValidation  | Entspricht der ili2gpkg Option --disableAreaValidation
-forceTypeValidation  | Entspricht der ili2gpkg Option --forceTypeValidation
-strokeArcs  | Entspricht der ili2gpkg Option --strokeArcs
-skipPolygonBuilding  | Entspricht der ili2gpkg Option --skipPolygonBuilding
-skipGeometryErrors  | Entspricht der ili2gpkg Option --skipGeometryErrors
-iligml20  | Entspricht der ili2gpkg Option --iligml20
-coalesceJson  | Entspricht der ili2gpkg Option --coalesceJson
-nameByTopic  | Entspricht der ili2gpkg Option --nameByTopic
-defaultSrsCode  | Entspricht der ili2gpkg Option --defaultSrsCode
-createEnumTabs  | Entspricht der ili2gpkg Option --createEnumTabs
-createMetaInfo  | Entspricht der ili2gpkg Option --createMetaInfo
-
-Für die Beschreibung der einzenen ili2gpkg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
-
-
 ### IliValidator
 
 Prüft eine INTERLIS-Datei (.itf oder .xtf) gegenüber einem INTERLIS-Modell (.ili). Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
@@ -997,158 +1148,133 @@ validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
 
 Zusatzfunktionen (Custom Functions): Die `pluginFolder`-Option ist zum jetzigen Zeitpunkt ohne Wirkung. Die Zusatzfunktionen werden als normale Abhängigkeit definiert und in der ilivalidator-Task-Implementierung registriert. Das Laden der Klassen zur Laufzeit in _iox-ili_ hat nicht funktioniert (`NoClassDefFoundError`...). Der Plugin-Mechanismus von _ilivalidator_ wird momentan ohnehin geändert ("Ahead-Of-Time-tauglich" gemacht).
 
-### Gpkg2Dxf 
+### JsonImport
 
-Exportiert alle Tabellen einer GeoPackage-Datei in DXF-Dateien. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt.
-
-Es werden alle INTERLIS-Klassen exportier (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Der eigentliche SELECT-Befehl ist komplizierter weil für das Layern der einzelnen DXF-Objekte das INTERLIS-Metaattribut `!!@dxflayer="true"` ausgelesen wird. Gibt es kein solches Metaattribut wird alles in den gleichen DXF-Layer (`default`) geschrieben.
- 
-**Encoding**: Die DXF-Dateien sind `ISO-8859-1` encodiert.
-
-**Achtung**: Task sollte verbessert werden (siehe E-Mail Claude im Rahmen des Publisher-Projektes).
-
-```
-task gpkg2dxf(type: Gpkg2Dxf) {
-    dataFile = file("data.gpkg")
-    outputDir = file("./out/")
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
-outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
-
-### Gpkg2Shp 
-
-Exportiert alle Tabellen einer GeoPackage-Datei in Shapefiles. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt. 
-
-Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Je nach, bei der Erstellung der GeoPackage-Datei, verwendeten Parametern, muss die Query angepasst werden. Es muss jedoch darauf geachtet werden, dass es nur eine Query gibt (für alle Datensätze). Für den vorgesehenen Anwendungsfall (sehr einfache, flache Modelle) dürfte das kein Problem darstellen.
-
-**Encoding**: Die Shapefiles sind neu `UTF-8` encodiert. Standard ist `ISO-8859-1`, scheint aber v.a. in QGIS nicht standardmässig zu funktionieren (keine Umlaute). 
-
-**Achtung**: Task sollte verbessert werden (siehe E-Mail Claude im Rahmen des Publisher-Projektes).
-
-```
-task gpkg2shp(type: Gpkg2Shp) {
-    dataFile = file("data.gpkg")
-    outputDir = file("./out/")
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-dataFile | GeoPackage-Datei, die nach Shapefile transformiert werden soll.
-outputDir | Verzeichnis, in das die Shapefile gespeichert werden.
-
-### GpkgImport
-**Achtung:** Fetch-Size ist nicht implementiert.
-
-Daten aus einer GeoPackage-Datei in eine bestehende Datenbanktabelle importieren.
+Daten aus einer Json-Datei in eine Datenbanktabelle importieren. Die gesamte Json-Datei (muss UTF-8 encoded sein) wird als Text in eine Spalte importiert. Ist das Json-Objekt in der Datei ein Top-Level-Array wird für jedes Element des Arrays ein Record in der Datenbanktabelle erzeugt.
 
 Beispiel:
 ```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task gpkgimport(type: GpkgImport){
+task importJson(type: JsonImport){
     database = [db_uri, db_user, db_pass]
-    schemaName = "gpkgimport"
-    srcTableName = "Point"
-    dstTableName = "importdata"
-    dataFile = "point.gpkg"
+    jsonFile = "data.json"
+    qualifiedTableName = "jsonimport.jsonarray"
+    columnName = "json_text_col"
 }
 ```
 
 Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank in die importiert werden soll
-dataFile  | Name der GeoPackage-Datei, die gelesen werden soll
-srcTableName | Name der GeoPackage-Tabelle, die importiert werden soll
-schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-dstTableName | Name der DB-Tabelle, in die importiert werden soll 
-encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
-batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
+jsonFile | Json-Datei, die importiert werden soll
+qualifiedTableName | Qualifizierter Tabellennamen ("schema.tabelle") in die importiert werden soll
+columnName | Spaltenname der Tabelle in die importiert werden soll
+deleteAllRows | Inhalt der Tabelle vorgängig löschen?
 
-Die Tabelle kann weitere Spalten enthalten, die in der GeoPackage-Datei nicht vorkommen. Sie müssen
-aber NULLable sein, oder einen Default-Wert definiert haben.
+### PostgisRasterExport
 
-Die Gross-/Kleinschreibung der GeoPckage-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert.
 
-### GpkgExport
-**Achtung:** Fetch-Size und Batch-Size sind nicht implementiert.
-
-Daten aus einer bestehenden Datenbanktabelle werden in eine GeoPackage-Datei exportiert.
-
-Beispiele:
 ```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task gpkgexport(type: GpkgExport){
+task exportTiff(type: PostgisRasterExport) {
     database = [db_uri, db_user, db_pass]
-    schemaName = "gpkgexport"
-    srcTableName = "exportdata"
-    dataFile = "data.gpkg"
-    dstTableName = "exportdata"
-}
-```
-
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task gpkgexport(type: GpkgExport){
-    database = [db_uri, db_user, db_pass]
-    schemaName = "gpkgexport"
-    srcTableName = ["exportTable1", "exportTable2"]
-    dataFile = "data.gpkg"
-    dstTableName = ["exportTable1", "exportTable2"]
+    sqlFile = "raster.sql"
+    dataFile = "export.tif"
 }
 ```
 
 Parameter | Beschreibung
 ----------|-------------------
-database | Datenbank aus der exportiert werden soll
-dataFile  | Name der GeoPackage-Datei, die erstellt werden soll
-srcTableName | Name der DB-Tabelle(n), die exportiert werden soll(en). String oder List.
-schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-dstTableName | Name der Tabelle(n) in der GeoPackage-Datei. String oder List.
+database | Datenbank aus der exportiert werden soll.
+sqlFile  | Name der SQL-Datei aus das SQL-Statement gelesen und ausgeführt wird.
+dataFile | Name der Rasterdatei, die erstellt werden soll.
 
-### GpkgValidator
-Prüft eine GeoPackage-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
+### Publisher
 
-Beispiel:
+Stellt für Vektordaten die aktuellsten Geodaten-Dateien bereit und pflegt das Archiv der vorherigen Zeitstände.
+
+[Details](Publisher.md)
+
+### S3Download
+
+Lädt eine Datei aus einem S3-Bucket herunter.
+
 ```
-task validate(type: GpkgValidator){
-    models = "GpkgModel"
-    dataFiles = ["attributes.gpkg"]
-    tableName = "Attributes"
+task downloadFile(type: S3Download) {
+    accessKey = abcdefg
+    secretKey = hijklmnopqrstuvwxy
+    downloadDir = file("./path/to/dir/")
+    bucketName = "ch.so.ada.denkmalschutz"
+    key = "foo.pdf"
+    endPoint = "https://s3.eu-central-1.amazonaws.com" 
+    region = "eu-central-1"
 }
 ```
 
 Parameter | Beschreibung
 ----------|-------------------
-dataFiles | Liste der GeoPackage-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
-tableName | Name der Tabelle in den GeoPackage-Dateien.
-models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
-modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der SHP-Datei.
-configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
-forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
-disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
-multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
-allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
-logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
-xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
-pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
-proxy | Proxy Server für den Zugriff auf Modell Repositories
-proxyPort | Proxy Port für den Zugriff auf Modell Repositories
-failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
-validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
+accessKey | AccessKey
+secretKey | SecretKey
+downloadDir  | Verzeichnis in das die Datei heruntergeladen werden soll.
+bucketName  | Name des Buckets, in dem die Datei gespeichert ist.
+key | Name der Datei
+endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
+region | S3-Region (default: `eu-central-1`). 
 
+### S3Upload
+
+Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch. 
+
+Mit dem passenden Content-Typ kann man das Verhalten des Browsers steuern. Default ist 'application/octect-stream', was dazu führt, dass die Datei immer heruntergeladen wird. Soll z.B. ein PDF oder ein Bild im Browser direkt angezeigt werden, muss der korrekte Content-Typ gewählt werden.
+
+```
+task uploadDirectory(type: S3Upload) {
+    accessKey = abcdefg
+    secretKey = hijklmnopqrstuvwxy
+    sourceDir = file("./docs")
+    bucketName = "ch.so.ada.denkmalschutz"
+    endPoint = "https://s3.eu-central-1.amazonaws.com" 
+    region = "eu-central-1"
+    acl = "public-read"
+    contentType = "application/pdf"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+accessKey | AccessKey
+secretKey | SecretKey
+sourceDir  | Verzeichnis mit den Dateien, die hochgeladen werden sollen.
+sourceFile  | Datei, die hochgeladen werden soll.
+sourceFiles  | FileCollection mit den Dateien, die hochgeladen werden sollen, z.B. `fileTree("/path/to/directoy/") { include "*.itf" }`
+bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
+endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
+region | S3-Region (default: `eu-central-1`). 
+acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
+contentType | Content-Type
+metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
+
+### S3Bucket2Bucket
+
+Kopiert Objekte von einem Bucket in einen anderen. Die Buckets müssen in der gleichen Region sein. Die Permissions werden nicht mitkopiert und müssen explizit gesetzt werden. 
+
+```
+task copyFiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
+    accessKey = s3AccessKey
+    secretKey = s3SecretKey
+    sourceBucket = s3SourceBucket
+    targetBucket = s3TargetBucket
+    acl = "public-read"
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+accessKey | AccessKey
+secretKey | SecretKey
+sourceBucket  | Bucket aus dem die Objekte kopiert werden.
+targetBucket  | Bucket in den die Objekte kopiert werden.
+acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
+metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
 ### ShpExport
 Daten aus einer bestehenden Datenbanktabelle werden in eine Shp-Datei exportiert.
@@ -1249,28 +1375,6 @@ die Attributtypen werden ignoriert. Wird keine solche Klasse gefunden, gilt das 
 
 Die Prüfung von gleichzeitig mehreren Shapefiles führt zu Fehlermeldungen wie `OID o3158 of object <Modelname>.<Topicname>.<Klassenname> already exists in ...`. Beim Öffnen und Lesen eines Shapefiles wird immer der Zähler, der die interne (im Shapefile nicht vorhandene) `OID` generiert, zurückgesetzt. Somit kann immer nur ein Shapefile pro Task geprüft werden.
 
-### JsonImport
-
-Daten aus einer Json-Datei in eine Datenbanktabelle importieren. Die gesamte Json-Datei (muss UTF-8 encoded sein) wird als Text in eine Spalte importiert. Ist das Json-Objekt in der Datei ein Top-Level-Array wird für jedes Element des Arrays ein Record in der Datenbanktabelle erzeugt.
-
-Beispiel:
-```
-task importJson(type: JsonImport){
-    database = [db_uri, db_user, db_pass]
-    jsonFile = "data.json"
-    qualifiedTableName = "jsonimport.jsonarray"
-    columnName = "json_text_col"
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank in die importiert werden soll
-jsonFile | Json-Datei, die importiert werden soll
-qualifiedTableName | Qualifizierter Tabellennamen ("schema.tabelle") in die importiert werden soll
-columnName | Spaltenname der Tabelle in die importiert werden soll
-deleteAllRows | Inhalt der Tabelle vorgängig löschen?
-
 ### SqlExecutor
 
 Der SqlExecutor-Task dient dazu, Datenumbauten auszuführen. 
@@ -1332,183 +1436,6 @@ sqlFiles  | Name der SQL-Datei aus der SQL-Statements gelesen und ausgeführt we
 sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert (``Map<String,String>``). Oder eine Liste mit Paaren von Parameter-Name und Parameter-Wert (``List<Map<String,String>>``).
 
 Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
-
-### PostgisRasterExport
-
-Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert.
-
-```
-task exportTiff(type: PostgisRasterExport) {
-    database = [db_uri, db_user, db_pass]
-    sqlFile = "raster.sql"
-    dataFile = "export.tif"
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank aus der exportiert werden soll.
-sqlFile  | Name der SQL-Datei aus das SQL-Statement gelesen und ausgeführt wird.
-dataFile | Name der Rasterdatei, die erstellt werden soll.
-
-### OerebIconizerQgis3 (Deprecated)
-
-Erstellt die Symbole anhand eines WMS-Layers für den ÖREB-Kataster indem er zuerst das SLD (GetStyles) ausliest und anschliessend einzelne GetLegendGraphic-Requests macht. Die Symbole werden dann in der Datenbank in der entsprechenden Tabelle nachgeführt (`update`). Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/openoereb/oereb-iconizer](https://github.com/openoereb/oereb-iconizer).
-
-Einschränkungen: 
-- Artcode-Wert muss zusammen mit der Artcodeliste eindeutig sein. Beim Updaten in der Datenbank wird die Artcodeliste mit `LIKE 'NameDerListe%'` gematcht.
-
-```
-task updateSymbols(type: OerebIconizerQgis3) {
-    sldUrl = "http://localhost:32793/qgis/singlesymbol?&SERVICE=WMS&REQUEST=GetStyles&LAYERS=singlepolygon&SLD_VERSION=1.1.0"
-    legendGraphicUrl = "http://localhost:32793/qgis/singlesymbol?SERVICE=WMS&REQUEST=GetLegendGraphic&LAYER=singlepolygon&FORMAT=image/png&RULELABEL=false&LAYERTITLE=false&HEIGHT=35&WIDTH=70&SYMBOLHEIGHT=3&SYMBOLWIDTH=6&DPI=300"
-    database = [db_uri, db_user, db_pass]
-    dbQTable = "agi_oereb.transferstruktur_legendeeintrag"
-    typeCodeAttrName = "artcode"
-    typeCodeListAttrName = "artcodeliste"
-    typeCodeListValue = "Grundnutzung'
-    symbolAttrName = "symbol"
-    useCommunalTypeCodes = true
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-sldUrl   | GetStyles-Request
-legendGraphicUrl | GetLegendGraphic-Request mit QGIS-spezifischen Parametern, um einzelne Symbole anfordern zu können. Der `RULE`-Parameter wird automatisch hinzugefügt.
-database | Datenbank in die importiert werden soll.
-dbQTable  | Qualifizierter Tabellename.
-typeCodeAttrName | Name des Attributes in der Tabelle, dem das Symbol zugeordnet werden kann.
-typeCodeListAttrName | Name des Artcodeliste in der Tabelle, dem das Symbol zugeordnet werden kann.
-typeCodeListValue | Wert der Artcodeliste in der Tabelle, dem das Symbol zugeordnet werden kann.
-symbolAttrName | Name des Symbolattributes in der Tabelle. Dieses Attribut wird upgedatet.
-useCommunalTypeCodes | Ob in der Update-Query Substrings verglichen werden, damit kommunale Codes mit (aggregierten) kantonalen Symbolen verwendet werden können.
-legendTextAttrName | Names des Legendentext-Attributes in der Tabelle. Dieses Attribut wird upgedatet. (Optional)
-
-### OerebIconizer
-
-Erstellt die Symbole anhand eines WMS-Layers für den ÖREB-Kataster indem er zuerst das SLD (GetStyles) ausliest und anschliessend einzelne GetLegendGraphic-Requests macht. Die Symbole werden dann in der Datenbank in der entsprechenden Tabelle nachgeführt (`update`). Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/openoereb/oereb-iconizer](https://github.com/openoereb/oereb-iconizer).
-
-Einschränkungen: 
-- Artcode-Wert muss zusammen mit der Artcodeliste eindeutig sein. Beim Updaten in der Datenbank wird die Artcodeliste mit `LIKE 'NameDerListe%'` gematcht.
-
-```
-task updateSymbols(type: OerebIconizer) {
-    vendor = "QGIS3"
-    stylesUrl = "http://localhost:32793/qgis/singlesymbol?&SERVICE=WMS&REQUEST=GetStyles&LAYERS=singlepolygon&SLD_VERSION=1.1.0"
-    legendGraphicUrl = "http://localhost:32793/qgis/singlesymbol?SERVICE=WMS&REQUEST=GetLegendGraphic&LAYER=singlepolygon&FORMAT=image/png&RULELABEL=false&LAYERTITLE=false&HEIGHT=35&WIDTH=70&SYMBOLHEIGHT=3&SYMBOLWIDTH=6&DPI=300"
-    database = [db_uri, db_user, db_pass]
-    dbSchema = "agi_oereb"
-    dbTable = "transferstruktur_legendeeintrag"
-    typeCodeAttrName = "artcode"
-    typeCodeListAttrName = "artcodeliste"
-    typeCodeListValue = "Grundnutzung'
-    symbolAttrName = "symbol"
-    substringMode = true
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-vendor | Iconizer-Implementierung. Zur Zeit zur "QGIS3".
-stylesUrl | GetStyles-Request
-legendGraphicUrl | GetLegendGraphic-Request mit QGIS-spezifischen Parametern, um einzelne Symbole anfordern zu können. Der `RULE`-Parameter wird automatisch hinzugefügt.
-database | Datenbank in die importiert werden soll.
-dbSchema  | Name des Datenbankschemas.
-dbTable  | Name des Datenbanktabelle.
-typeCodeAttrName | Name des Attributes in der Tabelle, dem das Symbol zugeordnet werden kann.
-typeCodeListAttrName | Name des Artcodeliste in der Tabelle, dem das Symbol zugeordnet werden kann.
-typeCodeListValue | Wert der Artcodeliste in der Tabelle, dem das Symbol zugeordnet werden kann.
-symbolAttrName | Name des Symbolattributes in der Tabelle. Dieses Attribut wird upgedatet.
-substringMode | Ob in der Update-Query Substrings verglichen werden, damit z.B. kommunale Codes mit (aggregierten) kantonalen Symbolen verwendet werden können.
-
-### Publisher
-
-Stellt für Vektordaten die aktuellsten Geodaten-Dateien bereit und pflegt das Archiv der vorherigen Zeitstände.
-
-[Details](Publisher.md)
-
-### S3Download
-
-Lädt eine Datei aus einem S3-Bucket herunter.
-
-```
-task downloadFile(type: S3Download) {
-    accessKey = abcdefg
-    secretKey = hijklmnopqrstuvwxy
-    downloadDir = file("./path/to/dir/")
-    bucketName = "ch.so.ada.denkmalschutz"
-    key = "foo.pdf"
-    endPoint = "https://s3.eu-central-1.amazonaws.com" 
-    region = "eu-central-1"
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-accessKey | AccessKey
-secretKey | SecretKey
-downloadDir  | Verzeichnis in das die Datei heruntergeladen werden soll.
-bucketName  | Name des Buckets, in dem die Datei gespeichert ist.
-key | Name der Datei
-endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
-region | S3-Region (default: `eu-central-1`). 
-
-### S3Upload
-
-Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch. 
-
-Mit dem passenden Content-Typ kann man das Verhalten des Browsers steuern. Default ist 'application/octect-stream', was dazu führt, dass die Datei immer heruntergeladen wird. Soll z.B. ein PDF oder ein Bild im Browser direkt angezeigt werden, muss der korrekte Content-Typ gewählt werden.
-
-```
-task uploadDirectory(type: S3Upload) {
-    accessKey = abcdefg
-    secretKey = hijklmnopqrstuvwxy
-    sourceDir = file("./docs")
-    bucketName = "ch.so.ada.denkmalschutz"
-    endPoint = "https://s3.eu-central-1.amazonaws.com" 
-    region = "eu-central-1"
-    acl = "public-read"
-    contentType = "application/pdf"
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-accessKey | AccessKey
-secretKey | SecretKey
-sourceDir  | Verzeichnis mit den Dateien, die hochgeladen werden sollen.
-sourceFile  | Datei, die hochgeladen werden soll.
-sourceFiles  | FileCollection mit den Dateien, die hochgeladen werden sollen, z.B. `fileTree("/path/to/directoy/") { include "*.itf" }`
-bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
-endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
-region | S3-Region (default: `eu-central-1`). 
-acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
-contentType | Content-Type
-metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
-
-### S3Bucket2Bucket
-
-Kopiert Objekte von einem Bucket in einen anderen. Die Buckets müssen in der gleichen Region sein. Die Permissions werden nicht mitkopiert und müssen explizit gesetzt werden. 
-
-```
-task copyFiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
-    accessKey = s3AccessKey
-    secretKey = s3SecretKey
-    sourceBucket = s3SourceBucket
-    targetBucket = s3TargetBucket
-    acl = "public-read"
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-accessKey | AccessKey
-secretKey | SecretKey
-sourceBucket  | Bucket aus dem die Objekte kopiert werden.
-targetBucket  | Bucket in den die Objekte kopiert werden.
-acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
-metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
 
 ### XslTransformer (Experimental)
 
