@@ -1199,6 +1199,13 @@ tasks.register('publishMetaFiles', MetaPublisher) {
 
 Im zweiten Beispiel werden die Regionen aus dem vorausgegangenen Publisher-Task als Input verwendet. 
 
+Parameter | Beschreibung
+----------|-------------------
+metaConfigFile | Toml-Datei mit Metainformationen zur Themenpublikation
+target | Zielverzeichnis der Metadateien (sftp oder Filesystem)
+regions | Liste (resp. ListProperty) mit den durch den PublisherTask publizierten Regionen.
+geocatTarget | Zielverzeichnis für Geocat-Output (sftp oder Filesystem)
+
 ### PostgisRasterExport
 
 Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert.
