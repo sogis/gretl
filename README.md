@@ -1,4 +1,4 @@
-![Build Status](https://github.com/sogis/gretl/actions/workflows/build.yml/badge.svg)
+![Build Status](https://github.com/sogis/gretl/actions/workflows/gretl.yml/badge.svg)
 
 # gretl
 
