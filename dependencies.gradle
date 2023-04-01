@@ -20,6 +20,10 @@ ext {
     jacksonVersion = '2.10.0'
     
     saxonVersion = '11.4'
+    
+    tomljVersion = '1.1.0'    
+    
+    freemarkerVersion = '2.3.31'
 
     postgresqlVersion = '42.2.5'
     sqliteJdbcVersion = '3.8.11.2'
@@ -52,7 +56,11 @@ ext {
     jacksonDatabindDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion ]
     
     saxonDependency = [ group: 'net.sf.saxon', name: 'Saxon-HE', version: saxonVersion]
+
+    tomljDependency = [ group: 'org.tomlj', name: 'tomlj', version: tomljVersion]
     
+    freemarkerDependency = [ group: 'org.freemarker', name: 'freemarker', version: freemarkerVersion]
+
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
     derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]

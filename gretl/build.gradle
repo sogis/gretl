@@ -92,6 +92,10 @@ dependencies {
     
     api saxonDependency
     
+    api tomljDependency
+    
+    api freemarkerDependency
+
     //api 'com.jcraft:jsch:0.1.55'
     //api 'com.pastdev:jsch-nio:1.0.14'
 	api 'com.github.robtimus:sftp-fs:2.0.4'

@@ -1,0 +1,17 @@
+import ch.so.agi.gretl.tasks.*
+import java.nio.file.Paths
+
+apply plugin: 'ch.so.agi.gretl'
+
+defaultTasks 'publishMetaFile'
+
+ext {
+    gretlEnvironment = "integration"
+}
+
+tasks.register('publishMetaFile', MetaPublisher){
+    metaConfigFile = file("meta.toml")
+    target = [project.buildDir]      
+    geocatTarget = [Paths.get(project.buildDir.getAbsolutePath(), "geocat").toFile()]
+}
+
