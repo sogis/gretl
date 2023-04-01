@@ -124,7 +124,7 @@ public class Av2geobau extends DefaultTask {
                     List<String> addonFileNames = Arrays.asList("DXF_Geobau_Layerdefinition.pdf", "Hinweise.pdf", "Musterplan.pdf");
                     for (String addonFileName : addonFileNames) {
                         File addonFile = Paths.get(dxfDir.getAbsolutePath(), addonFileName).toFile();
-                        InputStream addonInputStream = Av2geobau.class.getResourceAsStream("/Av2geobau/"+addonFileName); 
+                        InputStream addonInputStream = Av2geobau.class.getResourceAsStream("/av2geobau/"+addonFileName); 
                         Files.copy(addonInputStream, addonFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         addonInputStream.close();
                         
