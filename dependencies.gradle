@@ -32,7 +32,7 @@ ext {
     
     junitVersion = '4.12'
     mockFtpServerVersion = '2.7.1'   
-    testContainersVersion = '1.15.1'
+    testContainersVersion = '1.15.3'
 
     // dependencies
     ioxIliDependency = [ group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion ]
