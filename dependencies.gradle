@@ -9,7 +9,7 @@ ext {
     ehiSqlgenVersion = '1.15.0'
     
     av2chVersion = '1.1.8'
-    av2geobauVersion = '1.1.0'
+    av2geobauVersion = '1.2.0'
     
     awsSdkVersion = '2.15.64'
     
