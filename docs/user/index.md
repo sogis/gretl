@@ -1170,7 +1170,7 @@ qualifiedTableName | Qualifizierter Tabellennamen ("schema.tabelle") in die impo
 columnName | Spaltenname der Tabelle in die importiert werden soll
 deleteAllRows | Inhalt der Tabelle vorgängig löschen?
 
-### MetaPublisher (Experimental)
+### MetaPublisher (incubating)
 
 Der MetaPublisher dient zum Publizieren von Metadaten/-dateien. Er erstellt eine INTERLIS-Transferdatei pro Themenpublikation für die Datensuche, falls nötig eine GeoJSON-Datei und die Geocat-XML-Datei. Die GeoJSON-Datei ist entweder statisch (für Raster o.ä.) oder dynamisch (z.B. amtliche Vermessung). Bei einer dynamischen GeoJSON-Datei wird das Datum nachgeführt.
 
@@ -1473,7 +1473,7 @@ sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert (``Map
 
 Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
 
-### XslTransformer (Experimental)
+### XslTransformer (incubating)
 
 **TODO:** Signatur des Tasks. Muss wohl noch andere Möglichkeiten unterstützen: z.B. ganzes Verzeichnis. Wie sieht es mit der Endung aus? Immer XTF (wohl auch nicht)
 
