@@ -39,6 +39,12 @@ public class XslTransformerStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
     
+    public void execute(File xslFile, File xmlFile, File outputDirectory) {
+        
+    }
+    
+   
+    // Neu: Diese Methode kopiert die XSLT-Datei aus den Resourcen in ein Temp-Verzeichnis... 
     public void execute(String xslFileName, File xmlFile, File outDirectory) throws IOException, SaxonApiException { 
         log.lifecycle(String.format("Start XslTransformerStep(Name: %s XslFile: %s XmlFile: %s OutDirectory: %s)", taskName,
                 xslFileName, xmlFile.toString(), outDirectory.toString()));
