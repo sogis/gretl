@@ -19,7 +19,7 @@ public class XslTransformer extends DefaultTask {
     protected GretlLogger log;
 
     @Input
-    public String xslFileName;
+    public Object xslFile;
     
     @Input
     public Object xmlFile;
@@ -31,8 +31,8 @@ public class XslTransformer extends DefaultTask {
     public void transform() {
         log = LogEnvironment.getLogger(XslTransformer.class);
         
-        if (xslFileName == null) {
-            throw new IllegalArgumentException("xslFileName must not be null");
+        if (xslFile == null) {
+            throw new IllegalArgumentException("xslFile must not be null");
         }
         if (xmlFile == null) {
             throw new IllegalArgumentException("xmlFile must not be null");
@@ -60,7 +60,11 @@ public class XslTransformer extends DefaultTask {
         try {
             for(String dataFile : files) {
                 XslTransformerStep xslTransformerStep = new XslTransformerStep();
-                xslTransformerStep.execute(xslFileName, new File(dataFile), outDirectory);
+                if (xslFile instanceof String) {
+                    xslTransformerStep.execute((String) xslFile, new File(dataFile), outDirectory);
+                } else {
+                    xslTransformerStep.execute((File) xslFile, new File(dataFile), outDirectory);
+                }
             }
         } catch (Exception e) {
             log.error("Exception in XslTransformer task.", e);

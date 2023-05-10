@@ -39,34 +39,32 @@ public class XslTransformerStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
     
-    public void execute(File xslFile, File xmlFile, File outputDirectory) {
-        
-    }
-    
-   
-    // Neu: Diese Methode kopiert die XSLT-Datei aus den Resourcen in ein Temp-Verzeichnis... 
-    public void execute(String xslFileName, File xmlFile, File outDirectory) throws IOException, SaxonApiException { 
-        log.lifecycle(String.format("Start XslTransformerStep(Name: %s XslFile: %s XmlFile: %s OutDirectory: %s)", taskName,
-                xslFileName, xmlFile.toString(), outDirectory.toString()));
-        
-        // TODO: temp dir for xsltFile?
-        File xsltFile = new File(Paths.get(outDirectory.getAbsolutePath(), xslFileName).toFile().getAbsolutePath());
-        InputStream xsltFileInputStream = XslTransformerStep.class.getResourceAsStream("/xslt/"+xslFileName); 
-        Files.copy(xsltFileInputStream, xsltFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        xsltFileInputStream.close();
-
+    public void execute(File xslFile, File xmlFile, File outputDirectory) throws IOException, SaxonApiException {
         Processor proc = new Processor(false);
         XsltCompiler comp = proc.newXsltCompiler();
-        XsltExecutable exp = comp.compile(new StreamSource(xsltFile));
+        XsltExecutable exp = comp.compile(new StreamSource(xslFile));
         
         XdmNode source = proc.newDocumentBuilder().build(new StreamSource(xmlFile));
         
-        File outFile = Paths.get(outDirectory.getAbsolutePath(), FilenameUtils.getBaseName(xmlFile.getName()) + ".xtf").toFile();
+        File outFile = Paths.get(outputDirectory.getAbsolutePath(), FilenameUtils.getBaseName(xmlFile.getName()) + ".xtf").toFile();
         Serializer outFileSerializer = proc.newSerializer(outFile);
         XsltTransformer trans = exp.load();
         trans.setInitialContextNode(source);
         trans.setDestination(outFileSerializer);
         trans.transform();
         trans.close();
+    }
+    
+    public void execute(String xslFileName, File xmlFile, File outputDirectory) throws IOException, SaxonApiException { 
+        log.lifecycle(String.format("Start XslTransformerStep(Name: %s XslFile: %s XmlFile: %s OutDirectory: %s)", taskName,
+                xslFileName, xmlFile.toString(), outputDirectory.toString()));
+
+        String tmpDir = Files.createTempDirectory("xslttransformerstep").toFile().getAbsolutePath();
+        File xslFile = new File(Paths.get(tmpDir, xslFileName).toFile().getAbsolutePath());
+        InputStream xsltFileInputStream = XslTransformerStep.class.getResourceAsStream("/xslt/"+xslFileName); 
+        Files.copy(xsltFileInputStream, xslFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        xsltFileInputStream.close();
+        
+        execute(xslFile, xmlFile, outputDirectory);
     }
 }

@@ -1481,7 +1481,7 @@ Transformiert eine Datei mittels einer XSL-Transformation ein eine andere Datei.
 
 ```
 task transform(type: XslTransformer) {
-    xslFileName = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
+    xslFile = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
     xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
     outDirectory = file(".")
 }
@@ -1489,7 +1489,15 @@ task transform(type: XslTransformer) {
 
 ```
 task transform(type: XslTransformer) {
-    xslFileName = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
+    xslFile = file("path/to/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl")
+    xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
+    outDirectory = file(".")
+}
+```
+
+```
+task transform(type: XslTransformer) {
+    xslFile = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
     xmlFile = fileTree(".").matching {
         include "*.xml"
     }
@@ -1499,6 +1507,6 @@ task transform(type: XslTransformer) {
 
 Parameter | Beschreibung
 ----------|-------------------
-xslFileName | Name der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss.
+xslFile | Name der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss oder File-Objekt (beliebier Pfad).
 xmlFile | Datei oder FileTree, die/der transformiert werden soll.
 outDirectory | Verzeichnis, in das die transformierte Datei gespeichert wird. Der Name der transformierten Datei entspricht dem Namen der Inpuzt-Datei mit Endung `.xtf`.

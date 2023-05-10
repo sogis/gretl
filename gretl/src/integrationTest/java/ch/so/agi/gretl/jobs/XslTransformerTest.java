@@ -14,13 +14,13 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 public class XslTransformerTest {
 
     @Test
-    public void transformFile_Ok() throws Exception {
+    public void transformFile_Resource_Ok() throws Exception {
         // Transform xml file
         GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformer", gvs);
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformerResource", gvs);
         
         // Check result
-        byte[] bytes = Files.readAllBytes(Paths.get("src/integrationTest/jobs/XslTransformer", "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
+        byte[] bytes = Files.readAllBytes(Paths.get("src/integrationTest/jobs/XslTransformerResource", "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
         String fileContent = new String (bytes);
 
         assertTrue(fileContent.contains("<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\"SO_AGI_SGV_Meldungen_20221109.Meldungen\">"));
@@ -28,6 +28,21 @@ public class XslTransformerTest {
         assertTrue(fileContent.contains("<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>"));
     }
     
+    @Test
+    public void transformFile_File_Ok() throws Exception {
+        // Transform xml file
+        GradleVariable[] gvs = null;
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformerFile", gvs);
+        
+        // Check result
+        byte[] bytes = Files.readAllBytes(Paths.get("src/integrationTest/jobs/XslTransformerFile", "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
+        String fileContent = new String (bytes);
+
+        assertTrue(fileContent.contains("<SO_AGI_SGV_Meldungen_20221109.Meldungen BID=\"SO_AGI_SGV_Meldungen_20221109.Meldungen\">"));
+        assertTrue(fileContent.contains("<Grundstuecksnummer>1505</Grundstuecksnummer>"));
+        assertTrue(fileContent.contains("<Gebaeudebezeichnung>Reine Wohngebäude (Wohnnutzung ausschliesslich)</Gebaeudebezeichnung>"));
+    }
+
     @Test
     public void transformFileSet_Ok() throws Exception {
         // Transform xml file
