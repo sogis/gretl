@@ -73,6 +73,9 @@ dependencies {
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
+    api (ili2gpkgDependency) {
+        exclude group: 'ch.ehi', module: 'ehisqlgen'
+    }
     api (ioxWkfDependency) {
         // Exclude old dependencies. These get overriden anyways.
         // And they show on Snaphots...
