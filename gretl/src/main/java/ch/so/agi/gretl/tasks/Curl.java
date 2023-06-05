@@ -12,6 +12,8 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 // README.md eventuell
 // abstract class geht erst mit 5.6 oder so. Nicht mit 5.1.1
 // Dann kommen aber viele Warnungen von anderen Tasks wegen fehlendem Getter o.ä.
+// Publisher-Ansatz geht nicht, weil dann wird wirklich ein Objekt vom Typ Property erwartet.
+// Das ist für Anwender doof.
 
 public class Curl extends DefaultTask {
     protected GretlLogger log;
