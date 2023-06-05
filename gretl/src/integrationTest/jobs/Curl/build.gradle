@@ -1,0 +1,11 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.tasks.Curl.MethodType;
+
+apply plugin: 'ch.so.agi.gretl'
+
+defaultTasks 'uploadData'
+
+task uploadData(type: Curl) {
+    serverUrl = "https://geodienste.ch"
+    method = MethodType.GET
+}
