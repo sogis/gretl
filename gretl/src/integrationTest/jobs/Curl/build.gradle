@@ -6,6 +6,8 @@ apply plugin: 'ch.so.agi.gretl'
 defaultTasks 'uploadData'
 
 task uploadData(type: Curl) {
-    serverUrl = "https://geodienste.ch"
-    method = MethodType.GET
+    serverUrl = "https://geodienste.ch/data_agg/interlis/import"
+    method = MethodType.POST
+    formData = ["topic": "planerischer_gewaesserschutz", "lv95_file": file("./build.gradle"), "publish": "true", "replace_all": "false"]
+    
 }
