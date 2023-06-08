@@ -17,6 +17,7 @@ ext {
     apacheCommonsNetVersion = '3.6'
     apacheCommonsCodeVersion = '1.11'
     apacheHttpClientVersion = '4.5.13'
+    apacheHttpClientMimeVersion = '4.5.13'
     
     jacksonVersion = '2.10.0'
     
@@ -53,6 +54,7 @@ ext {
     apacheCommonsNetDependency = [ group: 'commons-net', name: 'commons-net', version: apacheCommonsNetVersion ]
     apacheCommonsCodeDependency = [ group: 'commons-codec', name: 'commons-codec', version: apacheCommonsCodeVersion ]
     apacheHttpClientDependency = [ group: 'org.apache.httpcomponents', name: 'httpclient', version: apacheHttpClientVersion ]
+    apacheHttpClientMimeDependency = [ group: 'org.apache.httpcomponents', name: 'httpmime', version: apacheHttpClientMimeVersion ]
     
     jacksonCoreDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion ]
     jacksonDatabindDependency = [ group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion ]

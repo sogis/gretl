@@ -95,6 +95,7 @@ dependencies {
     api apacheCommonsNetDependency
     api apacheCommonsCodeDependency
     api apacheHttpClientDependency
+    api apacheHttpClientMimeDependency
     
     api jacksonCoreDependency
     api jacksonDatabindDependency
