@@ -72,7 +72,7 @@ public class Curl extends DefaultTask {
     
     @Internal
     @Optional
-    public Map<String,String> header; // curl [URL] -H ... -H ...
+    public Map<String,String> headers; // curl [URL] -H ... -H ...
     
     @Internal
     @Optional
@@ -146,12 +146,7 @@ public class Curl extends DefaultTask {
 
     }
     
-    
     private static enum MethodType {
         GET, POST
-    }
-
-    
-    
-    
+    }    
 }
