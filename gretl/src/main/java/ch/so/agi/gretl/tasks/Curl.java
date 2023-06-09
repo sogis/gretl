@@ -1,14 +1,17 @@
 package ch.so.agi.gretl.tasks;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.provider.Property;
+import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
@@ -16,23 +19,15 @@ import org.gradle.api.tasks.TaskAction;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
@@ -54,6 +49,10 @@ public class Curl extends DefaultTask {
     
     @Internal
     public int expectedStatusCode;
+    
+    @Internal
+    @Optional
+    public String expectedBody;
     
     @Internal
     @Optional
@@ -91,59 +90,59 @@ public class Curl extends DefaultTask {
         System.out.println("*********"+method+"***********");
         System.out.println("*********"+formData+"***********");
         
+        RequestBuilder requestBuilder;
+        if (method.equals(MethodType.GET)) {
+            requestBuilder = RequestBuilder.get();
+        } else {
+            requestBuilder = RequestBuilder.post();
+        }
         
-//        HttpRequestBase request;
-//        if (method.equals(MethodType.GET)) {
-//            request = new HttpGet(serverUrl);
-//        } else {
-//            request = new HttpPost(serverUrl);            
-//        }
-        
-        CredentialsProvider provider = null;
         if (user != null && password != null) {
-            System.out.println(user);
-            System.out.println(password);
-            provider = new BasicCredentialsProvider();
-            provider.setCredentials(
-                    AuthScope.ANY,
-                    new UsernamePasswordCredentials(user, password)
-            ); 
+            Header header = new BasicHeader("Authorization", "Basic "+ Base64.getEncoder().encodeToString((user+":"+password).getBytes()));
+            requestBuilder.addHeader(header);
         }
 
-        MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-        entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        for (Map.Entry<String, Object> entry : formData.entrySet()) {
-            if (entry.getValue() instanceof String) {
-                entityBuilder.addTextBody(entry.getKey(), (String) entry.getValue());
-            } else if (entry.getValue() instanceof File) {
-                entityBuilder.addBinaryBody(entry.getKey(), (File) entry.getValue());   
+        if (formData != null) {
+            MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+            entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            for (Map.Entry<String, Object> entry : formData.entrySet()) {
+                if (entry.getValue() instanceof String) {
+                    entityBuilder.addTextBody(entry.getKey(), (String) entry.getValue());
+                } else if (entry.getValue() instanceof File) {
+                    entityBuilder.addBinaryBody(entry.getKey(), (File) entry.getValue());   
+                }
             }
+            HttpEntity entity = entityBuilder.build();
+            requestBuilder.setEntity(entity);
         }
-        HttpEntity entity = entityBuilder.build();
-       
-        HttpPost request = new HttpPost(serverUrl);
-        request.setEntity(entity);
+
+        requestBuilder.setUri(serverUrl);
         
-        HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+        int responseStatusCode;
+        String responseContent;
+        HttpUriRequest request = requestBuilder.build();
+        try (CloseableHttpClient httpClient = HttpClients.createDefault(); 
+                CloseableHttpResponse httpResponse = httpClient.execute(request)) {
+          
+            responseStatusCode = httpResponse.getStatusLine().getStatusCode();
+            
+            BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = reader.readLine()) != null) {
+                response.append(inputLine);
+            }
+            reader.close();
+            responseContent = response.toString();
+        } 
         
-        if (provider != null) {
-            System.out.println("*******asdfasd");
-            clientBuilder.setDefaultCredentialsProvider(provider);
+        if (responseStatusCode != expectedStatusCode) {
+            throw new GradleException("Wrong status code returned: " + String.valueOf(responseStatusCode));
         }
         
-        HttpClient httpClient = clientBuilder.build();
-
-        HttpResponse httpResponse = httpClient.execute(request);
-        System.out.println("POST Response Status:: "
-                + httpResponse.getStatusLine().getStatusCode());
-
-        
-//        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-//                CloseableHttpResponse response = httpClient.execute(post)){
-//
-//               result = EntityUtils.toString(response.getEntity());
-//           }
-
+        if (!responseContent.contains(expectedBody)) {
+            throw new GradleException("Response body does not contain expected string: " + responseContent);
+        }
 
     }
     
