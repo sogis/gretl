@@ -1,0 +1,19 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.tasks.Curl.MethodType;
+
+apply plugin: 'ch.so.agi.gretl'
+
+def MOCKWEBSERVER_PORT = 'mockWebServerPort'
+def mockWebServerPort = findProperty(MOCKWEBSERVER_PORT) != null ? findProperty(MOCKWEBSERVER_PORT) : '8080'
+
+defaultTasks 'uploadData'
+
+task uploadData(type: Curl) {
+    serverUrl = "http://localhost:"+mockWebServerPort+"/data_agg/interlis/import"
+    method = MethodType.POST
+    formData = ["topic": "npl_waldgrenzen", "lv95_file": file("./test.xtf.zip"), "publish": "true", "replace_all": "true"]
+    user = "fooUser"
+    password = "barPwd"
+    expectedStatusCode = 200
+    expectedBody = "\"success\":true"
+}

@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -28,6 +31,10 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
@@ -58,9 +65,9 @@ public class Curl extends DefaultTask {
     @Optional
     public Map<String,Object> formData; // curl [URL] -F key1=value1 -F file1=@my_file.xtf 
     
-    @Internal
-    @Optional
-    public String data; // curl [URL] -d "key1=value1&key2=value2"
+//    @Internal
+//    @Optional
+//    public String data; // curl [URL] -d "key1=value1&key2=value2"
     
     @Internal
     @Optional
@@ -68,7 +75,7 @@ public class Curl extends DefaultTask {
     
     @Internal
     @Optional
-    public File dataBinary; // curl [URL] --data-binary
+    public File dataBinary; // curl [URL] --data-binary / ueberschreibt formData, siehe setEntity (glaub)
     
     @Internal
     @Optional
@@ -115,6 +122,47 @@ public class Curl extends DefaultTask {
             HttpEntity entity = entityBuilder.build();
             requestBuilder.setEntity(entity);
         }
+        
+        System.out.println("*********1***********");
+
+        
+        if (dataBinary != null) {
+            byte[] data = Files.readAllBytes(dataBinary.toPath());
+            String content = Files.readString(dataBinary.toPath());
+//            request.addHeader("X-Goog-Upload-Content-Length", String.valueOf(data.length));
+            //request.setEntity(EntityBuilder.create().setBinary(data).build());
+
+//            http://www.javased.com/?api=org.apache.http.entity.FileEntity
+            
+//            FileEntity fileEntity = new FileEntity(dataBinary);
+//            requestBuilder.setEntity(fileEntity);
+//            FileEntity reqEntity = new FileEntity (dataBinary, ContentType.DEFAULT_BINARY);
+//            requestBuilder.setEntity(reqEntity);
+            
+            
+            HttpEntity httpEntity = new ByteArrayEntity(content.getBytes(StandardCharsets.UTF_8));
+            requestBuilder.setEntity(httpEntity);
+
+//            requestBuilder.setEntity(EntityBuilder.create().setBinary(data).build());
+            //requestBuilder.setHeader("Content-Length", String.valueOf(data.length));
+            
+            System.out.println("*********1.5***********");
+
+        }
+        
+        System.out.println("*********2***********");
+
+        
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getKey();
+                System.out.println("*********header***********:" + key);
+                requestBuilder.addHeader(key, value);
+            }
+        }
+        
+        System.out.println("*********3***********");
 
         requestBuilder.setUri(serverUrl);
         
@@ -134,19 +182,24 @@ public class Curl extends DefaultTask {
             }
             reader.close();
             responseContent = response.toString();
+            
+            System.out.println("**"+responseStatusCode);
+            System.out.println("***"+responseContent);
         } 
         
         if (responseStatusCode != expectedStatusCode) {
             throw new GradleException("Wrong status code returned: " + String.valueOf(responseStatusCode));
         }
         
-        if (!responseContent.contains(expectedBody)) {
-            throw new GradleException("Response body does not contain expected string: " + responseContent);
+        if (expectedBody != null) {
+            if (!responseContent.contains(expectedBody)) {
+                throw new GradleException("Response body does not contain expected string: " + responseContent);
+            }            
         }
 
     }
     
-    private static enum MethodType {
+    public static enum MethodType {
         GET, POST
     }    
 }

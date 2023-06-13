@@ -78,5 +78,31 @@ public class CurlTest {
         assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlGeodienste", gvs, new StringBuffer(), new StringBuffer()));
     }
     
+    @Test
+    public void planregister_Ok() throws Exception {
+        // Prepare mock web server
+        MockResponse mockResponse = new MockResponse()
+                .setResponseCode(202);
+        mockWebServer.enqueue(mockResponse);
+        
+        // Run GRETL task
+        GradleVariable[] gvs = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlPlanregister", gvs);
+        
+        // Validate result
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        
+        assertEquals("/typo3/api/digiplan", recordedRequest.getPath());
+//        assertEquals(recordedRequest.getHeader("Authorization").split(" ")[1].trim(),
+//                Base64.getEncoder().encodeToString(("fooUser:barPwd").getBytes()));
+
+//        Buffer bodyBuffer = recordedRequest.getBody();
+//        long bodyBufferSize = bodyBuffer.size();
+//        String bodyContent = bodyBuffer.readUtf8();
+//        assertTrue(bodyBufferSize>500L);
+//        assertTrue(bodyContent.contains("name=\"topic\""));
+//        assertTrue(bodyContent.contains("npl_waldgrenzen"));
+//        assertTrue(bodyContent.contains("name=\"lv95_file\"; filename=\"test.xtf.zip\""));
+    }
 
 }
