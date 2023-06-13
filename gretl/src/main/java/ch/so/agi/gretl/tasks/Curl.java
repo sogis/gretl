@@ -128,7 +128,7 @@ public class Curl extends DefaultTask {
         
         if (dataBinary != null) {
             byte[] data = Files.readAllBytes(dataBinary.toPath());
-            String content = Files.readString(dataBinary.toPath());
+            String content = new String().reaFiles.readString(dataBinary.toPath());
 //            request.addHeader("X-Goog-Upload-Content-Length", String.valueOf(data.length));
             //request.setEntity(EntityBuilder.create().setBinary(data).build());
 
