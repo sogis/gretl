@@ -316,6 +316,58 @@ gilt das als Validierungsfehler.
 
 Die Prüfung von gleichzeitig mehreren CSV-Dateien führt zu Fehlermeldungen wie `OID o3158 of object <Modelname>.<Topicname>.<Klassenname> already exists in ...`. Beim Öffnen und Lesen einer CSV-Datei wird immer der Zähler, der die interne (in der CSV-Datei nicht vorhandene) `OID` generiert, zurückgesetzt. Somit kann immer nur eine CSV-Datei pro Task geprüft werden.
 
+### Curl
+
+Simuliert mit einem HttpClient einige Curl-Befehle.
+
+Beispiele:
+
+```
+task uploadData(type: Curl) {
+    serverUrl = "https://geodienste.ch/data_agg/interlis/import"
+    method = MethodType.POST
+    formData = ["topic": "npl_waldgrenzen", "lv95_file": file("./test.xtf.zip"), "publish": "true", "replace_all": "true"]
+    user = "fooUser"
+    password = "barPwd"
+    expectedStatusCode = 200
+    expectedBody = "\"success\":true"
+}
+```
+
+```
+task uploadData(type: Curl) {
+    serverUrl = "https://testweb.so.ch/typo3/api/digiplan"
+    method = MethodType.POST
+    headers = ["Content-Type": "application/xml", "Content-Encoding": "gzip"]
+    dataBinary = file("./planregister.xml.gz")
+    user = "fooUser"
+    password = "barPwd"
+    expectedStatusCode = 202
+}
+```
+
+```
+task downloadData(type: Curl) {
+    serverUrl = "https://raw.githubusercontent.com/sogis/gretl/master/README.md"
+    method = MethodType.GET
+    outputFile = file("./README.md")
+    expectedStatusCode = 200
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+serverUrl | Die URL des Servers inklusive Pfad und Queryparameter.
+method |  HTTP-Request-Methode. Unterstützt werden `GET` und `POST`.
+expectedStatusCode | Erwarteter Status Code, der vom Server zurückgeliefert wird.
+expectedBody | Erwarteter Text, der vom Server als Body zurückgelieferd wird. (optional)
+formData | Form data parameters. Entspricht `curl [URL] -F key1=value1 -F file1=@my_file.xtf`. (optional)
+dataBinary | Datei, die hochgeladen werden soll. Entspricht `curl [URL] --data-binary`. (optional)
+headers | Request-Header. Entspricht `curl [URL] -H ... -H ...`. (optional)
+user | Benutzername. Wird zusammen mit `password` in einen Authorization-Header umgewandelt. Entspricht `curl [URL] -u user:password`. (optional)
+password | Passwort. Wird zusammen mit `user` in einen Authorization-Header umgewandelt. Entspricht `curl [URL] -u user:password`. (optional)
+outputFile | Datei, in die der Output gespeichert wird. Entspricht `curl [URL] -o`. (optional)
+
 ### DatabaseDocumentExport (Experimental)
 
 Speichert Dokumente, deren URL in einer Spalte einer Datenbanktabelle gespeichert sind, in einem lokalen Verzeichnis. Zukünftig und bei Bedarf kann der Task so erweitert werden, dass auch BLOBs aus der Datenbank gespeichert werden können.

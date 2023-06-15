@@ -117,9 +117,9 @@ dependencies {
     testImplementation junitDependency
     testImplementation testContainersDependency
     testImplementation testContainersPostgresDependency
-    testImplementation "org.testcontainers:mockserver:1.15.3"
     
-    testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
+    //testImplementation "org.testcontainers:mockserver:1.15.3"
+    //testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
     
     testImplementation mockWebServerDependency
     

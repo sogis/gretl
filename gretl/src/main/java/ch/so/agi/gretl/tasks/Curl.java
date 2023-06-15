@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tasks;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -93,10 +94,6 @@ public class Curl extends DefaultTask {
     public void request() throws ClientProtocolException, IOException {
         log = LogEnvironment.getLogger(Curl.class);
 
-        System.out.println("*********"+serverUrl+"***********");
-        System.out.println("*********"+method+"***********");
-        System.out.println("*********"+formData+"***********");
-        
         RequestBuilder requestBuilder;
         if (method.equals(MethodType.GET)) {
             requestBuilder = RequestBuilder.get();
@@ -123,68 +120,46 @@ public class Curl extends DefaultTask {
             requestBuilder.setEntity(entity);
         }
         
-        System.out.println("*********1***********");
-
-        
         if (dataBinary != null) {
             byte[] data = Files.readAllBytes(dataBinary.toPath());
-//            String content = new String().reaFiles.readString(dataBinary.toPath());
-//            request.addHeader("X-Goog-Upload-Content-Length", String.valueOf(data.length));
-            //request.setEntity(EntityBuilder.create().setBinary(data).build());
-
-//            http://www.javased.com/?api=org.apache.http.entity.FileEntity
-            
-//            FileEntity fileEntity = new FileEntity(dataBinary);
-//            requestBuilder.setEntity(fileEntity);
-//            FileEntity reqEntity = new FileEntity (dataBinary, ContentType.DEFAULT_BINARY);
-//            requestBuilder.setEntity(reqEntity);
-            
-            
-//            HttpEntity httpEntity = new ByteArrayEntity(content.getBytes(StandardCharsets.UTF_8));
-//            requestBuilder.setEntity(httpEntity);
-
-//            requestBuilder.setEntity(EntityBuilder.create().setBinary(data).build());
-            //requestBuilder.setHeader("Content-Length", String.valueOf(data.length));
-            
-            System.out.println("*********1.5***********");
-
+            requestBuilder.setEntity(EntityBuilder.create().setBinary(data).build());
         }
-        
-        System.out.println("*********2***********");
-
         
         if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 String key = entry.getKey();
-                String value = entry.getKey();
-                System.out.println("*********header***********:" + key);
+                String value = entry.getValue();
                 requestBuilder.addHeader(key, value);
             }
         }
-        
-        System.out.println("*********3***********");
-
+       
         requestBuilder.setUri(serverUrl);
         
         int responseStatusCode;
-        String responseContent;
+        String responseContent = null;
         HttpUriRequest request = requestBuilder.build();
         try (CloseableHttpClient httpClient = HttpClients.createDefault(); 
                 CloseableHttpResponse httpResponse = httpClient.execute(request)) {
           
             responseStatusCode = httpResponse.getStatusLine().getStatusCode();
             
-            BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            while ((inputLine = reader.readLine()) != null) {
-                response.append(inputLine);
-            }
-            reader.close();
-            responseContent = response.toString();
-            
-            System.out.println("**"+responseStatusCode);
-            System.out.println("***"+responseContent);
+            if (outputFile != null) {
+                HttpEntity entity = httpResponse.getEntity();
+                if (entity != null) {
+                    try (FileOutputStream outstream = new FileOutputStream(outputFile)) {
+                        entity.writeTo(outstream);
+                    }
+                }
+            } else {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+                while ((inputLine = reader.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                reader.close();
+                responseContent = response.toString();                
+            }            
         } 
         
         if (responseStatusCode != expectedStatusCode) {

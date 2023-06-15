@@ -9,13 +9,12 @@ def mockWebServerPort = findProperty(MOCKWEBSERVER_PORT) != null ? findProperty(
 defaultTasks 'uploadData'
 
 task uploadData(type: Curl) {
-    serverUrl = "https://testweb.so.ch/typo3/api/digiplan" //"http://localhost:"+mockWebServerPort+"/data_agg/interlis/import"
+    //serverUrl = "http://localhost:"+mockWebServerPort+"/data_agg/interlis/import"
+    serverUrl = "http://localhost:"+mockWebServerPort+"/typo3/api/digiplan"
     method = MethodType.POST
     headers = ["Content-Type": "application/xml", "Content-Encoding": "gzip"]
-    //formData = ["topic": "npl_waldgrenzen", "lv95_file": file("./test.xtf.zip"), "publish": "true", "replace_all": "true"]
-    dataBinary = file("./ch.so.arp.planregister.xml.gz")
-    user = "_digiplan_"
-    password = "3cDK9qbnn9C"
+    dataBinary = file("./foo.xml.gz")
+    user = "fooUser"
+    password = "barPwd"
     expectedStatusCode = 202
-    //expectedBody = "\"success\":true"
 }
