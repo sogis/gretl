@@ -1,0 +1,21 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.tasks.Curl.MethodType;
+
+apply plugin: 'ch.so.agi.gretl'
+
+def MOCKWEBSERVER_PORT = 'mockWebServerPort'
+def mockWebServerPort = findProperty(MOCKWEBSERVER_PORT) != null ? findProperty(MOCKWEBSERVER_PORT) : '8080'
+
+defaultTasks 'uploadData'
+
+task uploadData(type: Curl) {
+    serverUrl = "https://testweb.so.ch/typo3/api/digiplan" //"http://localhost:"+mockWebServerPort+"/data_agg/interlis/import"
+    method = MethodType.POST
+    headers = ["Content-Type": "application/xml", "Content-Encoding": "gzip"]
+    //formData = ["topic": "npl_waldgrenzen", "lv95_file": file("./test.xtf.zip"), "publish": "true", "replace_all": "true"]
+    dataBinary = file("./ch.so.arp.planregister.xml.gz")
+    user = "_digiplan_"
+    password = "3cDK9qbnn9C"
+    expectedStatusCode = 202
+    //expectedBody = "\"success\":true"
+}
