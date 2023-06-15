@@ -5,13 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
@@ -171,7 +166,6 @@ public class Curl extends DefaultTask {
                 throw new GradleException("Response body does not contain expected string: " + responseContent);
             }            
         }
-
     }
     
     public static enum MethodType {
