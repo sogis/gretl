@@ -94,6 +94,8 @@ dependencies {
     api apacheCommonsIoDependency
     api apacheCommonsNetDependency
     api apacheCommonsCodeDependency
+    api apacheHttpClientDependency
+    api apacheHttpClientMimeDependency
     
     api jacksonCoreDependency
     api jacksonDatabindDependency
@@ -103,7 +105,7 @@ dependencies {
     api tomljDependency
     
     api freemarkerDependency
-
+    
     //api 'com.jcraft:jsch:0.1.55'
     //api 'com.pastdev:jsch-nio:1.0.14'
 	api 'com.github.robtimus:sftp-fs:2.0.4'
@@ -115,6 +117,11 @@ dependencies {
     testImplementation junitDependency
     testImplementation testContainersDependency
     testImplementation testContainersPostgresDependency
+    
+    //testImplementation "org.testcontainers:mockserver:1.15.3"
+    //testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
+    
+    testImplementation mockWebServerDependency
     
     //testImplementation s3MockDependency
     //testImplementation s3MockJunitDependency

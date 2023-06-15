@@ -46,7 +46,7 @@ public class IntegrationTestUtil {
                 buf.append(" ");
                 buf.append(var.buildOptionString());
             }
-            buf.append(" -i "); // TODO: expose
+            buf.append(" -s "); // TODO: expose
             varText = buf.toString();
         }
         return varText;
