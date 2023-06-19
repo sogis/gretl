@@ -12,6 +12,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName(value = "grooming")
 @JsonPropertyOrder({"daily","weekly","monthly","yearly"})
 public class Grooming {
+    public static final int DAYS_PER_WEEK = 7;
+    public static final int DAYS_PER_MONTH = 30;
+    public static final int DAYS_PER_YEAR = 365;
     private GroomingRange ranges[]=new GroomingRange[4];
     private static final int DAILY=0;
     private static final int WEEKLY=1;
@@ -84,14 +87,13 @@ public class Grooming {
         return diff;
     }
     public static boolean isInRange(long days,GroomingRange range) {
-        long weeks=days/7;
-        if(weeks<0) {
+        if(days<0) {
             return false;
         }
         if(range==null || range.getFrom()==null) {
             return false;
         }
-        if(weeks>=range.getFrom() && (range.getTo()==null || weeks<range.getTo())) {
+        if(days>=range.getFrom() && (range.getTo()==null || days<range.getTo())) {
             return true;
         }
         return false;
@@ -113,35 +115,37 @@ public class Grooming {
         return "Grooming [daily=" + ranges[DAILY] + ", weekly=" + ranges[WEEKLY] + ", monthly=" + ranges[MONTHLY] + ", yearly=" + ranges[YEARLY] + "]";
     }
     public void getFilesToDelete(Date today, List<Date> allHistory, List<Date> deleteDates) {
-        allHistory.sort(null);
+        allHistory.sort(null); // oldest first!
         Set<Long> weeks=new HashSet<Long>();
         Set<Long> months=new HashSet<Long>();
         Set<Long> years=new HashSet<Long>();
         for(Date item:allHistory) {
             long diff=diffInDays(today, item);
-            if(isDaily(diff)) {
-                ;
-            }else if(isWeekly(diff)) {
-                long week=diff/7;
-                if(weeks.contains(week)) {
-                    deleteDates.add(item);
-                }else {
-                    weeks.add(week);
-                }
-            }else if(isMonthly(diff)) {
-                long month=diff/30;
-                if(months.contains(month)) {
-                    deleteDates.add(item);
-                }else {
-                    months.add(month);
-                }
+            if(diff==0) {
+                // today; keep it in any case
             }else if(isYearly(diff)) {
-                long year=diff/365;
+                long year=diff/DAYS_PER_YEAR;
                 if(years.contains(year)) {
                     deleteDates.add(item);
                 }else {
                     years.add(year);
                 }
+            }else if(isMonthly(diff)) {
+                long month=diff/DAYS_PER_MONTH;
+                if(months.contains(month)) {
+                    deleteDates.add(item);
+                }else {
+                    months.add(month);
+                }
+            }else if(isWeekly(diff)) {
+                long week=diff/DAYS_PER_WEEK;
+                if(weeks.contains(week)) {
+                    deleteDates.add(item);
+                }else {
+                    weeks.add(week);
+                }
+            }else if(isDaily(diff)) {
+                ;
             }else {
                 deleteDates.add(item);
             }

@@ -63,10 +63,10 @@ public class GroomingTest {
         grooming.setDaily(new GroomingRange(0,null));
         grooming.isValid();
         List<Date> allHistory=new ArrayList<Date>();
-        Date today=add(allHistory,"2022-05-01",null);
-        add(allHistory,"2022-04-30",null);
-        add(allHistory,"2022-04-01",null);
-        add(allHistory,"2021-04-01",null);
+        Date today=add(allHistory,"2022-05-01",null,null);
+        add(allHistory,"2022-04-30",null,today);
+        add(allHistory,"2022-04-01",null,today);
+        add(allHistory,"2021-04-01",null,today);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         Assert.assertEquals(0, deleteDates.size());
@@ -74,14 +74,15 @@ public class GroomingTest {
     @Test
     public void dailyOnly() throws Exception {
         Grooming grooming=new Grooming();
-        grooming.setDaily(new GroomingRange(0,1));
+        grooming.setDaily(new GroomingRange(0,2));
         grooming.isValid();
         List<Date> expectedDeleteDates=new ArrayList<Date>();
         List<Date> allHistory=new ArrayList<Date>();
-        Date today=add(allHistory,"2022-05-01",null);
-        add(allHistory,"2022-04-30",null);
-        add(allHistory,"2022-04-01",expectedDeleteDates);
-        add(allHistory,"2021-04-01",expectedDeleteDates);
+        Date today=add(allHistory,"2022-05-01",null,null);
+        add(allHistory,"2022-04-30",null,today);
+        add(allHistory,"2022-04-29",expectedDeleteDates,today);
+        add(allHistory,"2022-04-01",expectedDeleteDates,today);
+        add(allHistory,"2021-04-01",expectedDeleteDates,today);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
@@ -92,16 +93,47 @@ public class GroomingTest {
         Grooming grooming=new Grooming();
         grooming.setWeekly(new GroomingRange(0,null));
         grooming.isValid();
+        List<Date> expectedDeleteDates=new ArrayList<Date>();
+        List<Date> allHistory=new ArrayList<Date>();
+        Date today=add(allHistory,"2022-05-01",null,null);
+        add(allHistory,"2022-04-30",expectedDeleteDates,today);
+        add(allHistory,"2022-04-29",null,today);
+        add(allHistory,"2022-04-02",expectedDeleteDates,today);
+        add(allHistory,"2022-04-01",null,today);
+        add(allHistory,"2021-04-02",expectedDeleteDates,today);
+        add(allHistory,"2021-04-01",null,today);
+        List<Date> deleteDates=new ArrayList<Date>();
+        grooming.getFilesToDelete(today, allHistory, deleteDates);
+        expectedDeleteDates.sort(null);
+        Assert.assertEquals(expectedDeleteDates, deleteDates);
     }
     @Test
     public void weeklyOnly() throws Exception {
         Grooming grooming=new Grooming();
-        grooming.setWeekly(new GroomingRange(0,10));
+        grooming.setWeekly(new GroomingRange(0,30));
         grooming.isValid();
+        List<Date> expectedDeleteDates=new ArrayList<Date>();
+        List<Date> allHistory=new ArrayList<Date>();
+        Date today=add(allHistory,"2022-05-01",null,null);
+        add(allHistory,"2022-04-30",expectedDeleteDates,today);
+        add(allHistory,"2022-04-29",null,today);
+        add(allHistory,"2022-04-03",expectedDeleteDates,today);
+        add(allHistory,"2022-04-02",null,today);
+        add(allHistory,"2022-04-01",expectedDeleteDates,today);
+        add(allHistory,"2021-04-02",expectedDeleteDates,today);
+        add(allHistory,"2021-04-01",expectedDeleteDates,today);
+        List<Date> deleteDates=new ArrayList<Date>();
+        grooming.getFilesToDelete(today, allHistory, deleteDates);
+        expectedDeleteDates.sort(null);
+        Assert.assertEquals(expectedDeleteDates, deleteDates);
     }
     private Date add(List<Date> allHistory,
-        String dateTxt,List<Date> expectedDeleteDates) throws ParseException{
+        String dateTxt,List<Date> expectedDeleteDates,Date today) throws ParseException{
         Date date=dateParser.parse(dateTxt);
+        if(today!=null) {
+            long diff=Grooming.diffInDays(today, date);
+            //System.out.println(dateTxt+" day "+diff+" week "+diff/Grooming.DAYS_PER_WEEK+" month "+diff/Grooming.DAYS_PER_MONTH+" year "+diff/Grooming.DAYS_PER_YEAR);
+        }
         allHistory.add(date);
         if(expectedDeleteDates!=null) {
             expectedDeleteDates.add(date);
@@ -111,17 +143,18 @@ public class GroomingTest {
     @Test
     public void weeklyMonthlyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
-        grooming.setWeekly(new GroomingRange(0,1));
-        grooming.setMonthly(new GroomingRange(1,null));
+        grooming.setWeekly(new GroomingRange(0,30));
+        grooming.setMonthly(new GroomingRange(30,null));
         grooming.isValid();
         List<Date> expectedDeleteDates=new ArrayList<Date>();
         List<Date> allHistory=new ArrayList<Date>();
-        Date today=add(allHistory,"2022-05-01",expectedDeleteDates);
-        add(allHistory,"2022-04-30",null);
-        add(allHistory,"2022-04-02",null);
-        add(allHistory,"2022-04-01",null);
-        add(allHistory,"2021-04-02",expectedDeleteDates);
-        add(allHistory,"2021-04-01",null);
+        Date today=add(allHistory,"2022-05-01",null,null);
+        add(allHistory,"2022-04-30",null,today);
+        add(allHistory,"2022-04-03",expectedDeleteDates,today);
+        add(allHistory,"2022-04-02",null,today);
+        add(allHistory,"2022-04-01",null,today);
+        add(allHistory,"2021-04-02",expectedDeleteDates,today);
+        add(allHistory,"2021-04-01",null,today);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
@@ -177,18 +210,31 @@ public class GroomingTest {
         Grooming grooming=new Grooming();
         grooming.setYearly(new GroomingRange(0,null));
         grooming.isValid();
+        List<Date> expectedDeleteDates=new ArrayList<Date>();
+        List<Date> allHistory=new ArrayList<Date>();
+        Date today=add(allHistory,"2022-05-01",null,null);
+        add(allHistory,"2022-04-02",expectedDeleteDates,today);
+        add(allHistory,"2022-04-01",null,today);
+        add(allHistory,"2021-04-02",expectedDeleteDates,today);
+        add(allHistory,"2021-04-01",null,today);
+        add(allHistory,"2020-04-02",expectedDeleteDates,today);
+        add(allHistory,"2020-04-01",null,today);
+        List<Date> deleteDates=new ArrayList<Date>();
+        grooming.getFilesToDelete(today, allHistory, deleteDates);
+        expectedDeleteDates.sort(null);
+        Assert.assertEquals(expectedDeleteDates, deleteDates);
     }
     @Test
     public void yearlyOnly() throws Exception {
         Grooming grooming=new Grooming();
-        grooming.setYearly(new GroomingRange(0,10));
+        grooming.setYearly(new GroomingRange(0,365));
         grooming.isValid();
         List<Date> expectedDeleteDates=new ArrayList<Date>();
         List<Date> allHistory=new ArrayList<Date>();
-        Date today=add(allHistory,"2022-05-01",expectedDeleteDates);
-        add(allHistory,"2022-04-02",expectedDeleteDates);
-        add(allHistory,"2022-04-01",null);
-        add(allHistory,"2021-04-02",expectedDeleteDates);
+        Date today=add(allHistory,"2022-05-01",null,null);
+        add(allHistory,"2022-04-02",expectedDeleteDates,today);
+        add(allHistory,"2022-04-01",null,today);
+        add(allHistory,"2021-04-02",expectedDeleteDates,today);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
