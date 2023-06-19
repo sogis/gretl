@@ -73,11 +73,18 @@ dependencies {
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
-    api ioxWkfDependency
+    api (ili2gpkgDependency) {
+        exclude group: 'ch.ehi', module: 'ehisqlgen'
+    }
+    api (ioxWkfDependency) {
+        // Exclude old dependencies. These get overriden anyways.
+        // And they show on Snaphots...
+        exclude group: 'ch.interlis', module: 'ili2pg'        
+        exclude group: 'ch.interlis', module: 'ili2gpkg'
+    }
     api ioxIliDependency
     api ehiSqlgenDependency
 
-    api oerebIconizerDependency
     api av2chDependency
     api av2geobauDependency
     
@@ -87,9 +94,18 @@ dependencies {
     api apacheCommonsIoDependency
     api apacheCommonsNetDependency
     api apacheCommonsCodeDependency
+    api apacheHttpClientDependency
+    api apacheHttpClientMimeDependency
     
     api jacksonCoreDependency
     api jacksonDatabindDependency
+    
+    api saxonDependency
+    
+    api tomljDependency
+    
+    api freemarkerDependency
+    
     //api 'com.jcraft:jsch:0.1.55'
     //api 'com.pastdev:jsch-nio:1.0.14'
 	api 'com.github.robtimus:sftp-fs:2.0.4'
@@ -101,6 +117,11 @@ dependencies {
     testImplementation junitDependency
     testImplementation testContainersDependency
     testImplementation testContainersPostgresDependency
+    
+    //testImplementation "org.testcontainers:mockserver:1.15.3"
+    //testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
+    
+    testImplementation mockWebServerDependency
     
     //testImplementation s3MockDependency
     //testImplementation s3MockJunitDependency

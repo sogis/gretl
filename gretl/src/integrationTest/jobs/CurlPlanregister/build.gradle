@@ -1,0 +1,20 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.tasks.Curl.MethodType;
+
+apply plugin: 'ch.so.agi.gretl'
+
+def MOCKWEBSERVER_PORT = 'mockWebServerPort'
+def mockWebServerPort = findProperty(MOCKWEBSERVER_PORT) != null ? findProperty(MOCKWEBSERVER_PORT) : '8080'
+
+defaultTasks 'uploadData'
+
+task uploadData(type: Curl) {
+    //serverUrl = "http://localhost:"+mockWebServerPort+"/data_agg/interlis/import"
+    serverUrl = "http://localhost:"+mockWebServerPort+"/typo3/api/digiplan"
+    method = MethodType.POST
+    headers = ["Content-Type": "application/xml", "Content-Encoding": "gzip"]
+    dataBinary = file("./foo.xml.gz")
+    user = "fooUser"
+    password = "barPwd"
+    expectedStatusCode = 202
+}

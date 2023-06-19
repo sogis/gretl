@@ -190,26 +190,69 @@ mit dem Parameter modelsToPublish mit Angabe des INTERLIS-Modellnamens erfolgen:
 
 ## Regionen
 
-Falls die Daten bereits als XTF-/ITF-Datei vorliegen, muss zusätzlich zu einer möglichen Quelldatei (sourcePath) 
+Falls die Daten bereits als XTF-/ITF-Dateien vorliegen, muss zusätzlich zu einer möglichen Quelldatei (sourcePath) 
 das Dateinamens-Muster (ohne Nameserweiterung (.xtf oder .itf) der Regionen (region) angegeben werden.
 
     task publishFile(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [ "sftp://ftp.server.ch/data", "user", "password" ]
-      sourcePath = file("/path/file.xtf")
-      region = "[0-9][0-9][0-9][0-9]"  // muster; ersetzt den filename im sourcePath
+      sourcePath = file("/transferfiles/file.xtf")
+      region = "[0-9][0-9][0-9][0-9]"  // regex; ersetzt den filename im sourcePath
     }
 
-Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss dem Datensatz-Namen (dataset) 
-das Muster der Datensatz-Namen (=ein Datensazt pro Region) (region) angegeben werden.
+Der sourcePath ist wie bei der Verarbeitung eines XTF (ohne Regionen) ein Datei- und nicht ein Ordner-Pfad.
+Mittels Parameter "region" werden aus allem im Ordner "transferfiles" enthaltenen Transfer-Dateien die zu
+verarbeitenden selektiert.
+
+Falls die Daten in einer ili2db konformen PostgreSQL Datenbank vorliegen, muss 
+das Muster der Datensatz-Namen (dataset) angegeben werden (= ein Datensatz pro Region (region)).
     
     task publishFromDb(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [ "sftp://ftp.server.ch/data", "user", "password" ]
       database = ["uri","user","password"]
       dbSchema "av"
-      region = "[0-9][0-9][0-9][0-9]"  // muster; ersetzt das dataset
+      region = "[0-9][0-9][0-9][0-9]"  // regex; ersetzt das dataset
     }
+
+Verarbeitet werden alle Datensätze, deren Dateiname (Quelle Transferdatei) oder dataset Name
+(Quelle DB) auf das in Parameter "region" definierte Muster (regular Expression) zutreffen.
+
+### Beispiele für die Verwendung von Regionen
+
+Es können eindeutige Namen oder auch regular expressions verwendet werden.
+
+Export mit region aus lokaler DB (Nutzungsplanung mit 3 Datasets: 2580, 2581, 2582)
+
+    task publishFromDb2(type: Publisher){
+      dataIdent = "ch.so.arp.nutzungsplanung.publishFromDb2"
+      database = [dbUriPub, dbUserPub, dbPwdPub]
+      dbSchema = "arp_nutzungsplanung_pub_v1"
+      target = [project.buildDir]
+    
+      region = "[2][5][8][0]"         //exportiert Dataset 2580
+      region = "2580"                 //exportiert Dataset 2580
+      region = 2580                   //exportiert Dataset 2580
+      region = "[0-9][0-9][0-9][0-9]" //exportiert alle 3 Datasets
+      region = ".*"                   //exportiert alle 3 Datasets
+      userFormats = true
+      kgdiService = ["http://localhost:8080/app/rest","admin","admin"]
+    }
+
+
+4 xtf-Files: a2581.xtf, c2582.xtf, b2583.xtf, d2584.xtf, lokal im Job-Verzeichnis
+
+    task publishFile2(type: Publisher){
+      dataIdent = "publishFile2"
+      sourcePath = file("a2581.xtf")                                        Angabe zum Ablageort eines der zu publizierenden Files
+      target = [project.buildDir]
+      
+      region = "[a-d][0-9][0-9][0-9][0-9]"  //alle 4 Files werden publiziert
+      region = "[2][5][8][4]"               //d2584.xtf wird publiziert
+      kgdiService = ["http://localhost:8080/app/rest","admin","admin"]
+    }
+
+## Verkettung von Publishern
     
 Damit nachfolgende Tasks die Liste der tatsächlich publizierten Regionen auswerten können, 
 kann der Parameter publishedRegions des Tasks Publisher verwendet werden.
@@ -249,40 +292,6 @@ publizierten Regionen (und nicht alle publizierten Regionen). Auch an den KGDI-S
 publizierten Regionen notifiziert (und nicht alle publizierten Regionen).
 Die Dateien im meta Unterverzeichnis werden neu erstellt.
 
-### Beispiele für die Verwendung von Regionen
-
-Es können eindeutige Namen oder auch regular expressions verwendet werden.
-
-Export mit region aus lokaler DB (Nutzungsplanung mit 3 Datasets: 2580, 2581, 2582)
-
-    task publishFromDb2(type: Publisher){
-      dataIdent = "ch.so.arp.nutzungsplanung.publishFromDb2"
-      database = [dbUriPub, dbUserPub, dbPwdPub]
-      dbSchema = "arp_nutzungsplanung_pub_v1"
-      target = [project.buildDir]
-    
-      region = "[2][5][8][0]"                                               exportiert Dataset 2580
-      region = "2580"                                                       exportiert Dataset 2580
-      region = 2580                                                         exportiert Dataset 2580
-      region = "[0-9][0-9][0-9][0-9]"                                       exportiert alle 3 Datasets
-      region = ".*"                                                         exportiert alle 3 Datasets
-      userFormats = true
-      kgdiService = ["http://localhost:8080/app/rest","admin","admin"]
-}
-
-
-4 xtf-Files: a2581.xtf, c2582.xtf, b2583.xtf, d2584.xtf, lokal im Job-Verzeichnis
-
-    task publishFile2(type: Publisher){
-      dataIdent = "publishFile2"
-      sourcePath = file("a2581.xtf")                                        Angabe zum Ablageort eines der zu publizierenden Files
-      target = [project.buildDir]
-      
-      region = "[a-d][0-9][0-9][0-9][0-9]"                                  alle 4 Files werden publiziert
-      region = "[2][5][8][4]"                                               d2584.xtf wird publiziert
-      kgdiService = ["http://localhost:8080/app/rest","admin","admin"]
-    }
-
 ## Validierung
 
 Die Validierung kann mit einer ilivalidator Konfigurationsdatei konfiguriert werden.
@@ -297,12 +306,19 @@ Die Validierung kann mit einer ilivalidator Konfigurationsdatei konfiguriert wer
 Optional können Benutzerformate (Geopackage, Shapefile, Dxf) erstellt werden. Die Daten müssen in einer
 entsprechend flachen Struktur vorliegen.
 
-    task publishDb(type: Publisher){
+    task publishFromDb(type: Publisher){
       dataIdent = "ch.so.agi.vermessung"
       target = [ "sftp://ftp.server.ch/data", "user", "password" ]
       database = ["uri","user","password"]
       dbSchema "av"
       dataset = "dataset"
+      userFormats = true
+    }
+
+    task publishFromFile(type: Publisher){
+      dataIdent = "ch.so.agi.vermessung.edit"
+      target = [file("/out")]  
+      sourcePath = file("/path/file.xtf")
       userFormats = true
     }
     
@@ -417,8 +433,8 @@ sourcePath | Quelldatei z.B. file("/path/file.xtf")
 database  | Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
 dbSchema  | Schema in der Datenbank z.B. "av"
 dataset   | ili2db-Datasetname der Quelldaten "dataset" (Das ili2db-Schema muss also immer mit --createBasketCol erstellt werden)
-modelsToPublish   | Interlis-Modellnamen der Quelldaten in der DB (Das ili2db-Schema muss darf nicht mit --createBasketCol erstellt werden)
-region    | Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]". Alternative zum Parameter regions	  
+modelsToPublish   | Interlis-Modellnamen der Quelldaten in der DB (Nur für "einfache" Modelle, deren ili2db-Schema ohne --createBasketCol erstellt werden kann)
+region    | Muster (Regular Expression) der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]". Alternative zum Parameter regions,<br/><br/>Bei Quelle "Datei" ist die Angabe einer "stellvertretenden" Transferdatei mittels "sourcePath" zwingend. Bsp.: Bei sourcePath "file("/transferfiles/dummy.xtf")" werden alle im Ordner "transferfiles" enthaltenen Transferdateien mit dem Muster verglichen und bei "match" selektiert und verarbeitet.	  
 regions   | Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen), falls die Publikation Regionen-weise erfolgen soll. Alternative zum Parameter region	  
 publishedRegions | Liste der effektiv publizierten Regionen	  
 validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"

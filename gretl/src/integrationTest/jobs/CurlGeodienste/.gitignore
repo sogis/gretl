@@ -1,0 +1,5 @@
+.DS_Store
+*.xtf
+!test.xtf
+*.zip
+!test.xtf.zip

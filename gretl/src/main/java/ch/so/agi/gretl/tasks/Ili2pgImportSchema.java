@@ -133,6 +133,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public boolean sqlEnableNull = false;
     @Input
     @Optional
+    public boolean sqlColsAsText = false;
+    @Input
+    @Optional
+    public boolean sqlExtRefCols = false;
+    @Input
+    @Optional
     public boolean keepAreaRef = false;
     @Input
     @Optional
@@ -293,6 +299,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (sqlEnableNull) {
             settings.setSqlNull(settings.SQL_NULL_ENABLE);
+        }
+        if (sqlColsAsText) {
+            settings.setSqlColsAsText(settings.SQL_COLS_AS_TEXT_ENABLE);
+        }
+        if (sqlExtRefCols) {
+            settings.setSqlExtRefCols(settings.SQL_EXTREF_ENABLE);
         }
         if (keepAreaRef) {
             settings.setAreaRef(settings.AREA_REF_KEEP);

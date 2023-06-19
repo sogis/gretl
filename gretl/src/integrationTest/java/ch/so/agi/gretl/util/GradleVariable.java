@@ -14,7 +14,7 @@ public class GradleVariable {
     private String name;
     private String value;
 
-    private GradleVariable(String type, String name, String value){
+    private GradleVariable(String type, String name, String value) {
         if(name.contains(" ")){
             throw new RuntimeException("No spaces allowed in gradle variable name");
         }

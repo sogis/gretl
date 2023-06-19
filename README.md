@@ -1,14 +1,8 @@
-[![Build Status](https://travis-ci.org/sogis/gretl.svg?branch=master)](https://travis-ci.org/sogis/gretl)
+![Build Status](https://github.com/sogis/gretl/actions/workflows/gretl.yml/badge.svg)
 
 # gretl
 
 The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql-centric (geo)data etl. gretl = gradle etl.
-
-## API Breaks
-
-### 2.1.73
-- S3Upload: `endPoint` and `acl` have changed applicable values. The default values have changed too. See [manual](docs/user/index.md#s3upload-experimental)
-- S3Bucket2Bucket: `endPoint` and `acl` have changed applicable values. The default values have changed too. See [manual](docs/user/index.md#s3upload-experimental)
 
 ## Manual
 
@@ -24,7 +18,7 @@ _GRETL_ is in stable state.
 
 ## System requirements
 
-For the current version of _GRETL_, you will need a JRE (Java Runtime Environment) installed on your system, version 1.8 or later and gradle, version 3.4 or later.
+For the current version of _GRETL_, you will need a JRE (Java Runtime Environment) installed on your system, version 1.8 or later and Gradle, version 5.1.1 or later.
 For convenience use the gradle wrapper.
 
 ## Subprojects
@@ -93,15 +87,11 @@ The pipeline cannot run parallel since some tests write to S3 buckets. If someth
 
 ## Release management / Versioning
 
-It uses a simple release management and versioning mechanism: Local builds are tagged as `2.2.9999`. Builds on Github Action will append the build number, e.g. `2.2.230`. Major version will be increased after "major" changes. After every commit to the repository a docker image will be build and pushed to `hub.docker.com`. It will be tagged as `latest` and with the build number (`2.2.230`).
+It uses a simple release management and versioning mechanism: Local builds are tagged as `2.2.LOCALBUILD`. Builds on Github Action will append the build number, e.g. `2.2.230`. Major version will be increased after "major" changes. After every commit to the repository a docker image will be build and pushed to `hub.docker.com`. It will be tagged as `latest`, with the build number (`2.2.230`) and with major and minor version number (`2` and `2.2`).
 
 You have to bump the version number in three files:
 
 - versioning.gradle
 - runtimeImage/build.gradle
 - .github/workflows/gretl.yml
-
-## Jenkins (CI/CD)
-For a working github webhook one have to choose the content type `application/x-www-form-urlencoded` and not `application/json`. And do not forget the trailing `/`.  
-
 

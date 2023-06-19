@@ -1,0 +1,7 @@
+.DS_Store
+**/*.xtf
+!**/offices.xtf
+!**/fileformats.xtf
+**/*.xml
+!**/geocat_template.xml
+**/*.html
