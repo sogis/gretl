@@ -2,6 +2,7 @@ package ch.so.agi.gretl.util;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,12 +62,11 @@ public class GroomingTest {
         Grooming grooming=new Grooming();
         grooming.setDaily(new GroomingRange(0,null));
         grooming.isValid();
-        Date today=dateParser.parse("2022-05-01");
         List<Date> allHistory=new ArrayList<Date>();
-        allHistory.add(dateParser.parse("2022-04-30"));
-        allHistory.add(dateParser.parse("2022-04-01"));
-        allHistory.add(dateParser.parse("2021-04-01"));
-        allHistory.add(today);
+        Date today=add(allHistory,"2022-05-01",null);
+        add(allHistory,"2022-04-30",null);
+        add(allHistory,"2022-04-01",null);
+        add(allHistory,"2021-04-01",null);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         Assert.assertEquals(0, deleteDates.size());
@@ -76,13 +76,12 @@ public class GroomingTest {
         Grooming grooming=new Grooming();
         grooming.setDaily(new GroomingRange(0,1));
         grooming.isValid();
-        Date today=dateParser.parse("2022-05-01");
         List<Date> expectedDeleteDates=new ArrayList<Date>();
         List<Date> allHistory=new ArrayList<Date>();
-        allHistory.add(dateParser.parse("2022-04-30"));
-        allHistory.add(dateParser.parse("2022-04-01"));expectedDeleteDates.add(dateParser.parse("2022-04-01"));
-        allHistory.add(dateParser.parse("2021-04-01"));expectedDeleteDates.add(dateParser.parse("2021-04-01"));
-        allHistory.add(today);
+        Date today=add(allHistory,"2022-05-01",null);
+        add(allHistory,"2022-04-30",null);
+        add(allHistory,"2022-04-01",expectedDeleteDates);
+        add(allHistory,"2021-04-01",expectedDeleteDates);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
@@ -100,21 +99,29 @@ public class GroomingTest {
         grooming.setWeekly(new GroomingRange(0,10));
         grooming.isValid();
     }
+    private Date add(List<Date> allHistory,
+        String dateTxt,List<Date> expectedDeleteDates) throws ParseException{
+        Date date=dateParser.parse(dateTxt);
+        allHistory.add(date);
+        if(expectedDeleteDates!=null) {
+            expectedDeleteDates.add(date);
+        }
+        return date;
+    }
     @Test
     public void weeklyMonthlyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
         grooming.setWeekly(new GroomingRange(0,1));
         grooming.setMonthly(new GroomingRange(1,null));
         grooming.isValid();
-        Date today=dateParser.parse("2022-05-01");
         List<Date> expectedDeleteDates=new ArrayList<Date>();
         List<Date> allHistory=new ArrayList<Date>();
-        allHistory.add(dateParser.parse("2022-04-30"));
-        allHistory.add(dateParser.parse("2022-04-02"));
-        allHistory.add(dateParser.parse("2022-04-01"));
-        allHistory.add(dateParser.parse("2021-04-02"));expectedDeleteDates.add(dateParser.parse("2021-04-02"));
-        allHistory.add(dateParser.parse("2021-04-01"));
-        allHistory.add(today);expectedDeleteDates.add(today);
+        Date today=add(allHistory,"2022-05-01",expectedDeleteDates);
+        add(allHistory,"2022-04-30",null);
+        add(allHistory,"2022-04-02",null);
+        add(allHistory,"2022-04-01",null);
+        add(allHistory,"2021-04-02",expectedDeleteDates);
+        add(allHistory,"2021-04-01",null);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
@@ -176,13 +183,12 @@ public class GroomingTest {
         Grooming grooming=new Grooming();
         grooming.setYearly(new GroomingRange(0,10));
         grooming.isValid();
-        Date today=dateParser.parse("2022-05-01");
         List<Date> expectedDeleteDates=new ArrayList<Date>();
         List<Date> allHistory=new ArrayList<Date>();
-        allHistory.add(dateParser.parse("2022-04-02"));expectedDeleteDates.add(dateParser.parse("2022-04-02"));
-        allHistory.add(dateParser.parse("2022-04-01"));
-        allHistory.add(dateParser.parse("2021-04-02"));expectedDeleteDates.add(dateParser.parse("2021-04-02"));
-        allHistory.add(today);expectedDeleteDates.add(today);
+        Date today=add(allHistory,"2022-05-01",expectedDeleteDates);
+        add(allHistory,"2022-04-02",expectedDeleteDates);
+        add(allHistory,"2022-04-01",null);
+        add(allHistory,"2021-04-02",expectedDeleteDates);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
