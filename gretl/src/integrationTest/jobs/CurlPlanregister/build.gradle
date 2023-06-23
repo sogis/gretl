@@ -9,12 +9,12 @@ def mockWebServerPort = findProperty(MOCKWEBSERVER_PORT) != null ? findProperty(
 defaultTasks 'uploadData'
 
 task uploadData(type: Curl) {
-    //serverUrl = "http://localhost:"+mockWebServerPort+"/data_agg/interlis/import"
-    serverUrl = "http://localhost:"+mockWebServerPort+"/typo3/api/digiplan"
+    //serverUrl = "http://localhost:"+mockWebServerPort+"/typo3/api/digiplan"
+    serverUrl = "https://so.ch/typo3/api/digiplan"
     method = MethodType.POST
     headers = ["Content-Type": "application/xml", "Content-Encoding": "gzip"]
-    dataBinary = file("./foo.xml.gz")
-    user = "fooUser"
-    password = "barPwd"
+    dataBinary = file("./planregister_20230616_2.gz")
+    user = "_digiplan_"
+    password = "4YoxQ55hVOQHoNE1"
     expectedStatusCode = 202
 }
