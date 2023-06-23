@@ -33,6 +33,7 @@ public class Gzip extends DefaultTask {
         GzipStep gzipStep = new GzipStep();
         try {
             gzipStep.execute(dataFile, gzipFile);
+            log.lifecycle("Gzip file written: " + gzipFile.getAbsolutePath());
         } catch (IOException e) {
             throw new GradleException("Could not gzip file: " + e.getMessage());
         }

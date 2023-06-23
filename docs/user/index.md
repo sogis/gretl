@@ -788,6 +788,22 @@ proxyPort | Proxy Port für den Zugriff auf Modell Repositories
 failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
 validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
 
+### Gzip
+Gzipped eine einzelne Datei. Es gibt einen eingebauten Tar-Task, der - nomen est omen - aber immer zuerst eine Tar-Datei erstellt. 
+
+Parameter | Beschreibung
+----------|-------------------
+dataFile | Datei, die gezipped werden soll.
+gzipFile | Output-Datei
+
+Beispiel:
+```
+task compressFile(type: Gzip) {
+    dataFile = file("./planregister.xml");
+    gzipFile = file("./planregister.xml.gz");
+}
+```
+
 ### Ili2gpkgImport
 
 Importiert Daten aus einer INTERLIS-Transferdatei in eine GeoPackage-Datei.
