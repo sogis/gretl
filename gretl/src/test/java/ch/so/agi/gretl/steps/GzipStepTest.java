@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.zip.GZIPInputStream;
 
@@ -29,7 +28,7 @@ public class GzipStepTest {
     private GretlLogger log;
     
     @Test
-    public void gzip_file_Ok() throws Exception {
+    public void compress_file_Ok() throws Exception {
         File outDirectory = folder.newFolder("transformFile_Ok");
         //File outDirectory = new File("/Users/stefan/tmp/gzip/");
         File dataFile = new File("src/test/resources/data/gzip/planregister.xml");
