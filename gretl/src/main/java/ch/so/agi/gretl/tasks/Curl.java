@@ -136,6 +136,11 @@ public class Curl extends DefaultTask {
         try (CloseableHttpClient httpClient = HttpClients.createDefault(); 
                 CloseableHttpResponse httpResponse = httpClient.execute(request)) {
           
+            Header[] headers = httpResponse.getAllHeaders();
+            for (Header header : headers) {
+                log.lifecycle(header.getName() + " -- " + header.getValue());
+            }
+
             responseStatusCode = httpResponse.getStatusLine().getStatusCode();
             
             if (outputFile != null) {

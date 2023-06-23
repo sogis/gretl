@@ -22,7 +22,7 @@ public class GzipTest {
         // Run GRETL task
         GradleVariable[] gvs = null;
         IntegrationTestUtil.runJob("src/integrationTest/jobs/Gzip", gvs);
-        
+                
         // Validate result
         File gzipFile = new File("src/integrationTest/jobs/Gzip/planregister.xml.gz");
         String fileContent = contentGzipFile(gzipFile);

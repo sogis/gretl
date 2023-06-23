@@ -9,6 +9,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.GzipStep;
 
 public class Gzip extends DefaultTask {
@@ -22,6 +23,8 @@ public class Gzip extends DefaultTask {
     
     @TaskAction
     public void run() {
+        log = LogEnvironment.getLogger(Gzip.class);
+
         if (dataFile == null) {
             throw new IllegalArgumentException("dataFile must not be null");
         }
