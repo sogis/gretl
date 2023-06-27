@@ -161,6 +161,68 @@ public class GroomingTest {
         Assert.assertEquals(expectedDeleteDates, deleteDates);
     }
     @Test
+    public void doWeeklyMonthlyOpenEnd() throws Exception {
+        Grooming grooming=new Grooming();
+        grooming.setWeekly(new GroomingRange(0,29));
+        grooming.setMonthly(new GroomingRange(29,null));
+        grooming.isValid();
+        List<Date> allHistory=new ArrayList<Date>();
+        Date today=dateParser.parse("2022-05-01");
+        for(int i=0;i<60;i++) {
+            List<Date> deleteDates=new ArrayList<Date>();
+            allHistory.add(today);
+            //print("---",allHistory,today);
+            grooming.getFilesToDelete(today, allHistory, deleteDates);
+            allHistory.removeAll(deleteDates);
+            //print("",allHistory,today);
+            today = addOneDay(today);
+        }
+        Date[] expected=new Date[] {dateParser.parse("2022-05-01"),dateParser.parse("2022-06-01"),dateParser.parse("2022-06-06"),dateParser.parse("2022-06-13"),dateParser.parse("2022-06-20"),dateParser.parse("2022-06-27"),dateParser.parse("2022-06-29")};
+        Assert.assertArrayEquals(expected, allHistory.toArray(new Date[allHistory.size()]));
+    }
+    @Test
+    public void doWeeklyYearlyOpenEnd() throws Exception {
+        Grooming grooming=new Grooming();
+        grooming.setWeekly(new GroomingRange(0,29));
+        grooming.setYearly(new GroomingRange(29,null));
+        grooming.isValid();
+        List<Date> allHistory=new ArrayList<Date>();
+        Date today=dateParser.parse("2022-05-01");
+        for(int i=0;i<370;i++) {
+            List<Date> deleteDates=new ArrayList<Date>();
+            allHistory.add(today);
+            //print("---",allHistory,today);
+            grooming.getFilesToDelete(today, allHistory, deleteDates);
+            allHistory.removeAll(deleteDates);
+            //print("",allHistory,today);
+            today = addOneDay(today);
+        }
+        Date[] expected=new Date[] {dateParser.parse("2022-05-01"),dateParser.parse("2023-01-01"),dateParser.parse("2023-04-10"),dateParser.parse("2023-04-17"),dateParser.parse("2023-04-24"),dateParser.parse("2023-05-01"),dateParser.parse("2023-05-05")};
+        Assert.assertArrayEquals(expected, allHistory.toArray(new Date[allHistory.size()]));
+    }
+    protected Date addOneDay(Date today) {
+        java.util.Calendar c=java.util.Calendar.getInstance();
+        c.setTime(today);
+        c.add(java.util.Calendar.DAY_OF_MONTH, 1);
+        today=new Date(c.getTimeInMillis());
+        return today;
+    }
+    private void print(String prefix,List<Date> allHistory,Date today) {
+        StringBuffer all=new StringBuffer();
+        String sep="";
+        for(Date date:allHistory) {
+            String txt=dateParser.format(date);
+            all.append(sep);
+            all.append(txt);
+            long diff=Grooming.diffInDays(today, date);
+            java.util.Calendar c=java.util.Calendar.getInstance();
+            c.setTime(date);
+            all.append("("+c.get(java.util.Calendar.MONTH)+":"+c.get(java.util.Calendar.WEEK_OF_YEAR)+")");
+            sep=" ";
+        }
+        System.out.println(prefix+all);
+    }
+    @Test
     public void weeklyMonthly() throws Exception {
         Grooming grooming=new Grooming();
         grooming.setWeekly(new GroomingRange(0,2));
@@ -198,6 +260,18 @@ public class GroomingTest {
         Grooming grooming=new Grooming();
         grooming.setWeekly(new GroomingRange(0,2));
         grooming.setYearly(new GroomingRange(3,5));
+        try {
+            grooming.isValid();
+            Assert.fail();
+        }catch(IOException e) {
+            
+        }
+    }
+    @Test
+    public void weeklyYearlyOpenEndMismatch() throws Exception {
+        Grooming grooming=new Grooming();
+        grooming.setWeekly(new GroomingRange(0,null));
+        grooming.setYearly(new GroomingRange(29,null));
         try {
             grooming.isValid();
             Assert.fail();

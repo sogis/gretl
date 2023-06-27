@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.util;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -12,9 +13,6 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName(value = "grooming")
 @JsonPropertyOrder({"daily","weekly","monthly","yearly"})
 public class Grooming {
-    public static final int DAYS_PER_WEEK = 7;
-    public static final int DAYS_PER_MONTH = 30;
-    public static final int DAYS_PER_YEAR = 365;
     private GroomingRange ranges[]=new GroomingRange[4];
     private static final int DAILY=0;
     private static final int WEEKLY=1;
@@ -70,10 +68,19 @@ public class Grooming {
                         previous=current;
                     }else if( !ranges[previous].getTo().equals(ranges[current].getFrom())) {
                         throw new IOException("Luecke/Ueberlappung vorhanden "+ranges[previous].getTo()+" "+ranges[current].getFrom());
-                    }else if( ranges[current].getTo()==null) {
+                    }
+                    if( ranges[current].getTo()==null) {
                         end=current;
                         break;
                     }
+                }
+            }
+        }
+        if(end>=0) {
+            int current=end+1;
+            for(;current<ranges.length;current++) {
+                if(ranges[current]!=null) {
+                    throw new IOException("Definition nach Ende vorhanden (Ende: "+end+", Definition: "+current+")");
                 }
             }
         }
@@ -114,31 +121,40 @@ public class Grooming {
     public String toString() {
         return "Grooming [daily=" + ranges[DAILY] + ", weekly=" + ranges[WEEKLY] + ", monthly=" + ranges[MONTHLY] + ", yearly=" + ranges[YEARLY] + "]";
     }
-    public void getFilesToDelete(Date today, List<Date> allHistory, List<Date> deleteDates) {
+    public void getFilesToDelete(Date today, List<Date> allHistory0, List<Date> deleteDates) {
+        List<Date> allHistory=new java.util.ArrayList<Date>();
+        allHistory.addAll(allHistory0);
         allHistory.sort(null); // oldest first!
+        //allHistory.sort(Collections.reverseOrder()); // newest first!
         Set<Long> weeks=new HashSet<Long>();
         Set<Long> months=new HashSet<Long>();
         Set<Long> years=new HashSet<Long>();
         for(Date item:allHistory) {
             long diff=diffInDays(today, item);
-            if(diff==0) {
+            java.util.Calendar itemc=java.util.Calendar.getInstance();
+            itemc.setTime(item);
+            long year=itemc.get(java.util.Calendar.YEAR);
+            if(item.equals(today)) {
                 // today; keep it in any case
             }else if(isYearly(diff)) {
-                long year=diff/DAYS_PER_YEAR;
                 if(years.contains(year)) {
                     deleteDates.add(item);
                 }else {
                     years.add(year);
                 }
             }else if(isMonthly(diff)) {
-                long month=diff/DAYS_PER_MONTH;
+                long month=year*100+itemc.get(java.util.Calendar.MONTH);
                 if(months.contains(month)) {
                     deleteDates.add(item);
                 }else {
                     months.add(month);
                 }
             }else if(isWeekly(diff)) {
-                long week=diff/DAYS_PER_WEEK;
+                long month=year*100+itemc.get(java.util.Calendar.MONTH);
+                long week=month*100+itemc.get(java.util.Calendar.WEEK_OF_MONTH);
+                if(getWeekly()==null) {
+                    week=year*100+itemc.get(java.util.Calendar.WEEK_OF_YEAR);
+                }
                 if(weeks.contains(week)) {
                     deleteDates.add(item);
                 }else {
