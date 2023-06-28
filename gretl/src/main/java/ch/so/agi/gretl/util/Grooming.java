@@ -1,11 +1,13 @@
 package ch.so.agi.gretl.util;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -18,6 +20,8 @@ public class Grooming {
     private static final int WEEKLY=1;
     private static final int MONTHLY=2;
     private static final int YEARLY=3;
+    private static final Calendar calendar = java.util.GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT+1"));
+    
     public GroomingRange getDaily() {
         return ranges[DAILY];
     }
@@ -131,7 +135,7 @@ public class Grooming {
         Set<Long> years=new HashSet<Long>();
         for(Date item:allHistory) {
             long diff=diffInDays(today, item);
-            java.util.Calendar itemc=java.util.Calendar.getInstance();
+            java.util.Calendar itemc=getCalendar();
             itemc.setTime(item);
             long year=itemc.get(java.util.Calendar.YEAR);
             if(item.equals(today)) {
@@ -166,6 +170,9 @@ public class Grooming {
                 deleteDates.add(item);
             }
         }
+    }
+    public static Calendar getCalendar() {
+        return (Calendar)calendar.clone();
     }
 
 }

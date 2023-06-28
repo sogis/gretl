@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,6 +20,7 @@ import ch.so.agi.gretl.steps.PublisherStep;
 import ch.so.agi.gretl.util.Grooming;
 
 public class GroomingTest {
+
     final public static String SRC_TEST_DATA = AbstractPublisherStepTest.SRC_TEST_DATA;
 
     protected GretlLogger log;
@@ -24,6 +28,29 @@ public class GroomingTest {
     public GroomingTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
+        dateParser.setCalendar(Grooming.getCalendar());
+    }
+    @Test
+    public void weeks() throws Exception {
+        Date date0=dateParser.parse("2022-10-31");
+        Date date1=addOneDay(date0);
+        printDate(date0);
+        printDate(date1);
+        Calendar cal0=Grooming.getCalendar();cal0.setTime(date0);
+        Calendar cal1=Grooming.getCalendar();cal1.setTime(date1);
+        Assert.assertEquals(9, cal0.get(java.util.Calendar.MONTH));
+        Assert.assertEquals(10, cal1.get(java.util.Calendar.MONTH));
+        Assert.assertEquals(5, cal0.get(java.util.Calendar.WEEK_OF_MONTH));
+        Assert.assertEquals(1, cal1.get(java.util.Calendar.WEEK_OF_MONTH));
+    }
+    protected void printDate(Date date) {
+        java.util.Calendar itemc=Grooming.getCalendar();
+        itemc.setTimeInMillis(date.getTime());
+        long year=itemc.get(java.util.Calendar.YEAR);
+        long month=itemc.get(java.util.Calendar.MONTH);
+        long weekOfMonth=itemc.get(java.util.Calendar.WEEK_OF_MONTH);
+        long weekOfYear=itemc.get(java.util.Calendar.WEEK_OF_YEAR);
+        System.out.println("date "+date+", year "+year+", month "+month+", weekOfMonth "+weekOfMonth+", weekOfYear "+weekOfYear);
     }
     @Test
     public void readsimpleFile() throws Exception {
@@ -196,12 +223,13 @@ public class GroomingTest {
             allHistory.removeAll(deleteDates);
             //print("",allHistory,today);
             today = addOneDay(today);
+            //System.out.println(today);
         }
         Date[] expected=new Date[] {dateParser.parse("2022-05-01"),dateParser.parse("2023-01-01"),dateParser.parse("2023-04-10"),dateParser.parse("2023-04-17"),dateParser.parse("2023-04-24"),dateParser.parse("2023-05-01"),dateParser.parse("2023-05-05")};
         Assert.assertArrayEquals(expected, allHistory.toArray(new Date[allHistory.size()]));
     }
     protected Date addOneDay(Date today) {
-        java.util.Calendar c=java.util.Calendar.getInstance();
+        java.util.Calendar c=Grooming.getCalendar();
         c.setTime(today);
         c.add(java.util.Calendar.DAY_OF_MONTH, 1);
         today=new Date(c.getTimeInMillis());
@@ -215,7 +243,7 @@ public class GroomingTest {
             all.append(sep);
             all.append(txt);
             long diff=Grooming.diffInDays(today, date);
-            java.util.Calendar c=java.util.Calendar.getInstance();
+            java.util.Calendar c=Grooming.getCalendar();
             c.setTime(date);
             all.append("("+c.get(java.util.Calendar.MONTH)+":"+c.get(java.util.Calendar.WEEK_OF_YEAR)+")");
             sep=" ";
