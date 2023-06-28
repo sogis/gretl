@@ -757,8 +757,7 @@ public class PublisherStep {
         return ret.toString();
     }
     public static Date parseDateTag(String value) throws ParseException {
-        final java.text.SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd");
-        simpleDateFormat.setCalendar(Grooming.getCalendar());
+        final java.text.DateFormat simpleDateFormat = Grooming.getDateFormat();
         return simpleDateFormat.parse(value);
     }
     private void copyFilesFromFolderToZip(ZipOutputStream out,Path sourceFolder) throws IOException {

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -20,7 +21,7 @@ public class Grooming {
     private static final int WEEKLY=1;
     private static final int MONTHLY=2;
     private static final int YEARLY=3;
-    private static final Calendar calendar = java.util.GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT+1"));
+    private static final Calendar calendar = java.util.GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT+1"),Locale.GERMANY);
     
     public GroomingRange getDaily() {
         return ranges[DAILY];
@@ -173,6 +174,11 @@ public class Grooming {
     }
     public static Calendar getCalendar() {
         return (Calendar)calendar.clone();
+    }
+    public static java.text.DateFormat getDateFormat() {
+        final java.text.SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        simpleDateFormat.setCalendar(Grooming.getCalendar());
+        return simpleDateFormat;
     }
 
 }

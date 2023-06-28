@@ -24,11 +24,10 @@ public class GroomingTest {
     final public static String SRC_TEST_DATA = AbstractPublisherStepTest.SRC_TEST_DATA;
 
     protected GretlLogger log;
-    private java.text.SimpleDateFormat dateParser=new java.text.SimpleDateFormat("yyyy-MM-dd");
+    private java.text.DateFormat dateParser=Grooming.getDateFormat();
     public GroomingTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
-        dateParser.setCalendar(Grooming.getCalendar());
     }
     @Test
     public void weeks() throws Exception {
