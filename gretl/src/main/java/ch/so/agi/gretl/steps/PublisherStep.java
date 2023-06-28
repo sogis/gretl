@@ -744,7 +744,7 @@ public class PublisherStep {
         }
     }
     public static String getDateTag(Date date) {
-        return new java.text.SimpleDateFormat("yyyy-MM-dd").format(date);
+        return Grooming.getDateFormat().format(date);
     }
     public static String getDateTags(List<Date> dates) {
         StringBuffer ret=new StringBuffer();
