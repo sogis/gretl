@@ -659,7 +659,7 @@ dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
 outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
 
 ### GpkgExport
-**Achtung:** Fetch-Size und Batch-Size sind nicht implementiert.
+**Achtung:** Fetch-Size ist nicht implementiert. Darum macht wohl Batch-Size auf Seiten GeoPackage nicht allzu viel Sinn. Fetch-Size müsste wohl im in den dbtools von iox-wkf implementiert werden.
 
 Daten aus einer bestehenden Datenbanktabelle werden in eine GeoPackage-Datei exportiert.
 
@@ -683,7 +683,7 @@ def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task gpkgexport(type: GpkgExport){
+task gpkgexport(type: GpkgExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "gpkgexport"
     srcTableName = ["exportTable1", "exportTable2"]
@@ -699,9 +699,9 @@ dataFile  | Name der GeoPackage-Datei, die erstellt werden soll
 srcTableName | Name der DB-Tabelle(n), die exportiert werden soll(en). String oder List.
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 dstTableName | Name der Tabelle(n) in der GeoPackage-Datei. String oder List.
+batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank (GeoPackage) geschrieben werden (Standard: 5000). 
 
 ### GpkgImport
-**Achtung:** Fetch-Size ist nicht implementiert.
 
 Daten aus einer GeoPackage-Datei in eine bestehende Datenbanktabelle importieren.
 
@@ -727,8 +727,9 @@ dataFile  | Name der GeoPackage-Datei, die gelesen werden soll
 srcTableName | Name der GeoPackage-Tabelle, die importiert werden soll
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 dstTableName | Name der DB-Tabelle, in die importiert werden soll 
-encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+~~encoding~~ | ~~Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung~~
 batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
+fetchSize | Anzahl der Records, die pro Fetch aus der Quell-Datenbank gelesen werden (Standard: 5000). 
 
 Die Tabelle kann weitere Spalten enthalten, die in der GeoPackage-Datei nicht vorkommen. Sie müssen
 aber NULLable sein, oder einen Default-Wert definiert haben.

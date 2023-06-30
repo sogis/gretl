@@ -4,6 +4,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '0.21.0'
+    id 'org.cyclonedx.bom' version '1.7.4'
 }
 
 sourceCompatibility = 1.8
@@ -248,4 +249,16 @@ tasks.withType(Test) {
     systemProperty 's3AccessKey', s3AccessKey
     systemProperty 's3SecretKey', s3SecretKey
     systemProperty 's3BucketName', s3BucketName
+}
+
+cyclonedxBom {
+   includeConfigs = ["runtimeClasspath"]
+   //skipConfigs = ["compileClasspath", "testCompileClasspath"]
+   //projectType = "application"
+   //schemaVersion = "1.4"
+   destination = file("build/reports")
+   outputName = "Sbom"
+   outputFormat = "all"
+   //includeBomSerialNumber = true
+   //componentVersion = "2.0.0"
 }

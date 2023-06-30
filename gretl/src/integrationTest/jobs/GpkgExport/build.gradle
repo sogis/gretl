@@ -16,4 +16,5 @@ task gpkgexport(type: GpkgExport){
 	srcTableName = "exportdata"
     dataFile = "data.gpkg"
     dstTableName = "exportdata"
+    batchSize = 200
 }

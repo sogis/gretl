@@ -36,6 +36,9 @@ public class GpkgExport extends DefaultTask {
     @Input
     @Optional
     public String encoding = null;
+    @Input
+    @Optional
+    public Integer batchSize = null;
 
     @TaskAction
     public void exportData() {
@@ -86,10 +89,13 @@ public class GpkgExport extends DefaultTask {
                 
                 Settings settings = new Settings();
                 settings.setValue(IoxWkfConfig.SETTING_DBTABLE, srcTableName);
-                settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);        
+                settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);
                 // set optional parameters
                 if (schemaName != null) {
                     settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
+                }
+                if (batchSize != null) {
+                    settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
                 }
 
                 File data = this.getProject().file(dataFile);

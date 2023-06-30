@@ -16,4 +16,6 @@ task gpkgimport(type: GpkgImport){
     srcTableName = "Point"
     dstTableName = "importdata"
     dataFile = "point.gpkg"
+    batchSize = 200
+    fetchSize = 200
 }
