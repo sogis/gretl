@@ -659,7 +659,6 @@ dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
 outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
 
 ### GpkgExport
-**Achtung:** Fetch-Size ist nicht implementiert. Darum macht wohl Batch-Size auf Seiten GeoPackage nicht allzu viel Sinn. Fetch-Size müsste wohl im in den dbtools von iox-wkf implementiert werden.
 
 Daten aus einer bestehenden Datenbanktabelle werden in eine GeoPackage-Datei exportiert.
 
@@ -700,6 +699,7 @@ srcTableName | Name der DB-Tabelle(n), die exportiert werden soll(en). String od
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 dstTableName | Name der Tabelle(n) in der GeoPackage-Datei. String oder List.
 batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank (GeoPackage) geschrieben werden (Standard: 5000). 
+fetchSize | Anzahl der Records, die pro Fetch aus der Quell-Datenbank gelesen werden (Standard: 5000). 
 
 ### GpkgImport
 

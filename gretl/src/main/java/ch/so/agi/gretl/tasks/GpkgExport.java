@@ -39,6 +39,9 @@ public class GpkgExport extends DefaultTask {
     @Input
     @Optional
     public Integer batchSize = null;
+    @Input
+    @Optional
+    public Integer fetchSize = null;
 
     @TaskAction
     public void exportData() {
@@ -96,6 +99,9 @@ public class GpkgExport extends DefaultTask {
                 }
                 if (batchSize != null) {
                     settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
+                }
+                if (fetchSize != null) {
+                    settings.setValue(IoxWkfConfig.SETTING_FETCHSIZE, fetchSize.toString());
                 }
 
                 File data = this.getProject().file(dataFile);
