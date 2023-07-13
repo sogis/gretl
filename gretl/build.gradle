@@ -86,6 +86,9 @@ dependencies {
     api ioxIliDependency
     api ehiSqlgenDependency
 
+    api ioxParquetDependency
+    api ioxExcelDependency
+
     api av2chDependency
     api av2geobauDependency
     
