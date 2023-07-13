@@ -1,0 +1,41 @@
+INTERLIS 2.3;
+
+MODEL SO_AFU_Bewilligte_Erdwaermeanlagen_20230616 (de)
+AT "https://agi.so.ch"
+VERSION "2023-06-16"  =
+
+  TOPIC Bewilligte_Erdwaermeanlagen =
+
+    CLASS Bewilligte_Erdwaermeanlagen =      
+      /** Erhebungsjahr
+       */
+      jahr : MANDATORY INTERLIS.GregorianYear;
+      /** Anzahl Anfragen
+       */      
+      anfragen : MANDATORY 0 .. 100000;
+      /** Anzahl bewilligte Anlagen
+       */      
+      bewilligte_anlagen : 0 .. 100000;
+      /** Durchschnittlicher Erdölpries pro 1000 Liter
+       */      
+      durchschnittlicher_oelpreis_pro_1000_liter : 0 .. 10000;
+      /** Bewilligte Erdsonden
+       */      
+      bewilligte_erdsonden : 0 .. 100000;
+      /** Bewilligte Erdkollektoren
+       */      
+      bewilligte_erdkollektoren: 0 .. 100000;
+      /** Gesamte Bohrmeter / Sondenlänge in Kilometer
+       */      
+      sondenlaenge_km : 0.000 .. 10000.000;
+      /** Gesamte Heizleistung in Kilowatt
+       */      
+      heizleistung_kw : 0.000 .. 10000.000;
+      /** Anzahl Onlineanfragen via Web GIS Client
+       */      
+      internet_clicks_durchschnitt_pro_monat : 0 .. 100000;
+    END Bewilligte_Erdwaermeanlagen;
+
+  END Bewilligte_Erdwaermeanlagen;
+
+END SO_AFU_Bewilligte_Erdwaermeanlagen_20230616.

@@ -1,0 +1,18 @@
+INTERLIS 2.3;
+
+MODEL Date_202306016 (de)
+AT "https://agi.so.ch"
+VERSION "2023-06-16"  =
+
+  TOPIC DateTopic =
+
+    CLASS DateClass =      
+      id : TEXT;
+      aDate : INTERLIS.XMLDate;
+      aDatetime : INTERLIS.XMLDateTime;
+      aTime : INTERLIS.XMLTime;
+    END DateClass;
+
+  END DateTopic;
+
+END Date_202306016.

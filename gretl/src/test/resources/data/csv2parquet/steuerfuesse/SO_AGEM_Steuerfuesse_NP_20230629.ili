@@ -1,0 +1,23 @@
+INTERLIS 2.3;
+
+MODEL SO_AGEM_Steuerfuesse_NP_20230629 (de)
+AT "https://agem.so.ch"
+VERSION "2023-06-29"  =
+
+  TOPIC Steuerfuesse =
+
+    CLASS Steuerfuss_Natuerliche_Personen =      
+      /** Erhebungsjahr
+       */
+      jahr : MANDATORY INTERLIS.GregorianYear;
+      /** Name der politischen Gemeinde
+       */      
+      gemeinde : MANDATORY TEXT*100;
+      /** Steuerfuss in Prozent. Fehlende Werte aufgrund Gemeindefusionen, da momentan nur aktuelle Gemeinden vorliegend.
+       */      
+      steuerfuss_in_prozent : 0 .. 200;
+    END Steuerfuss_Natuerliche_Personen;
+
+  END Steuerfuesse;
+
+END SO_AGEM_Steuerfuesse_NP_20230629.

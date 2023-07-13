@@ -58,7 +58,7 @@ public class Csv2Parquet extends DefaultTask {
     @Internal
     @Optional
     public boolean meta = false; // TODO: wenn wir vom config file nicht mehr die CSV-Konfig brauchen, ist das jetzt redundant.
-    // TODO: oder gänzlich separat? Weil es nur "csv2parquet" ist und kein publisher.
+    // TODO: oder gaenzlich separat? Weil es nur "csv2parquet" ist und kein publisher.
     
     // TODO: nur mit normalen log-Methoden arbeiten?
 //    @Internal

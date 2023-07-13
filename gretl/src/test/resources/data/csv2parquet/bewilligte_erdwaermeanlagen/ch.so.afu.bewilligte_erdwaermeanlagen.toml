@@ -1,0 +1,14 @@
+["ch.so.afu.bewilligte_erdwaermeanlagen"]
+firstLineIsHeader=true
+valueSeparator=";"
+encoding="UTF-8"
+models="SO_AFU_Bewilligte_Erdwaermeanlagen_20230616"
+
+title="Bewilligte Erdwärmeanlagen"
+description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+publisher="ch.so.agi"
+theme = ["Statistik", "Energie"]
+keywords = ["Statistik", "Energie"]
+startDate = 1990-01-01
+endDate = 2022-12-31
+fileFormats = ["CSV", "PARQUET", "XLSX"]

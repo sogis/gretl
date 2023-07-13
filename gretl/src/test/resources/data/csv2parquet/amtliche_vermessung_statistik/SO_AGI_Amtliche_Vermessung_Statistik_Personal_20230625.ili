@@ -1,0 +1,30 @@
+INTERLIS 2.3;
+
+MODEL SO_AGI_Amtliche_Vermessung_Statistik_Personal_20230625 (de)
+AT "https://agi.so.ch"
+VERSION "2023-06-25"  =
+
+  TOPIC Statistik =
+
+    CLASS Personal =      
+      /** Erhebungsjahr
+       */
+      jahr : MANDATORY INTERLIS.GregorianYear;
+      /** Anzahl patentierte Ingenieur-Geometer
+       */      
+      ingenieur_geometer : MANDATORY 0 .. 100;
+      /** Anzahl Ingenieure FH und Techniker
+       */      
+      geomatiker : MANDATORY 0 .. 100;
+      /** Anzahl Geomatiker
+       */      
+      ingenieur_fh_techniker : MANDATORY 0 .. 100;
+      /** Anzahl Lernende
+       */      
+      lernende : MANDATORY 0 .. 100;
+
+    END Personal;
+
+  END Statistik;
+
+END SO_AGI_Amtliche_Vermessung_Statistik_Personal_20230625.

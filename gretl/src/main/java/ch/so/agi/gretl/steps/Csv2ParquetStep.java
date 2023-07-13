@@ -39,7 +39,7 @@ public class Csv2ParquetStep {
     
     public Csv2ParquetStep(String taskName) {
         if (taskName == null) {
-            this.taskName = XslTransformerStep.class.getSimpleName();
+            this.taskName = Csv2ParquetStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }
@@ -48,7 +48,7 @@ public class Csv2ParquetStep {
     
     public void execute(Path csvPath, Path outputPath, Settings config) throws IOException {
         log.lifecycle(String.format("Start Csv2ParquetStep(Name: %s csvPath: %s outputPath: %s config: %s)", taskName,
-                outputPath, config));
+                csvPath, outputPath, config));
 
         String csvBaseName = FilenameUtils.getBaseName(csvPath.getFileName().toString());
         ParquetWriter writer = null;
@@ -76,9 +76,7 @@ public class Csv2ParquetStep {
         if(valueDelimiter != null) {
             reader.setValueDelimiter(valueDelimiter.charAt(0));
             log.lifecycle("valueDelimiter <"+valueDelimiter+">.");
-        } else {
-            log.lifecycle("valueDelimiter <"+IoxWkfConfig.SETTING_VALUEDELIMITER_DEFAULT+">.");
-        }
+        } 
 
         String valueSeparator=config.getValue(IoxWkfConfig.SETTING_VALUESEPARATOR);
         if(valueSeparator != null) {
@@ -152,7 +150,7 @@ public class Csv2ParquetStep {
         
     private TransferDescription getTransferDescriptionFromModelName(String iliModelName, Path additionalRepository) throws Ili2cException {
         IliManager manager = new IliManager();        
-        String ilidirs = IoxWkfConfig.SETTING_ILIDIRS_DEFAULT + additionalRepository;
+        String ilidirs = IoxWkfConfig.SETTING_ILIDIRS_DEFAULT + ";" + additionalRepository;
         String repositories[] = ilidirs.split(";");
         manager.setRepositories(repositories);
         ArrayList<String> modelNames = new ArrayList<String>();

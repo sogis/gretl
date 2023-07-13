@@ -1,0 +1,30 @@
+INTERLIS 2.3;
+
+MODEL SO_AFU_Abfallmengen_Gemeinden_20230629 (de)
+AT "https://afu.so.ch"
+VERSION "2023-06-29"  =
+
+  TOPIC Abfallmengen_Gemeinden =
+
+    CLASS Abfallmengen_Gemeinden =      
+      /** Erhebungsjahr
+       */
+      jahr : MANDATORY INTERLIS.GregorianYear;
+      /** Art des Abfalls
+       */      
+      abfallart : MANDATORY TEXT*100;
+      /** Kilogramm Abfall pro Einwohner
+       */      
+      abfall_kg_pro_einwohner : MANDATORY 0.00 .. 1000.00;
+      /** Was bedeutet das genau?
+       */      
+      wiederverwertung : MANDATORY (ja, nein); 
+      /** Aufzählabfallartersatz und Showcase für Constraints.
+       */     
+      !!@ ilivalid.msg = "Falscher Wert im Attribut 'abfallart': '{abfallart}'"
+      MANDATORY CONSTRAINT abfallart=="Kehricht" OR abfallart=="Kehricht / Sperrgut" OR abfallart=="Papier / Karton" OR abfallart=="Grüngut"  OR abfallart=="Textil" OR abfallart=="Weissblech" OR abfallart=="Aluminium" OR abfallart=="Metalle" OR abfallart=="Motoren / Speiseöl" OR abfallart=="Sonderabfälle" OR abfallart=="Strassensammlerschlamm" OR abfallart=="Wischgut" OR abfallart=="Glas (Glasbruch + Glassand)";
+    END Abfallmengen_Gemeinden;
+
+  END Abfallmengen_Gemeinden;
+
+END SO_AFU_Abfallmengen_Gemeinden_20230629.
