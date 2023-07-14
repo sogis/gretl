@@ -57,8 +57,7 @@ public class Csv2ExcelStepTest {
         settings.setValue(Validator.SETTING_MODELNAMES, "SO_HBA_Gebaeude_20230111");
 
         Path csvPath = Paths.get("src/test/resources/data/csv2parquet/kantonale_gebaeude/20230124_sap_Gebaeude.csv");
-        //Path outputPath = folder.newFolder().toPath();
-        Path outputPath = Paths.get("/Users/stefan/tmp/");
+        Path outputPath = folder.newFolder().toPath();
         
         // Run
         Csv2ExcelStep csv2excelStep = new Csv2ExcelStep();
