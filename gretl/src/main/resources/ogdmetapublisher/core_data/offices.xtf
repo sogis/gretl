@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+  <HEADERSECTION SENDER="ili2gpkg-4.9.0-eb3a0d51869bd2adeeb51fe7aba4b526fe002c1a" VERSION="2.3">
+    <MODELS>
+      <MODEL NAME="SO_OGD_Metadata_20230629" VERSION="2023-06-29" URI="https://agi.so.ch"/>
+    </MODELS>
+  </HEADERSECTION>
+  <DATASECTION>
+    <SO_OGD_Metadata_20230629.Offices BID="SO_OGD_Metadata_20230629.Offices">
+      <SO_OGD_Metadata_20230629.Offices.Office TID="ch.so.agi">
+        <AgencyName>Amt für Geoinformation</AgencyName>
+        <Abbreviation>AGI</Abbreviation>
+        <OfficeAtWeb>https://agi.so.ch</OfficeAtWeb>
+        <Email>mailto:agi@bd.so.ch</Email>
+        <Phone>032 627 75 92</Phone>
+      </SO_OGD_Metadata_20230629.Offices.Office>
+      <SO_OGD_Metadata_20230629.Offices.Office TID="ch.so.afu">
+        <AgencyName>Amt für Umwelt</AgencyName>
+        <Abbreviation>AfU</Abbreviation>
+        <OfficeAtWeb>https://afu.so.ch</OfficeAtWeb>
+        <Email>mailto:afu@bd.so.ch</Email>
+        <Phone>032 627 24 47</Phone>
+      </SO_OGD_Metadata_20230629.Offices.Office>
+      <SO_OGD_Metadata_20230629.Offices.Office TID="ch.so.awjf">
+        <AgencyName>Amt für Jagd, Wald und Fischerei</AgencyName>
+        <Abbreviation>AWJF</Abbreviation>
+        <OfficeAtWeb>https://awjf.so.ch</OfficeAtWeb>
+        <Email>mailto:awjf@vd.so.ch</Email>
+        <Phone>032 627 23 41</Phone>
+      </SO_OGD_Metadata_20230629.Offices.Office>
+      <SO_OGD_Metadata_20230629.Offices.Office TID="ch.so.agem">
+        <AgencyName>Amt für Gemeinden</AgencyName>
+        <Abbreviation>AGEM</Abbreviation>
+        <OfficeAtWeb>https://agem.so.ch</OfficeAtWeb>
+        <Email>mailto:agem@vd.so.ch</Email>
+        <Phone>032 627 23 57</Phone>
+      </SO_OGD_Metadata_20230629.Offices.Office>
+      <SO_OGD_Metadata_20230629.Offices.Office TID="ch.so.hba">
+        <AgencyName>Hochbauamt</AgencyName>
+        <Abbreviation>HBA</Abbreviation>
+        <OfficeAtWeb>https://hba.so.ch</OfficeAtWeb>
+        <Email>mailto:hba@bd.so.ch</Email>
+        <Phone>032 627 26 03</Phone>
+      </SO_OGD_Metadata_20230629.Offices.Office>
+    </SO_OGD_Metadata_20230629.Offices>
+  </DATASECTION>
+</TRANSFER>

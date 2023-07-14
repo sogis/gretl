@@ -42,29 +42,11 @@ public class Csv2Parquet extends DefaultTask {
     @Internal
     @Optional
     public String models = null;
-    
-    @Internal
-    @Optional
-    public File configFile; // TODO siehe meta
-    
-    @Internal
-    @Optional
-    public String identifier; // TODO ohne meta auch nicht notwendig. -> OgdMetaPublisher?
-    
+        
     @Internal
     @Optional
     public File outputDir;
-    
-    @Internal
-    @Optional
-    public boolean meta = false; // TODO: wenn wir vom config file nicht mehr die CSV-Konfig brauchen, ist das jetzt redundant.
-    // TODO: oder gaenzlich separat? Weil es nur "csv2parquet" ist und kein publisher.
-    
-    // TODO: nur mit normalen log-Methoden arbeiten?
-//    @Internal
-//    @Optional
-//    public boolean trace = false;
-    
+            
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Csv2Parquet.class);

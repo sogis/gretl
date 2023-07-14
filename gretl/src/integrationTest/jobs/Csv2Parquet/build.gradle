@@ -1,6 +1,3 @@
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
-
 import ch.so.agi.gretl.tasks.*
 
 apply plugin: 'ch.so.agi.gretl'

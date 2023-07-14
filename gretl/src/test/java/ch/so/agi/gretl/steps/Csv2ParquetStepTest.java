@@ -57,6 +57,7 @@ public class Csv2ParquetStepTest {
         Path csvPath = Paths.get("src/test/resources/data/csv2parquet/kantonale_gebaeude/20230124_sap_Gebaeude.csv");
         Path outputPath = folder.newFolder().toPath();
         
+        // Run
         Csv2ParquetStep csv2parquetStep = new Csv2ParquetStep();
         csv2parquetStep.execute(csvPath, outputPath, settings);
 

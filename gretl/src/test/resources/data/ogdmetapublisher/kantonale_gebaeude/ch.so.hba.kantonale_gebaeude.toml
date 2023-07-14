@@ -1,0 +1,14 @@
+["ch.so.hba.kantonale_gebaeude"]
+firstLineIsHeader=true
+valueSeparator=";"
+encoding="ISO-8859-1"
+models="SO_HBA_Gebaeude_20230111"
+
+title="Kantonale Gebäude"
+description="Gebäude im Eigentum des Kantons Solothurn. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+publisher="ch.so.hba"
+theme = ["Energie"]
+keywords = ["Energie", "Gebäude"]
+startDate = 2023-06-30
+endDate = 2023-06-30
+fileFormats = ["CSV", "PARQUET", "XLSX"]

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+  <HEADERSECTION SENDER="ili2gpkg-4.9.0-eb3a0d51869bd2adeeb51fe7aba4b526fe002c1a" VERSION="2.3">
+    <MODELS>
+      <MODEL NAME="SO_OGD_Metadata_20230629" VERSION="2023-06-29" URI="https://agi.so.ch"/>
+    </MODELS>
+  </HEADERSECTION>
+  <DATASECTION>
+    <SO_OGD_Metadata_20230629.FileFormats BID="SO_OGD_Metadata_20230629.FileFormats">
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="ITF">
+        <Name>INTERLIS 1</Name>
+        <Abbreviation>ITF</Abbreviation>
+        <MimeType>application/interlis+txt;version=1.0</MimeType>
+        <Extension>itf</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="XTF">
+        <Name>INTERLIS 2</Name>
+        <Abbreviation>XTF</Abbreviation>
+        <MimeType>application/interlis+xml;version=2.3</MimeType>
+        <Extension>xtf</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="GPKG">
+        <Name>GeoPackage</Name>
+        <Abbreviation>GPKG</Abbreviation>
+        <MimeType>application/geopackage+sqlite3</MimeType>
+        <Extension>gpkg</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="SHP">
+        <Name>Shapefile</Name>
+        <Abbreviation>SHP</Abbreviation>
+        <MimeType>application/vnd.esri_shapefile</MimeType>
+        <Extension>shp.zip</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="DXF">
+        <Name>DXF</Name>
+        <Abbreviation>DXF</Abbreviation>
+        <MimeType>application/dxf+text</MimeType>
+        <Extension>dxf</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="CSV">
+        <Name>CSV</Name>
+        <Abbreviation>CSV</Abbreviation>
+        <MimeType>text/csv</MimeType>
+        <Extension>csv</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="PARQUET">
+        <Name>Parquet</Name>
+        <Abbreviation>PQT</Abbreviation>
+        <MimeType>application/x-parquet</MimeType>
+        <Extension>parquet</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="XLSX">
+        <Name>Excel</Name>
+        <Abbreviation>XLSX</Abbreviation>
+        <MimeType>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</MimeType>
+        <Extension>xlsx</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="GTIFF">
+        <Name>GeoTIFF</Name>
+        <Abbreviation>GTIFF</Abbreviation>
+        <MimeType>image/tiff; application=geotiff</MimeType>
+        <Extension>tif</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+      <SO_OGD_Metadata_20230629.FileFormats.FileFormat TID="LAZ">
+        <Name>LAZ</Name>
+        <Abbreviation>LAZ</Abbreviation>
+        <MimeType>application/vnd.laz</MimeType>
+        <Extension>laz</Extension>
+      </SO_OGD_Metadata_20230629.FileFormats.FileFormat>
+    </SO_OGD_Metadata_20230629.FileFormats>
+  </DATASECTION>
+</TRANSFER>
