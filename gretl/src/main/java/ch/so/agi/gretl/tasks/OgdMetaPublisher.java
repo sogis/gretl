@@ -34,7 +34,7 @@ public class OgdMetaPublisher extends DefaultTask {
         log = LogEnvironment.getLogger(OgdMetaPublisher.class);
 
         if (configFile == null) {
-            throw new IllegalArgumentException("csvFile must not be null");
+            throw new IllegalArgumentException("configFile must not be null");
         }
 
         if (outputDir == null) {

@@ -224,6 +224,7 @@ valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden
 valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
 encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 models | INTERLIS-Modell für Definition der Datentypen in der Excel-Datei.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ";" getrennt werden. Es sind auch URLs von Modell-Repositories möglich.
 outputDir | Verzeichnis, in das die Excel-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
 
 ### Csv2Parquet (incubating)
@@ -250,6 +251,7 @@ valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden
 valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
 encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 models | INTERLIS-Modell für Definition der Datentypen in der Parquet-Datei.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ";" getrennt werden. Es sind auch URLs von Modell-Repositories möglich.
 outputDir | Verzeichnis, in das die Parquet-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
 
 ### CsvExport

@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.interlis2.validator.Validator;
 import org.tomlj.TomlParseResult;
 import org.tomlj.TomlTable;
 
@@ -152,7 +153,9 @@ public class ModelMetaDescription {
         IliManager manager = new IliManager();
         File ilicacheFolder = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), ".ilicache_").toFile();        
         manager.setCache(ilicacheFolder);
-        String repositories[] = new String[] { localRepo, "https://geo.so.ch/models", "http://models.interlis.ch/" };
+        String ilidirs = Validator.SETTING_DEFAULT_ILIDIRS + ";" + localRepo;
+        String repositories[] = ilidirs.split(";");
+        //String repositories[] = new String[] { localRepo, "https://geo.so.ch/models", "http://models.interlis.ch/" };
         manager.setRepositories(repositories);
         ArrayList<String> modelNames = new ArrayList<String>();
         modelNames.add(modelName);

@@ -46,6 +46,10 @@ public class Csv2Excel extends DefaultTask {
         
     @Internal
     @Optional
+    public String modeldir = null;
+
+    @Internal
+    @Optional
     public File outputDir;
             
     @TaskAction
@@ -74,6 +78,10 @@ public class Csv2Excel extends DefaultTask {
         
         if (models != null) {
             settings.setValue(Validator.SETTING_MODELNAMES, models);
+        }
+        
+        if (modeldir != null) {
+            settings.setValue(Validator.SETTING_ILIDIRS, modeldir);
         }
 
         if (outputDir == null) {

@@ -94,7 +94,7 @@ public class Csv2ParquetStep {
         if (config.getValue(Validator.SETTING_MODELNAMES) != null) {
             TransferDescription td = null;
             try {
-                td = getTransferDescriptionFromModelName(config.getValue(Validator.SETTING_MODELNAMES), csvPath.getParent());
+                td = getTransferDescriptionFromModelName(config.getValue(Validator.SETTING_MODELNAMES), csvPath.getParent(), config);
             } catch (Ili2cException e) {
                 throw new IOException(e.getMessage());
             }
@@ -153,9 +153,9 @@ public class Csv2ParquetStep {
         }
     }
         
-    private TransferDescription getTransferDescriptionFromModelName(String iliModelName, Path additionalRepository) throws Ili2cException {
+    private TransferDescription getTransferDescriptionFromModelName(String iliModelName, Path additionalRepository, Settings settings) throws Ili2cException {
         IliManager manager = new IliManager();        
-        String ilidirs = IoxWkfConfig.SETTING_ILIDIRS_DEFAULT + ";" + additionalRepository;
+        String ilidirs = settings.getValue(Validator.SETTING_ILIDIRS) + ";" + additionalRepository;
         String repositories[] = ilidirs.split(";");
         manager.setRepositories(repositories);
         ArrayList<String> modelNames = new ArrayList<String>();
