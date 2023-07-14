@@ -200,6 +200,32 @@ proxy        | Proxy Server für den Zugriff auf Modell Repositories
 proxyPort    | Proxy Port für den Zugriff auf Modell Repositories
 zip          | Die zu erstellende Datei wird gezippt und es werden zusätzliche Dateien (Musterplan, Layerbeschreibung, Hinweise) hinzugefügt (Default: false).
 
+### Csv2Parquet (incubating)
+Konvertiert eine CSV-Datei in eine Parquet-Datei. Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert.
+
+Beispiel:
+```
+task convertData(type: Csv2Parquet) {
+    csvFile = file("./20230124_sap_Gebaeude.csv")
+    firstLineIsHeader = true
+    valueDelimiter = null
+    valueSeparator = ";"
+    encoding = "ISO-8859-1";
+    models = "SO_HBA_Gebaeude_20230111";
+    outputDir = file(".");
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+csvFile | CSV-Datei, die konvertiert werden soll.
+firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
+valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default ``"``
+valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
+encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+models | INTERLIS-Modell für Definition der Datentypen in der Parquet-Datei.
+outputDir | Verzeichnis, in das die Parquet-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
+
 ### CsvExport
 Daten aus einer bestehenden Datenbanktabelle werden in eine CSV-Datei exportiert.
 

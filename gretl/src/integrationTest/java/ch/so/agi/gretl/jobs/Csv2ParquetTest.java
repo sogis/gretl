@@ -40,13 +40,5 @@ public class Csv2ParquetTest {
 
         GenericRecord arecord = reader.read();
         assertEquals("Fernwärme", arecord.get("Energietraeger").toString());
-
-//        File gzipFile = new File("src/integrationTest/jobs/Gzip/planregister.xml.gz");
-//        String fileContent = contentGzipFile(gzipFile);
-//        
-//        assertTrue(fileContent.contains("ili2pg-4.9.0-eb3a0d51869bd2adeeb51fe7aba4b526fe002c1a"));
-//        assertTrue(fileContent.contains("<Bezeichnung>Römersmattquellen der Wasserversorgung Bellach"));
     }
-
-
 }
