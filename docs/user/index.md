@@ -1301,6 +1301,28 @@ target | Zielverzeichnis der Metadateien (sftp oder Filesystem)
 regions | Liste (resp. ListProperty) mit den durch den PublisherTask publizierten Regionen.
 geocatTarget | Zielverzeichnis für Geocat-Output (sftp oder Filesystem)
 
+### OgdMetaPublisher (incubating)
+
+Publiziert die Metadaten eines OGD-Datensatzes. Im Gegensatz zum "MetaPublisher" ist es weniger als Publisher (mit viel Konvention), sondern eher ein Generator, der aus dem Toml-File und der INTERLIS-Modelldatei die Metainfo-Datei erstellt. Beim Resultat handelt es sich um eine INTERLIS-Transferdatei (mit eigenem OgdMeta-Modell).
+
+Mit dem "MetaPublisher" teilt er sich einiges an Copy/Paste-Code. Man könnte gewissen Aspekte wohl zusammenlegen (z.B. Infos aus INTERLIS-Modell lesen).
+
+Die INTERLIS-Modelldatei muss entweder in einem (bekannten) Repo sein oder im Verzeichnis der Toml-Datei vorliegen.
+
+Beispiel:
+
+```
+task publishMeta(type: OgdMetaPublisher) {
+    configFile = file("./ch.so.hba.kantonale_gebaeude.toml")
+    outputDir = file(".")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+configFile | Toml-Datei mit Metainformationen zum Datensatz.
+outputDir | Verzeichnis, in das die Metainfo-Datei gespeichert wird.
+
 ### PostgisRasterExport
 
 Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert.
