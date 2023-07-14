@@ -144,6 +144,7 @@ public class Csv2ParquetStep {
                 reader = null;
             }
         } catch (IoxException e) {
+            e.printStackTrace();
             throw new IOException(e.getMessage());
         }
     }

@@ -144,6 +144,7 @@ public class Csv2ExcelStep {
                 reader = null;
             }
         } catch (IoxException e) {
+            e.printStackTrace();
             throw new IOException(e.getMessage());
         }
     }

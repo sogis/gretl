@@ -84,7 +84,8 @@ public class Csv2Parquet extends DefaultTask {
             csv2ParquetStep.execute(csvFile.toPath(), outputDir.toPath(), settings);
             log.lifecycle("Parquet file written: " + csvFile.getParentFile().getAbsolutePath());
         } catch (IOException e) {
-            throw new GradleException("Could not write parquet file: " + e.getMessage());
+            e.printStackTrace();
+            throw new GradleException("Could not write Parquet file: " + e.getMessage());
         }
     }
 
