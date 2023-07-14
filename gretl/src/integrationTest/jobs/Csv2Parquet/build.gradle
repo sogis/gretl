@@ -1,13 +1,18 @@
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
+
 import ch.so.agi.gretl.tasks.*
-import ch.so.agi.gretl.tasks.Curl.MethodType;
 
 apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'convertData'
 
 task convertData(type: Csv2Parquet) {
-    serverUrl = "https://raw.githubusercontent.com/sogis/gretl/master/README.md"
-    method = MethodType.GET
-    outputFile = file("./README.md")
-    expectedStatusCode = 200
+    csvFile = file("./20230124_sap_Gebaeude.csv")
+    firstLineIsHeader = true
+    valueDelimiter = null
+    valueSeparator = ";"
+    encoding = "ISO-8859-1";
+    models = "SO_HBA_Gebaeude_20230111";
+    outputDir = file(".");
 }
