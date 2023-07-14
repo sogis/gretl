@@ -130,12 +130,12 @@ dependencies {
     testImplementation mockWebServerDependency
 
     // Finde ich komisch. Bereits bei csv2parquet cli das gleiche Problem.
-    testImplementation ('org.apache.hadoop:hadoop-client:3.3.5') {
-        exclude group: 'org.slf4j', module: 'slf4j-reload4j'
-    }
-    testImplementation 'org.apache.parquet:parquet-avro:1.13.1'
-
-        
+    // War Problem wegen api vs implementation
+    //testImplementation ('org.apache.hadoop:hadoop-client:3.3.5') {
+    //    exclude group: 'org.slf4j', module: 'slf4j-reload4j'
+    //}
+    //testImplementation 'org.apache.parquet:parquet-avro:1.13.1'
+            
     //testImplementation s3MockDependency
     //testImplementation s3MockJunitDependency
     

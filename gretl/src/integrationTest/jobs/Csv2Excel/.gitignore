@@ -1,0 +1,5 @@
+.DS_Store
+*.parquet
+*.crc
+.gradle
+*.xslx

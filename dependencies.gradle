@@ -8,8 +8,8 @@ ext {
     ioxWkfVersion = '1.1.1-SNAPSHOT'
     ehiSqlgenVersion = '1.15.0'
     
-    ioxParquetVersion = '0.0.20'
-    ioxExcelVersion = '0.0.2'
+    ioxParquetVersion = '0.0.25'
+    ioxExcelVersion = '0.0.3'
     
     av2chVersion = '1.1.8'
     av2geobauVersion = '1.2.0'
