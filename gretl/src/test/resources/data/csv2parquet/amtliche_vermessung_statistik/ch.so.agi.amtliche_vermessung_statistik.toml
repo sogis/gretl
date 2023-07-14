@@ -1,0 +1,22 @@
+["ch.so.agi.amtliche_vermessung_statistik"]
+title="Statistische Kennzahlen der amtlichen Vermessung"
+description="Statistische Kennzahlen der amtlichen Vermessung über Personal und Umsatz in den Jahren 1983 bis 2022."
+publisher="ch.so.agi"
+theme = ["Statistik", "Amtliche Vermessung"]
+keywords = ["Statistik", "Amtliche Vermessung"]
+startDate = 1983-01-01
+endDate = 2022-12-31
+
+["ch.so.agi.amtliche_vermessung_statistik.umsatz"]
+firstLineIsHeader=true
+models="SO_AGI_Amtliche_Vermessung_Statistik_Umsatz_20230625"
+title="Umsatz pro Jahr"
+description="Umsatz pro Jahr. Anzahl Gebäudemutationen und Grundstücksmutationen und Gesamtumsatz in Franken."
+fileFormats = ["CSV", "PARQUET", "XLSX"]
+
+["ch.so.agi.amtliche_vermessung_statistik.personal"]
+firstLineIsHeader=true
+models="SO_AGI_Amtliche_Vermessung_Statistik_Personal_20230625"
+title="Personal in der amtlichen Vermessung"
+description="In der amtlichen Vermessung eingesetztes Personal aufgeteilt in verschiedene Gruppen."
+fileFormats = ["CSV", "PARQUET", "XLSX"]

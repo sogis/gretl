@@ -1,0 +1,13 @@
+["ch.so.afu.abfallmengen_gemeinden"]
+firstLineIsHeader=true
+valueSeparator=";"
+models="SO_AFU_Abfallmengen_Gemeinden_20230629"
+
+title="Ablagerungsmengen in Deponien"
+description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+publisher="ch.so.agi"
+theme = ["Statistik", "Abfall"]
+keywords = ["Statistik", "Abfall"]
+startDate = 1990-01-01
+endDate = 2022-12-31
+fileFormats = ["CSV", "PARQUET", "XLSX"]

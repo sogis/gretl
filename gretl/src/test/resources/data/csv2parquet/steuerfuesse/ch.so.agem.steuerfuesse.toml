@@ -1,0 +1,16 @@
+["ch.so.agem.steuerfuesse"]
+title="Steuerfüsse der Gemeinden"
+description="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+publisher="ch.so.agem"
+theme = ["Statistik", "Finanzen"]
+keywords = ["Statistik", "Finanzen", "Steuerfuss", "Steuerfüsse"]
+startDate = 1990-01-01
+endDate = 2022-12-31
+
+["ch.so.agem.steuerfuesse.natuerliche_personen"]
+firstLineIsHeader=true
+valueSeparator=";"
+models="SO_AGEM_Steuerfuesse_NP_20230629"
+title="Steuerfüsse Natürliche Personen"
+description="FUBAR Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+fileFormats = ["CSV", "PARQUET", "XLSX"]

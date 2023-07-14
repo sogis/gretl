@@ -200,6 +200,60 @@ proxy        | Proxy Server für den Zugriff auf Modell Repositories
 proxyPort    | Proxy Port für den Zugriff auf Modell Repositories
 zip          | Die zu erstellende Datei wird gezippt und es werden zusätzliche Dateien (Musterplan, Layerbeschreibung, Hinweise) hinzugefügt (Default: false).
 
+### Csv2Excel (incubating)
+Konvertiert eine CSV-Datei in eine Excel-Datei (*.xlsx). Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert. Die Daten werden vollständig im Speicher vorgehalten. Falls grosse Dateien geschrieben werden müssen, kann das zu Problemen führen. Dann müsste die Apache POI SXSSF Implementierung (Streaming) verwendet werden.
+
+Beispiel:
+```
+task convertData(type: Csv2Excel) {
+    csvFile = file("./20230124_sap_Gebaeude.csv")
+    firstLineIsHeader = true
+    valueDelimiter = null
+    valueSeparator = ";"
+    encoding = "ISO-8859-1";
+    models = "SO_HBA_Gebaeude_20230111";
+    outputDir = file(".");
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+csvFile | CSV-Datei, die konvertiert werden soll.
+firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
+valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default ``"``
+valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
+encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+models | INTERLIS-Modell für Definition der Datentypen in der Excel-Datei.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ";" getrennt werden. Es sind auch URLs von Modell-Repositories möglich.
+outputDir | Verzeichnis, in das die Excel-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
+
+### Csv2Parquet (incubating)
+Konvertiert eine CSV-Datei in eine Parquet-Datei. Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert.
+
+Beispiel:
+```
+task convertData(type: Csv2Parquet) {
+    csvFile = file("./20230124_sap_Gebaeude.csv")
+    firstLineIsHeader = true
+    valueDelimiter = null
+    valueSeparator = ";"
+    encoding = "ISO-8859-1";
+    models = "SO_HBA_Gebaeude_20230111";
+    outputDir = file(".");
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+csvFile | CSV-Datei, die konvertiert werden soll.
+firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
+valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default ``"``
+valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
+encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+models | INTERLIS-Modell für Definition der Datentypen in der Parquet-Datei.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ";" getrennt werden. Es sind auch URLs von Modell-Repositories möglich.
+outputDir | Verzeichnis, in das die Parquet-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
+
 ### CsvExport
 Daten aus einer bestehenden Datenbanktabelle werden in eine CSV-Datei exportiert.
 
@@ -1274,6 +1328,28 @@ metaConfigFile | Toml-Datei mit Metainformationen zur Themenpublikation
 target | Zielverzeichnis der Metadateien (sftp oder Filesystem)
 regions | Liste (resp. ListProperty) mit den durch den PublisherTask publizierten Regionen.
 geocatTarget | Zielverzeichnis für Geocat-Output (sftp oder Filesystem)
+
+### OgdMetaPublisher (incubating)
+
+Publiziert die Metadaten eines OGD-Datensatzes. Im Gegensatz zum "MetaPublisher" ist es weniger als Publisher (mit viel Konvention), sondern eher ein Generator, der aus dem Toml-File und der INTERLIS-Modelldatei die Metainfo-Datei erstellt. Beim Resultat handelt es sich um eine INTERLIS-Transferdatei (mit eigenem OgdMeta-Modell).
+
+Mit dem "MetaPublisher" teilt er sich einiges an Copy/Paste-Code. Man könnte gewissen Aspekte wohl zusammenlegen (z.B. Infos aus INTERLIS-Modell lesen).
+
+Die INTERLIS-Modelldatei muss entweder in einem (bekannten) Repo sein oder im Verzeichnis der Toml-Datei vorliegen.
+
+Beispiel:
+
+```
+task publishMeta(type: OgdMetaPublisher) {
+    configFile = file("./ch.so.hba.kantonale_gebaeude.toml")
+    outputDir = file(".")
+}
+```
+
+Parameter | Beschreibung
+----------|-------------------
+configFile | Toml-Datei mit Metainformationen zum Datensatz.
+outputDir | Verzeichnis, in das die Metainfo-Datei gespeichert wird.
 
 ### PostgisRasterExport
 

@@ -96,7 +96,7 @@ public class MetaPublisherStep {
 
     public MetaPublisherStep(String taskName) {
         if (taskName == null) {
-            this.taskName = XslTransformerStep.class.getSimpleName();
+            this.taskName = MetaPublisherStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

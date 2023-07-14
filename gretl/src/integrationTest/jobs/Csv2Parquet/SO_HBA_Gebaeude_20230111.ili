@@ -1,0 +1,45 @@
+INTERLIS 2.3;
+
+/** !!------------------------------------------------------------------------------
+ *  !! Version    | wer | Änderung
+ *  !!------------------------------------------------------------------------------
+ *  !! 2023-01-11 | sz  | Initialerstellung
+ *  !!==============================================================================
+ */
+!!@ technicalContact=mailto:agi@bd.so.ch
+!!@ furtherInformation=http://geo.so.ch/models/AFU/SO_HBA_Gebaeude_20230111.uml
+!!@ shortDescription="Modell für den CSV-Import der Gebäude des Kantons via HBA"
+!!@ title="Gebäude des Kantons"
+MODEL SO_HBA_Gebaeude_20230111 (de)
+AT "https://hba.so.ch"
+VERSION "2023-01-11"  =
+
+  TOPIC Gebaeude =
+
+    CLASS Gebaeude =
+      /** Schweizweit eindeutiger Gebäudeidentifikator
+       */
+      EGID : TEXT*20;
+      /** Ostwert der Koordinate
+       */
+      xkoordinaten : 2000000.000 .. 3000000.000;
+      /** Nordwert der Koordinate
+       */
+      ykoordinaten : 1000000.000 .. 2000000.000;
+      /** Heizungsart des Gebäudes
+       */
+      Energietraeger : TEXT*50;
+      /** Art der Nutzung
+       */
+      Nutzungsart : MANDATORY TEXT*50;
+      /** HBA-interne, eindeutige Nummer
+       */
+      Wirtschaftseinheit : MANDATORY TEXT*20;
+      /** Anzahl kantonale (nicht-öffentliche) Ladestationen
+       */
+      Fahrzeugladestation : 0 .. 999;
+    END Gebaeude;
+
+  END Gebaeude;
+
+END SO_HBA_Gebaeude_20230111.

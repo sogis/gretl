@@ -19,7 +19,7 @@ public class GzipStep {
     
     public GzipStep(String taskName) {
         if (taskName == null) {
-            this.taskName = XslTransformerStep.class.getSimpleName();
+            this.taskName = GzipStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

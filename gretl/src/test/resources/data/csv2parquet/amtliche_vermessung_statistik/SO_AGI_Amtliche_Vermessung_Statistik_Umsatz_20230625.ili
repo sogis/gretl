@@ -1,0 +1,26 @@
+INTERLIS 2.3;
+
+MODEL SO_AGI_Amtliche_Vermessung_Statistik_Umsatz_20230625 (de)
+AT "https://agi.so.ch"
+VERSION "2023-06-25"  =
+
+  TOPIC Statistik =
+
+    CLASS Umsatz =      
+      /** Erhebungsjahr
+       */
+      jahr : MANDATORY INTERLIS.GregorianYear;
+      /** Anzahl Grenzmutationen
+       */      
+      anzahl_grenzmutationen : MANDATORY 0 .. 100000;
+      /** Anzahl Gebäudemutationen
+       */      
+      anzahl_gebaeudemutationen : MANDATORY 0 .. 100000;
+      /** Gesamtumsatz in CHF
+       */      
+      umsatz_in_chf : MANDATORY 0 .. 100000000;
+    END Umsatz;
+
+  END Statistik;
+
+END SO_AGI_Amtliche_Vermessung_Statistik_Umsatz_20230625.
