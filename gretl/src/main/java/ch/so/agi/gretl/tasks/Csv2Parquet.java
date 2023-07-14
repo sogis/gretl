@@ -3,6 +3,7 @@ package ch.so.agi.gretl.tasks;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.hadoop.security.UserGroupInformation;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Internal;
