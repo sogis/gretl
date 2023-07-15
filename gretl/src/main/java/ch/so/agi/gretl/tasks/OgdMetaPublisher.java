@@ -46,6 +46,7 @@ public class OgdMetaPublisher extends DefaultTask {
             ogdMetaPublisherStep.execute(configFile.toPath(), outputDir.toPath());
             log.lifecycle("Meta file written: " + outputDir.getAbsolutePath());
         } catch (IOException | Ili2cException | IoxException e) {
+            e.printStackTrace();
             throw new GradleException("Could not write meta file: " + e.getMessage());
         }
     }
