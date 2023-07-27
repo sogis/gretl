@@ -30,7 +30,7 @@ public class S3DownloadStep {
     
     public S3DownloadStep(String taskName) {
         if (taskName == null) {
-            taskName = S3UploadStep.class.getSimpleName();
+            taskName = S3DownloadStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }
@@ -55,7 +55,7 @@ public class S3DownloadStep {
                 .build();
 
         ResponseInputStream<GetObjectResponse> ris = s3client.getObject(getObjectRequest);
-        File targetFile = Paths.get(downloadDir.getAbsolutePath(), key).toFile();
+        File targetFile = Paths.get(downloadDir.getAbsolutePath(), key.substring(key.lastIndexOf("/")+1)).toFile();
         
         Files.copy(ris, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
