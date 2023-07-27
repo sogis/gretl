@@ -38,7 +38,7 @@ public class S3DownloadStep {
     }
     
     public void execute(String accessKey, String secretKey, String bucketName, String key, String s3EndPoint, String s3Region, File downloadDir) throws URISyntaxException, IOException {        
-        log.lifecycle(String.format("Start S3UploadStep(Name: %s BucketName: %s Key: %s S3EndPoint: %s S3Region: %s DownloadDir %s)", taskName,
+        log.lifecycle(String.format("Start S3DownloadStep(Name: %s BucketName: %s Key: %s S3EndPoint: %s S3Region: %s DownloadDir %s)", taskName,
                  bucketName, key, s3EndPoint, s3Region, downloadDir));
         
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
