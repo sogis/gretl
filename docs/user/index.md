@@ -377,6 +377,8 @@ Simuliert mit einem HttpClient einige Curl-Befehle.
 Beispiele:
 
 ```
+import ch.so.agi.gretl.tasks.Curl.MethodType;
+
 task uploadData(type: Curl) {
     serverUrl = "https://geodienste.ch/data_agg/interlis/import"
     method = MethodType.POST
@@ -389,6 +391,8 @@ task uploadData(type: Curl) {
 ```
 
 ```
+import ch.so.agi.gretl.tasks.Curl.MethodType;
+
 task uploadData(type: Curl) {
     serverUrl = "https://testweb.so.ch/typo3/api/digiplan"
     method = MethodType.POST
@@ -401,6 +405,8 @@ task uploadData(type: Curl) {
 ```
 
 ```
+import ch.so.agi.gretl.tasks.Curl.MethodType;
+
 task downloadData(type: Curl) {
     serverUrl = "https://raw.githubusercontent.com/sogis/gretl/master/README.md"
     method = MethodType.GET
