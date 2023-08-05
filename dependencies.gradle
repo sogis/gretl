@@ -3,8 +3,8 @@ ext {
     ioxIliVersion = '1.21.13'
     ilivalidatorVersion = '1.12.1'
     ilivalidatorCustomFunctions = '1.1.50'
-    ili2pgVersion = '4.9.0'
-    ili2gpkgVersion = '4.9.0'
+    ili2pgVersion = '4.9.1'
+    ili2gpkgVersion = '4.9.1'
     ioxWkfVersion = '1.1.1-SNAPSHOT'
     ehiSqlgenVersion = '1.15.0'
     
