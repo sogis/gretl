@@ -24,7 +24,7 @@ dependencies {
     api 'ch.so.agi:gretl:2.2.+'
 
     // Add 3rd party libs which we want in the docker image.
-    api 'de.undercouch:gradle-download-task:3.4.1'
+    api 'de.undercouch:gradle-download-task:4.1.2'
     api 'org.hidetake:gradle-ssh-plugin:2.9.0'
     api 'jp.classmethod.aws:gradle-aws-plugin:0.41'
 
