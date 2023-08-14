@@ -357,11 +357,12 @@
             </xsl:element>
         </p>
 
+<!-- 
         <h2>Dienste / Web GIS Client</h2>
         <p>
             Service-Informationen können erst geliefert werden, wenn auch WMS/WFS/etc-Konfiguration im Repo als parsebare Dateien vorliegen. Dünkt mich nicht tragisch.
         </p>
-
+ -->
         <xsl:if test="ili:classDescription/ili:SO_AGI_Metadata_20230304.ClassDescription">
             <h2>Inhalt</h2>
 
