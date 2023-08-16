@@ -64,6 +64,8 @@ public class MetaPublisherStep {
     private GretlLogger log;
     private String taskName;
     
+    private static final String FOLDER_PREFIX = "metapublisher";
+    
     public static final String PATH_ELE_AKTUELL = "aktuell";
     public static final String PATH_ELE_META = "meta";
     public static final String PATH_ELE_CONFIG = "config";
@@ -122,11 +124,27 @@ public class MetaPublisherStep {
 //     * @throws SaxonApiException
 //     * @throws TemplateException 
 //     */
+    
+    // target: Root-Verzeichnis der Datenablage
+    // targetRootPath: target (expliziteres Nameing).
+    // targetPath: Verzeichnis des Themas innerhalb der Datenablage
+    // targetConfigPath: config-Verzeichnis innerhalb der Datenablage. Enthaelt Meta-Config-Dateien saemtlicher Themen. Damit es für die Datensuche einfacher ist (nur ein Verzeichnis).
+    // targetGeojsonFile: GeoJson-Datei innerhalb des config-Verzeichnisses.
+    // geocatTarget: Root-Verzeichnis der Geocat-Ablage
+    
+    // Saemtliche Dateien werden zuerst lokal gespeichert und ganz am Schluss an den Zielort kopiert.
+    // - Transaktion: Falls etwas schief geht, duerfen keine unterschiedlichen Metadaten publiziert sein.
+    // - Einige Klassen/Bibliotheken unterstuetzen nur "File" und keine "Path".
+    
     public void execute(File metaConfigFile, Path target, List<String> regions, 
             Path geocatTarget, String gretlEnvironment) throws IOException, IoxException, Ili2cException, SaxonApiException, TemplateException {
         log.lifecycle(String.format(
                 "Start MetaPublisherStep(Name: %s metaConfigFile: %s target: %s regions: %s geocatTarget: %s gretlEnvironment %s)",
                 taskName, metaConfigFile, target, regions, geocatTarget, gretlEnvironment));
+        
+        // Wird benoetigt, weil gewissen Dateien zuerst lokal erzeugt werden muessen und anschliessend
+        // als Path-Objekt kopiert werden koennen.
+        Path workFolder = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), FOLDER_PREFIX);        
         
         // (1) dataIdent (themePublication) ermitteln
         TomlParseResult metaTomlResult = Toml.parse(metaConfigFile.toPath());
@@ -164,7 +182,12 @@ public class MetaPublisherStep {
 
         // DOCS 
         boolean staticRegionsFile = false;
-        if (regions != null) {
+        
+        // TODO SFTP-Path-Implementierung macht wohl schon hier Probleme.
+        // Wahrscheinlich muss ich alles lokal machen (GeoJSON, Geocat, XTF, HTML)
+        // und dann an den Zielort mit Files.copy() kopieren.
+        
+        if (regions != null) {            
             File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
             if (!targetGeojsonFile.exists()) {
                 File sourceGeojsonFile = Paths.get(metaConfigFile.getParentFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
@@ -177,6 +200,7 @@ public class MetaPublisherStep {
                 regionMap.put(regionIdentifier, formattedDate);
             }
 
+            // FIXME muss Path sein?
             RegionsUtil.updateJson(targetGeojsonFile, regionMap);
         } else {
             // Es wird immer versucht ein allenfalls vorhandenes GeoJSON-Regionenfile zu deployen.
@@ -205,9 +229,12 @@ public class MetaPublisherStep {
         List<?> formats = formatsArray.toList(); 
         
         // (7) XTF herstellen
+        // Datei muss lokal erstellt werden und anschliessend als Path-Objekt kopiert
+        // werden, da IoxWriter nicht mit Path-Objekten umgehen kann.
         log.lifecycle("writing xtf file");
 
-        File xtfFile = Paths.get(targetPath.toFile().getAbsolutePath(), "meta-"+dataIdentifier+".xtf").toFile();
+        File xtfFile =  Paths.get(workFolder.toFile().getAbsolutePath(), "meta-"+dataIdentifier+".xtf").toFile();
+        
         TransferDescription td = getMetadataTransferdescription();
         IoxWriter ioxWriter = new XtfWriter(xtfFile, td);
 
@@ -345,6 +372,9 @@ public class MetaPublisherStep {
         ioxWriter.flush();
         ioxWriter.close();    
         
+        log.lifecycle("copying xtf file (tmp -> final)");
+        Files.copy(xtfFile.toPath(), targetPath.resolve(xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+        
         // (8) HTML-Datei aus XTF ableiten
         log.lifecycle("creating html file");
         
@@ -356,13 +386,17 @@ public class MetaPublisherStep {
         
         XdmNode source = proc.newDocumentBuilder().build(new StreamSource(xtfFile));
         
-        File outFile = Paths.get(targetPath.toFile().getAbsolutePath(), FilenameUtils.getBaseName(xtfFile.getName()) + ".html").toFile();
-        Serializer outFileSerializer = proc.newSerializer(outFile);
+        File outHtmlFile =  Paths.get(workFolder.toFile().getAbsolutePath(), FilenameUtils.getBaseName(xtfFile.getName()) + ".html").toFile();
+        //File outHtmlFile = Paths.get(targetPath.toFile().getAbsolutePath(), FilenameUtils.getBaseName(xtfFile.getName()) + ".html").toFile();
+        Serializer outFileSerializer = proc.newSerializer(outHtmlFile);
         XsltTransformer trans = exp.load();
         trans.setInitialContextNode(source);
         trans.setDestination(outFileSerializer);
         trans.transform();
         trans.close();
+        
+        log.lifecycle("copying html file (tmp -> final)");
+        Files.copy(outHtmlFile.toPath(), targetPath.resolve(outHtmlFile.getName()), StandardCopyOption.REPLACE_EXISTING);
         
         // (9) XTF in Config-Verzeichnis kopieren. Wird benoetigt, damit es fuer z.B. die Datensuche einfacher ist
         // an die notwendigen einzelnen Config-Dateien zu gelangen.
