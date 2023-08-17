@@ -202,12 +202,14 @@ public class MetaPublisherStep {
                 regionMap.put(regionIdentifier, formattedDate);
             }
 
+            log.lifecycle("upating GeoJSON file");
             RegionsUtil.updateJson(tmpTargetGeojsonFile.toFile(), regionMap);
         } else {
             // Es wird immer versucht ein allenfalls vorhandenes GeoJSON-Regionenfile zu deployen.
             // Fuer den Fall, dass eine statische GeoJSON-Datei existiert (z.B. Raster)
             Path sourceGeojsonFile = metaConfigFile.toPath().resolveSibling(dataIdentifier + ".json");
             if (Files.exists(sourceGeojsonFile)) {
+                log.lifecycle("static GeoJSON file exists");
                 staticRegionsFile = true;
                 if (!Files.exists(targetGeojsonFile)) {
                     Files.copy(sourceGeojsonFile, tmpTargetGeojsonFile);   
@@ -317,10 +319,11 @@ public class MetaPublisherStep {
         
         List<IomObject> formatIomObjects = new ArrayList<>();
         for (Object format : formats) {
-            
-            // TODO was wenn falsches Format??
-            
             IomObject formatObj = getIomObjectById(format.toString(), CORE_DATA_FILEFORMATS);
+            if (formatObj == null) {
+                log.lifecycle("Format '"+ format.toString() +"' not found. Will be ignored.");
+                continue;
+            }
             convertIomObjectToStructure(formatObj, FILEFORMAT_STRUCTURE_TAG);
             formatIomObjects.add(formatObj);
         }
@@ -396,7 +399,7 @@ public class MetaPublisherStep {
 
         // (9) XTF in Config-Verzeichnis kopieren. Wird benoetigt, damit es fuer z.B. die Datensuche einfacher ist
         // an die notwendigen einzelnen Config-Dateien zu gelangen.
-        Files.copy(xtfFile.toPath(), Paths.get(targetConfigPath.toFile().getAbsolutePath(), xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+        // Ganz ans Ende verschoben, zwecks "Transaktionssicherheit".
                 
         // (10) Geocat-XML erstellen
         Path geocatLocalFile = null;
@@ -427,14 +430,13 @@ public class MetaPublisherStep {
         // Poor man's solution fuer Transaktion.
         log.lifecycle("copying xtf file (tmp -> final)");
         Files.copy(xtfFile.toPath(), targetPath.resolve(xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(xtfFile.toPath(), targetConfigPath.resolve(xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
         log.lifecycle("copying html file (tmp -> final)");
         Files.copy(outHtmlFile.toPath(), targetPath.resolve(outHtmlFile.getName()), StandardCopyOption.REPLACE_EXISTING);
         log.lifecycle("copying geojson file (tmp -> final)");
         if(Files.exists(tmpTargetGeojsonFile)) Files.copy(tmpTargetGeojsonFile, targetGeojsonFile, StandardCopyOption.REPLACE_EXISTING);                       
         log.lifecycle("copying geocat file (tmp -> final)");
         if(geocatTarget != null) Files.copy(geocatLocalFile, geocatTargetFile, StandardCopyOption.REPLACE_EXISTING);   
-
-        
     }
     
     private File copyResourceToTmpDir(String resource) throws IOException {

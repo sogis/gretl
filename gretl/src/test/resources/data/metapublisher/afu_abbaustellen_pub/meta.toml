@@ -18,7 +18,7 @@ owner = "ch.so.afu"
 servicer = "ch.so.agi"
 licence = "https://files.geo.so.ch/nutzungsbedingungen.html"
 furtherInformation = "https://so.ch/verwaltung/bau-und-justizdepartement/amt-fuer-umwelt/boden-untergrund-geologie/rohstoffe-abbau/"
-formats = ["XTF", "GPKG", "SHP", "DXF"]
+formats = ["XTF", "GPKG", "SHP", "xxxxxxxxxDXF"]
 
 [SO_AFU_ABBAUSTELLEN_Publikation_20221103.Abbaustelle.Abbaustelle]
 title = "Standorte Abbaustellen"
