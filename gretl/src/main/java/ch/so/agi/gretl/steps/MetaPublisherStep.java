@@ -205,7 +205,7 @@ public class MetaPublisherStep {
                 regionMap.put(regionIdentifier, formattedDate);
             }
 
-            log.lifecycle("upating GeoJSON file");
+            log.lifecycle("updating GeoJSON file");
             RegionsUtil.updateJson(tmpTargetGeojsonFile.toFile(), regionMap);
         } else {
             // Es wird immer versucht ein allenfalls vorhandenes GeoJSON-Regionenfile zu deployen.
