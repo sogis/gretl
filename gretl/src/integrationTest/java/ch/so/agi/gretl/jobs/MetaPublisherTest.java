@@ -34,22 +34,22 @@ public class MetaPublisherTest {
         
         // Check result
         Path target = Paths.get(jobDirectory);
-        File htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+dataIdent+".html").toFile();
-        assertTrue(htmlFile.exists());
+        Path htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+dataIdent+".html");
+        assertTrue(Files.exists(htmlFile));
         {
-            byte[] bytes = Files.readAllBytes(htmlFile.toPath());
+            byte[] bytes = Files.readAllBytes(htmlFile);
             String fileContent = new String (bytes);
             assertTrue(fileContent.contains("Datenbeschreibung • Amt für Geoinformation Kanton Solothurn"));
             assertTrue(fileContent.contains("<div id=\"title\">Abbaustellen</div>"));   
         }
         
-        File xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf").toFile();
-        assertTrue(xtfFile.exists());
+        Path xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf");
+        assertTrue(Files.exists(xtfFile));
         
-        File xmlFile = target.resolve(PATH_ELE_ROOT).resolve(GEOCAT_FTP_DIR).resolve(GEOCAT_PATH_ELE_ENV).resolve(dataIdent+".xml").toFile();
-        assertTrue(xmlFile.exists());
+        Path xmlFile = target.resolve(PATH_ELE_ROOT).resolve(GEOCAT_FTP_DIR).resolve(GEOCAT_PATH_ELE_ENV).resolve(dataIdent+".xml");
+        assertTrue(Files.exists(xmlFile));
         {
-            byte[] bytes = Files.readAllBytes(xmlFile.toPath());
+            byte[] bytes = Files.readAllBytes(xmlFile);
             String fileContent = new String (bytes);
             assertTrue(fileContent.contains("<gco:CharacterString>Abbaustellen</gco:CharacterString>"));
             assertTrue(fileContent.contains("files-i.geo.so.ch"));
@@ -68,24 +68,24 @@ public class MetaPublisherTest {
         
         // Check result
         Path target = Paths.get(jobDirectory);
-        File htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+dataIdent+".html").toFile();
-        assertTrue(htmlFile.exists());
+        Path htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+dataIdent+".html");
+        assertTrue(Files.exists(htmlFile));
         
         {
-            byte[] bytes = Files.readAllBytes(htmlFile.toPath());
+            byte[] bytes = Files.readAllBytes(htmlFile);
             String fileContent = new String (bytes);
             assertTrue(fileContent.contains("Datenbeschreibung • Amt für Geoinformation Kanton Solothurn"));
             assertTrue(fileContent.contains("<div id=\"title\">Amtliche Vermessung (DM01 CH + DXF/Geobau)</div>"));            
         }
 
-        File xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf").toFile();
-        assertTrue(xtfFile.exists());
+        Path xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf");
+        assertTrue(Files.exists(xtfFile));
 
-        File jsonFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve(dataIdent + ".json").toFile();
-        assertTrue(jsonFile.exists()); 
+        Path jsonFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve(dataIdent + ".json");
+        assertTrue(Files.exists(jsonFile)); 
         
         {
-            byte[] bytes = Files.readAllBytes(jsonFile.toPath());
+            byte[] bytes = Files.readAllBytes(jsonFile);
             String fileContent = new String (bytes);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -108,16 +108,16 @@ public class MetaPublisherTest {
         // Check result
         Path target = Paths.get(jobDirectory);
         
-        File xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf").toFile();
-        assertTrue(xtfFile.exists());
+        Path xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf");
+        assertTrue(Files.exists(xtfFile));
         
         {
-            byte[] bytes = Files.readAllBytes(xtfFile.toPath());
+            byte[] bytes = Files.readAllBytes(xtfFile);
             String fileContent = new String (bytes);
             assertTrue(fileContent.contains("<identifier>2612519_1254998</identifier>"));
         }
 
-        File jsonFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve(dataIdent + ".json").toFile();
-        assertTrue(jsonFile.exists()); 
+        Path jsonFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve(dataIdent + ".json");
+        assertTrue(Files.exists(jsonFile)); 
     }
 }

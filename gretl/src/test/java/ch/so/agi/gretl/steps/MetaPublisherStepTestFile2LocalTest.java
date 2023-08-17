@@ -47,13 +47,13 @@ public class MetaPublisherStepTestFile2LocalTest {
         metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/agi_orthofoto_1993_meta_pub/meta.toml"), target, null, geocatTarget, "production");
 
         // Check results
-        File jsonFile = target.resolve(PATH_ELE_CONFIG).resolve(themePublication + ".json").toFile();
-        assertTrue(jsonFile.exists()); 
+        Path jsonFile = target.resolve(PATH_ELE_CONFIG).resolve(themePublication + ".json");
+        assertTrue(Files.exists(jsonFile)); 
         
-        File xtfFile = target.resolve(PATH_ELE_CONFIG).resolve("meta-"+themePublication+".xtf").toFile();
-        assertTrue(xtfFile.exists());
+        Path xtfFile = target.resolve(PATH_ELE_CONFIG).resolve("meta-"+themePublication+".xtf");
+        assertTrue(Files.exists(xtfFile)); 
         
-        byte[] bytes = Files.readAllBytes(xtfFile.toPath());
+        byte[] bytes = Files.readAllBytes(xtfFile);
         String fileContent = new String (bytes);
         assertTrue(fileContent.contains("<identifier>2612519_1254998</identifier>"));
     }
@@ -70,16 +70,16 @@ public class MetaPublisherStepTestFile2LocalTest {
         metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/afu_abbaustellen_pub/meta.toml"), target, null, null, "integration");
         
         // Check results
-        File htmlFile = target.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+themePublication+".html").toFile();
-        assertTrue(htmlFile.exists());
+        Path htmlFile = target.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+themePublication+".html");
+        assertTrue(Files.exists(htmlFile));
         
-        byte[] bytes = Files.readAllBytes(htmlFile.toPath());
+        byte[] bytes = Files.readAllBytes(htmlFile);
         String fileContent = new String (bytes);
         assertTrue(fileContent.contains("Datenbeschreibung • Amt für Geoinformation Kanton Solothurn"));
         assertTrue(fileContent.contains("<div id=\"title\">Abbaustellen</div>"));
 
-        File xtfFile = target.resolve(PATH_ELE_CONFIG).resolve("meta-"+themePublication+".xtf").toFile();
-        assertTrue(xtfFile.exists());
+        Path xtfFile = target.resolve(PATH_ELE_CONFIG).resolve("meta-"+themePublication+".xtf");
+        assertTrue(Files.exists(xtfFile));
     }
 
     @Test
@@ -96,10 +96,10 @@ public class MetaPublisherStepTestFile2LocalTest {
         metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/afu_abbaustellen_pub/meta.toml"), target, null, geocatTarget, "integration");
         
         // Check results
-        File xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR_INT).resolve(themePublication+".xml").toFile();
-        assertTrue(xmlFile.exists());
+        Path xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR_INT).resolve(themePublication+".xml");
+        assertTrue(Files.exists(xmlFile));
         
-        byte[] bytes = Files.readAllBytes(xmlFile.toPath());
+        byte[] bytes = Files.readAllBytes(xmlFile);
         String fileContent = new String (bytes);
         assertTrue(fileContent.contains("<gco:CharacterString>Abbaustellen</gco:CharacterString>"));
         assertTrue(fileContent.contains("files-i.geo.so.ch"));
@@ -122,24 +122,24 @@ public class MetaPublisherStepTestFile2LocalTest {
         metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/agi_dm01so_pub/meta-dm01_so.toml"), target, regions, null, "integration");
 
         // Check results
-        File htmlFile = target.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+themePublication+".html").toFile();
-        assertTrue(htmlFile.exists());
+        Path htmlFile = target.resolve(themePublication).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+themePublication+".html");
+        assertTrue(Files.exists(htmlFile));
 
         {
-            byte[] bytes = Files.readAllBytes(htmlFile.toPath());
+            byte[] bytes = Files.readAllBytes(htmlFile);
             String fileContent = new String (bytes);
             assertTrue(fileContent.contains("Datenbeschreibung • Amt für Geoinformation Kanton Solothurn"));
             assertTrue(fileContent.contains("<div id=\"title\">Amtliche Vermessung (DM01 CH + DXF/Geobau)</div>"));  
         }
 
-        File xtfFile = target.resolve(PATH_ELE_CONFIG).resolve("meta-"+themePublication+".xtf").toFile();
-        assertTrue(xtfFile.exists());
+        Path xtfFile = target.resolve(PATH_ELE_CONFIG).resolve("meta-"+themePublication+".xtf");
+        assertTrue(Files.exists(xtfFile));
         
-        File jsonFile = target.resolve(PATH_ELE_CONFIG).resolve(themePublication + ".json").toFile();
-        assertTrue(jsonFile.exists()); 
+        Path jsonFile = target.resolve(PATH_ELE_CONFIG).resolve(themePublication + ".json");
+        assertTrue(Files.exists(jsonFile)); 
         
         {
-            byte[] bytes = Files.readAllBytes(jsonFile.toPath());
+            byte[] bytes = Files.readAllBytes(jsonFile);
             String fileContent = new String (bytes);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -168,10 +168,10 @@ public class MetaPublisherStepTestFile2LocalTest {
         metaPublisherStep.execute(new File("src/test/resources/data/metapublisher/agi_dm01so_pub/meta-dm01_so.toml"), target, regions, geocatTarget, "integration");
 
         // Check results
-        File xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR_INT).resolve(themePublication+".xml").toFile();
-        assertTrue(xmlFile.exists());
+        Path xmlFile = geocatTarget.resolve(GEOCAT_FTP_DIR_INT).resolve(themePublication+".xml");
+        assertTrue(Files.exists(xmlFile));
 
-        byte[] bytes = Files.readAllBytes(xmlFile.toPath());
+        byte[] bytes = Files.readAllBytes(xmlFile);
         String fileContent = new String (bytes);
         assertTrue(fileContent.contains("<gco:CharacterString>Amtliche Vermessung"));  
     }

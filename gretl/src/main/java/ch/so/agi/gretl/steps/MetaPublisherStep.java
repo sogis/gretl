@@ -128,7 +128,7 @@ public class MetaPublisherStep {
     // target: Root-Verzeichnis der Datenablage
     // targetRootPath: target (expliziteres Nameing).
     // targetPath: Verzeichnis des Themas innerhalb der Datenablage
-    // targetConfigPath: config-Verzeichnis innerhalb der Datenablage. Enthaelt Meta-Config-Dateien saemtlicher Themen. Damit es für die Datensuche einfacher ist (nur ein Verzeichnis).
+    // targetConfigPath: config-Verzeichnis innerhalb der Datenablage. Enthaelt Meta-Config-Dateien saemtlicher Themen. Damit es fuer die Datensuche einfacher ist (nur ein Verzeichnis).
     // targetGeojsonFile: GeoJson-Datei innerhalb des config-Verzeichnisses.
     // geocatTarget: Root-Verzeichnis der Geocat-Ablage
     
@@ -183,15 +183,17 @@ public class MetaPublisherStep {
         // DOCS 
         boolean staticRegionsFile = false;
         
-        // TODO SFTP-Path-Implementierung macht wohl schon hier Probleme.
-        // Wahrscheinlich muss ich alles lokal machen (GeoJSON, Geocat, XTF, HTML)
-        // und dann an den Zielort mit Files.copy() kopieren.
-        
+        Path targetGeojsonFile = targetConfigPath.resolve(dataIdentifier + ".json");
+        Path tmpTargetGeojsonFile = Paths.get(workFolder.toFile().getAbsolutePath(), dataIdentifier + ".json");
         if (regions != null) {            
-            File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
-            if (!targetGeojsonFile.exists()) {
-                File sourceGeojsonFile = Paths.get(metaConfigFile.getParentFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
-                Files.copy(sourceGeojsonFile.toPath(), targetGeojsonFile.toPath());
+            // Falls die Datei bereits vorhanden ist, muss sie in ein lokales tmp-Verzeichnis kopiert werden,
+            // damit man ganz am Schluss alles zusammen kopieren kann.
+            // Falls sie nicht vorhanden ist, wird sie vom GRETL-Job-Repo in das tmp-Verzeichnis kopiert.
+            if (Files.exists(targetGeojsonFile)) {                
+                Files.copy(targetGeojsonFile, tmpTargetGeojsonFile);
+            } else {
+                Path sourceGeojsonFile = metaConfigFile.toPath().resolveSibling(dataIdentifier + ".json");
+                Files.copy(sourceGeojsonFile, tmpTargetGeojsonFile);
             }       
             
             String formattedDate = sdf.format(new Date());
@@ -200,17 +202,17 @@ public class MetaPublisherStep {
                 regionMap.put(regionIdentifier, formattedDate);
             }
 
-            // FIXME muss Path sein?
-            RegionsUtil.updateJson(targetGeojsonFile, regionMap);
+            RegionsUtil.updateJson(tmpTargetGeojsonFile.toFile(), regionMap);
         } else {
             // Es wird immer versucht ein allenfalls vorhandenes GeoJSON-Regionenfile zu deployen.
             // Fuer den Fall, dass eine statische GeoJSON-Datei existiert (z.B. Raster)
-            File sourceGeojsonFile = Paths.get(metaConfigFile.getParentFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
-            if (sourceGeojsonFile.exists()) {
+            Path sourceGeojsonFile = metaConfigFile.toPath().resolveSibling(dataIdentifier + ".json");
+            if (Files.exists(sourceGeojsonFile)) {
                 staticRegionsFile = true;
-                File targetGeojsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
-                if (!targetGeojsonFile.exists()) {
-                    Files.copy(sourceGeojsonFile.toPath(), targetGeojsonFile.toPath());   
+                if (!Files.exists(targetGeojsonFile)) {
+                    Files.copy(sourceGeojsonFile, tmpTargetGeojsonFile);   
+                } else {
+                    Files.copy(targetGeojsonFile, tmpTargetGeojsonFile);                       
                 }
             }            
         }
@@ -233,7 +235,7 @@ public class MetaPublisherStep {
         // werden, da IoxWriter nicht mit Path-Objekten umgehen kann.
         log.lifecycle("writing xtf file");
 
-        File xtfFile =  Paths.get(workFolder.toFile().getAbsolutePath(), "meta-"+dataIdentifier+".xtf").toFile();
+        File xtfFile = Paths.get(workFolder.toFile().getAbsolutePath(), "meta-"+dataIdentifier+".xtf").toFile();
         
         TransferDescription td = getMetadataTransferdescription();
         IoxWriter ioxWriter = new XtfWriter(xtfFile, td);
@@ -260,7 +262,6 @@ public class MetaPublisherStep {
         if (keywords!=null) iomObj.setattrvalue("keywords", keywords);
         if (synonyms!=null) iomObj.setattrvalue("synonyms", synonyms);
         
-        // DOCS
         IomObject servicerIomObject = getIomObjectById(servicer, CORE_DATA_OFFICES);
         IomObject ownerIomObject = getIomObjectById(owner, CORE_DATA_OFFICES);
 
@@ -287,7 +288,7 @@ public class MetaPublisherStep {
             bboxObj.setattrvalue("northlimit", "1260845");
         } else {
             // Die Extrema werden aus der Json-Datei mit den Regions/Items gerechnet.
-            File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
+            File jsonFile = tmpTargetGeojsonFile.toFile();
             Map<String,Double> boundary = new HashMap<String,Double>();
             RegionsUtil.getBoundary(jsonFile, boundary);
             
@@ -299,7 +300,7 @@ public class MetaPublisherStep {
         iomObj.addattrobj("boundary", bboxObj);
         
         if (regions != null || staticRegionsFile) {
-            File jsonFile = Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
+            File jsonFile = tmpTargetGeojsonFile.toFile();// Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
             List<IomObject> items = new ArrayList<IomObject>();
             RegionsUtil.getItems(jsonFile, items);
             
@@ -329,7 +330,6 @@ public class MetaPublisherStep {
             iomObj.addattrobj("fileFormats", formatStructure);
         }
         
-        // DOCS
         if (gretlEnvironment.equalsIgnoreCase("production")) {
             iomObj.setattrvalue("downloadHostUrl", "https://files.geo.so.ch");
             iomObj.setattrvalue("appHostUrl", "https://data.geo.so.ch");     
@@ -371,10 +371,7 @@ public class MetaPublisherStep {
         ioxWriter.write(new EndTransferEvent());
         ioxWriter.flush();
         ioxWriter.close();    
-        
-        log.lifecycle("copying xtf file (tmp -> final)");
-        Files.copy(xtfFile.toPath(), targetPath.resolve(xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
-        
+                
         // (8) HTML-Datei aus XTF ableiten
         log.lifecycle("creating html file");
         
@@ -387,43 +384,54 @@ public class MetaPublisherStep {
         XdmNode source = proc.newDocumentBuilder().build(new StreamSource(xtfFile));
         
         File outHtmlFile =  Paths.get(workFolder.toFile().getAbsolutePath(), FilenameUtils.getBaseName(xtfFile.getName()) + ".html").toFile();
-        //File outHtmlFile = Paths.get(targetPath.toFile().getAbsolutePath(), FilenameUtils.getBaseName(xtfFile.getName()) + ".html").toFile();
         Serializer outFileSerializer = proc.newSerializer(outHtmlFile);
         XsltTransformer trans = exp.load();
         trans.setInitialContextNode(source);
         trans.setDestination(outFileSerializer);
         trans.transform();
         trans.close();
-        
-        log.lifecycle("copying html file (tmp -> final)");
-        Files.copy(outHtmlFile.toPath(), targetPath.resolve(outHtmlFile.getName()), StandardCopyOption.REPLACE_EXISTING);
-        
+
         // (9) XTF in Config-Verzeichnis kopieren. Wird benoetigt, damit es fuer z.B. die Datensuche einfacher ist
         // an die notwendigen einzelnen Config-Dateien zu gelangen.
         Files.copy(xtfFile.toPath(), Paths.get(targetConfigPath.toFile().getAbsolutePath(), xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
                 
         // (10) Geocat-XML erstellen
+        Path geocatLocalFile = null;
+        Path geocatTargetFile = null;
         if (geocatTarget != null) {
-            // DOCS
             String geocatFtpDir = "int";
             if (gretlEnvironment.equalsIgnoreCase("production")) {
                 geocatFtpDir = "prod";
             } 
             
             String identifer = iomObj.getattrvalue("identifier");
-            Path geocatLocalFile = targetConfigPath.resolve(dataIdentifier + ".xml");
+            geocatLocalFile = targetConfigPath.resolve(dataIdentifier + ".xml");
             
             // Was nur lokal (beim Entwickeln) eintreffen sollte.
             if (!geocatTarget.resolve(geocatFtpDir).toFile().exists()) {
                 Files.createDirectories(geocatTarget.resolve(geocatFtpDir));
             }
             
-            Path geocatTargetFile = geocatTarget.resolve(geocatFtpDir).resolve(geocatLocalFile.toFile().getName());
+            geocatTargetFile = geocatTarget.resolve(geocatFtpDir).resolve(geocatLocalFile.toFile().getName());
             File templateFile = copyResourceToTmpDir(METAPUBLISHER_RESOURCE_DIR +"/"+ GEOCAT_DIR_NAME + "/" + GEOCAT_TEMPLATE_FILENAME);
 
             Geocat.export(iomObj, templateFile, geocatLocalFile);
-            Files.copy(geocatLocalFile, geocatTargetFile, StandardCopyOption.REPLACE_EXISTING);   
         }
+        
+        // (11)
+        // Weil verschiedene Dateien in unterschiedlichen Prozessen hergestellt werden, sollen erst ganz am Schluss
+        // (wenn alles erfolgreich durchgelaufen ist) die Daten an ihren defintiven Zielort kopiert werden. 
+        // Poor man's solution fuer Transaktion.
+        log.lifecycle("copying xtf file (tmp -> final)");
+        Files.copy(xtfFile.toPath(), targetPath.resolve(xtfFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+        log.lifecycle("copying html file (tmp -> final)");
+        Files.copy(outHtmlFile.toPath(), targetPath.resolve(outHtmlFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+        log.lifecycle("copying geojson file (tmp -> final)");
+        if(Files.exists(tmpTargetGeojsonFile)) Files.copy(tmpTargetGeojsonFile, targetGeojsonFile, StandardCopyOption.REPLACE_EXISTING);                       
+        log.lifecycle("copying geocat file (tmp -> final)");
+        if(geocatTarget != null) Files.copy(geocatLocalFile, geocatTargetFile, StandardCopyOption.REPLACE_EXISTING);   
+
+        
     }
     
     private File copyResourceToTmpDir(String resource) throws IOException {
