@@ -36,9 +36,9 @@ public class MetaPublisherStepTestFile2LocalTest {
 
     @Test
     public void publish_raster_geocat_Ok() throws Exception {
-        Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
+        //Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
         //Path geocatTarget = Paths.get("/Users/stefan/tmp/metapublisher/geocat/");
-        //Path target = folder.newFolder("publish_raster_geocat_Ok").toPath();
+        Path target = folder.newFolder("publish_raster_geocat_Ok").toPath();
         Path geocatTarget = folder.newFolder("publish_raster_geocat_Ok_geocat").toPath();
         String themePublication = "ch.so.agi.orthofoto_1993.grau";
 
