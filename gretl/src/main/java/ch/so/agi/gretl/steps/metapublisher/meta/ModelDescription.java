@@ -209,9 +209,30 @@ public class ModelDescription {
     private static void overrideModelDescription(Map<String, ClassDescription> classDescriptions, TomlParseResult metaTomlResult) {
         Map<String, Object> metaTomlMap = metaTomlResult.toMap();
         for (Map.Entry<String, Object> entry : metaTomlMap.entrySet()) {
+            
+            System.out.println("***** " + entry.getKey());
+            
+            
             if (!META_TOML_CONFIG_SECTIONS.contains(entry.getKey())) {
-                String modelName = (String) entry.getKey();
-                parseTopicDesc(classDescriptions, modelName, (TomlTable) entry.getValue());
+                //String modelName = (String) entry.getKey();
+                //parseTopicDesc(classDescriptions, modelName, (TomlTable) entry.getValue());
+                
+                TomlTable classOverride = (TomlTable) entry.getValue();
+                String title = classOverride.getString("title");
+                String description = classOverride.getString("description");
+                
+                String qualifiedClassName = entry.getKey();
+                ClassDescription classDescription = classDescriptions.get(qualifiedClassName);
+
+                if (classDescription != null) {
+                    if (title != null) {
+                        classDescription.setTitle(title);
+                    } 
+
+                    if (description != null) {
+                        classDescription.setDescription(description);
+                    }
+                }                               
             }      
         }
     }
@@ -232,10 +253,10 @@ public class ModelDescription {
             String description = classDesc.getString("description");
 
             String qualifiedClassName = modelName + "." + topicName + "." + className;
-//            System.out.println("qualifiedClassName: " + qualifiedClassName);
-//            System.out.println("className: " + className);
-//            System.out.println("title: " + title);
-//            System.out.println("description: " + description);
+            System.out.println("qualifiedClassName: " + qualifiedClassName);
+            System.out.println("className: " + className);
+            System.out.println("title: " + title);
+            System.out.println("description: " + description);
             
             ClassDescription classDescription = classDescriptions.get(qualifiedClassName);
 //            System.out.println(classDescription);

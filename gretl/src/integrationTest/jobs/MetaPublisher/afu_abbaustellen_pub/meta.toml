@@ -1,4 +1,4 @@
-[meta]
+["meta"]
 identifier = "ch.so.afu.abbaustellen"
 title = "Abbaustellen"
 description = """
@@ -20,7 +20,7 @@ licence = "https://files.geo.so.ch/nutzungsbedingungen.html"
 furtherInformation = "https://so.ch/verwaltung/bau-und-justizdepartement/amt-fuer-umwelt/boden-untergrund-geologie/rohstoffe-abbau/"
 formats = ["XTF", "GPKG", "SHP", "DXF"]
 
-[SO_AFU_ABBAUSTELLEN_Publikation_20221103.Abbaustelle.Abbaustelle]
+["SO_AFU_ABBAUSTELLEN_Publikation_20221103.Abbaustelle.Abbaustelle"]
 title = "Standorte Abbaustellen"
 description = "Umfasst die Flächenobjekte der Abbaugebiete, Kleinabbaustellen und künftigen Standorte. Er enthält u.a. Angaben zum abgebauten Material und zur Abstimmungskategorie im Richtplan."
 

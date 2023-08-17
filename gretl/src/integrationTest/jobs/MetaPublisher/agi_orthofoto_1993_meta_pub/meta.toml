@@ -1,4 +1,4 @@
-[meta]
+["meta"]
 identifier = "ch.so.agi.orthofoto_1993.grau"
 title = "Orthofoto 1993 Graustufen"
 description = """
@@ -11,6 +11,6 @@ servicer = "ch.so.agi"
 licence = "https://files.geo.so.ch/nutzungsbedingungen.html"
 formats = ["GTIFF"]
 
-[config]
+["config"]
 printClassDescription = false
 
