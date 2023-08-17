@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -233,6 +234,7 @@ public class MetaPublisherStep {
         String furtherInformation = metaTomlResult.getString("meta.furtherInformation");
         TomlArray formatsArray = metaTomlResult.getArrayOrEmpty("meta.formats");
         List<?> formats = formatsArray.toList(); 
+        LocalDate lastPublishingDate = metaTomlResult.getLocalDate("meta.lastPublishingDate");
         
         // (7) XTF herstellen
         // Datei muss lokal erstellt werden und anschliessend als Path-Objekt kopiert
@@ -259,8 +261,16 @@ public class MetaPublisherStep {
         
         iomObj.setattrvalue("title", title);
         if (description!=null) iomObj.setattrvalue("shortDescription", description); // DOCS CDATA wird nicht beruecksichtigt, d.h. auch mit einem CDATA-Block werden die "<"-Zeichen etc. escaped.
-        String dateString = sdf.format(new Date());
-        iomObj.setattrvalue("lastPublishingDate", dateString);
+        String dateString = null;
+        if (lastPublishingDate == null) {
+            dateString = sdf.format(new Date());
+        } else {
+            dateString = lastPublishingDate.format(DateTimeFormatter.ISO_DATE);
+        }
+        System.out.println("*****"+dateString);
+
+        iomObj.setattrvalue("lastPublishingDate", dateString);            
+
         iomObj.setattrvalue("licence", licence);
         if (furtherInformation!=null) iomObj.setattrvalue("furtherInformation", furtherInformation);            
         if (keywords!=null) iomObj.setattrvalue("keywords", keywords);

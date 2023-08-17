@@ -10,6 +10,7 @@ owner = "ch.so.agi"
 servicer = "ch.so.agi"
 licence = "https://files.geo.so.ch/nutzungsbedingungen.html"
 formats = ["GTIFF"]
+lastPublishingDate = 1993-04-01
 
 ["config"]
 printClassDescription = false

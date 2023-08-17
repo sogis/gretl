@@ -36,9 +36,9 @@ public class MetaPublisherStepTestFile2LocalTest {
 
     @Test
     public void publish_raster_geocat_Ok() throws Exception {
-        //Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
+        Path target = Paths.get("/Users/stefan/tmp/metapublisher/out/");
         //Path geocatTarget = Paths.get("/Users/stefan/tmp/metapublisher/geocat/");
-        Path target = folder.newFolder("publish_raster_geocat_Ok").toPath();
+        //Path target = folder.newFolder("publish_raster_geocat_Ok").toPath();
         Path geocatTarget = folder.newFolder("publish_raster_geocat_Ok_geocat").toPath();
         String themePublication = "ch.so.agi.orthofoto_1993.grau";
 
@@ -56,6 +56,7 @@ public class MetaPublisherStepTestFile2LocalTest {
         byte[] bytes = Files.readAllBytes(xtfFile);
         String fileContent = new String (bytes);
         assertTrue(fileContent.contains("<identifier>2612519_1254998</identifier>"));
+        assertTrue(fileContent.contains("<lastPublishingDate>1993-04-01</lastPublishingDate>"));
     }
    
     @Test
