@@ -210,13 +210,7 @@ public class ModelDescription {
         Map<String, Object> metaTomlMap = metaTomlResult.toMap();
         for (Map.Entry<String, Object> entry : metaTomlMap.entrySet()) {
             
-            System.out.println("***** " + entry.getKey());
-            
-            
             if (!META_TOML_CONFIG_SECTIONS.contains(entry.getKey())) {
-                //String modelName = (String) entry.getKey();
-                //parseTopicDesc(classDescriptions, modelName, (TomlTable) entry.getValue());
-                
                 TomlTable classOverride = (TomlTable) entry.getValue();
                 String title = classOverride.getString("title");
                 String description = classOverride.getString("description");
@@ -237,42 +231,6 @@ public class ModelDescription {
         }
     }
     
-    private static void parseTopicDesc(Map<String, ClassDescription> classDescriptions, String modelName, TomlTable topicDescs) {
-        for (Map.Entry<String, Object> entry : topicDescs.entrySet()) {
-            String topicName = (String) entry.getKey();
-            parseClassDesc(classDescriptions, modelName, topicName, (TomlTable) entry.getValue());   
-        }
-    }
-    
-    private static void parseClassDesc(Map<String, ClassDescription> classDescriptions, String modelName, String topicName, TomlTable classDescs) {
-        for (Map.Entry<String, Object> entry : classDescs.entrySet()) {
-            String className = (String) entry.getKey();
-            
-            TomlTable classDesc = (TomlTable) entry.getValue();
-            String title = classDesc.getString("title");
-            String description = classDesc.getString("description");
-
-            String qualifiedClassName = modelName + "." + topicName + "." + className;
-            System.out.println("qualifiedClassName: " + qualifiedClassName);
-            System.out.println("className: " + className);
-            System.out.println("title: " + title);
-            System.out.println("description: " + description);
-            
-            ClassDescription classDescription = classDescriptions.get(qualifiedClassName);
-//            System.out.println(classDescription);
-
-            if (classDescription != null) {
-                if (title != null) {
-                    classDescription.setTitle(title);
-                } 
-
-                if (description != null) {
-                    classDescription.setDescription(description);
-                }
-            }               
-        }
-    }
-
     private static TransferDescription getTransferDescriptionFromModelName(String modelName, String localRepo) throws  IOException, Ili2cException {
         IliManager manager = new IliManager();
         File ilicacheFolder = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), ".ilicache_").toFile();        

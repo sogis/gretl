@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
+import org.interlis2.validator.Validator;
 import org.tomlj.Toml;
 import org.tomlj.TomlArray;
 import org.tomlj.TomlParseResult;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import ch.ehi.basics.settings.Settings;
 import ch.interlis.ili2c.Ili2c;
 import ch.interlis.ili2c.Ili2cException;
 import ch.interlis.ili2c.Ili2cFailure;
@@ -377,6 +379,18 @@ public class MetaPublisherStep {
         ioxWriter.write(new EndTransferEvent());
         ioxWriter.flush();
         ioxWriter.close();    
+        
+        // Validate xtf file
+        Settings settings = new Settings();
+        File iliFile = copyResourceToTmpDir(METAPUBLISHER_RESOURCE_DIR +"/"+ ILI_DIR_NAME + "/" + ILI_MODEL_METADATA);
+        String settingIlidirs = iliFile.getParentFile().getAbsolutePath() + ";" + Validator.SETTING_DEFAULT_ILIDIRS;
+        settings.setValue(Validator.SETTING_ILIDIRS, settingIlidirs);
+        
+        String xtfFiles[] = new String[] { xtfFile.getAbsolutePath() };
+        boolean valid = Validator.runValidation(xtfFiles, settings);
+        if (!valid) {
+            throw new IllegalStateException("xtf file is not valid");
+        }
                 
         // (8) HTML-Datei aus XTF ableiten
         log.lifecycle("creating html file");
