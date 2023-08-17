@@ -300,7 +300,7 @@ public class MetaPublisherStep {
         iomObj.addattrobj("boundary", bboxObj);
         
         if (regions != null || staticRegionsFile) {
-            File jsonFile = tmpTargetGeojsonFile.toFile();// Paths.get(targetConfigPath.toFile().getAbsolutePath(), dataIdentifier + ".json").toFile();
+            File jsonFile = tmpTargetGeojsonFile.toFile();
             List<IomObject> items = new ArrayList<IomObject>();
             RegionsUtil.getItems(jsonFile, items);
             
@@ -317,6 +317,9 @@ public class MetaPublisherStep {
         
         List<IomObject> formatIomObjects = new ArrayList<>();
         for (Object format : formats) {
+            
+            // TODO was wenn falsches Format??
+            
             IomObject formatObj = getIomObjectById(format.toString(), CORE_DATA_FILEFORMATS);
             convertIomObjectToStructure(formatObj, FILEFORMAT_STRUCTURE_TAG);
             formatIomObjects.add(formatObj);

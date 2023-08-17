@@ -257,7 +257,7 @@
                     <i style="line-height:40px; vertical-align:middle;" ></i>
                     <ul class="breadcrumb">
                         <li><a href="https://geo.so.ch">Home</a></li>
-                        <li><a href="https://geo.so.ch/datenbezug">Datenbezug</a></li>
+                        <li><a href="https://data.geo.so.ch">Datenbezug</a></li>
                         <li class="active">Datenbeschreibung</li>
                     </ul>
                 </div>
