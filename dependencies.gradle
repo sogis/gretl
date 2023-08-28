@@ -5,7 +5,7 @@ ext {
     ilivalidatorCustomFunctions = '1.1.50'
     ili2pgVersion = '4.9.1'
     ili2gpkgVersion = '4.9.1'
-    ioxWkfVersion = '1.1.1-SNAPSHOT'
+    ioxWkfVersion = '1.1.1'
     ehiSqlgenVersion = '1.15.0'
     
     ioxParquetVersion = '0.0.25'
