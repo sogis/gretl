@@ -189,7 +189,7 @@ public class Publisher extends DefaultTask {
                 simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
                 if(kgdiTokenService!=null) {
                     simiSvc.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
-                }                
+                }
             }
         }
         if(version==null) {
