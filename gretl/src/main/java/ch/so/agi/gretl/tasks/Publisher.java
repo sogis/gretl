@@ -183,15 +183,13 @@ public class Publisher extends DefaultTask {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
         }
         SimiSvcApi simiSvc=null;
-        if(kgdiService!=null) {            
+        if(kgdiService!=null) {
             if (!kgdiService.getUrl().isEmpty() && !kgdiService.getUser().isEmpty() && !kgdiService.getPassword().isEmpty()) {
-                if (kgdiService.getUrl().trim().length()!=0 && kgdiService.getUser().trim().length()!=0 && kgdiService.getPassword().trim().length()!=0) {                    
-                    simiSvc=new SimiSvcClient();
-                    simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
-                    if(kgdiTokenService!=null) {
-                        simiSvc.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
-                    }                    
-                }
+                simiSvc=new SimiSvcClient();
+                simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
+                if(kgdiTokenService!=null) {
+                    simiSvc.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
+                }                
             }
         }
         if(version==null) {
