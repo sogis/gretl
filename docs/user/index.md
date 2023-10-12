@@ -1626,7 +1626,7 @@ Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treibe
 
 ### XslTransformer (incubating)
 
-**TODO:** Signatur des Tasks. Muss wohl noch andere Möglichkeiten unterstützen: z.B. ganzes Verzeichnis. Wie sieht es mit der Endung aus? Immer XTF (wohl auch nicht)
+**TODO:** Wie sieht es mit der Endung aus? Immer XTF (wohl auch nicht)
 
 Transformiert eine Datei mittels einer XSL-Transformation ein eine andere Datei. Ist der `xslFile`-Parameter ein String, wird erwartet, dass die Datei im GRETL-Verzeichnis im Ressourcenordner `src/main/resources/xslt`-Verzeichnis gespeichert ist. Falls der `xslFile`-Parameter ein File-Objekt ist, können lokale Dateien verwendet werden.
 
