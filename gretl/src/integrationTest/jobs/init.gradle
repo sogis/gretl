@@ -3,7 +3,8 @@ allprojects {
         repositories {
         	mavenLocal()
             maven { url "http://jars.interlis.ch" }
-            maven { url "https://repo.osgeo.org/repository/release/" }            
+            maven { url "https://repo.osgeo.org/repository/release/" }    
+            maven { url "https://s01.oss.sonatype.org/service/local/repositories/snapshots/content/" }
             mavenCentral()
             jcenter()
         }
