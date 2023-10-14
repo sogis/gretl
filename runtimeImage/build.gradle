@@ -14,9 +14,9 @@ configurations {
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.3.0' 
-        force 'ch.interlis:ili2c-core:5.3.0'
-        force 'ch.interlis:ili2gpkg:4.9.1'
+        force 'ch.interlis:ili2c-tool:5.3.2' 
+        force 'ch.interlis:ili2c-core:5.3.2'
+        force 'ch.interlis:ili2gpkg:4.11.1'
     }
 }
 

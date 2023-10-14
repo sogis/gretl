@@ -34,9 +34,9 @@ def ftppwd = System.getProperty('ftppwd',properties.get('ftppwd'))
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.3.0' 
-        force 'ch.interlis:ili2c-core:5.3.0'
-        force 'ch.interlis:ili2gpkg:4.9.1'
+        force 'ch.interlis:ili2c-tool:5.3.2' 
+        force 'ch.interlis:ili2c-core:5.3.2'
+        force 'ch.interlis:ili2gpkg:4.11.1'
     }
 }
 
@@ -69,8 +69,9 @@ dependencies {
     api gradleApi()
   
     api ilivalidatorDependency
-    //api 'ch.interlis:ilivalidator:1.11.13+'
     api ilivalidatorCustomFunctionsDependency
+    api ilivalidatorCustomFunctionsGeometriesDependency
+    api geowCustomFunctionsDependency
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }

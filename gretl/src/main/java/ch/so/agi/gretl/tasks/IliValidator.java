@@ -10,6 +10,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.interlis2.validator.Validator;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +55,13 @@ public class IliValidator extends AbstractValidatorTask {
         userFunctionList.add("ch.so.agi.ilivalidator.ext.IsValidDocumentsCycleIoxPlugin");
         userFunctionList.add("ch.so.agi.ilivalidator.ext.RingSelfIntersectionIoxPlugin");
         userFunctionList.add("ch.so.agi.ilivalidator.ext.TooFewPointsPolylineIoxPlugin");
-        //userFunctionList.add("ch.so.agi.ilivalidator.ext.IsHttpResourceFromOerebMultilingualUriIoxPlugin");
-        
+
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetAreaIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetLengthIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetInnerRingsCountIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetInGroupsIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideExternalDatasetIoxPlugin");
+
         Map<String,Class> userFunctions = new HashMap<String,Class>();
         try {
             for (String userFunction : userFunctionList) {

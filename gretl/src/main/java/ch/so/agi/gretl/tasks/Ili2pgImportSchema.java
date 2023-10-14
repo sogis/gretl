@@ -31,6 +31,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public Object createscript = null;
     @Input
     @Optional
+    public Object metaConfig = null;    
+    @Input
+    @Optional
     public String defaultSrsAuth = null;
     @Input
     @Optional
@@ -193,6 +196,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (createscript != null) {
             settings.setCreatescript(this.getProject().file(createscript).getPath());
+        }
+        if (metaConfig != null) {
+            settings.setMetaConfigFile(this.getProject().file(metaConfig).getPath());
         }
         if (defaultSrsAuth != null) {
             String auth = defaultSrsAuth;
