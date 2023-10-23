@@ -1736,6 +1736,31 @@
       <md5>2449ec7bcc775802b09cb428de2bf255</md5>
     </IliRepository20.RepositoryIndex.ModelMetadata>
 
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="100526">
+      <Name>Geometry3D_V2</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>CH/CHBase_Part8_GEOMETRY3D_V2.ili</File>
+      <Version>2023-10-18</Version>
+      <publishingDate>2023-10-18</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>Units</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>CoordSys</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>Geometry_V2</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/CH/</Issuer>
+      <technicalContact>mailto:models@geo.admin.ch</technicalContact>
+      <furtherInformation>https://www.geo.admin.ch/de/geoinformation-schweiz/geobasisdaten/geodata-models.html</furtherInformation>
+      <md5>404cf9f2831ff070ab0f0539524422f2</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+
+
   </IliRepository20.RepositoryIndex>
 
 <!-- =================================================================== -->
@@ -20781,6 +20806,24 @@
       <technicalContact>mailto:gis@bav.admin.ch</technicalContact>
       <furtherInformation>https://www.bav.admin.ch/bav/de/home/allgemeine-themen/fachthemen/geoinformation/geobasisdaten/einschraenkungen_binnenschifffahrt.html</furtherInformation>
       <md5>ae89948bcbeec21ca8249b34983743b7</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="008107">
+      <Name>SectoralPlanForSubterraneanFreightTransportInfrastructure_V1_4</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAV/SectoralPlanForSubterraneanFreightTransportInfrastructure_V1_4.ili</File>
+      <Version>2022-06-20</Version>
+      <publishingDate>2023-10-18</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>BaseModel_SectoralPlans_LV95_V1_4</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>226</Tags>
+      <Issuer>https://models.geo.admin.ch/BAV/</Issuer>
+      <technicalContact>mailto:gis@bav.admin.ch</technicalContact>
+      <furtherInformation>https://www.bav.admin.ch/bav/de/home/allgemeine-themen/fachthemen/raeumliche-abstimmung/sug.html</furtherInformation>
+      <md5>823723ac38ddf01876fab4568a9a2829</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+  <HEADERSECTION SENDER="ili2pg-4.9.0-eb3a0d51869bd2adeeb51fe7aba4b526fe002c1a" VERSION="2.3">
+    <MODELS>
+      <MODEL NAME="SO_AGI_MOpublic_20190424" VERSION="2018-04-30" URI="http://www.geo.so.ch/models/AGI"/>
+    </MODELS>
+  </HEADERSECTION>
+  <DATASECTION>
+    <SO_AGI_MOpublic_20190424.MOpublic BID="2549">
+      <SO_AGI_MOpublic_20190424.MOpublic.Strassenname_Pos TID="1f59e188-21ed-4e7c-970e-96a390f0b5e0">
+        <Strassenname>Günsbergstrasse</Strassenname>
+        <Pos>
+          <COORD>
+            <C1>2611466.841</C1>
+            <C2>1234175.678</C2>
+          </COORD>
+        </Pos>
+        <Orientierung>-76.95</Orientierung>
+        <HAli>Center</HAli>
+        <VAli>Half</VAli>
+        <BFS_Nr>2549</BFS_Nr>
+        <Importdatum>2023-10-19T22:40:04.063</Importdatum>
+        <Nachfuehrung>2010-01-07</Nachfuehrung>
+      </SO_AGI_MOpublic_20190424.MOpublic.Strassenname_Pos>
+    </SO_AGI_MOpublic_20190424.MOpublic>
+  </DATASECTION>
+</TRANSFER>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+  <HEADERSECTION SENDER="SOGIS-20230218" VERSION="2.3">
+    <MODELS>
+      <MODEL NAME="DatasetIdx16" VERSION="2022-10-10" URI="mailto:ce@eisenhutinformatik.ch"/>
+    </MODELS>
+  </HEADERSECTION>
+  <DATASECTION>
+    <IliRepository09.RepositoryIndex BID="DatasetIdx16.DataIndex">
+      <DatasetIdx16.DataIndex.DatasetMetadata TID="140">
+        <id>2549.ch.so.agi.av.mopublic</id>
+        <version>current</version>
+        <model>
+          <DatasetIdx16.ModelLink>
+            <name>SO_AGI_MOpublic_20190424</name>
+            <locationHint>https://geo.so.ch/models</locationHint>
+          </DatasetIdx16.ModelLink>
+        </model>
+        <epsgCode>2056</epsgCode>
+        <publishingDate>2023-10-22</publishingDate>
+        <owner>https://agi.so.ch</owner>
+        <boundary>
+          <DatasetIdx16.BoundingBox>
+            <westlimit>7.340693492284002</westlimit>
+            <southlimit>47.074299169536175</southlimit>
+            <eastlimit>8.03269288687543</eastlimit>
+            <northlimit>47.50119805032911</northlimit>
+          </DatasetIdx16.BoundingBox>
+        </boundary>
+        <title>
+          <DatasetIdx16.MultilingualText>
+            <LocalisedText>
+              <DatasetIdx16.LocalisedText>
+                <Language>de</Language>
+                <Text>Amtliche Vermessung (MOpublic)</Text>
+              </DatasetIdx16.LocalisedText>
+            </LocalisedText>
+          </DatasetIdx16.MultilingualText>
+        </title>
+        <shortDescription>
+          <DatasetIdx16.MultilingualMText>
+            <LocalisedText>
+              <DatasetIdx16.LocalisedMText>
+                <Language>de</Language>
+                <Text><![CDATA[Datenbereitstellung gemäss einem vereinfachten, kantonalen Datenmodell. <br><br> Die amtliche Vermessung hält als Bestandteil des Grundbuches die genauen Grenzverläufe der Grundstücke fest und schafft damit die Basis zur Sicherung des Grundeigentums. Nebst den aktuellen Grundstücksgrenzen sind in den Daten der amtlichen Vermessung auch weitere Objekte wie Gebäude, Strassen, Gebäudeadressen, Fixpunkte usw. abgebildet.]]></Text>
+              </DatasetIdx16.LocalisedMText>
+            </LocalisedText>
+          </DatasetIdx16.MultilingualMText>
+        </shortDescription>
+        <technicalContact>https://agi.so.ch</technicalContact>
+        <knownWMS>
+          <DatasetIdx16.WebService_>
+            <value>https://geo.so.ch/api/wms</value>
+          </DatasetIdx16.WebService_>
+        </knownWMS>
+        <knownWFS>
+          <DatasetIdx16.WebService_>
+            <value>https://geo.so.ch/api/wfs</value>
+          </DatasetIdx16.WebService_>
+        </knownWFS>
+        <furtherWS>
+          <DatasetIdx16.WebService_>
+            <value>https://geo.so.ch/api/data/v1</value>
+          </DatasetIdx16.WebService_>
+        </furtherWS>
+        <knownPortal>
+          <DatasetIdx16.WebSite_>
+            <value>https://geo.so.ch/map?l=ch.so.agi.av.grundstuecke</value>
+          </DatasetIdx16.WebSite_>
+        </knownPortal>
+        <files>
+          <DatasetIdx16.DataFile>
+            <fileFormat>application/interlis+xml;version=2.3</fileFormat>
+            <file>
+              <DatasetIdx16.File>
+                <path>files/2549.ch.so.agi.av.mopublic.xtf</path>
+              </DatasetIdx16.File>
+            </file>
+          </DatasetIdx16.DataFile>
+        </files>
+      </DatasetIdx16.DataIndex.DatasetMetadata>
+    </IliRepository09.RepositoryIndex>
+  </DATASECTION>
+</TRANSFER>
