@@ -30,21 +30,50 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
         if (dataFile == null) {
             return;
         }
-        FileCollection dataFilesCollection=null;
-        if(dataFile instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)dataFile;
-        }else {
-            dataFilesCollection=getProject().files(dataFile);
-        }
-        if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
-            return;
-        }
+        
+        // Liste mit saemtlicheen Dateipfaeden oder ilidata-Ids.
         List<String> files = new ArrayList<String>();
-        for (java.io.File fileObj : dataFilesCollection) {
-            String fileName = fileObj.getPath();
-            files.add(fileName);
+
+        FileCollection dataFilesCollection = null;
+        if(dataFile instanceof FileCollection) {
+            dataFilesCollection = (FileCollection) dataFile;
+            
+            if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
+                return;
+            }
+            
+            for (File fileObj : dataFilesCollection) {
+                String fileName = fileObj.getPath();
+                files.add(fileName);
+            }
+        } else if(dataFile instanceof File) {
+            File file = (File) dataFile;
+            files.add(file.getAbsolutePath());
+        } else if(dataFile instanceof String) {
+            String fileName = (String) dataFile;
+            if (fileName.startsWith("ilidata")) {
+                files.add(fileName);
+            } else {
+                File file = this.getProject().file(fileName);
+                files.add(file.getAbsolutePath());
+            }
+        } else {            
+            List<String> dataFileList = (ArrayList) dataFile;
+            for (String fileName : dataFileList) {
+                
+                if (fileName.startsWith("ilidata")) {
+                    files.add(fileName);
+                } else {
+                    File file = this.getProject().file(fileName);
+                    files.add(file.getAbsolutePath());
+                }
+            }    
+            if (files.size() == 0) {
+                return;
+            }
         }
-        java.util.List<String> datasetNames=null;
+
+        List<String> datasetNames = null;
         if (dataset != null) {
             if(dataset instanceof String) {
                 datasetNames=new ArrayList<String>();
