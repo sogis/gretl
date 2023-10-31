@@ -424,6 +424,8 @@ höchsten Stufe (i.d.R. ``yearly``) kann ``to`` definiert oder ``null`` sein. Fa
 der älteste Stand beim Erreichen des ``to`` Alters gelöscht. 
 Falls bei der höchsten Stufe ``to=null``, wird der älteste Stand nicht gelöscht.
 
+Siehe Repo [publisher_test](http://github.com/sogis/publisher_test) bzgl. Doku der Grooming "Corner-Cases", Testfälle und Testskript.
+
 ## Parameter
 
 Parameter | Beschreibung
