@@ -52,6 +52,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public boolean createEnumColAsItfCode = false;
     @Input
     @Optional
+    public boolean createEnumTabsWithId = false;
+    @Input
+    @Optional
     public boolean createImportTabs = false;
     @Input
     @Optional
@@ -221,6 +224,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (createEnumColAsItfCode) {
             settings.setCreateEnumColAsItfCode(settings.CREATE_ENUMCOL_AS_ITFCODE_YES);
+        }
+        if (createEnumTabsWithId) {
+            settings.setCreateEnumDefs(Config.CREATE_ENUM_DEFS_MULTI_WITH_ID);
         }
         if (createImportTabs) {
             settings.setCreateImportTabs(true);
