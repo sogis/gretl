@@ -400,6 +400,7 @@ public class PublisherStep {
         config.setDoImplicitSchemaImport(true);
         config.setValidation(false);
         config.setStrokeArcs(config.STROKE_ARCS_ENABLE);
+        config.setValue(Config.CREATE_GEOM_INDEX, Config.TRUE);
         config.setCreateMetaInfo(true); // required by following Gpkg2DxfStep
         Ili2db.run(config, null);
     }
