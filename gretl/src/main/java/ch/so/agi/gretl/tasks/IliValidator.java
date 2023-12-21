@@ -61,8 +61,8 @@ public class IliValidator extends AbstractValidatorTask {
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetInnerRingsCountIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetInGroupsIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideExternalDatasetIoxPlugin");
-        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideExternalDatasetResource");
-        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.PolylinesOverlap");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideExternalDatasetResourceIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.PolylinesOverlapIoxPlugin");
 
         Map<String,Class> userFunctions = new HashMap<String,Class>();
         try {
