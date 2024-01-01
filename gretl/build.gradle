@@ -121,6 +121,7 @@ dependencies {
     runtimeOnly postgresqlDependency
     runtimeOnly sqliteJdbcDependency
     runtimeOnly derbyDependency
+    runtimeOnly duckdbDependency
     
     testImplementation junitDependency
     testImplementation testContainersDependency
@@ -263,6 +264,17 @@ tasks.withType(Test) {
     systemProperty 's3AccessKey', s3AccessKey
     systemProperty 's3SecretKey', s3SecretKey
     systemProperty 's3BucketName', s3BucketName
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+
+    title = null
+    destinationDir = file("./doc/")
+    
+    include 'ch/so/agi/gretl/tasks/**'
+    options.doclet = "ch.so.agi.gretl.doclet.GretlDoclet"
+    options.docletpath = [file("/Users/stefan/sources/gretl-doclet/build/libs/gretl-doclet.jar")]    
 }
 
 cyclonedxBom {

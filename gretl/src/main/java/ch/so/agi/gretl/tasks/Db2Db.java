@@ -25,10 +25,19 @@ public class Db2Db extends DefaultTask {
         log = LogEnvironment.getLogger(Db2Db.class);
     }
 
+    /**
+     * Datenbank aus der gelesen werden soll 
+     */
     @Input
     public Connector sourceDb;
+    /**
+     * Datenbank in die geschrieben werden soll 
+     */
     @Input
     public Connector targetDb;
+    /**
+     * Eine Liste von `TransferSet`s
+     */
     @Input
     public List<TransferSet> transferSets;
     @Input
