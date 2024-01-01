@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.hadoop.security.UserGroupInformation;
+//import org.apache.hadoop.security.UserGroupInformation;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ili2c.Ili2c;
@@ -38,7 +38,7 @@ public class Csv2ParquetStep {
         this(null);
         
         // https://stackoverflow.com/questions/41864985/hadoop-ioexception-failure-to-login
-        UserGroupInformation.setLoginUser(UserGroupInformation.createRemoteUser("hduser"));
+        //UserGroupInformation.setLoginUser(UserGroupInformation.createRemoteUser("hduser"));
     }
     
     public Csv2ParquetStep(String taskName) {

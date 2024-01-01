@@ -11,7 +11,7 @@ ext {
     ioxWkfVersion = '1.1.1'
     ehiSqlgenVersion = '1.16.0'
     
-    ioxParquetVersion = '0.0.25'
+    ioxParquetVersion = '0.0.26'
     ioxExcelVersion = '0.0.3'
     
     av2chVersion = '1.1.8'
@@ -39,6 +39,7 @@ ext {
     sqliteJdbcVersion = '3.8.11.2'
     derbyVersion = '10.13.1.1'
     oracleVersion = '19.3.0.0'
+    duckdbVersion = '0.9.2'
     
     junitVersion = '4.12'
     mockFtpServerVersion = '2.7.1'   
@@ -85,6 +86,7 @@ ext {
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
     derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
     oracleDependency = [ group: 'com.oracle.ojdbc', name: 'ojdbc8', version: oracleVersion]
+    duckdbDependency = [ group: 'org.duckdb', name: 'duckdb_jdbc', version: duckdbVersion]
     
     junitDependency = [ group: 'junit', name: 'junit', version: junitVersion ]
     mockFtpServerDependency = [ group: 'org.mockftpserver', name: 'MockFtpServer', version: mockFtpServerVersion ]

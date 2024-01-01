@@ -174,6 +174,30 @@ public class SqlExecutorStepTest {
 
         x.execute(sourceDb, sqlListe);
     }
+    
+    @Test
+    public void executeDuckDB_Ok() throws Exception {
+        SqlExecutorStep x = new SqlExecutorStep();
+        Connector sourceDb = new Connector("jdbc:duckdb::memory", null, null);
+
+        List<File> sqlListe = createSelectSqlFile();
+
+        x.execute(sourceDb, sqlListe);
+    }
+    
+    @Test
+    public void executeDuckDB_Fail() throws Exception {
+        SqlExecutorStep x = new SqlExecutorStep();
+        Connector sourceDb = new Connector("jdbc:duckdb::memory", null, null);
+
+        List<File> sqlListe = createFailingSelectSqlFile();
+
+        try {
+            x.execute(sourceDb, sqlListe);
+        } catch (SQLException e) {
+            Assert.assertTrue(e.getMessage().contains("Referenced column \"asdf\" not found in FROM clause"));
+        }
+    }
 
     @Category(DbTest.class)
     @Test
@@ -292,4 +316,27 @@ public class SqlExecutorStepTest {
         sqlListe.add(sqlFile1);
         return sqlListe;
     }
+    
+    private List<File> createSelectSqlFile() throws Exception {
+        File sqlFile = folder.newFile("query.sql");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
+        writer.write(" SELECT 1; ");
+        writer.close();
+
+        List<File> sqlListe = new ArrayList<>();
+        sqlListe.add(sqlFile);
+        return sqlListe;
+    }
+    
+    private List<File> createFailingSelectSqlFile() throws Exception {
+        File sqlFile = folder.newFile("query.sql");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
+        writer.write(" SELECT asdf; ");
+        writer.close();
+
+        List<File> sqlListe = new ArrayList<>();
+        sqlListe.add(sqlFile);
+        return sqlListe;
+    }
+
 }

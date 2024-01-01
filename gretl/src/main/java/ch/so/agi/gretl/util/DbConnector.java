@@ -22,6 +22,7 @@ public class DbConnector {
         jdbcDriverClasses.put("sqlite", "org.sqlite.JDBC");
         jdbcDriverClasses.put("derby", "org.apache.derby.jdbc.EmbeddedDriver");
         jdbcDriverClasses.put("oracle", "oracle.jdbc.driver.OracleDriver");
+        jdbcDriverClasses.put("duckdb", "org.duckdb.DuckDBDriver");
     }
 
     /**

@@ -64,6 +64,10 @@ configurations {
     all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
     all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
     
+    // Konflikt zwischen "core" und "client". Siehe iox-parquet.
+    all*.exclude group: 'org.apache.hadoop', module: 'hadoop-core'
+
+    
 }
 
 dependencies {
@@ -121,6 +125,7 @@ dependencies {
     runtimeOnly postgresqlDependency
     runtimeOnly sqliteJdbcDependency
     runtimeOnly derbyDependency
+    runtimeOnly duckdbDependency
     
     testImplementation junitDependency
     testImplementation testContainersDependency
@@ -172,6 +177,9 @@ dependencies {
     integrationTestImplementation configurations.testRuntime
     
     testImplementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.69'
+    
+    testImplementation 'org.apache.hadoop:hadoop-client:3.3.5'
+    integrationTestImplementation 'org.apache.hadoop:hadoop-client:3.3.5'
     
 }
 
