@@ -1,0 +1,3 @@
+CREATE TABLE tbl (i INTEGER);
+INSERT INTO tbl VALUES (1), (2), (3);
+
