@@ -42,6 +42,8 @@ dependencies {
     // Gretl but does not have a oracle account, he cannot run
     // Gretl... We copy the jdbc jar into the docker image, our
     // gret-runtime artifact.
+    // 2024-01-12: Stimmt nicht mehr. Seit der JDBC-Treiber frei verfügbar ist,
+    // hat auch Gretl direkt die Abhängigkeit.
     api oracleDependency
 }
 
