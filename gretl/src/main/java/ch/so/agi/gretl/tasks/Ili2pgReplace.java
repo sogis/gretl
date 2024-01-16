@@ -30,8 +30,7 @@ public class Ili2pgReplace extends Ili2pgAbstractTask {
         }
         
         // Liste mit saemtlicheen Dateipfaeden oder ilidata-Ids.
-        List<String> files = new ArrayList<String>();
-
+        List<String> files = new ArrayList<String>();        
         FileCollection dataFilesCollection = null;
         if(dataFile instanceof FileCollection) {
             dataFilesCollection = (FileCollection) dataFile;

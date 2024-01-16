@@ -57,18 +57,20 @@ configurations {
         exclude module: 'osdt_core'
         exclude module: 'osdt_cert'
         exclude module: 'orai18n' 
-        exclude group: 'org.apache.hadoop', module: 'hadoop-core'
+        exclude group: 'org.apache.hadoop', module: 'hadoop-core' 
+        exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
     
     testImplementation {
-        // Konflikt zwischen "core" und "client". Siehe iox-parquet.
-        exclude group: 'org.apache.hadoop', module: 'hadoop-core'
+        exclude group: 'org.apache.hadoop', module: 'hadoop-core' // Konflikt zwischen "core" und "client". Siehe iox-parquet.
+        exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
     
     all*.exclude module: 'spring-boot-starter-logging'
     
     all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
     all*.exclude group: 'ch.qos.logback', module: 'logback-classic'    
+    //all*.exclude group: 'org.slf4j', module: 'slf4j-reload4j'
 }
 
 dependencies {

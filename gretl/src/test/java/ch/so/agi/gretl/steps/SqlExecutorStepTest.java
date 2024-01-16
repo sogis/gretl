@@ -178,7 +178,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeDuckDB_Ok() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:duckdb::memory", null, null);
+        Connector sourceDb = new Connector("jdbc:duckdb::memory:", null, null);
 
         List<File> sqlListe = createSelectSqlFile();
 
@@ -188,7 +188,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeDuckDB_Fail() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:duckdb::memory", null, null);
+        Connector sourceDb = new Connector("jdbc:duckdb::memory:", null, null);
 
         List<File> sqlListe = createFailingSelectSqlFile();
 
