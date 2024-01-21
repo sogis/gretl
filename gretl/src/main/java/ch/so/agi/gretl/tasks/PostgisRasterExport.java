@@ -13,6 +13,7 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.util.Map;
 
 public class PostgisRasterExport extends DefaultTask {
     private GretlLogger log;
@@ -25,7 +26,7 @@ public class PostgisRasterExport extends DefaultTask {
 
     @Input
     @Optional
-    public java.util.Map<String, String> sqlParameters = null;
+    public Map<String, String> sqlParameters = null;
 
     @OutputFile
     public Object dataFile = null;

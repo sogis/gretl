@@ -1359,8 +1359,15 @@ outputDir | Verzeichnis, in das die Metainfo-Datei gespeichert wird.
 
 ### PostgisRasterExport
 
-Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert.
+Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert. Das Outputformat und die Formatoptionen müssen in der SQL-Datei (in der Select-Query) angegeben werden, z.B.:
 
+```
+SELECT
+    1::int AS foo, ST_AsGDALRaster((ST_AsRaster(ST_Buffer(ST_Point(2607880,1228287),10),150, 150)), 'AAIGrid', ARRAY[''], 2056) AS raster
+;
+```
+
+Beispiel:
 ```
 task exportTiff(type: PostgisRasterExport) {
     database = [db_uri, db_user, db_pass]
@@ -1373,6 +1380,7 @@ Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank aus der exportiert werden soll.
 sqlFile  | Name der SQL-Datei aus das SQL-Statement gelesen und ausgeführt wird.
+sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert.
 dataFile | Name der Rasterdatei, die erstellt werden soll.
 
 ### Publisher

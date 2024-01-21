@@ -20,9 +20,8 @@ import org.apache.commons.io.FilenameUtils;
  * within a database based on queries in sql-Scripts
  */
 public class SqlExecutorStep {
-
-    private GretlLogger log;
-    private String taskName;
+    protected GretlLogger log;
+    protected String taskName;
 
     public SqlExecutorStep() {
         this(null);
@@ -52,33 +51,21 @@ public class SqlExecutorStep {
     }
 
     public void execute(Connector trans, List<File> sqlfiles, Map<String, String> params) throws Exception {
-
-
         log.lifecycle(taskName + ": Start SqlExecutor");
 
         checkIfConnectorIsNotNull(trans);
-
-        assertValidFilePaths(sqlfiles);
-
+        
         log.lifecycle(taskName + ": Given parameters DB-URL: " + trans.connect().getMetaData().getURL() + ", DB-User: "
                 + trans.connect().getMetaData().getUserName() + ", Files: " + sqlfiles);
-
-        logPathToInputSqlFiles(sqlfiles);
-
+        
+        checkSqlFiles(sqlfiles);
+                
         try {
             Connection db = trans.connect();
-
-            checkIfNoExistingFileIsEmpty(sqlfiles);
-
-            checkFilesExtensionsForSqlExtension(sqlfiles);
-
-            checkFilesForUTF8WithoutBOM(sqlfiles);
-
             readSqlFiles(sqlfiles, db, params);
-
             db.commit();
             trans.close();
-
+            
             log.lifecycle(taskName + ": End SqlExecutor (successful)");
         } catch (Exception e) {
             if (!trans.isClosed()) {
@@ -92,7 +79,15 @@ public class SqlExecutorStep {
             }
         }
     }
-
+    
+    private void checkSqlFiles(List<File> sqlfiles) throws Exception {
+        assertValidFilePaths(sqlfiles);
+        logPathToInputSqlFiles(sqlfiles);
+        checkIfNoExistingFileIsEmpty(sqlfiles);
+        checkFilesExtensionsForSqlExtension(sqlfiles);
+        checkFilesForUTF8WithoutBOM(sqlfiles);        
+    }
+    
     /**
      *
      * @param trans Connector
