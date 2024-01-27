@@ -95,10 +95,9 @@ dependencies {
     api ioxIliDependency
     api ehiSqlgenDependency
 
-    api (ioxParquetDependency) {
+    api (ioxFormatsDependency) {
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
-    api ioxExcelDependency
 
     api av2chDependency
     api av2geobauDependency

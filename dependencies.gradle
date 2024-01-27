@@ -11,8 +11,7 @@ ext {
     ioxWkfVersion = '1.1.1'
     ehiSqlgenVersion = '1.16.0'
     
-    ioxParquetVersion = '0.0.26'
-    ioxExcelVersion = '0.0.3'
+    ioxFormatsVersion = '0.0.29'
     
     av2chVersion = '1.1.8'
     av2geobauVersion = '1.2.0'
@@ -57,8 +56,7 @@ ext {
     ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
     ehiSqlgenDependency = [ group: 'ch.ehi', name: 'ehisqlgen', version: ehiSqlgenVersion ]
 
-    ioxParquetDependency = [ group: 'io.github.sogis', name: 'iox-parquet', version: ioxParquetVersion ]
-    ioxExcelDependency = [ group: 'io.github.sogis', name: 'iox-excel', version: ioxExcelVersion ]
+    ioxFormatsDependency = [ group: 'io.github.sogis', name: 'iox-formats', version: ioxFormatsVersion ]
 
     av2chDependency = [ group: 'io.github.sogis', name: 'av2ch', version: av2chVersion ]
     av2geobauDependency = [ group: 'ch.interlis', name: 'av2geobau', version: av2geobauVersion ]
