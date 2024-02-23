@@ -10,26 +10,53 @@ import ch.so.agi.gretl.logging.GretlLogger;
 
 public class AbstractFtpTask extends DefaultTask {
     protected GretlLogger log;
-    
+    private String server;
+    private String user;
+    private String password;
+    private String systemType=FTPClientConfig.SYST_UNIX;
+    private String fileSeparator=null;
+    private Boolean passiveMode=true;
+    private Long controlKeepAliveTimeout=300L; // set timeout to 5 minutes
+
     @Input
-    public String server;
+    public String getServer(){
+        return server;
+    }
+
     @Input
-    public String user;
+    public String getUser(){
+       return user;
+    }
+
     @Input
-    public String password;
+    public String getPassword(){
+        return this.password;
+    }
+
     @Input
     @Optional
-    public String systemType=FTPClientConfig.SYST_UNIX;
+    public String getSystemType(){
+        return systemType;
+    }
+
     @Input
     @Optional
-    public String fileSeparator=null;
+    public String getFileSeparator(){
+        return this.fileSeparator;
+    }
+
     @Input
     @Optional
-    public boolean passiveMode=true;
+    public Boolean getPassiveMode(){
+        return passiveMode;
+    }
+
     @Input
     @Optional
-    public long controlKeepAliveTimeout=300; // set timeout to 5 minutes
-   
+    public Long getControlKeepAliveTimeout(){
+        return controlKeepAliveTimeout;
+    }
+
     protected FTPClient setup() throws SocketException, IOException, Exception {
         FTPClient ftp;
         ftp = new FTPClient();
