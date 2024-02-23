@@ -23,24 +23,39 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class Av2ch extends DefaultTask {
     protected GretlLogger log;
-    
+    private Object inputFile = null;
+    private Object outputDirectory = null;
+    private String modeldir = null;
+    private String language = "de";
+    private boolean zip = false;
+
     @Input
-    public Object inputFile = null;
-    
+    public Object getInputFile(){
+        return inputFile;
+    };
+
     @Input
-    public Object outputDirectory = null;
+    public Object getOutputDirectory(){
+        return outputDirectory;
+    }
     
     @Input
     @Optional
-    public String modeldir = null;
+    public String getModeldir(){
+        return modeldir;
+    }
     
     @Input
     @Optional
-    public String language = "de";
+    public String getLanguage(){
+        return language;
+    }
     
     @Input
     @Optional
-    public boolean zip = false;
+    public boolean getZip(){
+        return zip;
+    }
 
     @TaskAction
     public void runTransformation() {
@@ -109,8 +124,7 @@ public class Av2ch extends DefaultTask {
             }
         } catch (Exception e) {
             log.error("failed to run Av2ch", e);
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         } 
     }
 }
