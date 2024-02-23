@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
@@ -27,7 +28,7 @@ public class Av2ch extends DefaultTask {
     private Object outputDirectory = null;
     private String modeldir = null;
     private String language = "de";
-    private boolean zip = false;
+    private Boolean zip = false;
 
     @Input
     public Object getInputFile(){
@@ -53,7 +54,7 @@ public class Av2ch extends DefaultTask {
     
     @Input
     @Optional
-    public boolean getZip(){
+    public Boolean getZip(){
         return zip;
     }
 

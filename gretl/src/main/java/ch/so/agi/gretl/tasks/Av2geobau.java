@@ -39,7 +39,7 @@ public class Av2geobau extends DefaultTask {
     private Object logFile = null;
     private String proxy = null;
     private Integer proxyPort = null;
-    private boolean zip = false;
+    private Boolean zip = false;
 
     @InputFile
     public Object getItfFiles() {
@@ -76,7 +76,7 @@ public class Av2geobau extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isZip() {
+    public Boolean isZip() {
         return zip;
     }
 

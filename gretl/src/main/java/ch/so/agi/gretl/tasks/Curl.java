@@ -44,47 +44,74 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 public class Curl extends DefaultTask {
     protected GretlLogger log;
 
+    private String serverUrl;
+    private MethodType method;
+    private int expectedStatusCode;
+    private String expectedBody;
+    private Map<String,Object> formData; // curl [URL] -F key1=value1 -F file1=@my_file.xtf
+    private File outputFile; // curl [URL] -o
+    private File dataBinary; // curl [URL] --data-binary / ueberschreibt formData, siehe setEntity (glaub)
+    private Map<String,String> headers; // curl [URL] -H ... -H ...
+    private String user;
+    private String password;
+
     @Internal
-    public String serverUrl;
-    
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
     @Internal
-    public MethodType method;
-    
+    public MethodType getMethod() {
+        return method;
+    }
+
     @Internal
-    public int expectedStatusCode;
-    
-    @Internal
-    @Optional
-    public String expectedBody;
-    
-    @Internal
-    @Optional
-    public Map<String,Object> formData; // curl [URL] -F key1=value1 -F file1=@my_file.xtf 
-    
-//    @Internal
-//    @Optional
-//    public String data; // curl [URL] -d "key1=value1&key2=value2"
-    
-    @Internal
-    @Optional
-    public File outputFile; // curl [URL] -o
-    
-    @Internal
-    @Optional
-    public File dataBinary; // curl [URL] --data-binary / ueberschreibt formData, siehe setEntity (glaub)
-    
+    public int getExpectedStatusCode() {
+        return expectedStatusCode;
+    }
+
     @Internal
     @Optional
-    public Map<String,String> headers; // curl [URL] -H ... -H ...
-    
+    public String getExpectedBody() {
+        return expectedBody;
+    }
+
     @Internal
     @Optional
-    public String user;
-    
+    public Map<String, Object> getFormData() {
+        return formData;
+    }
+
     @Internal
     @Optional
-    public String password;
-       
+    public File getOutputFile() {
+        return outputFile;
+    }
+
+    @Internal
+    @Optional
+    public File getDataBinary() {
+        return dataBinary;
+    }
+
+    @Internal
+    @Optional
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    @Internal
+    @Optional
+    public String getUser() {
+        return user;
+    }
+
+    @Internal
+    @Optional
+    public String getPassword() {
+        return password;
+    }
+
     @TaskAction
     public void request() throws ClientProtocolException, IOException {
         log = LogEnvironment.getLogger(Curl.class);

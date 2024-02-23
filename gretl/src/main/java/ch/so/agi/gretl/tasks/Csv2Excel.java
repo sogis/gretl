@@ -3,6 +3,7 @@ package ch.so.agi.gretl.tasks;
 import java.io.File;
 import java.io.IOException;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Internal;
@@ -21,42 +22,67 @@ import ch.so.agi.gretl.steps.Csv2ParquetStep;
 public class Csv2Excel extends DefaultTask {
     protected GretlLogger log;
 
-    @Internal
     public File csvFile;
-    
-    @Internal
-    @Optional
-    public boolean firstLineIsHeader = true;
-    
-    @Internal
-    @Optional
+    public Boolean firstLineIsHeader = true;
     public Character valueDelimiter = null;
-    
-    @Internal
-    @Optional
     public Character valueSeparator = null;
-    
+    public String encoding;
+    public String models;
+    public String modeldir;
+    public File outputDir;
+
     @Internal
-    @Optional
-    public String encoding = null;
-    
-    @Internal
-    @Optional
-    public String models = null;
-        
-    @Internal
-    @Optional
-    public String modeldir = null;
+    public File getCsvFile() {
+        return csvFile;
+    }
 
     @Internal
     @Optional
-    public File outputDir;
-            
+    public Boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
+    @Internal
+    @Optional
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
+    @Internal
+    @Optional
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+
+    @Internal
+    @Optional
+    public String getEncoding() {
+        return encoding;
+    }
+
+    @Internal
+    @Optional
+    public String getModels() {
+        return models;
+    }
+
+    @Internal
+    @Optional
+    public String getModeldir() {
+        return modeldir;
+    }
+
+    @Internal
+    @Optional
+    public File getOutputDir() {
+        return outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Csv2Excel.class);
 
-        if (csvFile == null) {
+        if (getCsvFile() == null) {
             throw new IllegalArgumentException("csvFile must not be null");
         }
         
@@ -64,34 +90,34 @@ public class Csv2Excel extends DefaultTask {
         settings.setValue(IoxWkfConfig.SETTING_FIRSTLINE,
                 firstLineIsHeader ? IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER : IoxWkfConfig.SETTING_FIRSTLINE_AS_VALUE);
         
-        if (valueDelimiter != null) {
-            settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER, valueDelimiter.toString());
+        if (getValueDelimiter() != null) {
+            settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER, getValueDelimiter().toString());
         }
         
-        if (valueSeparator != null) {
-            settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, valueSeparator.toString());
+        if (getValueSeparator() != null) {
+            settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, getValueSeparator().toString());
         }
         
-        if (encoding != null) {
-            settings.setValue(CsvReader.ENCODING, encoding);
+        if (getEncoding() != null) {
+            settings.setValue(CsvReader.ENCODING, getEncoding());
         }
         
-        if (models != null) {
-            settings.setValue(Validator.SETTING_MODELNAMES, models);
+        if (getModels() != null) {
+            settings.setValue(Validator.SETTING_MODELNAMES, getModels());
         }
         
-        if (modeldir != null) {
-            settings.setValue(Validator.SETTING_ILIDIRS, modeldir);
+        if (getModeldir() != null) {
+            settings.setValue(Validator.SETTING_ILIDIRS, getModeldir());
         }
 
-        if (outputDir == null) {
-            outputDir = csvFile.getParentFile();
+        if (getOutputDir() == null) {
+            outputDir = getCsvFile().getParentFile();
         }
 
         try {
             Csv2ExcelStep csv2ExcelStep = new Csv2ExcelStep();
-            csv2ExcelStep.execute(csvFile.toPath(), outputDir.toPath(), settings);
-            log.lifecycle("Excel file written: " + csvFile.getParentFile().getAbsolutePath());
+            csv2ExcelStep.execute(getCsvFile().toPath(), getOutputDir().toPath(), settings);
+            log.lifecycle("Excel file written: " + getCsvFile().getParentFile().getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
             throw new GradleException("Could not write Excel file: " + e.getMessage());

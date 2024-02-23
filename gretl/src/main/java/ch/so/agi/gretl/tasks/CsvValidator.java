@@ -8,6 +8,7 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
 import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
@@ -19,13 +20,14 @@ import java.util.List;
 
 public class CsvValidator extends AbstractValidatorTask {
     private GretlLogger log;
-    private boolean firstLineIsHeader = true;
+    private Boolean firstLineIsHeader = true;
     private Character valueDelimiter = null;
     private Character valueSeparator = null;
+    private String encoding = null;
 
     @Input
     @Optional
-    public boolean isFirstLineIsHeader() {
+    public Boolean isFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 
@@ -40,10 +42,10 @@ public class CsvValidator extends AbstractValidatorTask {
     public Character getValueSeparator() {
         return valueSeparator;
     }
-
-
     @Optional
-    public String encoding = null;
+    public String getEncoding(){
+        return encoding;
+    }
 
     @TaskAction
     public void validate() {

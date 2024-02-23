@@ -20,37 +20,62 @@ import ch.so.agi.gretl.steps.Csv2ParquetStep;
 public class Csv2Parquet extends DefaultTask {
     protected GretlLogger log;
 
+    private File csvFile;
+    private Boolean firstLineIsHeader = true;
+    private Character valueDelimiter = null;
+    private Character valueSeparator = null;
+    private String encoding;
+    private String models;
+    private String modeldir;
+    private File outputDir;
+
     @Internal
-    public File csvFile;
-    
-    @Internal
-    @Optional
-    public boolean firstLineIsHeader = true;
-    
-    @Internal
-    @Optional
-    public Character valueDelimiter = null;
-    
-    @Internal
-    @Optional
-    public Character valueSeparator = null;
-    
-    @Internal
-    @Optional
-    public String encoding = null;
-    
+    public File getCsvFile() {
+        return csvFile;
+    }
+
     @Internal
     @Optional
-    public String models = null;
-    
+    public Boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
     @Internal
     @Optional
-    public String modeldir = null;
-            
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
     @Internal
     @Optional
-    public File outputDir;
-            
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+
+    @Internal
+    @Optional
+    public String getEncoding() {
+        return encoding;
+    }
+
+    @Internal
+    @Optional
+    public String getModels() {
+        return models;
+    }
+
+    @Internal
+    @Optional
+    public String getModeldir() {
+        return modeldir;
+    }
+
+    @Internal
+    @Optional
+    public File getOutputDir() {
+        return outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Csv2Parquet.class);
