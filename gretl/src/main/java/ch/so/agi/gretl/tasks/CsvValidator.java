@@ -19,15 +19,29 @@ import java.util.List;
 
 public class CsvValidator extends AbstractValidatorTask {
     private GretlLogger log;
+    private boolean firstLineIsHeader = true;
+    private Character valueDelimiter = null;
+    private Character valueSeparator = null;
+
     @Input
     @Optional
-    public boolean firstLineIsHeader = true;
+    public boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
     @Input
     @Optional
-    public Character valueDelimiter = null;
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
     @Input
     @Optional
-    public Character valueSeparator = null;
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+
+
     @Optional
     public String encoding = null;
 

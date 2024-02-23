@@ -13,11 +13,14 @@ import ch.so.agi.gretl.tasks.impl.AbstractFtpTask;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class FtpList extends AbstractFtpTask {
-    
-    //@Output
+    private String remoteDir;
+
     public List<String> files;
+
     @Input
-    public String remoteDir;
+    public String getRemoteDir(){
+        return remoteDir;
+    }
    
     @TaskAction
     void list()

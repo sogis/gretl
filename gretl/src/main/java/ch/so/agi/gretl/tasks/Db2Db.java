@@ -25,21 +25,43 @@ public class Db2Db extends DefaultTask {
         log = LogEnvironment.getLogger(Db2Db.class);
     }
 
+    private Connector sourceDb;
+    private Connector targetDb;
+    private List<TransferSet> transferSets;
+    private Integer batchSize = null;
+    private Integer fetchSize = null;
+    private Object sqlParameters = null;
+
     @Input
-    public Connector sourceDb;
+    public Connector getSourceDb() {
+        return sourceDb;
+    }
     @Input
-    public Connector targetDb;
+    public Connector getTargetDb() {
+        return targetDb;
+    }
     @Input
-    public List<TransferSet> transferSets;
+    public List<TransferSet> getTransferSets() {
+        return transferSets;
+    }
+
     @Input
     @Optional
-    public Integer batchSize = null;
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
     @Input
     @Optional
-    public Integer fetchSize = null;
+    public Integer getFetchSize() {
+        return fetchSize;
+    }
+
     @Input
     @Optional
-    public Object sqlParameters = null;
+    public Object getSqlParameters() {
+        return sqlParameters;
+    }
 
     @TaskAction
     public void executeTask() throws Exception {

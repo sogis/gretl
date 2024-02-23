@@ -17,26 +17,44 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class DatabaseDocumentExport extends DefaultTask {
     protected GretlLogger log;
-   
-    @Input
-    public Connector database;
+    private Connector database;
+    private String qualifiedTableName;
+    private String documentColumn;
+    private File targetDir;
+    private String fileNamePrefix = null;
+    private String fileNameExtension = null;
 
     @Input
-    public String qualifiedTableName;
+    public Connector getDatabase() {
+        return database;
+    }
 
     @Input
-    public String documentColumn;
-    
-    @OutputDirectory 
-    public File targetDir;
-    
+    public String getQualifiedTableName() {
+        return qualifiedTableName;
+    }
+
+    @Input
+    public String getDocumentColumn() {
+        return documentColumn;
+    }
+
+    @OutputDirectory
+    public File getTargetDir() {
+        return targetDir;
+    }
+
     @Input
     @Optional
-    public String fileNamePrefix = null;
-    
+    public String getFileNamePrefix() {
+        return fileNamePrefix;
+    }
+
     @Input
     @Optional
-    public String fileNameExtension = null;
+    public String getFileNameExtension() {
+        return fileNameExtension;
+    }
 
     @TaskAction
     public void export() {

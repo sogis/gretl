@@ -21,26 +21,54 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class CsvExport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
+    private Object dataFile = null;
+    private String tableName = null;
+
+    private boolean firstLineIsHeader = true;
+
+    private Character valueDelimiter = null;
+
+    private Character valueSeparator = null;
+
+    private String schemaName = null;
+
     @Input
-    public Connector database;
+    public Connector getDatabase() {
+        return database;
+    }
     @InputFile
-    public Object dataFile = null;
+    public Object getDataFile() {
+        return dataFile;
+    }
     @Input
-    String tableName = null;
-    @Input
-    @Optional
-    public boolean firstLineIsHeader = true;
-    @Input
-    @Optional
-    public Character valueDelimiter = null;
+    public String getTableName() {
+        return tableName;
+    }
     @Input
     @Optional
-    public Character valueSeparator = null;
+    public boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
     @Input
     @Optional
-    public String schemaName = null;
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+    @Input
     @Optional
-    public String attributes[] = null;
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+    @Input
+    @Optional
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    @Optional
+    public String[] attributes = null;
+
     @Optional
     public String encoding = null;
 

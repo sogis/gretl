@@ -33,33 +33,53 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class Av2geobau extends DefaultTask {
     protected GretlLogger log;
-    
+    private Object itfFiles = null;
+    private Object dxfDirectory = null;
+    private String modeldir = null;
+    private Object logFile = null;
+    private String proxy = null;
+    private Integer proxyPort = null;
+    private boolean zip = false;
+
     @InputFile
-    public Object itfFiles = null;
-    
+    public Object getItfFiles() {
+        return itfFiles;
+    }
     @OutputDirectory
-    public Object dxfDirectory = null;
-    
+    public Object getDxfDirectory() {
+        return dxfDirectory;
+    }
+
     @Input
     @Optional
-    public String modeldir = null;
-    
+    public String getModeldir() {
+        return modeldir;
+    }
+
     @OutputFile
     @Optional
-    public Object logFile = null;
-    
+    public Object getLogFile() {
+        return logFile;
+    }
+
     @Input
     @Optional
-    public String proxy = null;
-    
+    public String getProxy() {
+        return proxy;
+    }
+
     @Input
     @Optional
-    public Integer proxyPort = null;
-    
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
     @Input
     @Optional
-    public boolean zip = false;
-    
+    public boolean isZip() {
+        return zip;
+    }
+
     @TaskAction
     public void runTransformation() {
         log = LogEnvironment.getLogger(Av2geobau.class);
