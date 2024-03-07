@@ -8,6 +8,8 @@ The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql
 
 A german user manual can be found here: [docs/user/](docs/user/index.md) 
 
+The Publisher task is documented here: [Publisher](docs/user/Publisher.md) 
+
 ## Licencse
 
 _GRETL_ is licensed under the [MIT License](LICENSE).
