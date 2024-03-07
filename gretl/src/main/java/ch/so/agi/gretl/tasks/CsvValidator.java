@@ -8,7 +8,6 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
 import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;

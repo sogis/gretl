@@ -3,7 +3,6 @@ package ch.so.agi.gretl.tasks;
 import java.io.File;
 import java.io.IOException;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Internal;
@@ -17,7 +16,6 @@ import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Csv2ExcelStep;
-import ch.so.agi.gretl.steps.Csv2ParquetStep;
 
 public class Csv2Excel extends DefaultTask {
     protected GretlLogger log;
