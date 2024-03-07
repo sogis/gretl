@@ -34,19 +34,36 @@ public class MetaPublisher extends DefaultTask {
     
     private static final String GRETL_ENV_STRING = "gretlEnvironment";
     
+    private File metaConfigFile = null; // Meta-Konfigurationsdatei (heute Toml)
+
+    private Endpoint target = null; // Zielverzeichnis
+
+    private ListProperty<String> regions = null; // Publizierte Regionen (aus Publisher-Task)
+    private Endpoint geocatTarget = null; // Geocat-Zielverzeichnis
+
     @Input
-    public File metaConfigFile = null; // Meta-Konfigurationsdatei (heute Toml)
-    
+    public File getMetaConfigFile(){
+        return metaConfigFile;
+    }
+
     @Input
-    public Endpoint target = null; // Zielverzeichnis
+    public Endpoint getTarget() {
+        return target;
+    }
 
     @Input
     @Optional
-    public ListProperty<String> regions = null; // Publizierte Regionen (aus Publisher-Task)
-    
+    public ListProperty<String> getRegions() {
+        return regions;
+    }
+
     @Input
     @Optional
-    public Endpoint geocatTarget = null; // Geocat-Zielverzeichnis
+    public Endpoint getGeocatTarget() {
+        return geocatTarget;
+    }
+
+
     
     @TaskAction
     public void publishAll() {

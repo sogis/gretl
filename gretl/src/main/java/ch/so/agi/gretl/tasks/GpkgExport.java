@@ -22,26 +22,58 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class GpkgExport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
+    private Object dataFile;
+    private Object dstTableName;
+    private Object srcTableName;
+    private String schemaName;
+    private String encoding;
+    private Integer batchSize;
+    private Integer fetchSize;
+
     @Input
-    public Connector database;
+    public Connector getDatabase() {
+        return database;
+    }
+
     @InputFile
-    public Object dataFile = null;
+    public Object getDataFile() {
+        return dataFile;
+    }
+
     @Input
-    Object dstTableName = null;    
+    public Object getDstTableName() {
+        return dstTableName;
+    }
+
     @Input
-    Object srcTableName = null;
+    public Object getSrcTableName() {
+        return srcTableName;
+    }
+
     @Input
     @Optional
-    public String schemaName = null;
+    public String getSchemaName() {
+        return schemaName;
+    }
+
     @Input
     @Optional
-    public String encoding = null;
+    public String getEncoding() {
+        return encoding;
+    }
+
     @Input
     @Optional
-    public Integer batchSize = null;
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
     @Input
     @Optional
-    public Integer fetchSize = null;
+    public Integer getFetchSize() {
+        return fetchSize;
+    }
 
     @TaskAction
     public void exportData() {

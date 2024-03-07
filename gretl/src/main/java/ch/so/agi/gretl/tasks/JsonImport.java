@@ -17,21 +17,41 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class JsonImport extends DefaultTask {
     protected GretlLogger log;
 
-    @Input
-    public Connector database;
+    private Connector database;
+
+    private String qualifiedTableName = null;
+
+    private String jsonFile = null;
+
+    private String columnName = null;
+
+    private boolean deleteAllRows = false;
 
     @Input
-    public String qualifiedTableName = null;
+    public Connector getDatabase() {
+        return database;
+    }
 
     @Input
-    public String jsonFile = null;
-    
-    @Input 
-    public String columnName = null;
-    
+    public String getQualifiedTableName() {
+        return qualifiedTableName;
+    }
+
+    @Input
+    public String getJsonFile() {
+        return jsonFile;
+    }
+
+    @Input
+    public String getColumnName() {
+        return columnName;
+    }
+
     @Input
     @Optional
-    public boolean deleteAllRows = false;
+    public boolean isDeleteAllRows() {
+        return deleteAllRows;
+    }
     
     @TaskAction
     public void importJsonFile() {

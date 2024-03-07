@@ -17,8 +17,12 @@ import java.util.List;
 
 public class GpkgValidator extends AbstractValidatorTask {
     private GretlLogger log;
+    private String tableName;
+
     @Input
-    public String tableName = null;
+    public String getTableName(){
+        return tableName;
+    }
 
     @TaskAction
     public void validate() {

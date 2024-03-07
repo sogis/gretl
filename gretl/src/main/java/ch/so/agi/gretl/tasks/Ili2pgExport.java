@@ -15,16 +15,28 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 public class Ili2pgExport extends Ili2pgAbstractTask {
+
+    private boolean export3;
+    private String exportModels;
+    private Object dataFile;
+
     @Input
     @Optional
-    public boolean export3 = false;
-    
+    public boolean isExport3() {
+        return export3;
+    }
+
     @Input
     @Optional
-    public String exportModels = null;
+    public String getExportModels() {
+        return exportModels;
+    }
 
     @OutputFile
-    public Object dataFile = null;
+    public Object getDataFile() {
+        return dataFile;
+    }
+
 
     @TaskAction
     public void exportData() {

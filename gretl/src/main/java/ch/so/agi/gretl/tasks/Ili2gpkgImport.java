@@ -18,32 +18,54 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
+    private Object dataFile;
+    private boolean coalesceJson;
+    private boolean nameByTopic;
+    private String defaultSrsCode;
+    private boolean createEnumTabs;
+    private boolean createMetaInfo;
+    private boolean createGeomIdx;
+
     @InputFile
-    public Object dataFile = null;
+    public Object getDataFile(){
+        return dataFile;
+    }
 
     @Input
     @Optional
-    public boolean coalesceJson = false;    
+    public boolean isCoalesceJson() {
+        return coalesceJson;
+    }
 
     @Input
     @Optional
-    public boolean nameByTopic = false;
+    public boolean isNameByTopic() {
+        return nameByTopic;
+    }
 
     @Input
     @Optional
-    public String defaultSrsCode = null;
+    public String getDefaultSrsCode() {
+        return defaultSrsCode;
+    }
 
     @Input
     @Optional
-    public boolean createEnumTabs = false;
-    
+    public boolean isCreateEnumTabs() {
+        return createEnumTabs;
+    }
+
     @Input
     @Optional
-    public boolean createMetaInfo = false;
-    
+    public boolean isCreateMetaInfo() {
+        return createMetaInfo;
+    }
+
     @Input
     @Optional
-    public boolean createGeomIdx = false;
+    public boolean isCreateGeomIdx() {
+        return createGeomIdx;
+    }
 
     @TaskAction
     public void importData() {

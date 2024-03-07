@@ -18,18 +18,33 @@ import java.util.Map;
 public class PostgisRasterExport extends DefaultTask {
     private GretlLogger log;
 
-    @Input
-    public Connector database;
+    private Connector database;
+    private String sqlFile;
+
+    private Map<String, String> sqlParameters = null;
+
+    private Object dataFile = null;
 
     @Input
-    public String sqlFile;
+    public Connector getDatabase() {
+        return database;
+    }
+
+    @Input
+    public String getSqlFile() {
+        return sqlFile;
+    }
 
     @Input
     @Optional
-    public Map<String, String> sqlParameters = null;
+    public Map<String, String> getSqlParameters() {
+        return sqlParameters;
+    }
 
     @OutputFile
-    public Object dataFile = null;
+    public Object getDataFile() {
+        return dataFile;
+    }
 
     @TaskAction
     public void exportRaster() {

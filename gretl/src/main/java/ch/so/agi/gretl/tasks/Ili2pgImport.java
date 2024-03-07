@@ -20,8 +20,11 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 
 public class Ili2pgImport extends Ili2pgAbstractTask {
+    private Object dataFile;
     @InputFile
-    public Object dataFile = null;
+    public Object getDataFile(){
+        return dataFile;
+    }
 
     @TaskAction
     public void importData() {

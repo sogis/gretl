@@ -42,70 +42,159 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class Publisher extends DefaultTask {
     protected GretlLogger log;
-    
+
+    private String dataIdent=null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+
+    private Endpoint target=null; // Zielverzeichnis
+
+    private Object sourcePath=null; // Quelldatei z.B. "/path/file.xtf"
+
+    private Connector database=null; //  Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
+
+    private String dbSchema=null; // Schema in der Datenbank z.B. "av"
+
+    private String dataset=null; //  ili2db-Datasetname der Quelldaten "dataset"
+
+    private String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
+
+    private String region=null; // Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
+
+    private ListProperty<String> regions=null; // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
+
+    private ListProperty<String> _publishedRegions=getProject().getObjects().listProperty(String.class);
+
+    private Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
+
+    private boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
+
+    private Endpoint kgdiService=null; // Endpunkt des SIMI-Services
+
+    private Endpoint kgdiTokenService=null; // Endpunkt des Authentifizierung-Services
+
+    private Object grooming=null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
+
+    private String exportModels=null; // Das Export-Modell, indem die Daten exportiert werden
+
+    private String modeldir=null;     // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
+
+    private String proxy=null;        // Proxy Server fuer den Zugriff auf Modell Repositories
+
+    private Integer proxyPort=null;    // Proxy Port fuer den Zugriff auf Modell Repositories
+
+    private Date version=null;
     @Input
-    public String dataIdent=null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+    public String getDataIdent() {
+        return dataIdent;
+    }
     @Input
-    public Endpoint target=null; // Zielverzeichnis
+    public Endpoint getTarget() {
+        return target;
+    }
     @InputFile
     @Optional
-    public Object sourcePath=null; // Quelldatei z.B. "/path/file.xtf"
+    public Object getSourcePath() {
+        return sourcePath;
+    }
     @Input
     @Optional
-    public Connector database=null; //  Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
+    public Connector getDatabase() {
+        return database;
+    }
     @Input
     @Optional
-    public String dbSchema=null; // Schema in der Datenbank z.B. "av"
+    public String getDbSchema() {
+        return dbSchema;
+    }
     @Input
     @Optional
-    public String dataset=null; //  ili2db-Datasetname der Quelldaten "dataset"
+    public String getDataset() {
+        return dataset;
+    }
+
     @Input
     @Optional
-    public String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
+    public String getModelsToPublish() {
+        return modelsToPublish;
+    }
+
     @Input
     @Optional
-    public String region=null; // Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"     
+    public String getRegion() {
+        return region;
+    }
+
     @Input
     @Optional
-    public ListProperty<String> regions=null; // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll     
-    private ListProperty<String> _publishedRegions=getProject().getObjects().listProperty(String.class);
+    public ListProperty<String> getRegions() {
+        return regions;
+    }
+
     @Optional
     public ListProperty<String> getPublishedRegions()
     {
         return _publishedRegions;
-    } // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen     
-    @InputFile
-    @Optional
-    public Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
-    @Input
-    @Optional
-    public boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
-    @Input
-    @Optional
-    public Endpoint kgdiService=null; // Endpunkt des SIMI-Services
-    @Input
-    @Optional
-    public Endpoint kgdiTokenService=null; // Endpunkt des Authentifizierung-Services
-    @InputFile
-    @Optional
-    public Object grooming=null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
-    @Input
-    @Optional
-    public String exportModels=null; // Das Export-Modell, indem die Daten exportiert werden 
-    @Input
-    @Optional
-    public String modeldir=null;     // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
-    @Input
-    @Optional
-    public String proxy=null;        // Proxy Server fuer den Zugriff auf Modell Repositories
-    @Input
-    @Optional
-    public Integer proxyPort=null;    // Proxy Port fuer den Zugriff auf Modell Repositories
-    @Input
-    @Optional
-    public Date version=null;
+    } // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
 
-    
+    @InputFile
+    @Optional
+    public Object getValidationConfig() {
+        return validationConfig;
+    }
+
+    @Input
+    @Optional
+    public boolean isUserFormats() {
+        return userFormats;
+    }
+
+    @Input
+    @Optional
+    public Endpoint getKgdiService() {
+        return kgdiService;
+    }
+
+    @Input
+    @Optional
+    public Endpoint getKgdiTokenService() {
+        return kgdiTokenService;
+    }
+
+    @InputFile
+    @Optional
+    public Object getGrooming() {
+        return grooming;
+    }
+
+    @Input
+    @Optional
+    public String getExportModels() {
+        return exportModels;
+    }
+
+    @Input
+    @Optional
+    public String getModeldir() {
+        return modeldir;
+    }
+
+    @Input
+    @Optional
+    public String getProxy() {
+        return proxy;
+    }
+
+    @Input
+    @Optional
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
+    @Input
+    @Optional
+    public Date getVersion() {
+        return version;
+    }
+
     @TaskAction
     public void publishAll() {
         log = LogEnvironment.getLogger(Publisher.class);
