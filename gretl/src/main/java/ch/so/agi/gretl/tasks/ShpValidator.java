@@ -18,9 +18,14 @@ import java.util.List;
 
 public class ShpValidator extends AbstractValidatorTask {
     private GretlLogger log;
+
+    private String encoding = null;
+
     @Input
     @Optional
-    public String encoding = null;
+    public String getEncoding(){
+        return encoding;
+    }
 
     @TaskAction
     public void validate() {

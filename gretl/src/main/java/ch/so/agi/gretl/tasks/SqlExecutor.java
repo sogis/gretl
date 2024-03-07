@@ -29,15 +29,25 @@ public class SqlExecutor extends DefaultTask {
         log = LogEnvironment.getLogger(SqlExecutor.class);
     }
 
-    @Input
-    public Connector database;
+
+    private Connector database;
+    private List<String> sqlFiles;
+    private Object sqlParameters = null;
 
     @Input
-    public List<String> sqlFiles;
+    public Connector getDatabase() {
+        return database;
+    }
 
+    @Input
+    public List<String> getSqlFiles() {
+        return sqlFiles;
+    }
     @Input
     @Optional
-    public Object sqlParameters = null;
+    public Object getSqlParameters() {
+        return sqlParameters;
+    }
 
     @TaskAction
     public void executeSQLExecutor() {

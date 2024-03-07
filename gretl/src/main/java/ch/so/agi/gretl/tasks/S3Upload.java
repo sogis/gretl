@@ -19,42 +19,74 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class S3Upload extends DefaultTask {
     protected GretlLogger log;
 
-    @Input
-    public String accessKey;
-    
-    @Input
-    public String secretKey;
-        
-    @InputDirectory
-    public Object sourceDir;
-    
-    @Input
-    public Object sourceFile;
-    
-    @Input 
-    public Object sourceFiles;
+    private String accessKey;
+    private String secretKey;
+    private Object sourceDir;
+    private Object sourceFile;
+    private Object sourceFiles;
+    private String bucketName;
+    private String endPoint = "https://s3.eu-central-1.amazonaws.com";
+    private String region = "eu-central-1";
+    private String acl = null;
+    private String contentType = null;
+    private Map<String,String> metaData = null;
 
     @Input
-    public String bucketName;
-    
+    public String getAccessKey() {
+        return accessKey;
+    }
+
+    @Input
+    public String getSecretKey() {
+        return secretKey;
+    }
+    @InputDirectory
+    public Object getSourceDir() {
+        return sourceDir;
+    }
+    @Input
+    public Object getSourceFile() {
+        return sourceFile;
+    }
+
+    @Input
+    public Object getSourceFiles() {
+        return sourceFiles;
+    }
+
+    @Input
+    public String getBucketName() {
+        return bucketName;
+    }
+
     @Input
     @Optional
-    public String endPoint = "https://s3.eu-central-1.amazonaws.com";
-    
+    public String getEndPoint() {
+        return endPoint;
+    }
+
     @Input
-    public String region = "eu-central-1";
-    
+    public String getRegion() {
+        return region;
+    }
+
     @Input
-    public String acl = null;
-    
+    public String getAcl() {
+        return acl;
+    }
+
     @Input
     @Optional
-    public String contentType = null;
-    
+    public String getContentType() {
+        return contentType;
+    }
+
     @Input
-    @Optional        
-    public Map<String,String> metaData = null;
-    
+    @Optional
+    public Map<String, String> getMetaData() {
+        return metaData;
+    }
+
     @TaskAction
     public void upload() {
         log = LogEnvironment.getLogger(S3Upload.class);

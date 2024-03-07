@@ -18,14 +18,22 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class XslTransformer extends DefaultTask {
     protected GretlLogger log;
 
+    private Object xslFile;
+    private Object xmlFile;
+    private File outDirectory;
+
     @Input
-    public Object xslFile;
-    
+    public Object getXslFile() {
+        return xslFile;
+    }
     @Input
-    public Object xmlFile;
-            
+    public Object getXmlFile() {
+        return xmlFile;
+    }
     @Input
-    public File outDirectory;
+    public File getOutDirectory() {
+        return outDirectory;
+    }
 
     @TaskAction
     public void transform() {

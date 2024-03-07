@@ -21,21 +21,46 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class ShpImport extends DefaultTask {
     protected GretlLogger log;
+
+    private Connector database;
+    private Object dataFile = null;
+    private String tableName = null;
+    private String schemaName = null;
+    private String encoding = null;
+    private Integer batchSize = null;
+
     @Input
-    public Connector database;
+    public Connector getDatabase() {
+        return database;
+    }
+
     @InputFile
-    public Object dataFile = null;
+    public Object getDataFile() {
+        return dataFile;
+    }
+
     @Input
-    String tableName = null;
+    public String getTableName() {
+        return tableName;
+    }
+
     @Input
     @Optional
-    public String schemaName = null;
+    public String getSchemaName() {
+        return schemaName;
+    }
+
     @Input
     @Optional
-    public String encoding = null;
+    public String getEncoding() {
+        return encoding;
+    }
+
     @Input
     @Optional
-    public Integer batchSize = null;
+    public Integer getBatchSize() {
+        return batchSize;
+    }
 
     @TaskAction
     public void importData() {

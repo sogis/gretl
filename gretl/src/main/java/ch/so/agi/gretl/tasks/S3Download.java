@@ -21,28 +21,46 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class S3Download extends DefaultTask {
     protected GretlLogger log;
 
-    @Input
-    public String accessKey;
+    private String accessKey;
+    private String secretKey;
+    private String bucketName;
+    private String key;
+    private File downloadDir;
+    private String endPoint = "https://s3.eu-central-1.amazonaws.com";
+    private String region = "eu-central-1";
     
     @Input
-    public String secretKey;
+    public String getAccessKey() {
+        return accessKey;
+    }
+    @Input
+    public String getSecretKey() {
+        return secretKey;
+    }
+    @Input
 
+    public String getBucketName() {
+        return bucketName;
+    }
     @Input
-    public String bucketName;
-    
-    @Input 
-    public String key;
-    
+
+    public String getKey() {
+        return key;
+    }
     @OutputDirectory
-    public File downloadDir;
-    
+    public File getDownloadDir() {
+        return downloadDir;
+    }
     @Input
     @Optional
-    public String endPoint = "https://s3.eu-central-1.amazonaws.com";
-    
+    public String getEndPoint() {
+        return endPoint;
+    }
     @Input
-    public String region = "eu-central-1";
-        
+    public String getRegion() {
+        return region;
+    }
+
     @TaskAction
     public void upload() {
         log = LogEnvironment.getLogger(S3Download.class);
