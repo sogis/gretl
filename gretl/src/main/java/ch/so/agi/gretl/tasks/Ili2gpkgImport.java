@@ -91,12 +91,12 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
             files.add(fileName);
         }
         java.util.List<String> datasetNames=null;
-        if (dataset != null) {
-            if(dataset instanceof String) {
+        if (getDataset() != null) {
+            if(getDataset() instanceof String) {
                 datasetNames=new ArrayList<String>();
-                datasetNames.add((String)dataset);
+                datasetNames.add((String)getDataset());
             }else {
-                datasetNames=(java.util.List)dataset;
+                datasetNames=(java.util.List)getDataset();
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
@@ -131,9 +131,9 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
 
         int function = Config.FC_IMPORT;
         ch.ehi.basics.logging.FileListener fileLogger=null;
-        if(logFile!=null){
+        if(getLogFile()!=null){
             // setup logger here, so that multiple file imports result in one logfile
-            java.io.File logFilepath=this.getProject().file(logFile);
+            java.io.File logFilepath=this.getProject().file(getLogFile());
             fileLogger=new FileLogger(logFilepath);
             EhiLogger.getInstance().addListener(fileLogger);
         }

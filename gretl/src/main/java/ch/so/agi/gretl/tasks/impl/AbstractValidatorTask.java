@@ -15,51 +15,134 @@ import org.interlis2.validator.Validator;
 import java.util.List;
 
 public class AbstractValidatorTask extends DefaultTask {
+
+    private Object dataFiles;
+
+    private String models = null;
+
+    private String modeldir = null;
+
+    private Object configFile = null;
+
+    private boolean forceTypeValidation = false;
+
+    private boolean disableAreaValidation = false;
+
+    private boolean multiplicityOff = false;
+
+    private boolean allObjectsAccessible = false;
+
+    private boolean skipPolygonBuilding = false;
+
+    private Object logFile = null;
+
+    private Object xtflogFile = null;
+
+    private Object pluginFolder = null;
+
+    private String proxy = null;
+
+    private Integer proxyPort = null;
+
+    private boolean failOnError = true;
+    private boolean validationOk = true;
+
     @InputFiles
-    public Object dataFiles;
+    public Object getDataFiles() {
+        return dataFiles;
+    }
+
     @Input
     @Optional
-    public String models = null;
+    public String getModels() {
+        return models;
+    }
+
     @Input
     @Optional
-    public String modeldir = null;
+    public String getModeldir() {
+        return modeldir;
+    }
+
     @InputFile
     @Optional
-    public Object configFile = null;
+    public Object getConfigFile() {
+        return configFile;
+    }
+
     @Input
     @Optional
-    public boolean forceTypeValidation = false;
+    public boolean isForceTypeValidation() {
+        return forceTypeValidation;
+    }
+
     @Input
     @Optional
-    public boolean disableAreaValidation = false;
+    public boolean isDisableAreaValidation() {
+        return disableAreaValidation;
+    }
+
     @Input
     @Optional
-    public boolean multiplicityOff = false;
+    public boolean isMultiplicityOff() {
+        return multiplicityOff;
+    }
+
     @Input
     @Optional
-    public boolean allObjectsAccessible = false;
+    public boolean isAllObjectsAccessible() {
+        return allObjectsAccessible;
+    }
+
     @Input
     @Optional
-    public boolean skipPolygonBuilding = false;
+    public boolean isSkipPolygonBuilding() {
+        return skipPolygonBuilding;
+    }
+
     @OutputFile
     @Optional
-    public Object logFile = null;
+    public Object getLogFile() {
+        return logFile;
+    }
+
     @OutputFile
     @Optional
-    public Object xtflogFile = null;
+    public Object getXtflogFile() {
+        return xtflogFile;
+    }
+
     @InputDirectory
     @Optional
-    public Object pluginFolder = null;
+    public Object getPluginFolder() {
+        return pluginFolder;
+    }
+
     @Input
     @Optional
-    public String proxy = null;
+    public String getProxy() {
+        return proxy;
+    }
+
     @Input
     @Optional
-    public Integer proxyPort = null;
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
     @Input
     @Optional
-    public boolean failOnError = true;
-    public boolean validationOk = true;
+    public boolean isFailOnError() {
+        return failOnError;
+    }
+
+    public boolean isValidationOk() {
+        return validationOk;
+    }
+
+    public void setValidationOk(boolean validationOk) {
+        this.validationOk = validationOk;
+    }
 
     protected void initSettings(Settings settings) {
         settings.setValue(Validator.SETTING_DISABLE_STD_LOGGER, Validator.TRUE);

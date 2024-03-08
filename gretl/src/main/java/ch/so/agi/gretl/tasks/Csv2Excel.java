@@ -20,14 +20,14 @@ import ch.so.agi.gretl.steps.Csv2ExcelStep;
 public class Csv2Excel extends DefaultTask {
     protected GretlLogger log;
 
-    public File csvFile;
-    public Boolean firstLineIsHeader = true;
-    public Character valueDelimiter = null;
-    public Character valueSeparator = null;
-    public String encoding;
-    public String models;
-    public String modeldir;
-    public File outputDir;
+    private File csvFile;
+    private Boolean firstLineIsHeader = true;
+    private Character valueDelimiter = null;
+    private Character valueSeparator = null;
+    private String encoding;
+    private String models;
+    private String modeldir;
+    private File outputDir;
 
     @Internal
     public File getCsvFile() {

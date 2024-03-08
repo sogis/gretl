@@ -50,14 +50,14 @@ public class CsvValidator extends AbstractValidatorTask {
     public void validate() {
         log = LogEnvironment.getLogger(CsvValidator.class);
 
-        if (dataFiles == null) {
+        if (getDataFiles() == null) {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(dataFiles instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)dataFiles;
+        if(getDataFiles() instanceof FileCollection) {
+            dataFilesCollection=(FileCollection)getDataFiles();
         }else {
-            dataFilesCollection=getProject().files(dataFiles);
+            dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
@@ -83,8 +83,8 @@ public class CsvValidator extends AbstractValidatorTask {
             settings.setValue(CsvReader.ENCODING, encoding);
         }
 
-        validationOk = new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && failOnError) {
+        setValidationOk(new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings));
+        if (!isValidationOk() && isFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

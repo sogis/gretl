@@ -18,72 +18,180 @@ import java.io.File;
 public abstract class Ili2gpkgAbstractTask extends DefaultTask {
     protected GretlLogger log;
 
+    private Object dbfile;
+
+    private String proxy = null;
+
+    private Integer proxyPort = null;
+
+    private String modeldir = null;
+
+    private String models = null;
+
+    private Object dataset = null;
+
+    private String baskets = null;
+
+    private String topics = null;
+
+    private boolean importTid = false;
+
+    private File preScript = null;
+
+    private File postScript = null;
+
+    private boolean deleteData = false;
+
+    private Object logFile = null;
+
+    private boolean trace = false;
+
+    private File validConfigFile = null;
+
+    private boolean disableValidation = false;
+
+    private boolean disableAreaValidation = false;
+
+    private boolean forceTypeValidation = false;
+
+    private boolean strokeArcs = false;
+
+    private boolean skipPolygonBuilding = false;
+
+    private boolean skipGeometryErrors = false;
+
+    private boolean iligml20 = false;
+
     @InputFile
-    public Object dbfile;
-    @Input
-    @Optional
-    public String proxy = null;
-    @Input
-    @Optional
-    public Integer proxyPort = null;
+    public Object getDbfile() {
+        return dbfile;
+    }
 
     @Input
     @Optional
-    public String modeldir = null;
+    public String getProxy() {
+        return proxy;
+    }
+
     @Input
     @Optional
-    public String models = null;
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
     @Input
     @Optional
-    public Object dataset = null;
+    public String getModeldir() {
+        return modeldir;
+    }
+
     @Input
     @Optional
-    public String baskets = null;
+    public String getModels() {
+        return models;
+    }
+
     @Input
     @Optional
-    public String topics = null;
+    public Object getDataset() {
+        return dataset;
+    }
+
     @Input
     @Optional
-    public boolean importTid = false;
+    public String getBaskets() {
+        return baskets;
+    }
+
+    @Input
+    @Optional
+    public String getTopics() {
+        return topics;
+    }
+
+    @Input
+    @Optional
+    public boolean isImportTid() {
+        return importTid;
+    }
+
     @InputFile
     @Optional
-    public File preScript = null;
+    public File getPreScript() {
+        return preScript;
+    }
+
     @InputFile
     @Optional
-    public File postScript = null;
+    public File getPostScript() {
+        return postScript;
+    }
+
     @Input
     @Optional
-    public boolean deleteData = false;
+    public boolean isDeleteData() {
+        return deleteData;
+    }
+
     @OutputFile
     @Optional
-    public Object logFile = null;
+    public Object getLogFile() {
+        return logFile;
+    }
+
     @Input
     @Optional
-    public boolean trace = false;
+    public boolean isTrace() {
+        return trace;
+    }
+
     @InputFile
     @Optional
-    public File validConfigFile = null;
+    public File getValidConfigFile() {
+        return validConfigFile;
+    }
+
     @Input
     @Optional
-    public boolean disableValidation = false;
+    public boolean isDisableValidation() {
+        return disableValidation;
+    }
+
     @Input
     @Optional
-    public boolean disableAreaValidation = false;
+    public boolean isDisableAreaValidation() {
+        return disableAreaValidation;
+    }
+
     @Input
     @Optional
-    public boolean forceTypeValidation = false;
+    public boolean isForceTypeValidation() {
+        return forceTypeValidation;
+    }
+
     @Input
     @Optional
-    public boolean strokeArcs = false;
+    public boolean isStrokeArcs() {
+        return strokeArcs;
+    }
+
     @Input
     @Optional
-    public boolean skipPolygonBuilding = false;
+    public boolean isSkipPolygonBuilding() {
+        return skipPolygonBuilding;
+    }
+
     @Input
     @Optional
-    public boolean skipGeometryErrors = false;
+    public boolean isSkipGeometryErrors() {
+        return skipGeometryErrors;
+    }
+
     @Input
     @Optional
-    public boolean iligml20 = false;
+    public boolean isIligml20() {
+        return iligml20;
+    }
 
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2gpkgAbstractTask.class);
