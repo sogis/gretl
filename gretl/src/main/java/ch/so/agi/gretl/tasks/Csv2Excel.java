@@ -34,43 +34,36 @@ public class Csv2Excel extends DefaultTask {
         return csvFile;
     }
 
-    @Internal
     @Optional
     public Boolean isFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 
-    @Internal
     @Optional
     public Character getValueDelimiter() {
         return valueDelimiter;
     }
 
-    @Internal
     @Optional
     public Character getValueSeparator() {
         return valueSeparator;
     }
 
-    @Internal
     @Optional
     public String getEncoding() {
         return encoding;
     }
 
-    @Internal
     @Optional
     public String getModels() {
         return models;
     }
 
-    @Internal
     @Optional
     public String getModeldir() {
         return modeldir;
     }
 
-    @Internal
     @Optional
     public File getOutputDir() {
         return outputDir;
@@ -80,7 +73,7 @@ public class Csv2Excel extends DefaultTask {
     public void run() {
         log = LogEnvironment.getLogger(Csv2Excel.class);
 
-        if (getCsvFile() == null) {
+        if (csvFile == null) {
             throw new IllegalArgumentException("csvFile must not be null");
         }
         
@@ -88,27 +81,27 @@ public class Csv2Excel extends DefaultTask {
         settings.setValue(IoxWkfConfig.SETTING_FIRSTLINE,
                 firstLineIsHeader ? IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER : IoxWkfConfig.SETTING_FIRSTLINE_AS_VALUE);
         
-        if (getValueDelimiter() != null) {
-            settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER, getValueDelimiter().toString());
+        if (valueDelimiter != null) {
+            settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER, valueDelimiter.toString());
         }
         
-        if (getValueSeparator() != null) {
-            settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, getValueSeparator().toString());
+        if (valueSeparator != null) {
+            settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, valueSeparator.toString());
         }
         
-        if (getEncoding() != null) {
-            settings.setValue(CsvReader.ENCODING, getEncoding());
+        if (encoding != null) {
+            settings.setValue(CsvReader.ENCODING, encoding);
         }
         
-        if (getModels() != null) {
-            settings.setValue(Validator.SETTING_MODELNAMES, getModels());
+        if (models != null) {
+            settings.setValue(Validator.SETTING_MODELNAMES, models);
         }
         
-        if (getModeldir() != null) {
-            settings.setValue(Validator.SETTING_ILIDIRS, getModeldir());
+        if (modeldir != null) {
+            settings.setValue(Validator.SETTING_ILIDIRS, modeldir);
         }
 
-        if (getOutputDir() == null) {
+        if (outputDir == null) {
             outputDir = getCsvFile().getParentFile();
         }
 

@@ -70,43 +70,36 @@ public class Curl extends DefaultTask {
         return expectedStatusCode;
     }
 
-    @Internal
     @Optional
     public String getExpectedBody() {
         return expectedBody;
     }
 
-    @Internal
     @Optional
     public Map<String, Object> getFormData() {
         return formData;
     }
 
-    @Internal
     @Optional
     public File getOutputFile() {
         return outputFile;
     }
 
-    @Internal
     @Optional
     public File getDataBinary() {
         return dataBinary;
     }
 
-    @Internal
     @Optional
     public Map<String, String> getHeaders() {
         return headers;
     }
 
-    @Internal
     @Optional
     public String getUser() {
         return user;
     }
 
-    @Internal
     @Optional
     public String getPassword() {
         return password;

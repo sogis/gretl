@@ -27,7 +27,7 @@ public class CsvExport extends DefaultTask {
 
     private Boolean firstLineIsHeader = true;
 
-    private Character valueDelimiter = null;
+    private Character valueDelimiter = null;/**/
 
     private Character valueSeparator = null;
 

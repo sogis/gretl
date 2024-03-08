@@ -34,43 +34,36 @@ public class Csv2Parquet extends DefaultTask {
         return csvFile;
     }
 
-    @Internal
     @Optional
     public Boolean isFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 
-    @Internal
     @Optional
     public Character getValueDelimiter() {
         return valueDelimiter;
     }
 
-    @Internal
     @Optional
     public Character getValueSeparator() {
         return valueSeparator;
     }
 
-    @Internal
     @Optional
     public String getEncoding() {
         return encoding;
     }
 
-    @Internal
     @Optional
     public String getModels() {
         return models;
     }
 
-    @Internal
     @Optional
     public String getModeldir() {
         return modeldir;
     }
 
-    @Internal
     @Optional
     public File getOutputDir() {
         return outputDir;
