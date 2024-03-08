@@ -25,7 +25,7 @@ public class JsonImport extends DefaultTask {
 
     private String columnName = null;
 
-    private boolean deleteAllRows = false;
+    private Boolean deleteAllRows = false;
 
     @Input
     public Connector getDatabase() {
@@ -49,7 +49,7 @@ public class JsonImport extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isDeleteAllRows() {
+    public Boolean isDeleteAllRows() {
         return deleteAllRows;
     }
     

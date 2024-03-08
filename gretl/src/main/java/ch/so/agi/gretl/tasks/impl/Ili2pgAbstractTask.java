@@ -45,41 +45,41 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     public String topics = null;
 
-    public boolean importTid = false;
+    public Boolean importTid = false;
 
-    public boolean exportTid = false;
+    public Boolean exportTid = false;
 
-    public boolean importBid = false;
+    public Boolean importBid = false;
 
     public File preScript = null;
 
     public File postScript = null;
 
-    public boolean deleteData = false;
+    public Boolean deleteData = false;
 
     public Object logFile = null;
 
-    public boolean trace = false;
+    public Boolean trace = false;
 
     public File validConfigFile = null;
 
-    public boolean disableValidation = false;
+    public Boolean disableValidation = false;
 
-    public boolean disableAreaValidation = false;
+    public Boolean disableAreaValidation = false;
 
-    public boolean forceTypeValidation = false;
+    public Boolean forceTypeValidation = false;
 
-    public boolean strokeArcs = false;
+    public Boolean strokeArcs = false;
 
-    public boolean skipPolygonBuilding = false;
+    public Boolean skipPolygonBuilding = false;
 
-    public boolean skipGeometryErrors = false;
+    public Boolean skipGeometryErrors = false;
 
-    public boolean iligml20 = false;
+    public Boolean iligml20 = false;
 
-    public boolean disableRounding = false;  
+    public Boolean disableRounding = false;
 
-    public boolean failOnException = true;
+    public Boolean failOnException = true;
 
     public Range<Integer> datasetSubstring = null;
 
@@ -138,19 +138,19 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isImportTid() {
+    public Boolean isImportTid() {
         return importTid;
     }
 
     @Input
     @Optional
-    public boolean isExportTid() {
+    public Boolean isExportTid() {
         return exportTid;
     }
 
     @Input
     @Optional
-    public boolean isImportBid() {
+    public Boolean isImportBid() {
         return importBid;
     }
 
@@ -168,7 +168,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isDeleteData() {
+    public Boolean isDeleteData() {
         return deleteData;
     }
 
@@ -180,7 +180,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isTrace() {
+    public Boolean isTrace() {
         return trace;
     }
 
@@ -192,55 +192,55 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isDisableValidation() {
+    public Boolean isDisableValidation() {
         return disableValidation;
     }
 
     @Input
     @Optional
-    public boolean isDisableAreaValidation() {
+    public Boolean isDisableAreaValidation() {
         return disableAreaValidation;
     }
 
     @Input
     @Optional
-    public boolean isForceTypeValidation() {
+    public Boolean isForceTypeValidation() {
         return forceTypeValidation;
     }
 
     @Input
     @Optional
-    public boolean isStrokeArcs() {
+    public Boolean isStrokeArcs() {
         return strokeArcs;
     }
 
     @Input
     @Optional
-    public boolean isSkipPolygonBuilding() {
+    public Boolean isSkipPolygonBuilding() {
         return skipPolygonBuilding;
     }
 
     @Input
     @Optional
-    public boolean isSkipGeometryErrors() {
+    public Boolean isSkipGeometryErrors() {
         return skipGeometryErrors;
     }
 
     @Input
     @Optional
-    public boolean isIligml20() {
+    public Boolean isIligml20() {
         return iligml20;
     }
 
     @Input
     @Optional
-    public boolean isDisableRounding() {
+    public Boolean isDisableRounding() {
         return disableRounding;
     }
 
     @Input
     @Optional
-    public boolean isFailOnException() {
+    public Boolean isFailOnException() {
         return failOnException;
     }
 

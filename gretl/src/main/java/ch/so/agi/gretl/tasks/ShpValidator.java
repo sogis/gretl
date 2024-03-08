@@ -55,8 +55,8 @@ public class ShpValidator extends AbstractValidatorTask {
             settings.setValue(ShapeReader.ENCODING, encoding);
         }
 
-        setValidationOk(new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings));
-        if (!isValidationOk() && isFailOnError()) {
+        validationOk =new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
+        if (!validationOk && isFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

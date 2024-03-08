@@ -19,12 +19,12 @@ import org.gradle.api.tasks.TaskAction;
 
 public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
     private Object dataFile;
-    private boolean coalesceJson;
-    private boolean nameByTopic;
+    private Boolean coalesceJson;
+    private Boolean nameByTopic;
     private String defaultSrsCode;
-    private boolean createEnumTabs;
-    private boolean createMetaInfo;
-    private boolean createGeomIdx;
+    private Boolean createEnumTabs;
+    private Boolean createMetaInfo;
+    private Boolean createGeomIdx;
 
     @InputFile
     public Object getDataFile(){
@@ -33,13 +33,13 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
 
     @Input
     @Optional
-    public boolean isCoalesceJson() {
+    public Boolean isCoalesceJson() {
         return coalesceJson;
     }
 
     @Input
     @Optional
-    public boolean isNameByTopic() {
+    public Boolean isNameByTopic() {
         return nameByTopic;
     }
 
@@ -51,19 +51,19 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
 
     @Input
     @Optional
-    public boolean isCreateEnumTabs() {
+    public Boolean isCreateEnumTabs() {
         return createEnumTabs;
     }
 
     @Input
     @Optional
-    public boolean isCreateMetaInfo() {
+    public Boolean isCreateMetaInfo() {
         return createMetaInfo;
     }
 
     @Input
     @Optional
-    public boolean isCreateGeomIdx() {
+    public Boolean isCreateGeomIdx() {
         return createGeomIdx;
     }
 

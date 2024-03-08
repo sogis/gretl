@@ -14,53 +14,53 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
 
     private Object iliFile = null;
     private Object iliMetaAttrs = null;
-    private boolean oneGeomPerTable = false;
-    private boolean setupPgExt = false;
+    private Boolean oneGeomPerTable = false;
+    private Boolean setupPgExt = false;
     private Object dropscript = null;
     private Object createscript = null;
     private Object metaConfig = null;
     private String defaultSrsCode = null;
-    private boolean createSingleEnumTab = false;
-    private boolean createEnumTabs = false;
-    private boolean createEnumTxtCol = false;
-    private boolean createEnumColAsItfCode = false;
-    private boolean createEnumTabsWithId = false;
-    private boolean createImportTabs = false;
-    private boolean beautifyEnumDispName = false;
-    private boolean noSmartMapping = false;
-    private boolean smart1Inheritance = false;
-    private boolean smart2Inheritance = false;
-    private boolean coalesceCatalogueRef = false;
-    private boolean coalesceMultiSurface = false;
-    private boolean coalesceMultiLine = false;
-    private boolean expandMultilingual = false;
-    private boolean coalesceJson = false;
-    private boolean coalesceArray = false;
-    private boolean createTypeConstraint = false;
-    private boolean createFk = false;
-    private boolean createFkIdx = false;
-    private boolean createUnique = false;
-    private boolean createNumChecks = false;
-    private boolean createTextChecks = false;
-    private boolean createDateTimeChecks = false;
-    private boolean createStdCols = false;
+    private Boolean createSingleEnumTab = false;
+    private Boolean createEnumTabs = false;
+    private Boolean createEnumTxtCol = false;
+    private Boolean createEnumColAsItfCode = false;
+    private Boolean createEnumTabsWithId = false;
+    private Boolean createImportTabs = false;
+    private Boolean beautifyEnumDispName = false;
+    private Boolean noSmartMapping = false;
+    private Boolean smart1Inheritance = false;
+    private Boolean smart2Inheritance = false;
+    private Boolean coalesceCatalogueRef = false;
+    private Boolean coalesceMultiSurface = false;
+    private Boolean coalesceMultiLine = false;
+    private Boolean expandMultilingual = false;
+    private Boolean coalesceJson = false;
+    private Boolean coalesceArray = false;
+    private Boolean createTypeConstraint = false;
+    private Boolean createFk = false;
+    private Boolean createFkIdx = false;
+    private Boolean createUnique = false;
+    private Boolean createNumChecks = false;
+    private Boolean createTextChecks = false;
+    private Boolean createDateTimeChecks = false;
+    private Boolean createStdCols = false;
     private String t_id_Name = null;
     private Long idSeqMin = null;
     private Long idSeqMax = null;
-    private boolean createTypeDiscriminator = false;
-    private boolean createGeomIdx = false;
-    private boolean disableNameOptimization = false;
-    private boolean nameByTopic = false;
+    private Boolean createTypeDiscriminator = false;
+    private Boolean createGeomIdx = false;
+    private Boolean disableNameOptimization = false;
+    private Boolean nameByTopic = false;
     private Integer maxNameLength = null;
-    private boolean sqlEnableNull = false;
-    private boolean sqlColsAsText = false;
-    private boolean sqlExtRefCols = false;
-    private boolean keepAreaRef = false;
-    private boolean createTidCol = false;
-    private boolean createBasketCol = false;
-    private boolean createDatasetCol = false;
+    private Boolean sqlEnableNull = false;
+    private Boolean sqlColsAsText = false;
+    private Boolean sqlExtRefCols = false;
+    private Boolean keepAreaRef = false;
+    private Boolean createTidCol = false;
+    private Boolean createBasketCol = false;
+    private Boolean createDatasetCol = false;
     private String translation = null;
-    private boolean createMetaInfo = false;
+    private Boolean createMetaInfo = false;
     private String defaultSrsAuth = null;
 
     @InputFile
@@ -77,13 +77,13 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
 
     @Input
     @Optional
-    public boolean isOneGeomPerTable() {
+    public Boolean isOneGeomPerTable() {
         return oneGeomPerTable;
     }
 
     @Input
     @Optional
-    public boolean isSetupPgExt() {
+    public Boolean isSetupPgExt() {
         return setupPgExt;
     }
 
@@ -119,132 +119,132 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
 
     @Input
     @Optional
-    public boolean isCreateSingleEnumTab() {
+    public Boolean isCreateSingleEnumTab() {
         return createSingleEnumTab;
     }
 
     @Input
     @Optional
-    public boolean isCreateEnumTabs() {
+    public Boolean isCreateEnumTabs() {
         return createEnumTabs;
     }
 
     @Input
     @Optional
-    public boolean isCreateEnumTxtCol() {
+    public Boolean isCreateEnumTxtCol() {
         return createEnumTxtCol;
     }
 
     @Input
     @Optional
-    public boolean isCreateEnumColAsItfCode() {
+    public Boolean isCreateEnumColAsItfCode() {
         return createEnumColAsItfCode;
     }
 
     @Input
     @Optional
-    public boolean isCreateEnumTabsWithId() {
+    public Boolean isCreateEnumTabsWithId() {
         return createEnumTabsWithId;
     }
 
     @Input
     @Optional
-    public boolean isCreateImportTabs() {
+    public Boolean isCreateImportTabs() {
         return createImportTabs;
     }
 
     @Input
     @Optional
-    public boolean isBeautifyEnumDispName() {
+    public Boolean isBeautifyEnumDispName() {
         return beautifyEnumDispName;
     }
 
     @Input
     @Optional
-    public boolean isNoSmartMapping() {
+    public Boolean isNoSmartMapping() {
         return noSmartMapping;
     }
 
     @Input
     @Optional
-    public boolean isSmart1Inheritance() {
+    public Boolean isSmart1Inheritance() {
         return smart1Inheritance;
     }
 
     @Input
     @Optional
-    public boolean isSmart2Inheritance() {
+    public Boolean isSmart2Inheritance() {
         return smart2Inheritance;
     }
 
     @Input
     @Optional
-    public boolean isCoalesceCatalogueRef() {
+    public Boolean isCoalesceCatalogueRef() {
         return coalesceCatalogueRef;
     }
     @Input
     @Optional
-    public boolean isCoalesceMultiSurface() {
+    public Boolean isCoalesceMultiSurface() {
         return coalesceMultiSurface;
     }
     @Input
     @Optional
-    public boolean isCoalesceMultiLine() {
+    public Boolean isCoalesceMultiLine() {
         return coalesceMultiLine;
     }
     @Input
     @Optional
-    public boolean isExpandMultilingual() {
+    public Boolean isExpandMultilingual() {
         return expandMultilingual;
     }
     @Input
     @Optional
-    public boolean isCoalesceJson() {
+    public Boolean isCoalesceJson() {
         return coalesceJson;
     }
     @Input
     @Optional
-    public boolean isCoalesceArray() {
+    public Boolean isCoalesceArray() {
         return coalesceArray;
     }
     @Input
     @Optional
-    public boolean isCreateTypeConstraint() {
+    public Boolean isCreateTypeConstraint() {
         return createTypeConstraint;
     }
     @Input
     @Optional
-    public boolean isCreateFk() {
+    public Boolean isCreateFk() {
         return createFk;
     }
     @Input
     @Optional
-    public boolean isCreateFkIdx() {
+    public Boolean isCreateFkIdx() {
         return createFkIdx;
     }
     @Input
     @Optional
-    public boolean isCreateUnique() {
+    public Boolean isCreateUnique() {
         return createUnique;
     }
     @Input
     @Optional
-    public boolean isCreateNumChecks() {
+    public Boolean isCreateNumChecks() {
         return createNumChecks;
     }
     @Input
     @Optional
-    public boolean isCreateTextChecks() {
+    public Boolean isCreateTextChecks() {
         return createTextChecks;
     }
     @Input
     @Optional
-    public boolean isCreateDateTimeChecks() {
+    public Boolean isCreateDateTimeChecks() {
         return createDateTimeChecks;
     }
     @Input
     @Optional
-    public boolean isCreateStdCols() {
+    public Boolean isCreateStdCols() {
         return createStdCols;
     }
     @Input
@@ -264,22 +264,22 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     }
     @Input
     @Optional
-    public boolean isCreateTypeDiscriminator() {
+    public Boolean isCreateTypeDiscriminator() {
         return createTypeDiscriminator;
     }
     @Input
     @Optional
-    public boolean isCreateGeomIdx() {
+    public Boolean isCreateGeomIdx() {
         return createGeomIdx;
     }
     @Input
     @Optional
-    public boolean isDisableNameOptimization() {
+    public Boolean isDisableNameOptimization() {
         return disableNameOptimization;
     }
     @Input
     @Optional
-    public boolean isNameByTopic() {
+    public Boolean isNameByTopic() {
         return nameByTopic;
     }
     @Input
@@ -289,39 +289,39 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     }
     @Input
     @Optional
-    public boolean isSqlEnableNull() {
+    public Boolean isSqlEnableNull() {
         return sqlEnableNull;
     }
     @Input
     @Optional
-    public boolean isSqlColsAsText() {
+    public Boolean isSqlColsAsText() {
         return sqlColsAsText;
     }
     @Input
     @Optional
-    public boolean isSqlExtRefCols() {
+    public Boolean isSqlExtRefCols() {
         return sqlExtRefCols;
     }
     @Input
     @Optional
-    public boolean isKeepAreaRef() {
+    public Boolean isKeepAreaRef() {
         return keepAreaRef;
     }
     @Input
     @Optional
-    public boolean isCreateTidCol() {
+    public Boolean isCreateTidCol() {
         return createTidCol;
     }
 
     @Input
     @Optional
-    public boolean isCreateBasketCol() {
+    public Boolean isCreateBasketCol() {
         return createBasketCol;
     }
 
     @Input
     @Optional
-    public boolean isCreateDatasetCol() {
+    public Boolean isCreateDatasetCol() {
         return createDatasetCol;
     }
 
@@ -333,7 +333,7 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
 
     @Input
     @Optional
-    public boolean isCreateMetaInfo() {
+    public Boolean isCreateMetaInfo() {
         return createMetaInfo;
     }
 

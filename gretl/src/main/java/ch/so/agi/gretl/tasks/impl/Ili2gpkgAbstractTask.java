@@ -34,33 +34,33 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
 
     private String topics = null;
 
-    private boolean importTid = false;
+    private Boolean importTid = false;
 
     private File preScript = null;
 
     private File postScript = null;
 
-    private boolean deleteData = false;
+    private Boolean deleteData = false;
 
     private Object logFile = null;
 
-    private boolean trace = false;
+    private Boolean trace = false;
 
     private File validConfigFile = null;
 
-    private boolean disableValidation = false;
+    private Boolean disableValidation = false;
 
-    private boolean disableAreaValidation = false;
+    private Boolean disableAreaValidation = false;
 
-    private boolean forceTypeValidation = false;
+    private Boolean forceTypeValidation = false;
 
-    private boolean strokeArcs = false;
+    private Boolean strokeArcs = false;
 
-    private boolean skipPolygonBuilding = false;
+    private Boolean skipPolygonBuilding = false;
 
-    private boolean skipGeometryErrors = false;
+    private Boolean skipGeometryErrors = false;
 
-    private boolean iligml20 = false;
+    private Boolean iligml20 = false;
 
     @InputFile
     public Object getDbfile() {
@@ -111,7 +111,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isImportTid() {
+    public Boolean isImportTid() {
         return importTid;
     }
 
@@ -129,7 +129,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isDeleteData() {
+    public Boolean isDeleteData() {
         return deleteData;
     }
 
@@ -141,7 +141,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isTrace() {
+    public Boolean isTrace() {
         return trace;
     }
 
@@ -153,43 +153,43 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isDisableValidation() {
+    public Boolean isDisableValidation() {
         return disableValidation;
     }
 
     @Input
     @Optional
-    public boolean isDisableAreaValidation() {
+    public Boolean isDisableAreaValidation() {
         return disableAreaValidation;
     }
 
     @Input
     @Optional
-    public boolean isForceTypeValidation() {
+    public Boolean isForceTypeValidation() {
         return forceTypeValidation;
     }
 
     @Input
     @Optional
-    public boolean isStrokeArcs() {
+    public Boolean isStrokeArcs() {
         return strokeArcs;
     }
 
     @Input
     @Optional
-    public boolean isSkipPolygonBuilding() {
+    public Boolean isSkipPolygonBuilding() {
         return skipPolygonBuilding;
     }
 
     @Input
     @Optional
-    public boolean isSkipGeometryErrors() {
+    public Boolean isSkipGeometryErrors() {
         return skipGeometryErrors;
     }
 
     @Input
     @Optional
-    public boolean isIligml20() {
+    public Boolean isIligml20() {
         return iligml20;
     }
 

@@ -53,8 +53,8 @@ public class GpkgValidator extends AbstractValidatorTask {
         settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, tableName);
         initSettings(settings);
 
-        setValidationOk(new GpkgValidatorImpl().validate(files.toArray(new String[files.size()]), settings));
-        if (!isValidationOk() && isFailOnError()) {
+        validationOk = new GpkgValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
+        if (!validationOk && isFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

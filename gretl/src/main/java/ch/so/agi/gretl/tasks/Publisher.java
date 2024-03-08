@@ -20,11 +20,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 import org.interlis2.validator.Validator;
 
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
@@ -65,7 +61,7 @@ public class Publisher extends DefaultTask {
 
     private Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
 
-    private boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
+    private Boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
 
     private Endpoint kgdiService=null; // Endpunkt des SIMI-Services
 
@@ -129,7 +125,7 @@ public class Publisher extends DefaultTask {
         return regions;
     }
 
-    @Optional
+    @Internal
     public ListProperty<String> getPublishedRegions()
     {
         return _publishedRegions;
@@ -143,7 +139,7 @@ public class Publisher extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isUserFormats() {
+    public Boolean isUserFormats() {
         return userFormats;
     }
 

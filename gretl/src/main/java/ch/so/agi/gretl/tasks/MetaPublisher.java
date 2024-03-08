@@ -12,6 +12,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
@@ -41,7 +42,7 @@ public class MetaPublisher extends DefaultTask {
     private ListProperty<String> regions = null; // Publizierte Regionen (aus Publisher-Task)
     private Endpoint geocatTarget = null; // Geocat-Zielverzeichnis
 
-    @Input
+    @InputFile
     public File getMetaConfigFile(){
         return metaConfigFile;
     }

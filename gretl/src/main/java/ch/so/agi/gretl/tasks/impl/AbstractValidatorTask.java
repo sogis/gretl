@@ -24,15 +24,15 @@ public class AbstractValidatorTask extends DefaultTask {
 
     private Object configFile = null;
 
-    private boolean forceTypeValidation = false;
+    private Boolean forceTypeValidation = false;
 
-    private boolean disableAreaValidation = false;
+    private Boolean disableAreaValidation = false;
 
-    private boolean multiplicityOff = false;
+    private Boolean multiplicityOff = false;
 
-    private boolean allObjectsAccessible = false;
+    private Boolean allObjectsAccessible = false;
 
-    private boolean skipPolygonBuilding = false;
+    private Boolean skipPolygonBuilding = false;
 
     private Object logFile = null;
 
@@ -44,8 +44,8 @@ public class AbstractValidatorTask extends DefaultTask {
 
     private Integer proxyPort = null;
 
-    private boolean failOnError = true;
-    private boolean validationOk = true;
+    private Boolean failOnError = true;
+    protected boolean validationOk = true;
 
     @InputFiles
     public Object getDataFiles() {
@@ -72,31 +72,30 @@ public class AbstractValidatorTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isForceTypeValidation() {
+    public Boolean isForceTypeValidation() {
         return forceTypeValidation;
     }
 
     @Input
     @Optional
-    public boolean isDisableAreaValidation() {
+    public Boolean isDisableAreaValidation() {
         return disableAreaValidation;
     }
-
     @Input
     @Optional
-    public boolean isMultiplicityOff() {
+    public Boolean isMultiplicityOff() {
         return multiplicityOff;
     }
 
     @Input
     @Optional
-    public boolean isAllObjectsAccessible() {
+    public Boolean isAllObjectsAccessible() {
         return allObjectsAccessible;
     }
 
     @Input
     @Optional
-    public boolean isSkipPolygonBuilding() {
+    public Boolean isSkipPolygonBuilding() {
         return skipPolygonBuilding;
     }
 
@@ -132,16 +131,8 @@ public class AbstractValidatorTask extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isFailOnError() {
+    public Boolean isFailOnError() {
         return failOnError;
-    }
-
-    public boolean isValidationOk() {
-        return validationOk;
-    }
-
-    public void setValidationOk(boolean validationOk) {
-        this.validationOk = validationOk;
     }
 
     protected void initSettings(Settings settings) {
