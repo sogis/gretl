@@ -9,11 +9,9 @@ import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
 import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
 
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.*;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +39,8 @@ public class CsvValidator extends AbstractValidatorTask {
     public Character getValueSeparator() {
         return valueSeparator;
     }
-    @Optional
+    @Internal
+    @Nullable
     public String getEncoding(){
         return encoding;
     }

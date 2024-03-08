@@ -5,10 +5,7 @@ import java.sql.SQLException;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.iom_j.csv.CsvReader;
@@ -18,6 +15,8 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
+
+import javax.annotation.Nullable;
 
 public class CsvExport extends DefaultTask {
     protected GretlLogger log;
@@ -70,12 +69,14 @@ public class CsvExport extends DefaultTask {
         return schemaName;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public String[] getAttributes(){
         return attributes;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public String getEncoding(){
         return encoding;
     }
