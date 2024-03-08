@@ -24,7 +24,7 @@ public class CsvImport extends DefaultTask {
     private Connector database;
     private Object dataFile = null;
     private String tableName = null;
-    private boolean firstLineIsHeader = true;
+    private Boolean firstLineIsHeader = true;
     private Character valueDelimiter = null;
     private Character valueSeparator = null;
     private String schemaName = null;
@@ -47,7 +47,7 @@ public class CsvImport extends DefaultTask {
 
     @Input
     @Optional
-    public boolean isFirstLineIsHeader() {
+    public Boolean isFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 

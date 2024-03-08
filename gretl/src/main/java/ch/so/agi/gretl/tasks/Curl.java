@@ -34,6 +34,8 @@ import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
+import javax.annotation.Nullable;
+
 
 // README.md eventuell
 // abstract class geht erst mit 5.6 oder so. Nicht mit 5.1.1
@@ -70,37 +72,44 @@ public class Curl extends DefaultTask {
         return expectedStatusCode;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public String getExpectedBody() {
         return expectedBody;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public Map<String, Object> getFormData() {
         return formData;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public File getOutputFile() {
         return outputFile;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public File getDataBinary() {
         return dataBinary;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public Map<String, String> getHeaders() {
         return headers;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public String getUser() {
         return user;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public String getPassword() {
         return password;
     }

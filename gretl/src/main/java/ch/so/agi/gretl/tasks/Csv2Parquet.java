@@ -17,6 +17,8 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Csv2ParquetStep;
 
+import javax.annotation.Nullable;
+
 public class Csv2Parquet extends DefaultTask {
     protected GretlLogger log;
 
@@ -34,37 +36,44 @@ public class Csv2Parquet extends DefaultTask {
         return csvFile;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public Boolean isFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public Character getValueDelimiter() {
         return valueDelimiter;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public Character getValueSeparator() {
         return valueSeparator;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public String getEncoding() {
         return encoding;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public String getModels() {
         return models;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public String getModeldir() {
         return modeldir;
     }
 
-    @Optional
+    @Internal
+    @Nullable
     public File getOutputDir() {
         return outputDir;
     }
