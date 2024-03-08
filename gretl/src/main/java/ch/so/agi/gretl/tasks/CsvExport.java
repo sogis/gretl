@@ -25,13 +25,17 @@ public class CsvExport extends DefaultTask {
     private Object dataFile = null;
     private String tableName = null;
 
-    private boolean firstLineIsHeader = true;
+    private Boolean firstLineIsHeader = true;
 
     private Character valueDelimiter = null;
 
     private Character valueSeparator = null;
 
     private String schemaName = null;
+
+    private String[] attributes = null;
+
+    private String encoding = null;
 
     @Input
     public Connector getDatabase() {
@@ -47,7 +51,7 @@ public class CsvExport extends DefaultTask {
     }
     @Input
     @Optional
-    public boolean isFirstLineIsHeader() {
+    public Boolean isFirstLineIsHeader() {
         return firstLineIsHeader;
     }
     @Input
@@ -67,10 +71,14 @@ public class CsvExport extends DefaultTask {
     }
 
     @Optional
-    public String[] attributes = null;
+    public String[] getAttributes(){
+        return attributes;
+    }
 
     @Optional
-    public String encoding = null;
+    public String getEncoding(){
+        return encoding;
+    }
 
     @TaskAction
     public void exportData() {
