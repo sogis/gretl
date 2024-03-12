@@ -29,6 +29,14 @@ public class Gzip extends DefaultTask {
         return gzipFile;
     }
 
+    public void setDataFile(File dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setGzipFile(File gzipFile) {
+        this.gzipFile = gzipFile;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Gzip.class);

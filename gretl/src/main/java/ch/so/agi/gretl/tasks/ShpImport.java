@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tasks;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -29,9 +30,22 @@ public class ShpImport extends DefaultTask {
     private String encoding = null;
     private Integer batchSize = null;
 
+
     @Input
     public Connector getDatabase() {
         return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
     }
 
     @InputFile
@@ -39,9 +53,17 @@ public class ShpImport extends DefaultTask {
         return dataFile;
     }
 
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
     @Input
     public String getTableName() {
         return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     @Input
@@ -50,16 +72,28 @@ public class ShpImport extends DefaultTask {
         return schemaName;
     }
 
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
     @Input
     @Optional
     public String getEncoding() {
         return encoding;
     }
 
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
     @Input
     @Optional
     public Integer getBatchSize() {
         return batchSize;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
     }
 
     @TaskAction

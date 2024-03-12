@@ -35,7 +35,15 @@ public class OgdMetaPublisher extends DefaultTask {
     public File getOutputDir() {
         return outputDir;
     }
-        
+
+    public void setConfigFile(File configFile) {
+        this.configFile = configFile;
+    }
+
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(OgdMetaPublisher.class);

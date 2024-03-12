@@ -80,6 +80,34 @@ public class Av2geobau extends DefaultTask {
         return zip;
     }
 
+    public void setItfFiles(Object itfFiles) {
+        this.itfFiles = itfFiles;
+    }
+
+    public void setDxfDirectory(Object dxfDirectory) {
+        this.dxfDirectory = dxfDirectory;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setLogFile(Object logFile) {
+        this.logFile = logFile;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setZip(Boolean zip) {
+        this.zip = zip;
+    }
+
     @TaskAction
     public void runTransformation() {
         log = LogEnvironment.getLogger(Av2geobau.class);

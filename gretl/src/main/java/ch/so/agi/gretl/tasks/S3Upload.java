@@ -87,6 +87,50 @@ public class S3Upload extends DefaultTask {
         return metaData;
     }
 
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setSourceDir(Object sourceDir) {
+        this.sourceDir = sourceDir;
+    }
+
+    public void setSourceFile(Object sourceFile) {
+        this.sourceFile = sourceFile;
+    }
+
+    public void setSourceFiles(Object sourceFiles) {
+        this.sourceFiles = sourceFiles;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public void setEndPoint(String endPoint) {
+        this.endPoint = endPoint;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setAcl(String acl) {
+        this.acl = acl;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setMetaData(Map<String, String> metaData) {
+        this.metaData = metaData;
+    }
+
     @TaskAction
     public void upload() {
         log = LogEnvironment.getLogger(S3Upload.class);

@@ -27,6 +27,10 @@ public class ShpValidator extends AbstractValidatorTask {
         return encoding;
     }
 
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
     @TaskAction
     public void validate() {
         log = LogEnvironment.getLogger(ShpValidator.class);
@@ -60,4 +64,5 @@ public class ShpValidator extends AbstractValidatorTask {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }
+
 }

@@ -68,6 +68,38 @@ public class S3Bucket2Bucket extends DefaultTask {
         return metaData;
     }
 
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setSourceBucket(String sourceBucket) {
+        this.sourceBucket = sourceBucket;
+    }
+
+    public void setTargetBucket(String targetBucket) {
+        this.targetBucket = targetBucket;
+    }
+
+    public void setEndPoint(String endPoint) {
+        this.endPoint = endPoint;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setAcl(String acl) {
+        this.acl = acl;
+    }
+
+    public void setMetaData(Map<String, String> metaData) {
+        this.metaData = metaData;
+    }
+
     @TaskAction
     public void upload() {
         log = LogEnvironment.getLogger(S3Bucket2Bucket.class);

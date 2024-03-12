@@ -40,6 +40,22 @@ public class FtpDownload extends AbstractFtpTask {
         return fileType;
     }
 
+    public void setLocalDir(String localDir) {
+        this.localDir = localDir;
+    }
+
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
+    public void setRemoteFile(Object remoteFile) {
+        this.remoteFile = remoteFile;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
     @TaskAction
     void download()
     {

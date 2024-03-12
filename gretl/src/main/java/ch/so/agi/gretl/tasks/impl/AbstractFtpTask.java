@@ -57,6 +57,34 @@ public class AbstractFtpTask extends DefaultTask {
         return controlKeepAliveTimeout;
     }
 
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setSystemType(String systemType) {
+        this.systemType = systemType;
+    }
+
+    public void setFileSeparator(String fileSeparator) {
+        this.fileSeparator = fileSeparator;
+    }
+
+    public void setPassiveMode(Boolean passiveMode) {
+        this.passiveMode = passiveMode;
+    }
+
+    public void setControlKeepAliveTimeout(Long controlKeepAliveTimeout) {
+        this.controlKeepAliveTimeout = controlKeepAliveTimeout;
+    }
+
     protected FTPClient setup() throws SocketException, IOException, Exception {
         FTPClient ftp;
         ftp = new FTPClient();

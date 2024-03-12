@@ -38,12 +38,10 @@ public class S3Download extends DefaultTask {
         return secretKey;
     }
     @Input
-
     public String getBucketName() {
         return bucketName;
     }
     @Input
-
     public String getKey() {
         return key;
     }
@@ -59,6 +57,34 @@ public class S3Download extends DefaultTask {
     @Input
     public String getRegion() {
         return region;
+    }
+
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setDownloadDir(File downloadDir) {
+        this.downloadDir = downloadDir;
+    }
+
+    public void setEndPoint(String endPoint) {
+        this.endPoint = endPoint;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     @TaskAction

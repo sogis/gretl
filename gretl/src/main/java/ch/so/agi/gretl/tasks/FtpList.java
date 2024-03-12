@@ -21,7 +21,11 @@ public class FtpList extends AbstractFtpTask {
     public String getRemoteDir(){
         return remoteDir;
     }
-   
+
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
     @TaskAction
     void list()
     {

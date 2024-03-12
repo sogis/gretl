@@ -49,6 +49,26 @@ public class SqlExecutor extends DefaultTask {
         return sqlParameters;
     }
 
+    public void setDatabase(List<String> databaseDetails) {
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setSqlFiles(List<String> sqlFiles) {
+        this.sqlFiles = sqlFiles;
+    }
+
+    public void setSqlParameters(Object sqlParameters) {
+        this.sqlParameters = sqlParameters;
+    }
+
     @TaskAction
     public void executeSQLExecutor() {
 

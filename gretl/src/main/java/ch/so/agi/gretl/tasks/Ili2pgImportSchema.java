@@ -337,6 +337,205 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         return createMetaInfo;
     }
 
+    public void setIliFile(Object iliFile) {
+        this.iliFile = iliFile;
+    }
+
+    public void setIliMetaAttrs(Object iliMetaAttrs) {
+        this.iliMetaAttrs = iliMetaAttrs;
+    }
+
+    public void setOneGeomPerTable(Boolean oneGeomPerTable) {
+        this.oneGeomPerTable = oneGeomPerTable;
+    }
+
+    public void setSetupPgExt(Boolean setupPgExt) {
+        this.setupPgExt = setupPgExt;
+    }
+
+    public void setDropscript(Object dropscript) {
+        this.dropscript = dropscript;
+    }
+
+    public void setCreatescript(Object createscript) {
+        this.createscript = createscript;
+    }
+
+    public void setMetaConfig(Object metaConfig) {
+        this.metaConfig = metaConfig;
+    }
+
+    public void setDefaultSrsCode(String defaultSrsCode) {
+        this.defaultSrsCode = defaultSrsCode;
+    }
+
+    public void setCreateSingleEnumTab(Boolean createSingleEnumTab) {
+        this.createSingleEnumTab = createSingleEnumTab;
+    }
+
+    public void setCreateEnumTabs(Boolean createEnumTabs) {
+        this.createEnumTabs = createEnumTabs;
+    }
+
+    public void setCreateEnumTxtCol(Boolean createEnumTxtCol) {
+        this.createEnumTxtCol = createEnumTxtCol;
+    }
+
+    public void setCreateEnumColAsItfCode(Boolean createEnumColAsItfCode) {
+        this.createEnumColAsItfCode = createEnumColAsItfCode;
+    }
+
+    public void setCreateEnumTabsWithId(Boolean createEnumTabsWithId) {
+        this.createEnumTabsWithId = createEnumTabsWithId;
+    }
+
+    public void setCreateImportTabs(Boolean createImportTabs) {
+        this.createImportTabs = createImportTabs;
+    }
+
+    public void setBeautifyEnumDispName(Boolean beautifyEnumDispName) {
+        this.beautifyEnumDispName = beautifyEnumDispName;
+    }
+
+    public void setNoSmartMapping(Boolean noSmartMapping) {
+        this.noSmartMapping = noSmartMapping;
+    }
+
+    public void setSmart1Inheritance(Boolean smart1Inheritance) {
+        this.smart1Inheritance = smart1Inheritance;
+    }
+
+    public void setSmart2Inheritance(Boolean smart2Inheritance) {
+        this.smart2Inheritance = smart2Inheritance;
+    }
+
+    public void setCoalesceCatalogueRef(Boolean coalesceCatalogueRef) {
+        this.coalesceCatalogueRef = coalesceCatalogueRef;
+    }
+
+    public void setCoalesceMultiSurface(Boolean coalesceMultiSurface) {
+        this.coalesceMultiSurface = coalesceMultiSurface;
+    }
+
+    public void setCoalesceMultiLine(Boolean coalesceMultiLine) {
+        this.coalesceMultiLine = coalesceMultiLine;
+    }
+
+    public void setExpandMultilingual(Boolean expandMultilingual) {
+        this.expandMultilingual = expandMultilingual;
+    }
+
+    public void setCoalesceJson(Boolean coalesceJson) {
+        this.coalesceJson = coalesceJson;
+    }
+
+    public void setCoalesceArray(Boolean coalesceArray) {
+        this.coalesceArray = coalesceArray;
+    }
+
+    public void setCreateTypeConstraint(Boolean createTypeConstraint) {
+        this.createTypeConstraint = createTypeConstraint;
+    }
+
+    public void setCreateFk(Boolean createFk) {
+        this.createFk = createFk;
+    }
+
+    public void setCreateFkIdx(Boolean createFkIdx) {
+        this.createFkIdx = createFkIdx;
+    }
+
+    public void setCreateUnique(Boolean createUnique) {
+        this.createUnique = createUnique;
+    }
+
+    public void setCreateNumChecks(Boolean createNumChecks) {
+        this.createNumChecks = createNumChecks;
+    }
+
+    public void setCreateTextChecks(Boolean createTextChecks) {
+        this.createTextChecks = createTextChecks;
+    }
+
+    public void setCreateDateTimeChecks(Boolean createDateTimeChecks) {
+        this.createDateTimeChecks = createDateTimeChecks;
+    }
+
+    public void setCreateStdCols(Boolean createStdCols) {
+        this.createStdCols = createStdCols;
+    }
+
+    public void setT_id_Name(String t_id_Name) {
+        this.t_id_Name = t_id_Name;
+    }
+
+    public void setIdSeqMin(Long idSeqMin) {
+        this.idSeqMin = idSeqMin;
+    }
+
+    public void setIdSeqMax(Long idSeqMax) {
+        this.idSeqMax = idSeqMax;
+    }
+
+    public void setCreateTypeDiscriminator(Boolean createTypeDiscriminator) {
+        this.createTypeDiscriminator = createTypeDiscriminator;
+    }
+
+    public void setCreateGeomIdx(Boolean createGeomIdx) {
+        this.createGeomIdx = createGeomIdx;
+    }
+
+    public void setDisableNameOptimization(Boolean disableNameOptimization) {
+        this.disableNameOptimization = disableNameOptimization;
+    }
+
+    public void setNameByTopic(Boolean nameByTopic) {
+        this.nameByTopic = nameByTopic;
+    }
+
+    public void setMaxNameLength(Integer maxNameLength) {
+        this.maxNameLength = maxNameLength;
+    }
+
+    public void setSqlEnableNull(Boolean sqlEnableNull) {
+        this.sqlEnableNull = sqlEnableNull;
+    }
+
+    public void setSqlColsAsText(Boolean sqlColsAsText) {
+        this.sqlColsAsText = sqlColsAsText;
+    }
+
+    public void setSqlExtRefCols(Boolean sqlExtRefCols) {
+        this.sqlExtRefCols = sqlExtRefCols;
+    }
+
+    public void setKeepAreaRef(Boolean keepAreaRef) {
+        this.keepAreaRef = keepAreaRef;
+    }
+
+    public void setCreateTidCol(Boolean createTidCol) {
+        this.createTidCol = createTidCol;
+    }
+
+    public void setCreateBasketCol(Boolean createBasketCol) {
+        this.createBasketCol = createBasketCol;
+    }
+
+    public void setCreateDatasetCol(Boolean createDatasetCol) {
+        this.createDatasetCol = createDatasetCol;
+    }
+
+    public void setTranslation(String translation) {
+        this.translation = translation;
+    }
+
+    public void setCreateMetaInfo(Boolean createMetaInfo) {
+        this.createMetaInfo = createMetaInfo;
+    }
+
+    public void setDefaultSrsAuth(String defaultSrsAuth) {
+        this.defaultSrsAuth = defaultSrsAuth;
+    }
 
     @TaskAction
     public void importSchema() {

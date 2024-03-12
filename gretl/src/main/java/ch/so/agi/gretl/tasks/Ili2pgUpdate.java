@@ -20,6 +20,11 @@ public class Ili2pgUpdate extends Ili2pgAbstractTask {
     public Object getDataFile(){
         return dataFile;
     }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
     @TaskAction
     public void updateData() {
         Config settings = createConfig();

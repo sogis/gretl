@@ -45,6 +45,22 @@ public class CsvValidator extends AbstractValidatorTask {
         return encoding;
     }
 
+    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
+        this.firstLineIsHeader = firstLineIsHeader;
+    }
+
+    public void setValueDelimiter(Character valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
+
+    public void setValueSeparator(Character valueSeparator) {
+        this.valueSeparator = valueSeparator;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
     @TaskAction
     public void validate() {
         log = LogEnvironment.getLogger(CsvValidator.class);

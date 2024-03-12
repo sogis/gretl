@@ -114,6 +114,46 @@ public class Curl extends DefaultTask {
         return password;
     }
 
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
+    public void setMethod(MethodType method) {
+        this.method = method;
+    }
+
+    public void setExpectedStatusCode(int expectedStatusCode) {
+        this.expectedStatusCode = expectedStatusCode;
+    }
+
+    public void setExpectedBody(String expectedBody) {
+        this.expectedBody = expectedBody;
+    }
+
+    public void setFormData(Map<String, Object> formData) {
+        this.formData = formData;
+    }
+
+    public void setOutputFile(File outputFile) {
+        this.outputFile = outputFile;
+    }
+
+    public void setDataBinary(File dataBinary) {
+        this.dataBinary = dataBinary;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @TaskAction
     public void request() throws ClientProtocolException, IOException {
         log = LogEnvironment.getLogger(Curl.class);

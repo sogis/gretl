@@ -63,6 +63,46 @@ public class Db2Db extends DefaultTask {
         return sqlParameters;
     }
 
+    public void setSourceDb(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.sourceDb = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setTargetDb(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.targetDb = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setTransferSets(List<TransferSet> transferSets) {
+        this.transferSets = transferSets;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public void setFetchSize(Integer fetchSize) {
+        this.fetchSize = fetchSize;
+    }
+
+    public void setSqlParameters(Object sqlParameters) {
+        this.sqlParameters = sqlParameters;
+    }
+
     @TaskAction
     public void executeTask() throws Exception {
         String taskName = ((Task) this).getName();

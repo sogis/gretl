@@ -67,6 +67,34 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
         return createGeomIdx;
     }
 
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setCoalesceJson(Boolean coalesceJson) {
+        this.coalesceJson = coalesceJson;
+    }
+
+    public void setNameByTopic(Boolean nameByTopic) {
+        this.nameByTopic = nameByTopic;
+    }
+
+    public void setDefaultSrsCode(String defaultSrsCode) {
+        this.defaultSrsCode = defaultSrsCode;
+    }
+
+    public void setCreateEnumTabs(Boolean createEnumTabs) {
+        this.createEnumTabs = createEnumTabs;
+    }
+
+    public void setCreateMetaInfo(Boolean createMetaInfo) {
+        this.createMetaInfo = createMetaInfo;
+    }
+
+    public void setCreateGeomIdx(Boolean createGeomIdx) {
+        this.createGeomIdx = createGeomIdx;
+    }
+
     @TaskAction
     public void importData() {
         Config settings = createConfig();

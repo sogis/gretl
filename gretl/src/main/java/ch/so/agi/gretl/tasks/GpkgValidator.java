@@ -24,6 +24,10 @@ public class GpkgValidator extends AbstractValidatorTask {
         return tableName;
     }
 
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
     @TaskAction
     public void validate() {
         log = LogEnvironment.getLogger(GpkgValidator.class);

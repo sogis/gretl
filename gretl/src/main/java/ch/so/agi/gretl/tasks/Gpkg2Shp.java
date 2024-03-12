@@ -32,6 +32,14 @@ public class Gpkg2Shp extends DefaultTask {
         return outputDir;
     }
 
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Gpkg2Shp.class);

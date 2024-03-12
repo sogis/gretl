@@ -36,6 +36,8 @@ import ch.so.agi.gretl.util.SimiSvcApi;
 import ch.so.agi.gretl.util.SimiSvcClient;
 import ch.so.agi.gretl.util.TaskUtil;
 
+import javax.annotation.Nullable;
+
 public class Publisher extends DefaultTask {
     protected GretlLogger log;
 
@@ -125,7 +127,8 @@ public class Publisher extends DefaultTask {
         return regions;
     }
 
-    @Internal
+    @Optional
+    @Input
     public ListProperty<String> getPublishedRegions()
     {
         return _publishedRegions;
@@ -189,6 +192,90 @@ public class Publisher extends DefaultTask {
     @Optional
     public Date getVersion() {
         return version;
+    }
+
+    public void setDataIdent(String dataIdent) {
+        this.dataIdent = dataIdent;
+    }
+
+    public void setTarget(Endpoint target) {
+        this.target = target;
+    }
+
+    public void setSourcePath(Object sourcePath) {
+        this.sourcePath = sourcePath;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setDbSchema(String dbSchema) {
+        this.dbSchema = dbSchema;
+    }
+
+    public void setDataset(String dataset) {
+        this.dataset = dataset;
+    }
+
+    public void setModelsToPublish(String modelsToPublish) {
+        this.modelsToPublish = modelsToPublish;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setRegions(List<String> regions) {
+        this.regions.set(regions);
+    }
+
+    public void setValidationConfig(Object validationConfig) {
+        this.validationConfig = validationConfig;
+    }
+
+    public void setUserFormats(Boolean userFormats) {
+        this.userFormats = userFormats;
+    }
+
+    public void setKgdiService(Endpoint kgdiService) {
+        this.kgdiService = kgdiService;
+    }
+
+    public void setKgdiTokenService(Endpoint kgdiTokenService) {
+        this.kgdiTokenService = kgdiTokenService;
+    }
+
+    public void setGrooming(Object grooming) {
+        this.grooming = grooming;
+    }
+
+    public void setExportModels(String exportModels) {
+        this.exportModels = exportModels;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setVersion(Date version) {
+        this.version = version;
     }
 
     @TaskAction

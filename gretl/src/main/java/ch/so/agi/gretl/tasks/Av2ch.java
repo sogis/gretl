@@ -56,6 +56,26 @@ public class Av2ch extends DefaultTask {
         return zip;
     }
 
+    public void setInputFile(Object inputFile) {
+        this.inputFile = inputFile;
+    }
+
+    public void setOutputDirectory(Object outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setZip(Boolean zip) {
+        this.zip = zip;
+    }
+
     @TaskAction
     public void runTransformation() {
         log = LogEnvironment.getLogger(Av2ch.class);

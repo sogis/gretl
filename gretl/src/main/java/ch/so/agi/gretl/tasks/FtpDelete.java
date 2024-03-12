@@ -35,6 +35,14 @@ public class FtpDelete extends AbstractFtpTask {
         return remoteFile;
     }
 
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
+    public void setRemoteFile(Object remoteFile) {
+        this.remoteFile = remoteFile;
+    }
+
     @TaskAction
     void download() {
         log = LogEnvironment.getLogger(FtpDelete.class);

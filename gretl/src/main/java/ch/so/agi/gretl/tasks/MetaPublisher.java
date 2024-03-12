@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -64,8 +65,22 @@ public class MetaPublisher extends DefaultTask {
         return geocatTarget;
     }
 
+    public void setMetaConfigFile(File metaConfigFile) {
+        this.metaConfigFile = metaConfigFile;
+    }
 
-    
+    public void setTarget(Endpoint target) {
+        this.target = target;
+    }
+
+    public void setRegions(List<String> regions) {
+        this.regions.set(regions);
+    }
+
+    public void setGeocatTarget(Endpoint geocatTarget) {
+        this.geocatTarget = geocatTarget;
+    }
+
     @TaskAction
     public void publishAll() {
         log = LogEnvironment.getLogger(MetaPublisher.class);

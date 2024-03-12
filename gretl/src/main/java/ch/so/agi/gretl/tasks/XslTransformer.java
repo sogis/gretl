@@ -36,6 +36,18 @@ public class XslTransformer extends DefaultTask {
         return outDirectory;
     }
 
+    public void setXslFile(Object xslFile) {
+        this.xslFile = xslFile;
+    }
+
+    public void setXmlFile(Object xmlFile) {
+        this.xmlFile = xmlFile;
+    }
+
+    public void setOutDirectory(File outDirectory) {
+        this.outDirectory = outDirectory;
+    }
+
     @TaskAction
     public void transform() {
         log = LogEnvironment.getLogger(XslTransformer.class);

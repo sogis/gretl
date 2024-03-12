@@ -193,6 +193,94 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
         return iligml20;
     }
 
+    public void setDbfile(Object dbfile) {
+        this.dbfile = dbfile;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setModels(String models) {
+        this.models = models;
+    }
+
+    public void setDataset(Object dataset) {
+        this.dataset = dataset;
+    }
+
+    public void setBaskets(String baskets) {
+        this.baskets = baskets;
+    }
+
+    public void setTopics(String topics) {
+        this.topics = topics;
+    }
+
+    public void setImportTid(Boolean importTid) {
+        this.importTid = importTid;
+    }
+
+    public void setPreScript(File preScript) {
+        this.preScript = preScript;
+    }
+
+    public void setPostScript(File postScript) {
+        this.postScript = postScript;
+    }
+
+    public void setDeleteData(Boolean deleteData) {
+        this.deleteData = deleteData;
+    }
+
+    public void setLogFile(Object logFile) {
+        this.logFile = logFile;
+    }
+
+    public void setTrace(Boolean trace) {
+        this.trace = trace;
+    }
+
+    public void setValidConfigFile(File validConfigFile) {
+        this.validConfigFile = validConfigFile;
+    }
+
+    public void setDisableValidation(Boolean disableValidation) {
+        this.disableValidation = disableValidation;
+    }
+
+    public void setDisableAreaValidation(Boolean disableAreaValidation) {
+        this.disableAreaValidation = disableAreaValidation;
+    }
+
+    public void setForceTypeValidation(Boolean forceTypeValidation) {
+        this.forceTypeValidation = forceTypeValidation;
+    }
+
+    public void setStrokeArcs(Boolean strokeArcs) {
+        this.strokeArcs = strokeArcs;
+    }
+
+    public void setSkipPolygonBuilding(Boolean skipPolygonBuilding) {
+        this.skipPolygonBuilding = skipPolygonBuilding;
+    }
+
+    public void setSkipGeometryErrors(Boolean skipGeometryErrors) {
+        this.skipGeometryErrors = skipGeometryErrors;
+    }
+
+    public void setIligml20(Boolean iligml20) {
+        this.iligml20 = iligml20;
+    }
+
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2gpkgAbstractTask.class);
 

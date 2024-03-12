@@ -135,6 +135,70 @@ public class AbstractValidatorTask extends DefaultTask {
         return failOnError;
     }
 
+    public void setDataFiles(Object dataFiles) {
+        this.dataFiles = dataFiles;
+    }
+
+    public void setModels(String models) {
+        this.models = models;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setConfigFile(Object configFile) {
+        this.configFile = configFile;
+    }
+
+    public void setForceTypeValidation(Boolean forceTypeValidation) {
+        this.forceTypeValidation = forceTypeValidation;
+    }
+
+    public void setDisableAreaValidation(Boolean disableAreaValidation) {
+        this.disableAreaValidation = disableAreaValidation;
+    }
+
+    public void setMultiplicityOff(Boolean multiplicityOff) {
+        this.multiplicityOff = multiplicityOff;
+    }
+
+    public void setAllObjectsAccessible(Boolean allObjectsAccessible) {
+        this.allObjectsAccessible = allObjectsAccessible;
+    }
+
+    public void setSkipPolygonBuilding(Boolean skipPolygonBuilding) {
+        this.skipPolygonBuilding = skipPolygonBuilding;
+    }
+
+    public void setLogFile(Object logFile) {
+        this.logFile = logFile;
+    }
+
+    public void setXtflogFile(Object xtflogFile) {
+        this.xtflogFile = xtflogFile;
+    }
+
+    public void setPluginFolder(Object pluginFolder) {
+        this.pluginFolder = pluginFolder;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setFailOnError(Boolean failOnError) {
+        this.failOnError = failOnError;
+    }
+
+    public void setValidationOk(boolean validationOk) {
+        this.validationOk = validationOk;
+    }
+
     protected void initSettings(Settings settings) {
         settings.setValue(Validator.SETTING_DISABLE_STD_LOGGER, Validator.TRUE);
         if (models != null) {

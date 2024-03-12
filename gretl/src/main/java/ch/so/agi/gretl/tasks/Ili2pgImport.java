@@ -26,6 +26,10 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
         return dataFile;
     }
 
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
     @TaskAction
     public void importData() {
         Config settings = createConfig();

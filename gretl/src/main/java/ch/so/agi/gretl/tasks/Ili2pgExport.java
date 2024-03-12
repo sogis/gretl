@@ -37,6 +37,17 @@ public class Ili2pgExport extends Ili2pgAbstractTask {
         return dataFile;
     }
 
+    public void setExport3(Boolean export3) {
+        this.export3 = export3;
+    }
+
+    public void setExportModels(String exportModels) {
+        this.exportModels = exportModels;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
 
     @TaskAction
     public void exportData() {

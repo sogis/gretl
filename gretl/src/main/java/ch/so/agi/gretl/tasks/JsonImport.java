@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -52,7 +53,35 @@ public class JsonImport extends DefaultTask {
     public Boolean isDeleteAllRows() {
         return deleteAllRows;
     }
-    
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setQualifiedTableName(String qualifiedTableName) {
+        this.qualifiedTableName = qualifiedTableName;
+    }
+
+    public void setJsonFile(String jsonFile) {
+        this.jsonFile = jsonFile;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
+
+    public void setDeleteAllRows(Boolean deleteAllRows) {
+        this.deleteAllRows = deleteAllRows;
+    }
+
     @TaskAction
     public void importJsonFile() {
         log = LogEnvironment.getLogger(JsonImport.class);
