@@ -19,9 +19,6 @@ tasks.register('schemaimport', Ili2pgImportSchema) {
     coalesceMultiSurface = true
     coalesceMultiLine = true
     createBasketCol = true
-    createGeomIdx = true
-    createFk = true
-    createFkIdx = true
     createTidCol = true
     defaultSrsAuth = "EPSG"
     defaultSrsCode = "2056"
@@ -58,7 +55,6 @@ tasks.register('importdataset2', Ili2pgImport) {
 tasks.register('validate', Ili2pgValidate) {
     dependsOn 'importdataset2'
     database = [db_uri, db_user, db_pass]
-    //models = "SO_AFU_Schutzbauten_20231212"
     modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = db_schema
     dataset = ["agi.testeinzelobjekt1", "agi.testeinzelobjekt2"]
