@@ -27,8 +27,8 @@ public class Ili2pgValidate extends Ili2pgAbstractTask {
         }
 
         if (datasetNames != null) {
-            for (int i = 0; i < datasetNames.size(); i++) {
-                settings.setDatasetName(datasetNames.get(i));
+            for (String ds : datasetNames) {
+                settings.setDatasetName(ds);
                 run(function, settings);
             }
         } else {
