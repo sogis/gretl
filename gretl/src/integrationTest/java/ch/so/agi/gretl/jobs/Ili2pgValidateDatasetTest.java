@@ -29,13 +29,24 @@ public class Ili2pgValidateDatasetTest {
         .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
 
     @Test
-    public void validateData_Ok() throws Exception {
+    public void validateSingleDataset_Ok() throws Exception {
         // Run task
         GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgValidateDataset", gvs);
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgValidateSingleDataset", gvs);
 
         // Check result
-        String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateDataset/validation.log")));
+        String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateSingleDataset/validation.log")));
+        assertTrue(logFileContent.contains("Info: ...validate done"));        
+    }
+    
+    @Test
+    public void validateMultipleDataset_Ok() throws Exception {
+        // Run task
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgValidateMultipleDatasets", gvs);
+
+        // Check result
+        String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateMultipleDatasets/validation.log")));
         assertTrue(logFileContent.contains("Info: ...validate done"));        
     }
     

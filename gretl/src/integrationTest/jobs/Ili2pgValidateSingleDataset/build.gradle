@@ -57,7 +57,8 @@ tasks.register('validate', Ili2pgValidate) {
     database = [db_uri, db_user, db_pass]
     modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = db_schema
-    dataset = ["agi.testeinzelobjekt1", "agi.testeinzelobjekt2"]
+    // Prüfe nur ein Dataset, auch wenn mehrere in der Datenbank liegen
+    dataset = "agi.testeinzelobjekt1"
     logFile = file("validation.log")
 }
 
