@@ -31,8 +31,8 @@ public class Ili2pgValidate extends Ili2pgAbstractTask {
                 settings.setDatasetName(ds);
                 run(function, settings);
             }
-        } else {
-            run(function, settings);
+            return;
         }
+        run(function, settings);
     }
 }

@@ -27,24 +27,14 @@ tasks.register('schemaimport', Ili2pgImportSchema) {
     strokeArcs = true
 }
 
-tasks.register('importdataset1', Ili2pgImport) {
+tasks.register('importdatasets', Ili2pgImport) {
     dependsOn 'schemaimport'
     database = [db_uri, db_user, db_pass]
     models = "SO_AFU_Schutzbauten_20231212"
     modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = db_schema
-    dataFile = file("ch.so.agi.testeinzelobjekt_valid.xtf")
-    dataset = "agi.testeinzelobjekt1"
-}
-
-tasks.register('importdataset2', Ili2pgImport) {
-    dependsOn 'importdataset1'
-    database = [db_uri, db_user, db_pass]
-    models = "SO_AFU_Schutzbauten_20231212"
-    modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
-    dbschema = db_schema
-    dataFile = file("ch.so.agi.testeinzelobjekt_valid.xtf")
-    dataset = "agi.testeinzelobjekt2"
+    dataFile = ["ch.so.agi.testeinzelobjekt_valid.xtf","ch.so.agi.testeinzelobjekt_valid.xtf"] 
+    dataset = ["agi.testeinzelobjekt1","agi.testeinzelobjekt2"]
 }
 
 /**
@@ -53,7 +43,7 @@ tasks.register('importdataset2', Ili2pgImport) {
  * einzeln geprüft werden.
  */
 tasks.register('validate', Ili2pgValidate) {
-    dependsOn 'importdataset2'
+    dependsOn 'importdatasets'
     database = [db_uri, db_user, db_pass]
     modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = db_schema
