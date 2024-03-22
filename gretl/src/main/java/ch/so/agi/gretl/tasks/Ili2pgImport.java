@@ -7,8 +7,6 @@ import ch.interlis.iox_j.logging.FileLogger;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,12 +14,12 @@ import java.util.Set;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
-import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
 
 public class Ili2pgImport extends Ili2pgAbstractTask {
     private Object dataFile;
-    @InputFile
+    @InputFiles
     public Object getDataFile(){
         return dataFile;
     }

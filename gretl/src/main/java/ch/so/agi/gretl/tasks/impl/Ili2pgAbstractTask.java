@@ -19,68 +19,43 @@ import org.gradle.api.tasks.OutputFile;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Ili2pgAbstractTask extends DefaultTask {
     protected GretlLogger log;
 
-
     public Connector database;
 
     public String dbschema = null;
-
     public String proxy = null;
-
     public Integer proxyPort = null;
-
 
     public String modeldir = null;
 
     public String models = null;
 
     public Object dataset = null;
-
     public String baskets = null;
-
     public String topics = null;
-
     public Boolean importTid = false;
-
     public Boolean exportTid = false;
-
     public Boolean importBid = false;
-
     public File preScript = null;
-
     public File postScript = null;
-
     public Boolean deleteData = false;
 
     public Object logFile = null;
-
     public Boolean trace = false;
-
     public File validConfigFile = null;
-
     public Boolean disableValidation = false;
-
     public Boolean disableAreaValidation = false;
-
     public Boolean forceTypeValidation = false;
-
     public Boolean strokeArcs = false;
-
     public Boolean skipPolygonBuilding = false;
-
     public Boolean skipGeometryErrors = false;
-
     public Boolean iligml20 = false;
-
     public Boolean disableRounding = false;
-
     public Boolean failOnException = true;
-
     public Range<Integer> datasetSubstring = null;
 
     @Input

@@ -62,7 +62,11 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
 
     private Boolean iligml20 = false;
 
-    @InputFile
+    /*
+    *  Using @InputFile here is not an option because it expects the file to exist.
+    *  In this case the file does not have to exist for the task to run.
+     */
+    @Input
     public Object getDbfile() {
         return dbfile;
     }

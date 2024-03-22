@@ -9,10 +9,7 @@ import java.util.List;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 public class Ili2pgExport extends Ili2pgAbstractTask {
 
@@ -32,7 +29,7 @@ public class Ili2pgExport extends Ili2pgAbstractTask {
         return exportModels;
     }
 
-    @OutputFile
+    @OutputFiles
     public Object getDataFile() {
         return dataFile;
     }
