@@ -17,13 +17,7 @@ import java.util.zip.ZipOutputStream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.*;
 
 import ch.ehi.basics.settings.Settings;
 import ch.ehi.basics.view.GenericFileFilter;
@@ -41,7 +35,7 @@ public class Av2geobau extends DefaultTask {
     private Integer proxyPort = null;
     private Boolean zip = false;
 
-    @InputFile
+    @InputFiles
     public Object getItfFiles() {
         return itfFiles;
     }
