@@ -36,7 +36,11 @@ public class GpkgExport extends DefaultTask {
         return database;
     }
 
-    @InputFile
+    /*
+     *  Using @InputFile here is not an option because it expects the file to exist.
+     *  In this case the file does not have to exist for the task to run.
+     */
+    @Input
     public Object getDataFile() {
         return dataFile;
     }
