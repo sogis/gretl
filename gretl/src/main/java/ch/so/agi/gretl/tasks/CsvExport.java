@@ -41,7 +41,7 @@ public class CsvExport extends DefaultTask {
     public Connector getDatabase() {
         return database;
     }
-    @InputFile
+    @Input
     public Object getDataFile() {
         return dataFile;
     }
