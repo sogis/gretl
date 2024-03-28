@@ -34,7 +34,7 @@ public class ShpExport extends DefaultTask {
         return database;
     }
 
-    @InputFile
+    @Input
     public Object getDataFile() {
         return dataFile;
     }
