@@ -23,7 +23,7 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
     private Boolean createMetaInfo = false;
     private Boolean createGeomIdx = false;
 
-    @InputFiles
+    @Input
     public Object getDataFile(){
         return dataFile;
     }
