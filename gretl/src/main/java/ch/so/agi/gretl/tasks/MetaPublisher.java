@@ -40,7 +40,7 @@ public class MetaPublisher extends DefaultTask {
 
     private Endpoint target = null; // Zielverzeichnis
 
-    private ListProperty<String> regions = null; // Publizierte Regionen (aus Publisher-Task)
+    private ListProperty<String> regions = getProject().getObjects().listProperty(String.class); // Publizierte Regionen (aus Publisher-Task)
     private Endpoint geocatTarget = null; // Geocat-Zielverzeichnis
 
     @InputFile
@@ -111,7 +111,7 @@ public class MetaPublisher extends DefaultTask {
         
         MetaPublisherStep step = new MetaPublisherStep();
         try {
-            step.execute(metaConfigFile, targetFile, regions!=null?regions.get():null, geocatTargetFile, gretlEnvironment);
+            step.execute(metaConfigFile, targetFile, regions.get().isEmpty() ? null: regions.get(), geocatTargetFile, gretlEnvironment);
         } catch (IOException | IoxException | Ili2cException | SaxonApiException | TemplateException  e) {
             log.error("failed to run MetaPublisher", e);
 

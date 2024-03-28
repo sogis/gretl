@@ -5,14 +5,7 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'publishMetaFiles'
 
-tasks.register('foo') {
-    doLast {
-        println "bar"
-    }
-}
-
 tasks.register('publishFiles', Publisher) {
-    dependsOn 'foo'
     dataIdent = "ch.so.agi.av.dm01_so"
     target = [project.buildDir]  
     sourcePath = file("itf/dummy.itf") 
@@ -27,14 +20,3 @@ tasks.register('publishMetaFiles', MetaPublisher) {
     target = [project.buildDir]  
     regions = publishFiles.publishedRegions
 }
-
-/*
-tasks.register('printPublishedRegions') {
-    dependsOn 'publishFiles'
-    doLast() {
-        publishFile.publishedRegions.get().each {
-            println it
-        }
-    }
-}
-*/

@@ -81,7 +81,7 @@ public class Publisher extends DefaultTask {
     public Endpoint getTarget() {
         return target;
     }
-    @InputFile
+    @Input
     @Optional
     public Object getSourcePath() {
         return sourcePath;
