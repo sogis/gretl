@@ -2,15 +2,12 @@ package ch.so.agi.gretl.tasks;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,8 +15,6 @@ import java.util.List;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.provider.ListProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.*;
 import org.interlis2.validator.Validator;
 
@@ -35,8 +30,6 @@ import ch.so.agi.gretl.steps.PublisherStep;
 import ch.so.agi.gretl.util.SimiSvcApi;
 import ch.so.agi.gretl.util.SimiSvcClient;
 import ch.so.agi.gretl.util.TaskUtil;
-
-import javax.annotation.Nullable;
 
 public class Publisher extends DefaultTask {
     protected GretlLogger log;
@@ -55,11 +48,11 @@ public class Publisher extends DefaultTask {
 
     private String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
 
-    private String region=null; // Muster der der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
+    private String region; // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
 
-    private ListProperty<String> regions=null; // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
+    private ListProperty<String> regions = getProject().getObjects().listProperty(String.class); // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
 
-    private ListProperty<String> _publishedRegions=getProject().getObjects().listProperty(String.class);
+    private ListProperty<String> _publishedRegions = getProject().getObjects().listProperty(String.class); // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
 
     private Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
 
@@ -127,8 +120,8 @@ public class Publisher extends DefaultTask {
         return regions;
     }
 
-    @Optional
-    @Input
+
+    @Internal
     public ListProperty<String> getPublishedRegions()
     {
         return _publishedRegions;
@@ -291,9 +284,9 @@ public class Publisher extends DefaultTask {
             if(dbSchema==null) {
                 throw new IllegalArgumentException("dbSchema must be set");
             }
-            if(modelsToPublish==null && dataset==null && region==null && regions==null) {
+            if(modelsToPublish==null && dataset==null && region==null && regions.get().isEmpty()) {
                 throw new IllegalArgumentException("modelsToPublish OR dataset OR region OR regions must be set");
-            }else if((modelsToPublish!=null?1:0) + (dataset!=null?1:0) + (region!=null?1:0) + (regions!=null?1:0) > 1) {
+            }else if((modelsToPublish!=null?1:0) + (dataset!=null?1:0) + (region!=null?1:0) + (!regions.get().isEmpty()?1:0) > 1) {
                 throw new IllegalArgumentException("only one of modelsToPublish OR dataset OR region OR regions can be set");
             }
         }else {
@@ -370,16 +363,18 @@ public class Publisher extends DefaultTask {
         try {
             Files.createDirectories(getProject().getBuildDir().toPath());
             List<String> pubRegions=null;
-            if(region!=null || regions!=null) {
+            if(region!=null || !regions.get().isEmpty()) {
                 pubRegions=new ArrayList<String>();
             }
+
+            List<String> regionsToPublish = regions.get().isEmpty() ? null : regions.get();
             if(database!=null) {
-                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,modelsToPublish,exportModels,userFormats,targetFile, region,regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,modelsToPublish,exportModels,userFormats,targetFile, region,regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }else {
-                step.publishDatasetFromFile(version, dataIdent, sourceFile, userFormats,targetFile, region, regions==null?null:regions.get(),pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+                step.publishDatasetFromFile(version, dataIdent, sourceFile, userFormats,targetFile, region, regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }
             if(pubRegions!=null) {
-                getPublishedRegions().set(pubRegions);
+                this._publishedRegions.set(pubRegions);
             }
         } catch (Exception e) {
             log.error("failed to run Publisher", e);
