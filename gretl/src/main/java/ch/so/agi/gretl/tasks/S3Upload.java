@@ -41,15 +41,18 @@ public class S3Upload extends DefaultTask {
         return secretKey;
     }
     @InputDirectory
+    @Optional
     public Object getSourceDir() {
         return sourceDir;
     }
     @Input
+    @Optional
     public Object getSourceFile() {
         return sourceFile;
     }
 
     @Input
+    @Optional
     public Object getSourceFiles() {
         return sourceFiles;
     }
