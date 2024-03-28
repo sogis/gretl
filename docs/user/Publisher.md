@@ -29,121 +29,29 @@ Für den Datenbezug wird das build.gradle mit zwei Aufrufen des Publisher-Task e
 
 Bei Problemen mit der Datenqualität der Originaldaten schlägt der Task "pubEdit" fehl. Der Job bricht mit Fehler ab, bevor die Daten irgendwo landen.
 
-## Ablauf
+## Parameter
 
-Der Publisher arbeitet die folgenden Hauptschritte ab:
-
-1) Verstecktes Verzeichnis für den Datenstand via FTPS erstellen (.yyyy-MM-dd-UUID/). Kein Abbruch, falls das Verzeichnis vorhanden ist.
-2) XTFs in Verzeichnis ablegen.
-   1) Für Datenthemen mit Quelle=Datenbank: XTF-Transferdateien exportieren.
-      1) Mit ili2pg das xtf erzeugen
-      2) Prüfung des xtf gegen das Modell. Abbruch bei fatalen Fehlern
-      3) Prüf-Bericht (und evtl. Prüf-Konfiguartion) muss auch mit in die ZIP Datei
-      4) ZIP-Datei publizieren
-   2) Für Datenthemen mit Quelle=XTF: XTF in Verzeichnis kopieren.
-      1) Prüfung des xtf gegen das Modell. Abbruch bei fatalen Fehlern
-      2) Prüf-Bericht (und evtl. Prüf-Konfiguartion) muss auch mit in die ZIP Datei
-      3) ZIP-Datei publizieren   
-3) Aus dem Publikations-xtf die Benutzerformate (Geopackage, Shapefile, Dxf) ableiten und ablegen.
-4) Metadaten sammeln und im Unterordner meta/ ablegen.
-   1) Publikationsdatum
-   2) ili-Dateien
-   3) Beipackzettel (HTML via REST-API vom SIMI-Service beziehen) 
-5) Neue Ordnernamen setzen.
-   1) "aktuell" umbenennen auf Ordnername gemäss Datum in publishdate.json und verschieben in "hist".
-   2) Verstecktes Verzeichnis umbenennen auf aktuell.
-   3) Benutzerformate in "hist" löschen
-6) Publikationsdatum via REST-API in den KGDI-Metadaten nachführen
-7) Historische Stände ausdünnen.
-
-## Ordnerstruktur im Ziel-Verzeichnis
-
-### Gängiger Fall: Zwei Modelle, keine Regionen
-
-Publikation in den beiden Datenbereitstellungen ch.so.avt.verkehrszaehlstellen und ch.so.avt.verkehrszaehlstellen.edit
-
-Namenskonvention für die Dateien: \[Datenbereitstellungs-Identifier\].\[Format-Identifier\].zip
-
-> data/
-> * ch.so.avt.verkehrszaehlstellen/
->    * aktuell/
->      * ch.so.avt.verkehrszaehlstellen.dxf.zip
->        * Tabelle1.dxf
->        * Tabelle2.dxf
->        * ....
->        * validation.log
->        * validation.ini
->      * ch.so.avt.verkehrszaehlstellen.gpkg.zip
->        * ch.so.avt.verkehrszaehlstellen.gpkg
->        * validation.log
->        * validation.ini
->      * ch.so.avt.verkehrszaehlstellen.shp.zip
->        * Tabelle1.prj
->        * Tabelle1.shp
->        * Tabelle1.shx
->        * Tabelle2.dbf
->        * Tabelle2.prj
->        * Tabelle2.shp
->        * Tabelle2.shx
->        * ....
->        * validation.log
->        * validation.ini
->      * ch.so.avt.verkehrszaehlstellen.xtf.zip
->        * ch.so.avt.verkehrszaehlstellen.xtf
->        * validation.log
->        * validation.ini
->      * meta/
->        * SO_AVT_Verkehrszaehlstellen_Publikation_20190206.ili
->        * publishdate.json      
->        * datenbeschreibung.html
->   * hist/
->     * 2021-04-12/ -- intern identisch aufgebaut wie Ordner aktuell/ aber ohne Benutzerformate
->       * ch.so.avt.verkehrszaehlstellen.xtf.zip
->         * ch.so.avt.verkehrszaehlstellen.xtf
->         * validation.log
->         * validation.ini
->       * meta/
->         * SO_AVT_Verkehrszaehlstellen_Publikation_20190206.ili
->         * publishdate.json      
->         * datenbeschreibung.html
->     * 2021-03-14/
->     * ...
-> * ch.so.avt.verkehrszaehlstellen.edit/
->   * aktuell/
->       * ch.so.avt.verkehrszaehlstellen.edit.xtf.zip
->         * ch.so.avt.verkehrszaehlstellen.edit.xtf
->         * validation.log
->         * validation.ini
->       * meta/
->         * SO_AVT_Verkehrszaehlstellen_20190206.ili  
->         * publishdate.json      
->         * datenbeschreibung.html
->   * hist/
->     * ...
-
-### Abbildung von Regionen-Einteilungen
-
-Die Regionen werden als Präfix der Dateien abgebildet. Die Ordnerstruktur bleibt gleich. Aufbau Dateiname:   
-\[Regionen-Identifier\].\[Datenbereitstellungs-Identifier\].\[Format-Identifier\].zip
-
-Beispiel AV (Regionen-Identifier ist die BFS-NR):
-
-> data/
-> * ch.so.agi.av.mopublic/
->   * aktuell/
->     * 2501.ch.so.agi.av.mopublic.dxf.zip
->     * 2501.ch.so.agi.av.mopublic.gpkg.zip
->     * 2501.ch.so.agi.av.mopublic.shp.zip
->     * 2501.ch.so.agi.av.mopublic.xtf.zip
->     * 2502.ch.so.agi.av.mopublic.dxf.zip
->     * 2502.ch.so.agi.av.mopublic.gpkg.zip
->     * 2502.ch.so.agi.av.mopublic.shp.zip
->     * 2502.ch.so.agi.av.mopublic.xtf.zip
->     * ...
->     * meta/
->       * ...    
->   * hist/
->     * ...
+Parameter | Beschreibung
+----------|-------------------
+dataIdent | Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+target    | Zielverzeichnis z.B. [ "sftp://ftp.server.ch/data", "user", "password" ] oder einfach ein Pfad [file("/out")]
+sourcePath | Quelldatei z.B. file("/path/file.xtf")
+database  | Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
+dbSchema  | Schema in der Datenbank z.B. "av"
+dataset   | ili2db-Datasetname der Quelldaten "dataset" (Das ili2db-Schema muss also immer mit --createBasketCol erstellt werden)
+modelsToPublish   | Interlis-Modellnamen der Quelldaten in der DB (Nur für "einfache" Modelle, deren ili2db-Schema ohne --createBasketCol erstellt werden kann)
+region    | Muster (Regular Expression) der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]". Alternative zum Parameter regions,<br/><br/>Bei Quelle "Datei" ist die Angabe einer "stellvertretenden" Transferdatei mittels "sourcePath" zwingend. Bsp.: Bei sourcePath "file("/transferfiles/dummy.xtf")" werden alle im Ordner "transferfiles" enthaltenen Transferdateien mit dem Muster verglichen und bei "match" selektiert und verarbeitet.	  
+regions   | Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen), falls die Publikation Regionen-weise erfolgen soll. Alternative zum Parameter region	  
+publishedRegions | Liste der effektiv publizierten Regionen	  
+validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
+userFormats | Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default ist false
+kgdiTokenService | Endpunkt des Authentifizierung-Services, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]. Publisher ergänzt die URL mit /v2/oauth/token.
+kgdiService | Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]. Publisher ergänzt die URL fallabhängig mit /pubsignal respektive /doc.
+grooming | Konfiguration für die Ausdünnung z.B. "grooming.json". Ohne Angabe wird nicht aufgeräumt.
+exportModels | Das Export-Modell, indem die Daten exportiert werden. Der Parameter wird nur bei der Ausdünnung benötigt. Als Export-Modelle sind Basis-Modelle zulässig. 
+modeldir     | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%ITF_DIR;http://models.interlis.ch/``. ``%ITF_DIR`` ist ein Platzhalter für das Verzeichnis mit der ITF-Datei.
+proxy        | Proxy Server für den Zugriff auf Modell Repositories
+proxyPort    | Proxy Port für den Zugriff auf Modell Repositories
 
 ## XTF -> XTF
 
@@ -343,6 +251,7 @@ Der Service wird benutzt, um:
 ### Beipackzettel beziehen
 
     HTTP GET: endpoint+"/doc?dataident="+dataIdent+"&published="+versionTag
+
 ### Publikationsdatum nachführen
 
     HTTP PUT: endpoint+"/pubsignal",request
@@ -426,26 +335,118 @@ Falls bei der höchsten Stufe ``to=null``, wird der älteste Stand nicht gelösc
 
 Siehe Repo [publisher_test](http://github.com/sogis/publisher_test) bzgl. Doku der Grooming "Corner-Cases", Testfälle und Testskript.
 
-## Parameter
+## Ablauf
 
-Parameter | Beschreibung
-----------|-------------------
-dataIdent | Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
-target    | Zielverzeichnis z.B. [ "sftp://ftp.server.ch/data", "user", "password" ] oder einfach ein Pfad [file("/out")]
-sourcePath | Quelldatei z.B. file("/path/file.xtf")
-database  | Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
-dbSchema  | Schema in der Datenbank z.B. "av"
-dataset   | ili2db-Datasetname der Quelldaten "dataset" (Das ili2db-Schema muss also immer mit --createBasketCol erstellt werden)
-modelsToPublish   | Interlis-Modellnamen der Quelldaten in der DB (Nur für "einfache" Modelle, deren ili2db-Schema ohne --createBasketCol erstellt werden kann)
-region    | Muster (Regular Expression) der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]". Alternative zum Parameter regions,<br/><br/>Bei Quelle "Datei" ist die Angabe einer "stellvertretenden" Transferdatei mittels "sourcePath" zwingend. Bsp.: Bei sourcePath "file("/transferfiles/dummy.xtf")" werden alle im Ordner "transferfiles" enthaltenen Transferdateien mit dem Muster verglichen und bei "match" selektiert und verarbeitet.	  
-regions   | Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen), falls die Publikation Regionen-weise erfolgen soll. Alternative zum Parameter region	  
-publishedRegions | Liste der effektiv publizierten Regionen	  
-validationConfig |  Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
-userFormats | Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default ist false
-kgdiTokenService | Endpunkt des Authentifizierung-Services, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]. Publisher ergänzt die URL mit /v2/oauth/token.
-kgdiService | Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. ["http://api.kgdi.ch/metadata","user","pwd"]. Publisher ergänzt die URL fallabhängig mit /pubsignal respektive /doc.
-grooming | Konfiguration für die Ausdünnung z.B. "grooming.json". Ohne Angabe wird nicht aufgeräumt.
-exportModels | Das Export-Modell, indem die Daten exportiert werden. Der Parameter wird nur bei der Ausdünnung benötigt. Als Export-Modelle sind Basis-Modelle zulässig. 
-modeldir     | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%ITF_DIR;http://models.interlis.ch/``. ``%ITF_DIR`` ist ein Platzhalter für das Verzeichnis mit der ITF-Datei.
-proxy        | Proxy Server für den Zugriff auf Modell Repositories
-proxyPort    | Proxy Port für den Zugriff auf Modell Repositories
+Der Publisher arbeitet die folgenden Hauptschritte ab:
+
+1) Verstecktes Verzeichnis für den Datenstand via FTPS erstellen (.yyyy-MM-dd-UUID/). Kein Abbruch, falls das Verzeichnis vorhanden ist.
+2) XTFs in Verzeichnis ablegen.
+   1) Für Datenthemen mit Quelle=Datenbank: XTF-Transferdateien exportieren.
+      1) Mit ili2pg das xtf erzeugen
+      2) Prüfung des xtf gegen das Modell. Abbruch bei fatalen Fehlern
+      3) Prüf-Bericht (und evtl. Prüf-Konfiguartion) muss auch mit in die ZIP Datei
+      4) ZIP-Datei publizieren
+   2) Für Datenthemen mit Quelle=XTF: XTF in Verzeichnis kopieren.
+      1) Prüfung des xtf gegen das Modell. Abbruch bei fatalen Fehlern
+      2) Prüf-Bericht (und evtl. Prüf-Konfiguartion) muss auch mit in die ZIP Datei
+      3) ZIP-Datei publizieren   
+3) Aus dem Publikations-xtf die Benutzerformate (Geopackage, Shapefile, Dxf) ableiten und ablegen.
+4) Metadaten sammeln und im Unterordner meta/ ablegen.
+   1) Publikationsdatum
+   2) ili-Dateien
+   3) Beipackzettel (HTML via REST-API vom SIMI-Service beziehen) 
+5) Neue Ordnernamen setzen.
+   1) "aktuell" umbenennen auf Ordnername gemäss Datum in publishdate.json und verschieben in "hist".
+   2) Verstecktes Verzeichnis umbenennen auf aktuell.
+   3) Benutzerformate in "hist" löschen
+6) Publikationsdatum via REST-API in den KGDI-Metadaten nachführen
+7) Historische Stände ausdünnen.
+
+## Ordnerstruktur im Ziel-Verzeichnis
+
+### Gängiger Fall: Zwei Modelle, keine Regionen
+
+Publikation in den beiden Datenbereitstellungen ch.so.avt.verkehrszaehlstellen und ch.so.avt.verkehrszaehlstellen.edit
+
+Namenskonvention für die Dateien: \[Datenbereitstellungs-Identifier\].\[Format-Identifier\].zip
+
+> data/
+> * ch.so.avt.verkehrszaehlstellen/
+>    * aktuell/
+>      * ch.so.avt.verkehrszaehlstellen.dxf.zip
+>        * Tabelle1.dxf
+>        * Tabelle2.dxf
+>        * ....
+>        * validation.log
+>        * validation.ini
+>      * ch.so.avt.verkehrszaehlstellen.gpkg.zip
+>        * ch.so.avt.verkehrszaehlstellen.gpkg
+>        * validation.log
+>        * validation.ini
+>      * ch.so.avt.verkehrszaehlstellen.shp.zip
+>        * Tabelle1.prj
+>        * Tabelle1.shp
+>        * Tabelle1.shx
+>        * Tabelle2.dbf
+>        * Tabelle2.prj
+>        * Tabelle2.shp
+>        * Tabelle2.shx
+>        * ....
+>        * validation.log
+>        * validation.ini
+>      * ch.so.avt.verkehrszaehlstellen.xtf.zip
+>        * ch.so.avt.verkehrszaehlstellen.xtf
+>        * validation.log
+>        * validation.ini
+>      * meta/
+>        * SO_AVT_Verkehrszaehlstellen_Publikation_20190206.ili
+>        * publishdate.json      
+>        * datenbeschreibung.html
+>   * hist/
+>     * 2021-04-12/ -- intern identisch aufgebaut wie Ordner aktuell/ aber ohne Benutzerformate
+>       * ch.so.avt.verkehrszaehlstellen.xtf.zip
+>         * ch.so.avt.verkehrszaehlstellen.xtf
+>         * validation.log
+>         * validation.ini
+>       * meta/
+>         * SO_AVT_Verkehrszaehlstellen_Publikation_20190206.ili
+>         * publishdate.json      
+>         * datenbeschreibung.html
+>     * 2021-03-14/
+>     * ...
+> * ch.so.avt.verkehrszaehlstellen.edit/
+>   * aktuell/
+>       * ch.so.avt.verkehrszaehlstellen.edit.xtf.zip
+>         * ch.so.avt.verkehrszaehlstellen.edit.xtf
+>         * validation.log
+>         * validation.ini
+>       * meta/
+>         * SO_AVT_Verkehrszaehlstellen_20190206.ili  
+>         * publishdate.json      
+>         * datenbeschreibung.html
+>   * hist/
+>     * ...
+
+### Abbildung von Regionen-Einteilungen
+
+Die Regionen werden als Präfix der Dateien abgebildet. Die Ordnerstruktur bleibt gleich. Aufbau Dateiname:   
+\[Regionen-Identifier\].\[Datenbereitstellungs-Identifier\].\[Format-Identifier\].zip
+
+Beispiel AV (Regionen-Identifier ist die BFS-NR):
+
+> data/
+> * ch.so.agi.av.mopublic/
+>   * aktuell/
+>     * 2501.ch.so.agi.av.mopublic.dxf.zip
+>     * 2501.ch.so.agi.av.mopublic.gpkg.zip
+>     * 2501.ch.so.agi.av.mopublic.shp.zip
+>     * 2501.ch.so.agi.av.mopublic.xtf.zip
+>     * 2502.ch.so.agi.av.mopublic.dxf.zip
+>     * 2502.ch.so.agi.av.mopublic.gpkg.zip
+>     * 2502.ch.so.agi.av.mopublic.shp.zip
+>     * 2502.ch.so.agi.av.mopublic.xtf.zip
+>     * ...
+>     * meta/
+>       * ...    
+>   * hist/
+>     * ...
