@@ -163,7 +163,7 @@ public class GpkgAttributeDescriptor {
 	private String targetTableName=null;
 	private String referenceColumnName=null;
 	private String attributeDefinition=null;
-	
+
 	public static final String JDBC_GETCOLUMNS_FKCOLUMNNAME="FKCOLUMN_NAME";
 	public static final String JDBC_GETCOLUMNS_PKTABLENAME="PKTABLE_NAME";
 	/** The typeName bool is an alias of boolean type.
@@ -739,7 +739,7 @@ public class GpkgAttributeDescriptor {
 	}
 
 	/** the name of the column with the reference to the target table.
-	 * @param the reference column name to the target table.
+	 * @param referenceColumnName the reference column name to the target table.
 	 */
 	public void setReferenceColumnName(String referenceColumnName) {
 		this.referenceColumnName = referenceColumnName;

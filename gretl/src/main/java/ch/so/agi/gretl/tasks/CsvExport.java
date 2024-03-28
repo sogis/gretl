@@ -2,13 +2,11 @@ package ch.so.agi.gretl.tasks;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.iom_j.csv.CsvReader;
@@ -19,30 +17,114 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
+import javax.annotation.Nullable;
+
 public class CsvExport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
+    private Object dataFile = null;
+    private String tableName = null;
+
+    private Boolean firstLineIsHeader = true;
+
+    private Character valueDelimiter = null;/**/
+
+    private Character valueSeparator = null;
+
+    private String schemaName = null;
+
+    private String[] attributes = null;
+
+    private String encoding = null;
+
     @Input
-    public Connector database;
-    @InputFile
-    public Object dataFile = null;
+    public Connector getDatabase() {
+        return database;
+    }
     @Input
-    String tableName = null;
+    public Object getDataFile() {
+        return dataFile;
+    }
+    @Input
+    public String getTableName() {
+        return tableName;
+    }
     @Input
     @Optional
-    public boolean firstLineIsHeader = true;
+    public Boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
     @Input
     @Optional
-    public Character valueDelimiter = null;
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
     @Input
     @Optional
-    public Character valueSeparator = null;
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
     @Input
     @Optional
-    public String schemaName = null;
-    @Optional
-    public String attributes[] = null;
-    @Optional
-    public String encoding = null;
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    @Internal
+    @Nullable
+    public String[] getAttributes(){
+        return attributes;
+    }
+
+    @Internal
+    @Nullable
+    public String getEncoding(){
+        return encoding;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
+        this.firstLineIsHeader = firstLineIsHeader;
+    }
+
+    public void setValueDelimiter(Character valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
+
+    public void setValueSeparator(Character valueSeparator) {
+        this.valueSeparator = valueSeparator;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setAttributes(String[] attributes) {
+        this.attributes = attributes;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
 
     @TaskAction
     public void exportData() {

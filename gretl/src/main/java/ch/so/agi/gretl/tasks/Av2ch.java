@@ -11,7 +11,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
@@ -23,24 +22,59 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class Av2ch extends DefaultTask {
     protected GretlLogger log;
-    
+    private Object inputFile = null;
+    private Object outputDirectory = null;
+    private String modeldir = null;
+    private String language = "de";
+    private Boolean zip = false;
+
     @Input
-    public Object inputFile = null;
-    
+    public Object getInputFile(){
+        return inputFile;
+    };
+
     @Input
-    public Object outputDirectory = null;
+    public Object getOutputDirectory(){
+        return outputDirectory;
+    }
     
     @Input
     @Optional
-    public String modeldir = null;
+    public String getModeldir(){
+        return modeldir;
+    }
     
     @Input
     @Optional
-    public String language = "de";
+    public String getLanguage(){
+        return language;
+    }
     
     @Input
     @Optional
-    public boolean zip = false;
+    public Boolean getZip(){
+        return zip;
+    }
+
+    public void setInputFile(Object inputFile) {
+        this.inputFile = inputFile;
+    }
+
+    public void setOutputDirectory(Object outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setZip(Boolean zip) {
+        this.zip = zip;
+    }
 
     @TaskAction
     public void runTransformation() {
@@ -109,8 +143,7 @@ public class Av2ch extends DefaultTask {
             }
         } catch (Exception e) {
             log.error("failed to run Av2ch", e);
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         } 
     }
 }

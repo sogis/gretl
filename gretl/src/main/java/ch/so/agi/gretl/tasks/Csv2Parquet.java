@@ -17,40 +17,99 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Csv2ParquetStep;
 
+import javax.annotation.Nullable;
+
 public class Csv2Parquet extends DefaultTask {
     protected GretlLogger log;
 
+    private File csvFile;
+    private Boolean firstLineIsHeader = true;
+    private Character valueDelimiter = null;
+    private Character valueSeparator = null;
+    private String encoding;
+    private String models;
+    private String modeldir;
+    private File outputDir;
+
     @Internal
-    public File csvFile;
-    
+    public File getCsvFile() {
+        return csvFile;
+    }
+
     @Internal
-    @Optional
-    public boolean firstLineIsHeader = true;
-    
+    @Nullable
+    public Boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
     @Internal
-    @Optional
-    public Character valueDelimiter = null;
-    
+    @Nullable
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
     @Internal
-    @Optional
-    public Character valueSeparator = null;
-    
+    @Nullable
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+
     @Internal
-    @Optional
-    public String encoding = null;
-    
+    @Nullable
+    public String getEncoding() {
+        return encoding;
+    }
+
     @Internal
-    @Optional
-    public String models = null;
-    
+    @Nullable
+    public String getModels() {
+        return models;
+    }
+
     @Internal
-    @Optional
-    public String modeldir = null;
-            
+    @Nullable
+    public String getModeldir() {
+        return modeldir;
+    }
+
     @Internal
-    @Optional
-    public File outputDir;
-            
+    @Nullable
+    public File getOutputDir() {
+        return outputDir;
+    }
+
+    public void setCsvFile(File csvFile) {
+        this.csvFile = csvFile;
+    }
+
+    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
+        this.firstLineIsHeader = firstLineIsHeader;
+    }
+
+    public void setValueDelimiter(Character valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
+
+    public void setValueSeparator(Character valueSeparator) {
+        this.valueSeparator = valueSeparator;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setModels(String models) {
+        this.models = models;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Csv2Parquet.class);

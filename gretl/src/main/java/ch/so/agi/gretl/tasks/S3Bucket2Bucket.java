@@ -1,51 +1,105 @@
 package ch.so.agi.gretl.tasks;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.S3Bucket2BucketStep;
-import ch.so.agi.gretl.steps.S3UploadStep;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class S3Bucket2Bucket extends DefaultTask {
     protected GretlLogger log;
 
+    private String accessKey;
+    private String secretKey;
+    private String sourceBucket;
+    private String targetBucket;
+    private String endPoint = "https://s3.eu-central-1.amazonaws.com";
+    private String region = "eu-central-1";
+    private String acl = null;
+    private Map<String,String> metaData = new HashMap<String,String>();
+
     @Input
-    public String accessKey;
-    
+    public String getAccessKey() {
+        return accessKey;
+    }
+
     @Input
-    public String secretKey;
-        
+    public String getSecretKey() {
+        return secretKey;
+    }
+
     @Input
-    public String sourceBucket;
-    
+    public String getSourceBucket() {
+        return sourceBucket;
+    }
+
     @Input
-    public String targetBucket;
-    
+    public String getTargetBucket() {
+        return targetBucket;
+    }
+
     @Input
     @Optional
-    public String endPoint = "https://s3.eu-central-1.amazonaws.com";
-    
+    public String getEndPoint() {
+        return endPoint;
+    }
+
     @Input
-    public String region = "eu-central-1";
-        
+    public String getRegion() {
+        return region;
+    }
+
     @Input
-    public String acl = null;
-    
+    public String getAcl() {
+        return acl;
+    }
+
     @Input
-    @Optional        
-    public Map<String,String> metaData = new HashMap<String,String>();
-    
+    @Optional
+    public Map<String, String> getMetaData() {
+        return metaData;
+    }
+
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setSourceBucket(String sourceBucket) {
+        this.sourceBucket = sourceBucket;
+    }
+
+    public void setTargetBucket(String targetBucket) {
+        this.targetBucket = targetBucket;
+    }
+
+    public void setEndPoint(String endPoint) {
+        this.endPoint = endPoint;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setAcl(String acl) {
+        this.acl = acl;
+    }
+
+    public void setMetaData(Map<String, String> metaData) {
+        this.metaData = metaData;
+    }
+
     @TaskAction
     public void upload() {
         log = LogEnvironment.getLogger(S3Bucket2Bucket.class);

@@ -25,21 +25,83 @@ public class Db2Db extends DefaultTask {
         log = LogEnvironment.getLogger(Db2Db.class);
     }
 
+    private Connector sourceDb;
+    private Connector targetDb;
+    private List<TransferSet> transferSets;
+    private Integer batchSize = null;
+    private Integer fetchSize = null;
+    private Object sqlParameters = null;
+
     @Input
-    public Connector sourceDb;
+    public Connector getSourceDb() {
+        return sourceDb;
+    }
     @Input
-    public Connector targetDb;
+    public Connector getTargetDb() {
+        return targetDb;
+    }
     @Input
-    public List<TransferSet> transferSets;
+    public List<TransferSet> getTransferSets() {
+        return transferSets;
+    }
+
     @Input
     @Optional
-    public Integer batchSize = null;
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
     @Input
     @Optional
-    public Integer fetchSize = null;
+    public Integer getFetchSize() {
+        return fetchSize;
+    }
+
     @Input
     @Optional
-    public Object sqlParameters = null;
+    public Object getSqlParameters() {
+        return sqlParameters;
+    }
+
+    public void setSourceDb(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.sourceDb = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setTargetDb(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.targetDb = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setTransferSets(List<TransferSet> transferSets) {
+        this.transferSets = transferSets;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public void setFetchSize(Integer fetchSize) {
+        this.fetchSize = fetchSize;
+    }
+
+    public void setSqlParameters(Object sqlParameters) {
+        this.sqlParameters = sqlParameters;
+    }
 
     @TaskAction
     public void executeTask() throws Exception {

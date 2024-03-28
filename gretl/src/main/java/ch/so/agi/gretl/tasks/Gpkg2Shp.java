@@ -16,15 +16,30 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class Gpkg2Shp extends DefaultTask {
     protected GretlLogger log;
-    
-    @Input
-    public Object dataFile = null;
-    
+    private Object dataFile = null;
+
     // @OutputDirectory should create directory if it does not exist. Does
     // not seem to work here!?
+    private File outputDir = null;
+
+    @Input
+    public Object getDataFile() {
+        return dataFile;
+    }
+
     @OutputDirectory
-    public File outputDir = null;
-    
+    public File getOutputDir() {
+        return outputDir;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Gpkg2Shp.class);

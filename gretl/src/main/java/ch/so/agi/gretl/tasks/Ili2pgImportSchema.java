@@ -11,156 +11,531 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 public class Ili2pgImportSchema extends Ili2pgAbstractTask {
+
+    private Object iliFile = null;
+    private Object iliMetaAttrs = null;
+    private Boolean oneGeomPerTable = false;
+    private Boolean setupPgExt = false;
+    private Object dropscript = null;
+    private Object createscript = null;
+    private Object metaConfig = null;
+    private String defaultSrsCode = null;
+    private Boolean createSingleEnumTab = false;
+    private Boolean createEnumTabs = false;
+    private Boolean createEnumTxtCol = false;
+    private Boolean createEnumColAsItfCode = false;
+    private Boolean createEnumTabsWithId = false;
+    private Boolean createImportTabs = false;
+    private Boolean beautifyEnumDispName = false;
+    private Boolean noSmartMapping = false;
+    private Boolean smart1Inheritance = false;
+    private Boolean smart2Inheritance = false;
+    private Boolean coalesceCatalogueRef = false;
+    private Boolean coalesceMultiSurface = false;
+    private Boolean coalesceMultiLine = false;
+    private Boolean expandMultilingual = false;
+    private Boolean coalesceJson = false;
+    private Boolean coalesceArray = false;
+    private Boolean createTypeConstraint = false;
+    private Boolean createFk = false;
+    private Boolean createFkIdx = false;
+    private Boolean createUnique = false;
+    private Boolean createNumChecks = false;
+    private Boolean createTextChecks = false;
+    private Boolean createDateTimeChecks = false;
+    private Boolean createStdCols = false;
+    private String t_id_Name = null;
+    private Long idSeqMin = null;
+    private Long idSeqMax = null;
+    private Boolean createTypeDiscriminator = false;
+    private Boolean createGeomIdx = false;
+    private Boolean disableNameOptimization = false;
+    private Boolean nameByTopic = false;
+    private Integer maxNameLength = null;
+    private Boolean sqlEnableNull = false;
+    private Boolean sqlColsAsText = false;
+    private Boolean sqlExtRefCols = false;
+    private Boolean keepAreaRef = false;
+    private Boolean createTidCol = false;
+    private Boolean createBasketCol = false;
+    private Boolean createDatasetCol = false;
+    private String translation = null;
+    private Boolean createMetaInfo = false;
+    private String defaultSrsAuth = null;
+
     @InputFile
     @Optional
-    public Object iliFile = null;
+    public Object getIliFile() {
+        return iliFile;
+    }
+
     @InputFile
     @Optional
-    public Object iliMetaAttrs = null;
+    public Object getIliMetaAttrs() {
+        return iliMetaAttrs;
+    }
+
     @Input
     @Optional
-    public boolean oneGeomPerTable = false;
+    public Boolean isOneGeomPerTable() {
+        return oneGeomPerTable;
+    }
+
     @Input
     @Optional
-    public boolean setupPgExt = false;
+    public Boolean isSetupPgExt() {
+        return setupPgExt;
+    }
+
     @OutputFile
     @Optional
-    public Object dropscript = null;
+    public Object getDropscript() {
+        return dropscript;
+    }
+
     @OutputFile
     @Optional
-    public Object createscript = null;
+    public Object getCreatescript() {
+        return createscript;
+    }
+
     @Input
     @Optional
-    public Object metaConfig = null;    
+    public Object getMetaConfig() {
+        return metaConfig;
+    }
+
     @Input
     @Optional
-    public String defaultSrsAuth = null;
+    public String getDefaultSrsAuth() {
+        return defaultSrsAuth;
+    }
+
     @Input
     @Optional
-    public String defaultSrsCode = null;
+    public String getDefaultSrsCode() {
+        return defaultSrsCode;
+    }
+
     @Input
     @Optional
-    public boolean createSingleEnumTab = false;
+    public Boolean isCreateSingleEnumTab() {
+        return createSingleEnumTab;
+    }
+
     @Input
     @Optional
-    public boolean createEnumTabs = false;
+    public Boolean isCreateEnumTabs() {
+        return createEnumTabs;
+    }
+
     @Input
     @Optional
-    public boolean createEnumTxtCol = false;
+    public Boolean isCreateEnumTxtCol() {
+        return createEnumTxtCol;
+    }
+
     @Input
     @Optional
-    public boolean createEnumColAsItfCode = false;
+    public Boolean isCreateEnumColAsItfCode() {
+        return createEnumColAsItfCode;
+    }
+
     @Input
     @Optional
-    public boolean createEnumTabsWithId = false;
+    public Boolean isCreateEnumTabsWithId() {
+        return createEnumTabsWithId;
+    }
+
     @Input
     @Optional
-    public boolean createImportTabs = false;
+    public Boolean isCreateImportTabs() {
+        return createImportTabs;
+    }
+
     @Input
     @Optional
-    public boolean beautifyEnumDispName = false;
+    public Boolean isBeautifyEnumDispName() {
+        return beautifyEnumDispName;
+    }
+
     @Input
     @Optional
-    public boolean noSmartMapping = false;
+    public Boolean isNoSmartMapping() {
+        return noSmartMapping;
+    }
+
     @Input
     @Optional
-    public boolean smart1Inheritance = false;
+    public Boolean isSmart1Inheritance() {
+        return smart1Inheritance;
+    }
+
     @Input
     @Optional
-    public boolean smart2Inheritance = false;
+    public Boolean isSmart2Inheritance() {
+        return smart2Inheritance;
+    }
+
     @Input
     @Optional
-    public boolean coalesceCatalogueRef = false;
+    public Boolean isCoalesceCatalogueRef() {
+        return coalesceCatalogueRef;
+    }
     @Input
     @Optional
-    public boolean coalesceMultiSurface = false;
+    public Boolean isCoalesceMultiSurface() {
+        return coalesceMultiSurface;
+    }
     @Input
     @Optional
-    public boolean coalesceMultiLine = false;
+    public Boolean isCoalesceMultiLine() {
+        return coalesceMultiLine;
+    }
     @Input
     @Optional
-    public boolean expandMultilingual = false;
+    public Boolean isExpandMultilingual() {
+        return expandMultilingual;
+    }
     @Input
     @Optional
-    public boolean coalesceJson = false;    
+    public Boolean isCoalesceJson() {
+        return coalesceJson;
+    }
     @Input
     @Optional
-    public boolean coalesceArray = false; 
+    public Boolean isCoalesceArray() {
+        return coalesceArray;
+    }
     @Input
     @Optional
-    public boolean createTypeConstraint = false;
+    public Boolean isCreateTypeConstraint() {
+        return createTypeConstraint;
+    }
     @Input
     @Optional
-    public boolean createFk = false;
+    public Boolean isCreateFk() {
+        return createFk;
+    }
     @Input
     @Optional
-    public boolean createFkIdx = false;
+    public Boolean isCreateFkIdx() {
+        return createFkIdx;
+    }
     @Input
     @Optional
-    public boolean createUnique = false;
+    public Boolean isCreateUnique() {
+        return createUnique;
+    }
     @Input
     @Optional
-    public boolean createNumChecks = false;
+    public Boolean isCreateNumChecks() {
+        return createNumChecks;
+    }
     @Input
     @Optional
-    public boolean createTextChecks = false;
+    public Boolean isCreateTextChecks() {
+        return createTextChecks;
+    }
     @Input
     @Optional
-    public boolean createDateTimeChecks = false;
+    public Boolean isCreateDateTimeChecks() {
+        return createDateTimeChecks;
+    }
     @Input
     @Optional
-    public boolean createStdCols = false;
+    public Boolean isCreateStdCols() {
+        return createStdCols;
+    }
     @Input
     @Optional
-    public String t_id_Name = null;
+    public String getT_id_Name() {
+        return t_id_Name;
+    }
     @Input
     @Optional
-    public Long idSeqMin = null;
+    public Long getIdSeqMin() {
+        return idSeqMin;
+    }
     @Input
     @Optional
-    public Long idSeqMax = null;
+    public Long getIdSeqMax() {
+        return idSeqMax;
+    }
     @Input
     @Optional
-    public boolean createTypeDiscriminator = false;
+    public Boolean isCreateTypeDiscriminator() {
+        return createTypeDiscriminator;
+    }
     @Input
     @Optional
-    public boolean createGeomIdx = false;
+    public Boolean isCreateGeomIdx() {
+        return createGeomIdx;
+    }
     @Input
     @Optional
-    public boolean disableNameOptimization = false;
+    public Boolean isDisableNameOptimization() {
+        return disableNameOptimization;
+    }
     @Input
     @Optional
-    public boolean nameByTopic = false;
+    public Boolean isNameByTopic() {
+        return nameByTopic;
+    }
     @Input
     @Optional
-    public Integer maxNameLength = null;
+    public Integer getMaxNameLength() {
+        return maxNameLength;
+    }
     @Input
     @Optional
-    public boolean sqlEnableNull = false;
+    public Boolean isSqlEnableNull() {
+        return sqlEnableNull;
+    }
     @Input
     @Optional
-    public boolean sqlColsAsText = false;
+    public Boolean isSqlColsAsText() {
+        return sqlColsAsText;
+    }
     @Input
     @Optional
-    public boolean sqlExtRefCols = false;
+    public Boolean isSqlExtRefCols() {
+        return sqlExtRefCols;
+    }
     @Input
     @Optional
-    public boolean keepAreaRef = false;
+    public Boolean isKeepAreaRef() {
+        return keepAreaRef;
+    }
     @Input
     @Optional
-    public boolean createTidCol = false;
+    public Boolean isCreateTidCol() {
+        return createTidCol;
+    }
+
     @Input
     @Optional
-    public boolean createBasketCol = false;
+    public Boolean isCreateBasketCol() {
+        return createBasketCol;
+    }
+
     @Input
     @Optional
-    public boolean createDatasetCol = false;
+    public Boolean isCreateDatasetCol() {
+        return createDatasetCol;
+    }
+
     @Input
     @Optional
-    public String translation = null;
+    public String getTranslation() {
+        return translation;
+    }
+
     @Input
     @Optional
-    public boolean createMetaInfo = false;
+    public Boolean isCreateMetaInfo() {
+        return createMetaInfo;
+    }
+
+    public void setIliFile(Object iliFile) {
+        this.iliFile = iliFile;
+    }
+
+    public void setIliMetaAttrs(Object iliMetaAttrs) {
+        this.iliMetaAttrs = iliMetaAttrs;
+    }
+
+    public void setOneGeomPerTable(Boolean oneGeomPerTable) {
+        this.oneGeomPerTable = oneGeomPerTable;
+    }
+
+    public void setSetupPgExt(Boolean setupPgExt) {
+        this.setupPgExt = setupPgExt;
+    }
+
+    public void setDropscript(Object dropscript) {
+        this.dropscript = dropscript;
+    }
+
+    public void setCreatescript(Object createscript) {
+        this.createscript = createscript;
+    }
+
+    public void setMetaConfig(Object metaConfig) {
+        this.metaConfig = metaConfig;
+    }
+
+    public void setDefaultSrsCode(String defaultSrsCode) {
+        this.defaultSrsCode = defaultSrsCode;
+    }
+
+    public void setCreateSingleEnumTab(Boolean createSingleEnumTab) {
+        this.createSingleEnumTab = createSingleEnumTab;
+    }
+
+    public void setCreateEnumTabs(Boolean createEnumTabs) {
+        this.createEnumTabs = createEnumTabs;
+    }
+
+    public void setCreateEnumTxtCol(Boolean createEnumTxtCol) {
+        this.createEnumTxtCol = createEnumTxtCol;
+    }
+
+    public void setCreateEnumColAsItfCode(Boolean createEnumColAsItfCode) {
+        this.createEnumColAsItfCode = createEnumColAsItfCode;
+    }
+
+    public void setCreateEnumTabsWithId(Boolean createEnumTabsWithId) {
+        this.createEnumTabsWithId = createEnumTabsWithId;
+    }
+
+    public void setCreateImportTabs(Boolean createImportTabs) {
+        this.createImportTabs = createImportTabs;
+    }
+
+    public void setBeautifyEnumDispName(Boolean beautifyEnumDispName) {
+        this.beautifyEnumDispName = beautifyEnumDispName;
+    }
+
+    public void setNoSmartMapping(Boolean noSmartMapping) {
+        this.noSmartMapping = noSmartMapping;
+    }
+
+    public void setSmart1Inheritance(Boolean smart1Inheritance) {
+        this.smart1Inheritance = smart1Inheritance;
+    }
+
+    public void setSmart2Inheritance(Boolean smart2Inheritance) {
+        this.smart2Inheritance = smart2Inheritance;
+    }
+
+    public void setCoalesceCatalogueRef(Boolean coalesceCatalogueRef) {
+        this.coalesceCatalogueRef = coalesceCatalogueRef;
+    }
+
+    public void setCoalesceMultiSurface(Boolean coalesceMultiSurface) {
+        this.coalesceMultiSurface = coalesceMultiSurface;
+    }
+
+    public void setCoalesceMultiLine(Boolean coalesceMultiLine) {
+        this.coalesceMultiLine = coalesceMultiLine;
+    }
+
+    public void setExpandMultilingual(Boolean expandMultilingual) {
+        this.expandMultilingual = expandMultilingual;
+    }
+
+    public void setCoalesceJson(Boolean coalesceJson) {
+        this.coalesceJson = coalesceJson;
+    }
+
+    public void setCoalesceArray(Boolean coalesceArray) {
+        this.coalesceArray = coalesceArray;
+    }
+
+    public void setCreateTypeConstraint(Boolean createTypeConstraint) {
+        this.createTypeConstraint = createTypeConstraint;
+    }
+
+    public void setCreateFk(Boolean createFk) {
+        this.createFk = createFk;
+    }
+
+    public void setCreateFkIdx(Boolean createFkIdx) {
+        this.createFkIdx = createFkIdx;
+    }
+
+    public void setCreateUnique(Boolean createUnique) {
+        this.createUnique = createUnique;
+    }
+
+    public void setCreateNumChecks(Boolean createNumChecks) {
+        this.createNumChecks = createNumChecks;
+    }
+
+    public void setCreateTextChecks(Boolean createTextChecks) {
+        this.createTextChecks = createTextChecks;
+    }
+
+    public void setCreateDateTimeChecks(Boolean createDateTimeChecks) {
+        this.createDateTimeChecks = createDateTimeChecks;
+    }
+
+    public void setCreateStdCols(Boolean createStdCols) {
+        this.createStdCols = createStdCols;
+    }
+
+    public void setT_id_Name(String t_id_Name) {
+        this.t_id_Name = t_id_Name;
+    }
+
+    public void setIdSeqMin(Long idSeqMin) {
+        this.idSeqMin = idSeqMin;
+    }
+
+    public void setIdSeqMax(Long idSeqMax) {
+        this.idSeqMax = idSeqMax;
+    }
+
+    public void setCreateTypeDiscriminator(Boolean createTypeDiscriminator) {
+        this.createTypeDiscriminator = createTypeDiscriminator;
+    }
+
+    public void setCreateGeomIdx(Boolean createGeomIdx) {
+        this.createGeomIdx = createGeomIdx;
+    }
+
+    public void setDisableNameOptimization(Boolean disableNameOptimization) {
+        this.disableNameOptimization = disableNameOptimization;
+    }
+
+    public void setNameByTopic(Boolean nameByTopic) {
+        this.nameByTopic = nameByTopic;
+    }
+
+    public void setMaxNameLength(Integer maxNameLength) {
+        this.maxNameLength = maxNameLength;
+    }
+
+    public void setSqlEnableNull(Boolean sqlEnableNull) {
+        this.sqlEnableNull = sqlEnableNull;
+    }
+
+    public void setSqlColsAsText(Boolean sqlColsAsText) {
+        this.sqlColsAsText = sqlColsAsText;
+    }
+
+    public void setSqlExtRefCols(Boolean sqlExtRefCols) {
+        this.sqlExtRefCols = sqlExtRefCols;
+    }
+
+    public void setKeepAreaRef(Boolean keepAreaRef) {
+        this.keepAreaRef = keepAreaRef;
+    }
+
+    public void setCreateTidCol(Boolean createTidCol) {
+        this.createTidCol = createTidCol;
+    }
+
+    public void setCreateBasketCol(Boolean createBasketCol) {
+        this.createBasketCol = createBasketCol;
+    }
+
+    public void setCreateDatasetCol(Boolean createDatasetCol) {
+        this.createDatasetCol = createDatasetCol;
+    }
+
+    public void setTranslation(String translation) {
+        this.translation = translation;
+    }
+
+    public void setCreateMetaInfo(Boolean createMetaInfo) {
+        this.createMetaInfo = createMetaInfo;
+    }
+
+    public void setDefaultSrsAuth(String defaultSrsAuth) {
+        this.defaultSrsAuth = defaultSrsAuth;
+    }
 
     @TaskAction
     public void importSchema() {

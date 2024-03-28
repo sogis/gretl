@@ -16,42 +16,100 @@ import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Csv2ExcelStep;
-import ch.so.agi.gretl.steps.Csv2ParquetStep;
+
+import javax.annotation.Nullable;
 
 public class Csv2Excel extends DefaultTask {
     protected GretlLogger log;
 
-    @Internal
-    public File csvFile;
-    
-    @Internal
-    @Optional
-    public boolean firstLineIsHeader = true;
-    
-    @Internal
-    @Optional
-    public Character valueDelimiter = null;
-    
-    @Internal
-    @Optional
-    public Character valueSeparator = null;
-    
-    @Internal
-    @Optional
-    public String encoding = null;
-    
-    @Internal
-    @Optional
-    public String models = null;
-        
-    @Internal
-    @Optional
-    public String modeldir = null;
+    private File csvFile;
+    private Boolean firstLineIsHeader = true;
+    private Character valueDelimiter = null;
+    private Character valueSeparator = null;
+    private String encoding;
+    private String models;
+    private String modeldir;
+    private File outputDir;
 
     @Internal
-    @Optional
-    public File outputDir;
-            
+    public File getCsvFile() {
+        return csvFile;
+    }
+
+    @Internal
+    @Nullable
+    public Boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
+    @Internal
+    @Nullable
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
+    @Internal
+    @Nullable
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+
+    @Internal
+    @Nullable
+    public String getEncoding() {
+        return encoding;
+    }
+
+    @Internal
+    @Nullable
+    public String getModels() {
+        return models;
+    }
+
+    @Internal
+    @Nullable
+    public String getModeldir() {
+        return modeldir;
+    }
+
+    @Internal
+    @Nullable
+    public File getOutputDir() {
+        return outputDir;
+    }
+
+    public void setCsvFile(File csvFile) {
+        this.csvFile = csvFile;
+    }
+
+    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
+        this.firstLineIsHeader = firstLineIsHeader;
+    }
+
+    public void setValueDelimiter(Character valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
+
+    public void setValueSeparator(Character valueSeparator) {
+        this.valueSeparator = valueSeparator;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setModels(String models) {
+        this.models = models;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Csv2Excel.class);
@@ -85,13 +143,13 @@ public class Csv2Excel extends DefaultTask {
         }
 
         if (outputDir == null) {
-            outputDir = csvFile.getParentFile();
+            outputDir = getCsvFile().getParentFile();
         }
 
         try {
             Csv2ExcelStep csv2ExcelStep = new Csv2ExcelStep();
-            csv2ExcelStep.execute(csvFile.toPath(), outputDir.toPath(), settings);
-            log.lifecycle("Excel file written: " + csvFile.getParentFile().getAbsolutePath());
+            csv2ExcelStep.execute(getCsvFile().toPath(), getOutputDir().toPath(), settings);
+            log.lifecycle("Excel file written: " + getCsvFile().getParentFile().getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
             throw new GradleException("Could not write Excel file: " + e.getMessage());

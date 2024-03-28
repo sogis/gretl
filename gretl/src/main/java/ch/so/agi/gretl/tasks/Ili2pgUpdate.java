@@ -15,8 +15,15 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 
 public class Ili2pgUpdate extends Ili2pgAbstractTask {
+    private Object dataFile = null;
     @InputFile
-    public Object dataFile = null;
+    public Object getDataFile(){
+        return dataFile;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
 
     @TaskAction
     public void updateData() {

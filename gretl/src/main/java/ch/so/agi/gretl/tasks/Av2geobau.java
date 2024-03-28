@@ -17,13 +17,7 @@ import java.util.zip.ZipOutputStream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.*;
 
 import ch.ehi.basics.settings.Settings;
 import ch.ehi.basics.view.GenericFileFilter;
@@ -33,33 +27,81 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class Av2geobau extends DefaultTask {
     protected GretlLogger log;
-    
-    @InputFile
-    public Object itfFiles = null;
-    
+    private Object itfFiles = null;
+    private Object dxfDirectory = null;
+    private String modeldir = null;
+    private Object logFile = null;
+    private String proxy = null;
+    private Integer proxyPort = null;
+    private Boolean zip = false;
+
+    @InputFiles
+    public Object getItfFiles() {
+        return itfFiles;
+    }
     @OutputDirectory
-    public Object dxfDirectory = null;
-    
+    public Object getDxfDirectory() {
+        return dxfDirectory;
+    }
+
     @Input
     @Optional
-    public String modeldir = null;
-    
+    public String getModeldir() {
+        return modeldir;
+    }
+
     @OutputFile
     @Optional
-    public Object logFile = null;
-    
+    public Object getLogFile() {
+        return logFile;
+    }
+
     @Input
     @Optional
-    public String proxy = null;
-    
+    public String getProxy() {
+        return proxy;
+    }
+
     @Input
     @Optional
-    public Integer proxyPort = null;
-    
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
     @Input
     @Optional
-    public boolean zip = false;
-    
+    public Boolean isZip() {
+        return zip;
+    }
+
+    public void setItfFiles(Object itfFiles) {
+        this.itfFiles = itfFiles;
+    }
+
+    public void setDxfDirectory(Object dxfDirectory) {
+        this.dxfDirectory = dxfDirectory;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setLogFile(Object logFile) {
+        this.logFile = logFile;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setZip(Boolean zip) {
+        this.zip = zip;
+    }
+
     @TaskAction
     public void runTransformation() {
         log = LogEnvironment.getLogger(Av2geobau.class);

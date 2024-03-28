@@ -10,7 +10,6 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.interlis2.validator.Validator;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,14 +26,14 @@ public class IliValidator extends AbstractValidatorTask {
     public void validate() {
         log = LogEnvironment.getLogger(IliValidator.class);
 
-        if (dataFiles == null) {
+        if (getDataFiles() == null) {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(dataFiles instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)dataFiles;
+        if(getDataFiles() instanceof FileCollection) {
+            dataFilesCollection=(FileCollection)getDataFiles();
         }else {
-            dataFilesCollection=getProject().files(dataFiles);
+            dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
@@ -85,7 +84,7 @@ public class IliValidator extends AbstractValidatorTask {
         settings.setTransientObject(ch.interlis.iox_j.validator.Validator.CONFIG_CUSTOM_FUNCTIONS, userFunctions);
 
         validationOk = new Validator().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && failOnError) {
+        if (!validationOk && isFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

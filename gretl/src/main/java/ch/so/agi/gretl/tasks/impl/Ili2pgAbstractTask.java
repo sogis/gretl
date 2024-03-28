@@ -19,97 +19,331 @@ import org.gradle.api.tasks.OutputFile;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Ili2pgAbstractTask extends DefaultTask {
     protected GretlLogger log;
 
-    @Input
     public Connector database;
-    @Input
-    @Optional
+
     public String dbschema = null;
-    @Input
-    @Optional
     public String proxy = null;
-    @Input
-    @Optional
     public Integer proxyPort = null;
 
-    @Input
-    @Optional
     public String modeldir = null;
-    @Input
-    @Optional
+
     public String models = null;
-    @Input
-    @Optional
+
     public Object dataset = null;
-    @Input
-    @Optional
     public String baskets = null;
-    @Input
-    @Optional
     public String topics = null;
-    @Input
-    @Optional
-    public boolean importTid = false;
-    @Input
-    @Optional
-    public boolean exportTid = false;
-    @Input
-    @Optional
-    public boolean importBid = false;
-    @InputFile
-    @Optional
+    public Boolean importTid = false;
+    public Boolean exportTid = false;
+    public Boolean importBid = false;
     public File preScript = null;
-    @InputFile
-    @Optional
     public File postScript = null;
-    @Input
-    @Optional
-    public boolean deleteData = false;
-    @OutputFile
-    @Optional
+    public Boolean deleteData = false;
+
     public Object logFile = null;
-    @Input
-    @Optional
-    public boolean trace = false;
-    @InputFile
-    @Optional
+    public Boolean trace = false;
     public File validConfigFile = null;
-    @Input
-    @Optional
-    public boolean disableValidation = false;
-    @Input
-    @Optional
-    public boolean disableAreaValidation = false;
-    @Input
-    @Optional
-    public boolean forceTypeValidation = false;
-    @Input
-    @Optional
-    public boolean strokeArcs = false;
-    @Input
-    @Optional
-    public boolean skipPolygonBuilding = false;
-    @Input
-    @Optional
-    public boolean skipGeometryErrors = false;
-    @Input
-    @Optional
-    public boolean iligml20 = false;
-    @Input
-    @Optional
-    public boolean disableRounding = false;  
-    @Input
-    @Optional
-    public boolean failOnException = true;
-    @Input
-    @Optional
+    public Boolean disableValidation = false;
+    public Boolean disableAreaValidation = false;
+    public Boolean forceTypeValidation = false;
+    public Boolean strokeArcs = false;
+    public Boolean skipPolygonBuilding = false;
+    public Boolean skipGeometryErrors = false;
+    public Boolean iligml20 = false;
+    public Boolean disableRounding = false;
+    public Boolean failOnException = true;
     public Range<Integer> datasetSubstring = null;
 
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    @Input
+    @Optional
+    public String getDbschema() {
+        return dbschema;
+    }
+
+    @Input
+    @Optional
+    public String getProxy() {
+        return proxy;
+    }
+
+    @Input
+    @Optional
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
+    @Input
+    @Optional
+    public String getModeldir() {
+        return modeldir;
+    }
+
+    @Input
+    @Optional
+    public String getModels() {
+        return models;
+    }
+
+    @Input
+    @Optional
+    public Object getDataset() {
+        return dataset;
+    }
+
+    @Input
+    @Optional
+    public String getBaskets() {
+        return baskets;
+    }
+
+    @Input
+    @Optional
+    public String getTopics() {
+        return topics;
+    }
+
+    @Input
+    @Optional
+    public Boolean isImportTid() {
+        return importTid;
+    }
+
+    @Input
+    @Optional
+    public Boolean isExportTid() {
+        return exportTid;
+    }
+
+    @Input
+    @Optional
+    public Boolean isImportBid() {
+        return importBid;
+    }
+
+    @InputFile
+    @Optional
+    public File getPreScript() {
+        return preScript;
+    }
+
+    @InputFile
+    @Optional
+    public File getPostScript() {
+        return postScript;
+    }
+
+    @Input
+    @Optional
+    public Boolean isDeleteData() {
+        return deleteData;
+    }
+
+    @OutputFile
+    @Optional
+    public Object getLogFile() {
+        return logFile;
+    }
+
+    @Input
+    @Optional
+    public Boolean isTrace() {
+        return trace;
+    }
+
+    @InputFile
+    @Optional
+    public File getValidConfigFile() {
+        return validConfigFile;
+    }
+
+    @Input
+    @Optional
+    public Boolean isDisableValidation() {
+        return disableValidation;
+    }
+
+    @Input
+    @Optional
+    public Boolean isDisableAreaValidation() {
+        return disableAreaValidation;
+    }
+
+    @Input
+    @Optional
+    public Boolean isForceTypeValidation() {
+        return forceTypeValidation;
+    }
+
+    @Input
+    @Optional
+    public Boolean isStrokeArcs() {
+        return strokeArcs;
+    }
+
+    @Input
+    @Optional
+    public Boolean isSkipPolygonBuilding() {
+        return skipPolygonBuilding;
+    }
+
+    @Input
+    @Optional
+    public Boolean isSkipGeometryErrors() {
+        return skipGeometryErrors;
+    }
+
+    @Input
+    @Optional
+    public Boolean isIligml20() {
+        return iligml20;
+    }
+
+    @Input
+    @Optional
+    public Boolean isDisableRounding() {
+        return disableRounding;
+    }
+
+    @Input
+    @Optional
+    public Boolean isFailOnException() {
+        return failOnException;
+    }
+
+    @Input
+    @Optional
+    public Range<Integer> getDatasetSubstring() {
+        return datasetSubstring;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setDbschema(String dbschema) {
+        this.dbschema = dbschema;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setModels(String models) {
+        this.models = models;
+    }
+
+    public void setDataset(Object dataset) {
+        this.dataset = dataset;
+    }
+
+    public void setBaskets(String baskets) {
+        this.baskets = baskets;
+    }
+
+    public void setTopics(String topics) {
+        this.topics = topics;
+    }
+
+    public void setImportTid(Boolean importTid) {
+        this.importTid = importTid;
+    }
+
+    public void setExportTid(Boolean exportTid) {
+        this.exportTid = exportTid;
+    }
+
+    public void setImportBid(Boolean importBid) {
+        this.importBid = importBid;
+    }
+
+    public void setPreScript(File preScript) {
+        this.preScript = preScript;
+    }
+
+    public void setPostScript(File postScript) {
+        this.postScript = postScript;
+    }
+
+    public void setDeleteData(Boolean deleteData) {
+        this.deleteData = deleteData;
+    }
+
+    public void setLogFile(Object logFile) {
+        this.logFile = logFile;
+    }
+
+    public void setTrace(Boolean trace) {
+        this.trace = trace;
+    }
+
+    public void setValidConfigFile(File validConfigFile) {
+        this.validConfigFile = validConfigFile;
+    }
+
+    public void setDisableValidation(Boolean disableValidation) {
+        this.disableValidation = disableValidation;
+    }
+
+    public void setDisableAreaValidation(Boolean disableAreaValidation) {
+        this.disableAreaValidation = disableAreaValidation;
+    }
+
+    public void setForceTypeValidation(Boolean forceTypeValidation) {
+        this.forceTypeValidation = forceTypeValidation;
+    }
+
+    public void setStrokeArcs(Boolean strokeArcs) {
+        this.strokeArcs = strokeArcs;
+    }
+
+    public void setSkipPolygonBuilding(Boolean skipPolygonBuilding) {
+        this.skipPolygonBuilding = skipPolygonBuilding;
+    }
+
+    public void setSkipGeometryErrors(Boolean skipGeometryErrors) {
+        this.skipGeometryErrors = skipGeometryErrors;
+    }
+
+    public void setIligml20(Boolean iligml20) {
+        this.iligml20 = iligml20;
+    }
+
+    public void setDisableRounding(Boolean disableRounding) {
+        this.disableRounding = disableRounding;
+    }
+
+    public void setFailOnException(Boolean failOnException) {
+        this.failOnException = failOnException;
+    }
+
+    public void setDatasetSubstring(Range<Integer> datasetSubstring) {
+        this.datasetSubstring = datasetSubstring;
+    }
 
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);

@@ -8,6 +8,8 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
@@ -18,14 +20,34 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class XslTransformer extends DefaultTask {
     protected GretlLogger log;
 
+    private Object xslFile;
+    private Object xmlFile;
+    private File outDirectory;
+
     @Input
-    public Object xslFile;
-    
+    public Object getXslFile() {
+        return xslFile;
+    }
     @Input
-    public Object xmlFile;
-            
-    @Input
-    public File outDirectory;
+    public Object getXmlFile() {
+        return xmlFile;
+    }
+    @InputDirectory
+    public File getOutDirectory() {
+        return outDirectory;
+    }
+
+    public void setXslFile(Object xslFile) {
+        this.xslFile = xslFile;
+    }
+
+    public void setXmlFile(Object xmlFile) {
+        this.xmlFile = xmlFile;
+    }
+
+    public void setOutDirectory(File outDirectory) {
+        this.outDirectory = outDirectory;
+    }
 
     @TaskAction
     public void transform() {
