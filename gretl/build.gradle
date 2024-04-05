@@ -170,19 +170,6 @@ dependencies {
     integrationTestImplementation sourceSets.main.output
     integrationTestImplementation sourceSets.test.output
     
-    /**
-     * Provides, at compile-time, the dependencies that both _main_ and _test_ require in order
-     * to successfully compile.
-     */
-    /*integrationTestImplementation configurations.implementation
-    integrationTestImplementation configurations.testImplementation*/
-    
-    /**
-     * Provides, at run-time, the dependencies that both _main_ and _test_ require to run.
-     */
-    /*integrationTestImplementation configurations.runtime
-    integrationTestImplementation configurations.testRuntime*/
-    
     testImplementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.69'
     
     testImplementation 'org.apache.hadoop:hadoop-client:3.3.5'
@@ -291,3 +278,9 @@ cyclonedxBom {
    //includeBomSerialNumber = true
    //componentVersion = "2.0.0"
 }
+
+// https://github.com/gradle/gradle/issues/17236
+processResources{
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
