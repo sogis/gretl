@@ -34,6 +34,10 @@ public class ShpExport extends DefaultTask {
         return database;
     }
 
+    /*
+     *  @InputFile kann hier nicht verwendet werden, da die Datei existieren muss.
+     *  Bei einem ersten Run dieses Tasks kann es sein, dass die Datei noch nicht existiert.
+     */
     @Input
     public Object getDataFile() {
         return dataFile;

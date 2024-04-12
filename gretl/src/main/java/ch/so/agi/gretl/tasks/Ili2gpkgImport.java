@@ -23,6 +23,10 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
     private Boolean createMetaInfo = false;
     private Boolean createGeomIdx = false;
 
+    /*
+     *  @InputFile kann hier nicht verwendet werden, da die Datei existieren muss.
+     *  Bei einem ersten Run dieses Tasks kann es sein, dass die Datei noch nicht existiert.
+     */
     @Input
     public Object getDataFile(){
         return dataFile;
