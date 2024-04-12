@@ -4,7 +4,6 @@ import ch.so.agi.gretl.util.DbConnector;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import kotlin.jvm.Transient;
 
 import java.io.Serializable;
 import java.sql.Connection;
