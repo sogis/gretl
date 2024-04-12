@@ -39,8 +39,8 @@ public class CsvValidator extends AbstractValidatorTask {
     public Character getValueSeparator() {
         return valueSeparator;
     }
-    @Internal
-    @Nullable
+    @Input
+    @Optional
     public String getEncoding(){
         return encoding;
     }

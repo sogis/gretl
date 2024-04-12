@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.interlis2.validator.Validator;
 
@@ -16,8 +15,6 @@ import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Csv2ParquetStep;
-
-import javax.annotation.Nullable;
 
 public class Csv2Parquet extends DefaultTask {
     protected GretlLogger log;
@@ -37,43 +34,36 @@ public class Csv2Parquet extends DefaultTask {
     }
 
     @Internal
-    @Nullable
     public Boolean isFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 
     @Internal
-    @Nullable
     public Character getValueDelimiter() {
         return valueDelimiter;
     }
 
     @Internal
-    @Nullable
     public Character getValueSeparator() {
         return valueSeparator;
     }
 
     @Internal
-    @Nullable
     public String getEncoding() {
         return encoding;
     }
 
     @Internal
-    @Nullable
     public String getModels() {
         return models;
     }
 
     @Internal
-    @Nullable
     public String getModeldir() {
         return modeldir;
     }
 
     @Internal
-    @Nullable
     public File getOutputDir() {
         return outputDir;
     }

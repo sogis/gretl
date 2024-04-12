@@ -73,43 +73,36 @@ public class Curl extends DefaultTask {
     }
 
     @Internal
-    @Nullable
     public String getExpectedBody() {
         return expectedBody;
     }
 
     @Internal
-    @Nullable
     public Map<String, Object> getFormData() {
         return formData;
     }
 
     @Internal
-    @Nullable
     public File getOutputFile() {
         return outputFile;
     }
 
     @Internal
-    @Nullable
     public File getDataBinary() {
         return dataBinary;
     }
 
     @Internal
-    @Nullable
     public Map<String, String> getHeaders() {
         return headers;
     }
 
     @Internal
-    @Nullable
     public String getUser() {
         return user;
     }
 
     @Internal
-    @Nullable
     public String getPassword() {
         return password;
     }

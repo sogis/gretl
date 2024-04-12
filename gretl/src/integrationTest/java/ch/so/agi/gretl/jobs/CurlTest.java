@@ -2,20 +2,14 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-//import org.mockserver.client.MockServerClient;
-//import org.testcontainers.containers.MockServerContainer;
-//import org.testcontainers.utility.DockerImageName;
 
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
@@ -26,13 +20,6 @@ import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 
 import java.io.IOException;
-
-//import static org.mockserver.matchers.Times.exactly;
-//import static org.mockserver.model.HttpClassCallback.callback;
-//import static org.mockserver.model.HttpForward.forward;
-//import static org.mockserver.model.HttpRequest.request;
-//import static org.mockserver.model.HttpResponse.response;
-//import static org.mockserver.model.StringBody.exact;
 
 public class CurlTest {    
     private MockWebServer mockWebServer;

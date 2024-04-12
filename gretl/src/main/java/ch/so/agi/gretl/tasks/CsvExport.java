@@ -69,15 +69,13 @@ public class CsvExport extends DefaultTask {
     public String getSchemaName() {
         return schemaName;
     }
-
-    @Internal
-    @Nullable
+    @Input
+    @Optional
     public String[] getAttributes(){
         return attributes;
     }
-
-    @Internal
-    @Nullable
+    @Input
+    @Optional
     public String getEncoding(){
         return encoding;
     }
