@@ -15,12 +15,28 @@ import ch.so.agi.gretl.steps.GzipStep;
 public class Gzip extends DefaultTask {
     protected GretlLogger log;
 
+    private File dataFile;
+
+    private File gzipFile;
+
     @Internal
-    public File dataFile;
-    
+    public File getDataFile() {
+        return dataFile;
+    }
+
     @Internal
-    public File gzipFile;
-    
+    public File getGzipFile() {
+        return gzipFile;
+    }
+
+    public void setDataFile(File dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setGzipFile(File gzipFile) {
+        this.gzipFile = gzipFile;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Gzip.class);

@@ -9,22 +9,42 @@ import java.util.List;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 public class Ili2pgExport extends Ili2pgAbstractTask {
-    @Input
-    @Optional
-    public boolean export3 = false;
-    
-    @Input
-    @Optional
-    public String exportModels = null;
 
-    @OutputFile
-    public Object dataFile = null;
+    private Boolean export3 = false;
+    private String exportModels;
+    private Object dataFile;
+
+    @Input
+    @Optional
+    public Boolean isExport3() {
+        return export3;
+    }
+
+    @Input
+    @Optional
+    public String getExportModels() {
+        return exportModels;
+    }
+
+    @OutputFiles
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    public void setExport3(Boolean export3) {
+        this.export3 = export3;
+    }
+
+    public void setExportModels(String exportModels) {
+        this.exportModels = exportModels;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
 
     @TaskAction
     public void exportData() {

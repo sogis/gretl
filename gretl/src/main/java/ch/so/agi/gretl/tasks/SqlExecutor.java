@@ -29,15 +29,45 @@ public class SqlExecutor extends DefaultTask {
         log = LogEnvironment.getLogger(SqlExecutor.class);
     }
 
-    @Input
-    public Connector database;
+
+    private Connector database;
+    private List<String> sqlFiles;
+    private Object sqlParameters = null;
 
     @Input
-    public List<String> sqlFiles;
+    public Connector getDatabase() {
+        return database;
+    }
 
+    @Input
+    public List<String> getSqlFiles() {
+        return sqlFiles;
+    }
     @Input
     @Optional
-    public Object sqlParameters = null;
+    public Object getSqlParameters() {
+        return sqlParameters;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setSqlFiles(List<String> sqlFiles) {
+        this.sqlFiles = sqlFiles;
+    }
+
+    public void setSqlParameters(Object sqlParameters) {
+        this.sqlParameters = sqlParameters;
+    }
 
     @TaskAction
     public void executeSQLExecutor() {

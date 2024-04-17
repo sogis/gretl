@@ -14,12 +14,23 @@ import java.util.Set;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
-import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 public class Ili2pgReplace extends Ili2pgAbstractTask {
-    @InputFile
-    public Object dataFile = null;
+    private Object dataFile = null;
+
+    /*
+        Input kann hier FileCollection, File oder String sein.
+     */
+    @Input
+    public Object getDataFile(){
+        return dataFile;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
 
     @TaskAction
     public void replaceData() {

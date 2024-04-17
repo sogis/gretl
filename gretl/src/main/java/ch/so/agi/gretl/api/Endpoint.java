@@ -1,12 +1,13 @@
 package ch.so.agi.gretl.api;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Parameters of a Web-Service or FTP-service
  */
-public class Endpoint {
+public class Endpoint implements Serializable{
 
     private String url;
     private String user;

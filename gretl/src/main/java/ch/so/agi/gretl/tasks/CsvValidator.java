@@ -9,40 +9,70 @@ import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
 import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
 
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.*;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CsvValidator extends AbstractValidatorTask {
     private GretlLogger log;
+    private Boolean firstLineIsHeader = true;
+    private Character valueDelimiter = null;
+    private Character valueSeparator = null;
+    private String encoding = null;
+
     @Input
     @Optional
-    public boolean firstLineIsHeader = true;
+    public Boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
     @Input
     @Optional
-    public Character valueDelimiter = null;
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
     @Input
     @Optional
-    public Character valueSeparator = null;
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+    @Input
     @Optional
-    public String encoding = null;
+    public String getEncoding(){
+        return encoding;
+    }
+
+    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
+        this.firstLineIsHeader = firstLineIsHeader;
+    }
+
+    public void setValueDelimiter(Character valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
+
+    public void setValueSeparator(Character valueSeparator) {
+        this.valueSeparator = valueSeparator;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
 
     @TaskAction
     public void validate() {
         log = LogEnvironment.getLogger(CsvValidator.class);
 
-        if (dataFiles == null) {
+        if (getDataFiles() == null) {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(dataFiles instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)dataFiles;
+        if(getDataFiles() instanceof FileCollection) {
+            dataFilesCollection=(FileCollection)getDataFiles();
         }else {
-            dataFilesCollection=getProject().files(dataFiles);
+            dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
@@ -69,7 +99,7 @@ public class CsvValidator extends AbstractValidatorTask {
         }
 
         validationOk = new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && failOnError) {
+        if (!validationOk && isFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }
