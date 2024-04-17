@@ -17,12 +17,10 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
-import javax.annotation.Nullable;
-
 public class CsvExport extends DefaultTask {
     protected GretlLogger log;
     private Connector database;
-    private Object dataFile = null;
+    private String dataFile = null;
     private String tableName = null;
 
     private Boolean firstLineIsHeader = true;
@@ -42,12 +40,8 @@ public class CsvExport extends DefaultTask {
         return database;
     }
 
-    /*
-     *  @InputFile kann hier nicht verwendet werden, da die Datei existieren muss.
-     *  Bei einem ersten Run dieses Tasks kann es sein, dass die Datei noch nicht existiert.
-     */
     @Input
-    public Object getDataFile() {
+    public String getDataFile() {
         return dataFile;
     }
     @Input
@@ -97,7 +91,7 @@ public class CsvExport extends DefaultTask {
         this.database = new Connector(databaseUri, databaseUser, databasePassword);
     }
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(String dataFile) {
         this.dataFile = dataFile;
     }
 
