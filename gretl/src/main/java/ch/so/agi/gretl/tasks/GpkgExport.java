@@ -7,10 +7,7 @@ import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.Db2Gpkg;
@@ -23,7 +20,7 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class GpkgExport extends DefaultTask {
     protected GretlLogger log;
     private Connector database;
-    private String dataFile;
+    private Object dataFile;
     private Object dstTableName;
     private Object srcTableName;
     private String schemaName;
@@ -36,8 +33,8 @@ public class GpkgExport extends DefaultTask {
         return database;
     }
 
-    @Input
-    public String getDataFile() {
+    @OutputFile
+    public Object getDataFile() {
         return dataFile;
     }
 
@@ -87,7 +84,7 @@ public class GpkgExport extends DefaultTask {
         this.database = new Connector(databaseUri, databaseUser, databasePassword);
     }
 
-    public void setDataFile(String dataFile) {
+    public void setDataFile(Object dataFile) {
         this.dataFile = dataFile;
     }
 

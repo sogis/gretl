@@ -20,7 +20,7 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class CsvExport extends DefaultTask {
     protected GretlLogger log;
     private Connector database;
-    private String dataFile = null;
+    private Object dataFile = null;
     private String tableName = null;
 
     private Boolean firstLineIsHeader = true;
@@ -40,8 +40,8 @@ public class CsvExport extends DefaultTask {
         return database;
     }
 
-    @Input
-    public String getDataFile() {
+    @OutputFile
+    public Object getDataFile() {
         return dataFile;
     }
     @Input
@@ -91,7 +91,7 @@ public class CsvExport extends DefaultTask {
         this.database = new Connector(databaseUri, databaseUser, databasePassword);
     }
 
-    public void setDataFile(String dataFile) {
+    public void setDataFile(Object dataFile) {
         this.dataFile = dataFile;
     }
 
