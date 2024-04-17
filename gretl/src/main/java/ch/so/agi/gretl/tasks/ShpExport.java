@@ -6,10 +6,7 @@ import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.Db2Shp;
@@ -34,11 +31,7 @@ public class ShpExport extends DefaultTask {
         return database;
     }
 
-    /*
-     *  @InputFile kann hier nicht verwendet werden, da die Datei existieren muss.
-     *  Bei einem ersten Run dieses Tasks kann es sein, dass die Datei noch nicht existiert.
-     */
-    @Input
+    @OutputFile
     public Object getDataFile() {
         return dataFile;
     }
