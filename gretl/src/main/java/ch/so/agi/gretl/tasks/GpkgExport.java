@@ -23,7 +23,7 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class GpkgExport extends DefaultTask {
     protected GretlLogger log;
     private Connector database;
-    private Object dataFile;
+    private String dataFile;
     private Object dstTableName;
     private Object srcTableName;
     private String schemaName;
@@ -36,12 +36,8 @@ public class GpkgExport extends DefaultTask {
         return database;
     }
 
-    /*
-     *  @InputFile kann hier nicht verwendet werden, da die Datei existieren muss.
-     *  Bei einem ersten Run dieses Tasks kann es sein, dass die Datei noch nicht existiert.
-     */
     @Input
-    public Object getDataFile() {
+    public String getDataFile() {
         return dataFile;
     }
 
@@ -91,7 +87,7 @@ public class GpkgExport extends DefaultTask {
         this.database = new Connector(databaseUri, databaseUser, databasePassword);
     }
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(String dataFile) {
         this.dataFile = dataFile;
     }
 
@@ -185,9 +181,6 @@ public class GpkgExport extends DefaultTask {
                 Db2Gpkg db2gpkg = new Db2Gpkg();
                 db2gpkg.exportData(data, conn, settings);
                 conn.commit();
-                //conn.close();
-                //conn = null; 
-                
                 i++;
             }
        } catch (Exception e) {
