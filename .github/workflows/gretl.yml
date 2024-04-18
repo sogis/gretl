@@ -84,11 +84,11 @@ jobs:
           images: sogis/gretl
           labels: |
             org.opencontainers.image.title=gretl
-            org.opencontainers.image.version=2.2.${{ github.run_number }}
+            org.opencontainers.image.version=2.4.${{ github.run_number }}
             org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-alpine:8u333-2
           tags: |
-            type=raw,value=2.2.${{ github.run_number }},enable=true,priority=200
-            type=raw,value=2.2,enable=true,priority=200
+            type=raw,value=2.4.${{ github.run_number }},enable=true,priority=200
+            type=raw,value=2.4,enable=true,priority=200
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9  # v1.10.0 (2021-10-22)
@@ -127,7 +127,7 @@ jobs:
           path: |
             gretl/build/reports/tests/
 
-      # 2.2-Branch nicht (mehr) in Plugins-Repo releasen.
+      # 2.2- und 2.4-Branch nicht (mehr) in Plugins-Repo releasen.
       # - name: Publish plugin
       #   run: ./gradlew gretl:publishPlugins -s
       #   if: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}

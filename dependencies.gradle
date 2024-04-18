@@ -1,12 +1,12 @@
 ext {
     // dependencies version
-    ioxIliVersion = '1.21.13'
-    ilivalidatorVersion = '1.12.1'
+    ioxIliVersion = '1.22.0'
+    ilivalidatorVersion = '1.14.0'
     ilivalidatorCustomFunctions = '1.1.50'
-    ili2pgVersion = '4.9.1'
-    ili2gpkgVersion = '4.9.1'
+    ili2pgVersion = '5.1.0'
+    ili2gpkgVersion = '5.1.0'
     ioxWkfVersion = '1.1.1'
-    ehiSqlgenVersion = '1.15.0'
+    ehiSqlgenVersion = '1.16.0'
     
     ioxParquetVersion = '0.0.25'
     ioxExcelVersion = '0.0.3'
