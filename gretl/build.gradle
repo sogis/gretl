@@ -8,8 +8,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
 }
 
 compileJava.options.encoding = 'US-ASCII'
@@ -44,41 +44,23 @@ configurations.all {
     }
 }
 
-/*
- * This is ridiculous.
- */
-// TODO: Ist das noch notwendig, da jetzt die Treiber
-// in maven central frei verfügbar sind? Solange
-// es nicht schadet, ist es ja ok, wenn wir möglichst
-// wenig 'Müll' mitschleppen.
 configurations {
-    integrationTestImplementation {
-        exclude module: 'xmlparserv2'
-        exclude module: 'ucp'
-        exclude module: 'xdb6'
-        exclude module: 'oraclepki'
-        exclude module: 'osdt_core'
-        exclude module: 'osdt_cert'
-        exclude module: 'orai18n' 
-        exclude group: 'org.apache.hadoop', module: 'hadoop-core' 
-        exclude group: 'org.slf4j', module: 'slf4j-reload4j'
-    }
-    
     testImplementation {
         exclude group: 'org.apache.hadoop', module: 'hadoop-core' // Konflikt zwischen "core" und "client". Siehe iox-parquet.
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
 
-    integrationTestImplementation.extendsFrom implementation
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestImplementation.extendsFrom runtime
-    integrationTestImplementation.extendsFrom testRuntime
-    
+    integrationTestImplementation {
+        extendsFrom implementation
+        extendsFrom testImplementation
+        extendsFrom runtime
+        extendsFrom testRuntime
+    }
+
     all*.exclude module: 'spring-boot-starter-logging'
     
     all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
     all*.exclude group: 'ch.qos.logback', module: 'logback-classic'    
-    //all*.exclude group: 'org.slf4j', module: 'slf4j-reload4j'
 }
 
 dependencies {
@@ -110,7 +92,6 @@ dependencies {
     api av2chDependency
     api av2geobauDependency
     
-    //api awsSdkDependency
     api awsSdkS3Dependency
     
     api apacheCommonsIoDependency
@@ -128,51 +109,22 @@ dependencies {
     
     api freemarkerDependency
     
-    //api 'com.jcraft:jsch:0.1.55'
-    //api 'com.pastdev:jsch-nio:1.0.14'
 	api 'com.github.robtimus:sftp-fs:2.0.4'
     
     runtimeOnly postgresqlDependency
     runtimeOnly sqliteJdbcDependency
     runtimeOnly derbyDependency
     runtimeOnly duckdbDependency
+    runtimeOnly oracleDependency
     
     testImplementation junitDependency
     testImplementation testContainersDependency
     testImplementation testContainersPostgresDependency
     
-    //testImplementation "org.testcontainers:mockserver:1.15.3"
-    //testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
-    
     testImplementation mockWebServerDependency
 
-    // Finde ich komisch. Bereits bei csv2parquet cli das gleiche Problem.
-    // War Problem wegen api vs implementation
-    //testImplementation ('org.apache.hadoop:hadoop-client:3.3.5') {
-    //    exclude group: 'org.slf4j', module: 'slf4j-reload4j'
-    //}
-    //testImplementation 'org.apache.parquet:parquet-avro:1.13.1'
-            
-    //testImplementation s3MockDependency
-    //testImplementation s3MockJunitDependency
-    
-    // Oracle JDBC would be a runtime dependency but since it's kinda hard to obtain the jar 
-    // file, we just make it a integration test dependency. It will not appear in the pom.xml 
-    // of the gretl plugin (jar).
-    // We copy the jdbc jar into the docker image for our gretl-runtime. Login and password
-    // is needed.
-    // Those who want to run the integration tests need the jdbc jar too.
-    integrationTestImplementation oracleDependency
-    testImplementation testContainersOracleDependency    
-    
-    /**
-     * Provides, at compile-time, the classes produced by the _main_ and _test_ SourceSets, 
-     * allowing the integration tests to access the production code in _main_ and allowing 
-     * them to reuse any unit test helper methods in _test_.
-     */
-    integrationTestImplementation sourceSets.main.output
-    integrationTestImplementation sourceSets.test.output
-    
+    testImplementation testContainersOracleDependency
+
     testImplementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.69'
     
     testImplementation 'org.apache.hadoop:hadoop-client:3.3.5'
@@ -272,14 +224,9 @@ tasks.withType(Test) {
 
 cyclonedxBom {
    includeConfigs = ["runtimeClasspath"]
-   //skipConfigs = ["compileClasspath", "testCompileClasspath"]
-   //projectType = "application"
-   //schemaVersion = "1.4"
    destination = file("build/reports")
    outputName = "Sbom"
    outputFormat = "all"
-   //includeBomSerialNumber = true
-   //componentVersion = "2.0.0"
 }
 
 /*
