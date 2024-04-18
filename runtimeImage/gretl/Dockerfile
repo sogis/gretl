@@ -18,8 +18,8 @@ RUN apk add --no-cache bash ca-certificates java-cacerts curl \
 
 ENV JAVA_TOOL_OPTIONS=-Duser.home=${HOME}
 ENV GRADLE_HOME /opt/gradle
-ENV GRADLE_VERSION 7.6.4
-ARG GRADLE_DOWNLOAD_SHA256=bed1da33cca0f557ab13691c77f38bb67388119e4794d113e051039b80af9bb1
+ENV GRADLE_VERSION 8.7
+ARG GRADLE_DOWNLOAD_SHA256=544c35d6bd849ae8a5ed0bcea39ba677dc40f49df7d1835561582da2009b961d
 RUN set -o errexit -o nounset \
     && echo "Downloading Gradle" \
     && wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" \
