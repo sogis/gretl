@@ -279,8 +279,18 @@ cyclonedxBom {
    //componentVersion = "2.0.0"
 }
 
-// https://github.com/gradle/gradle/issues/17236
+/*
+   Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
+   https://github.com/gradle/gradle/issues/17236
+ */
 processResources{
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
+/*
+   init_postgresql.sql seems to be copied multiple times.
+   Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
+ */
+processIntegrationTestResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
