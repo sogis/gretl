@@ -8,8 +8,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 compileJava.options.encoding = 'US-ASCII'
@@ -45,17 +45,17 @@ configurations.all {
 }
 
 configurations {
+    integrationTestImplementation {
+    }
     testImplementation {
         exclude group: 'org.apache.hadoop', module: 'hadoop-core' // Konflikt zwischen "core" und "client". Siehe iox-parquet.
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
 
-    integrationTestImplementation {
-        extendsFrom implementation
-        extendsFrom testImplementation
-        extendsFrom runtime
-        extendsFrom testRuntime
-    }
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestImplementation.extendsFrom runtime
+    integrationTestImplementation.extendsFrom testRuntime
 
     all*.exclude module: 'spring-boot-starter-logging'
     
