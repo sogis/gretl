@@ -10,7 +10,7 @@ task ili2gpkgimport(type: Ili2gpkgImport) {
     defaultSrsCode = "2056"
     dataFile = fileTree(".").matching {
     	include"*.xtf"
-    }
+    }.files.toList()
     dataset = [ 'DatasetA', 'DatasetB']
     dbfile = file("Beispiel2.gpkg")    
 }
