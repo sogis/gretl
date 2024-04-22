@@ -113,4 +113,58 @@ public class Ili2pgImportSchemaTest {
         }
     }
 
+    @Test
+    public void schemaImport_MetaConfigIliData_Ok() throws Exception {
+        Connection con = null;
+        try {
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema_MetaConfigIliData", gvs);
+
+            // check results
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement s = con.createStatement();
+            ResultSet rs = s.executeQuery("SELECT setting FROM afu_schutzbauten_ilidata.t_ili2db_settings WHERE tag ILIKE 'ch.ehi.ili2db.metaConfigFileName'");
+
+            if(!rs.next()) {
+                fail();
+            }
+
+            assertTrue(rs.getString(1).contains("ilidata:metaconfig_so_afu_schutzbauten_20231212_ohne_constraints_ini_001"));
+
+            if(rs.next()) {
+                fail();
+            }
+
+        } finally {
+            IntegrationTestUtilSql.closeCon(con);
+        }
+    }
+
+    @Test
+    public void schemaImport_MetaConfigFile_Ok() throws Exception {
+        Connection con = null;
+        try {
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema_MetaConfigFile", gvs);
+
+            // check results
+            con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement s = con.createStatement();
+            ResultSet rs = s.executeQuery("SELECT setting FROM afu_schutzbauten_file.t_ili2db_settings WHERE tag ILIKE 'ch.ehi.ili2db.metaConfigFileName'");
+
+            if(!rs.next()) {
+                fail();
+            }
+
+            assertTrue(rs.getString(1).contains("so_afu_schutzbauten_20231212_ohne_constraints.ini"));
+
+            if(rs.next()) {
+                fail();
+            }
+
+        } finally {
+            IntegrationTestUtilSql.closeCon(con);
+        }
+    }
+
 }

@@ -79,10 +79,10 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public boolean expandMultilingual = false;
     @Input
     @Optional
-    public boolean coalesceJson = false;    
+    public boolean coalesceJson = false;
     @Input
     @Optional
-    public boolean coalesceArray = false; 
+    public boolean coalesceArray = false;
     @Input
     @Optional
     public boolean createTypeConstraint = false;
@@ -158,6 +158,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @Input
     @Optional
     public boolean createMetaInfo = false;
+    @Input
+    @Optional
+    public String metaConfig = null;
 
     @TaskAction
     public void importSchema() {
@@ -174,12 +177,12 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
             }
         }
         settings.setXtffile(iliFilename);
-        
+
         if (iliMetaAttrs != null) {
             String iliMetaAttrsFilename = this.getProject().file(iliMetaAttrs).getPath();
             settings.setIliMetaAttrsFile(iliMetaAttrsFilename);
         }
-        
+
         init(settings);
         run(function, settings);
     }
@@ -329,6 +332,16 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (createMetaInfo) {
             settings.setCreateMetaInfo(true);
+        }
+        if (metaConfig != null) {
+            String metaConfigFile = null;
+            if (metaConfig.startsWith("ilidata")) {
+                metaConfigFile = metaConfig;
+            } else {
+                java.io.File file = this.getProject().file(metaConfig);
+                metaConfigFile = file.getAbsolutePath();
+            }
+            settings.setMetaConfigFile(metaConfigFile);
         }
     }
 }
