@@ -1,17 +1,6 @@
 apply from: '../dependencies.gradle'
 apply plugin: 'java-library'
 
-configurations {
-    api {
-        exclude module: 'xmlparserv2'
-        exclude module: 'ucp'
-        exclude module: 'xdb6'
-        exclude module: 'oraclepki'
-        exclude module: 'osdt_core'
-        exclude module: 'osdt_cert'
-    }  
-}
-
 configurations.all {
     resolutionStrategy { 
         force 'ch.interlis:ili2c-tool:5.3.2' 
@@ -29,22 +18,6 @@ dependencies {
     api 'org.hidetake:gradle-ssh-plugin:2.9.0'
     api 'jp.classmethod.aws:gradle-aws-plugin:0.41'
 
-    // Add ilivalidator custom functions
-    // Weil die Funktionen jetzt nicht mit dem Plugin-Mechanismus
-    // von ilivalidator geladen werden, sondern vom vom GRETL-Task
-    // (noch hardcodiert), braucht es dieses Deployment nicht mehr.
-    // Falls es funktionieren sollte, muss auch das Dockerfile 
-    // wieder angepasst werden, damit diese Abhängigkeit in das
-    // plugin-Verzeichnis beim Builden des Images kopiert wird.
-    // api 'ch.so.agi.ilivalidator:ilivalidator-custom-functions:1.1.7'
-    
-    // Gretl has no oracle dependency: If someone wants to use
-    // Gretl but does not have a oracle account, he cannot run
-    // Gretl... We copy the jdbc jar into the docker image, our
-    // gret-runtime artifact.
-    // 2024-01-12: Stimmt nicht mehr. Seit der JDBC-Treiber frei verfügbar ist,
-    // hat auch Gretl direkt die Abhängigkeit.
-    api oracleDependency
 }
 
 task stageJars(type: Copy) {
