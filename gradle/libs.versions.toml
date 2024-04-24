@@ -1,0 +1,78 @@
+[versions]
+ioxIliVersion = "1.21.18"
+ilivalidatorVersion = "1.13.3"
+ilivalidatorCustomFunctionsVersion = "1.1.50"
+ilivalidatorCustomFunctionsGeometriesVersion = "0.0.8"
+geowCustomFunctionsVersion = "0.1.10-SNAPSHOT"
+ili2pgVersion = "4.11.1"
+ili2gpkgVersion = "4.11.1"
+ioxWkfVersion = "1.1.1"
+ehiSqlgenVersion = "1.16.0"
+ioxFormatsVersion = "0.0.29"
+av2chVersion = "1.1.8"
+av2geobauVersion = "1.2.0"
+awsSdkVersion = "2.15.64"
+apacheCommonsIoVersion = "2.6"
+apacheCommonsNetVersion = "3.6"
+apacheCommonsCodeVersion = "1.11"
+apacheHttpClientVersion = "4.5.13"
+apacheHttpClientMimeVersion = "4.5.13"
+jacksonVersion = "2.10.0"
+saxonVersion = "11.4"
+tomljVersion = "1.1.0"
+freemarkerVersion = "2.3.31"
+mockServerClientVersion = "5.15.0"
+postgresqlVersion = "42.2.5"
+sqliteJdbcVersion = "3.8.11.2"
+derbyVersion = "10.13.1.1"
+oracleVersion = "19.3.0.0"
+duckdbVersion = "0.9.2"
+junitVersion = "4.12"
+mockFtpServerVersion = "2.7.1"
+mockWebServerVersion = "4.11.0"
+testContainersVersion = "1.15.3"
+sftpFsVersion = "2.0.4"
+tomcatEmbedVersion = "9.0.69"
+hadoopClientVersion = "3.3.5"
+
+[libraries]
+iox-ili = { group = "ch.interlis", module = "iox-ili", version.ref = "ioxIliVersion" }
+ili-validator = { group = "ch.interlis", module = "ilivalidator", version.ref = "ilivalidatorVersion" }
+ili-validator-custom-functions = { group = "io.github.sogis", module = "ilivalidator-custom-functions", version.ref = "ilivalidatorCustomFunctionsVersion" }
+ili-validator-custom-functions-geometries = { group = "io.github.sogis", module = "ilivalidator-custom-functions-geometries", version.ref = "ilivalidatorCustomFunctionsGeometriesVersion" }
+geow-custom-functions = { group = "ch.geowerkstatt.ilivalidator.extensions.functions", module = "geow-interlis-functions", version.ref = "geowCustomFunctionsVersion" }
+ili-2-pg = { group = "ch.interlis", module = "ili2pg", version.ref = "ili2pgVersion" }
+ili-2-gpkg = { group = "ch.interlis", module = "ili2gpkg", version.ref = "ili2gpkgVersion" }
+iox-wkf = { group = "ch.interlis", module = "iox-wkf", version.ref = "ioxWkfVersion" }
+ehi-sql-gen = { group = "ch.ehi", module = "ehisqlgen", version.ref = "ehiSqlgenVersion" }
+iox-formats = { group = "io.github.sogis", module = "iox-formats", version.ref = "ioxFormatsVersion" }
+av2-ch = { group = "io.github.sogis", module = "av2ch", version.ref = "av2chVersion" }
+av2-geobau = { group = "ch.interlis", module = "av2geobau", version.ref = "av2geobauVersion" }
+aws-sdk-s3 = { group = "software.amazon.awssdk", module = "s3", version.ref = "awsSdkVersion" }
+apache-commons-io = { group = "commons-io", module = "commons-io", version.ref = "apacheCommonsIoVersion" }
+apache-commons-net = { group = "commons-net", module = "commons-net", version.ref = "apacheCommonsNetVersion" }
+apache-commons-code = { group = "commons-codec", module = "commons-codec", version.ref = "apacheCommonsCodeVersion" }
+apache-http-client = { group = "org.apache.httpcomponents", module = "httpclient", version.ref = "apacheHttpClientVersion" }
+apache-http-client-mime = { group = "org.apache.httpcomponents", module = "httpmime", version.ref = "apacheHttpClientMimeVersion" }
+jackson-core = { group = "com.fasterxml.jackson.core", module = "jackson-core", version.ref = "jacksonVersion" }
+jackson-data-bind = { group = "com.fasterxml.jackson.core", module = "jackson-databind", version.ref = "jacksonVersion" }
+saxon = { group = "net.sf.saxon", module = "Saxon-HE", version.ref = "saxonVersion"}
+tomlj = { group = "org.tomlj", module = "tomlj", version.ref = "tomljVersion"}
+freemarker = { group = "org.freemarker", module = "freemarker", version.ref = "freemarkerVersion"}
+mock-server-client = { group = "org.mock-server", module = "mockserver-client-java", version.ref = "mockServerClientVersion" }
+postgresql = { group = "org.postgresql", module = "postgresql", version.ref = "postgresqlVersion" }
+sqlite-jdbc = {group = "org.xerial", module = "sqlite-jdbc", version.ref = "sqliteJdbcVersion"}
+derby = {group = "org.apache.derby", module = "derby", version.ref = "derbyVersion"}
+oracle = { group = "com.oracle.ojdbc", module = "ojdbc8", version.ref = "oracleVersion"}
+duckdb = { group = "org.duckdb", module = "duckdb_jdbc", version.ref = "duckdbVersion"}
+junit = { group = "junit", module = "junit", version.ref = "junitVersion" }
+mock-ftp-server = { group = "org.mockftpserver", module = "MockFtpServer", version.ref = "mockFtpServerVersion" }
+mock-web-server = { group = "com.squareup.okhttp3", module ="mockwebserver", version.ref = "mockWebServerVersion"}
+test-containers = { group = "org.testcontainers", module = "testcontainers", version.ref = "testContainersVersion"}
+test-containers-postgresql = { group = "org.testcontainers", module = "postgresql", version.ref = "testContainersVersion"}
+test-containers-oracle = { group = "org.testcontainers", module = "oracle-xe", version.ref = "testContainersVersion"}
+sftp-fs = { group = "com.github.robtimus", module = "sftp-fs", version.ref = "sftpFsVersion"}
+tomcat-embed-core = { group = "org.apache.tomcat.embed", module = "tomcat-embed-core", version.ref = "tomcatEmbedVersion" }
+hadoop-client = { group = "org.apache.hadoop", module = "hadoop-client", version.ref = "hadoopClientVersion" }
+
+[plugins]
