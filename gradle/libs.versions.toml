@@ -38,11 +38,12 @@ hadoopClientVersion = "3.3.5"
 [libraries]
 iox-ili = { group = "ch.interlis", module = "iox-ili", version.ref = "ioxIliVersion" }
 ili-validator = { group = "ch.interlis", module = "ilivalidator", version.ref = "ilivalidatorVersion" }
-ili-validator-custom-functions = { group = "io.github.sogis", module = "ilivalidator-custom-functions", version.ref = "ilivalidatorCustomFunctionsVersion" }
-ili-validator-custom-functions-geometries = { group = "io.github.sogis", module = "ilivalidator-custom-functions-geometries", version.ref = "ilivalidatorCustomFunctionsGeometriesVersion" }
+ili-custom-validator-functions = { group = "io.github.sogis", module = "ilivalidator-custom-functions", version.ref = "ilivalidatorCustomFunctionsVersion" }
+ili-custom-validator-geometries = { group = "io.github.sogis", module = "ilivalidator-custom-functions-geometries", version.ref = "ilivalidatorCustomFunctionsGeometriesVersion" }
+ili-validator-custom-geometries = { group = "io.github.sogis", module = "ilivalidator-custom-functions-geometries", version.ref = "ilivalidatorCustomFunctionsGeometriesVersion" }
 geow-custom-functions = { group = "ch.geowerkstatt.ilivalidator.extensions.functions", module = "geow-interlis-functions", version.ref = "geowCustomFunctionsVersion" }
-ili-2-pg = { group = "ch.interlis", module = "ili2pg", version.ref = "ili2pgVersion" }
-ili-2-gpkg = { group = "ch.interlis", module = "ili2gpkg", version.ref = "ili2gpkgVersion" }
+ili2-pg = { group = "ch.interlis", module = "ili2pg", version.ref = "ili2pgVersion" }
+ili2-gpkg = { group = "ch.interlis", module = "ili2gpkg", version.ref = "ili2gpkgVersion" }
 iox-wkf = { group = "ch.interlis", module = "iox-wkf", version.ref = "ioxWkfVersion" }
 ehi-sql-gen = { group = "ch.ehi", module = "ehisqlgen", version.ref = "ehiSqlgenVersion" }
 iox-formats = { group = "io.github.sogis", module = "iox-formats", version.ref = "ioxFormatsVersion" }
@@ -53,7 +54,7 @@ apache-commons-io = { group = "commons-io", module = "commons-io", version.ref =
 apache-commons-net = { group = "commons-net", module = "commons-net", version.ref = "apacheCommonsNetVersion" }
 apache-commons-code = { group = "commons-codec", module = "commons-codec", version.ref = "apacheCommonsCodeVersion" }
 apache-http-client = { group = "org.apache.httpcomponents", module = "httpclient", version.ref = "apacheHttpClientVersion" }
-apache-http-client-mime = { group = "org.apache.httpcomponents", module = "httpmime", version.ref = "apacheHttpClientMimeVersion" }
+apache-http-mime = { group = "org.apache.httpcomponents", module = "httpmime", version.ref = "apacheHttpClientMimeVersion" }
 jackson-core = { group = "com.fasterxml.jackson.core", module = "jackson-core", version.ref = "jacksonVersion" }
 jackson-data-bind = { group = "com.fasterxml.jackson.core", module = "jackson-databind", version.ref = "jacksonVersion" }
 saxon = { group = "net.sf.saxon", module = "Saxon-HE", version.ref = "saxonVersion"}
@@ -68,7 +69,7 @@ duckdb = { group = "org.duckdb", module = "duckdb_jdbc", version.ref = "duckdbVe
 junit = { group = "junit", module = "junit", version.ref = "junitVersion" }
 mock-ftp-server = { group = "org.mockftpserver", module = "MockFtpServer", version.ref = "mockFtpServerVersion" }
 mock-web-server = { group = "com.squareup.okhttp3", module ="mockwebserver", version.ref = "mockWebServerVersion"}
-test-containers = { group = "org.testcontainers", module = "testcontainers", version.ref = "testContainersVersion"}
+test-containers-base = { group = "org.testcontainers", module = "testcontainers", version.ref = "testContainersVersion"}
 test-containers-postgresql = { group = "org.testcontainers", module = "postgresql", version.ref = "testContainersVersion"}
 test-containers-oracle = { group = "org.testcontainers", module = "oracle-xe", version.ref = "testContainersVersion"}
 sftp-fs = { group = "com.github.robtimus", module = "sftp-fs", version.ref = "sftpFsVersion"}
