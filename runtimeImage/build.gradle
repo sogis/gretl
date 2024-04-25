@@ -1,4 +1,3 @@
-apply from: '../dependencies.gradle'
 apply plugin: 'java-library'
 
 configurations.all {
@@ -14,10 +13,9 @@ dependencies {
     api 'ch.so.agi:gretl:2.3.+'
 
     // Add 3rd party libs which we want in the docker image.
-    api 'de.undercouch:gradle-download-task:4.1.2'
-    api 'org.hidetake:gradle-ssh-plugin:2.9.0'
-    api 'jp.classmethod.aws:gradle-aws-plugin:0.41'
-
+    api libs.gradle.download.task
+    api libs.gradle.ssh.plugin
+    api libs.gradle.aws.plugin
 }
 
 task stageJars(type: Copy) {

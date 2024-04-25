@@ -3,8 +3,8 @@ plugins {
     id 'eclipse'
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.21.0'
-    id 'org.cyclonedx.bom' version '1.7.4'
+    alias libs.plugins.plugin.publish
+    alias libs.plugins.cyclonedx.bom
 }
 
 java {
