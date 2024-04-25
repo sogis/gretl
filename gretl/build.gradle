@@ -124,7 +124,7 @@ dependencies {
     
     testImplementation libs.mock.web.server
 
-    testImplementation libs.oracle
+    testImplementation libs.test.containers.oracle
 
     testImplementation libs.tomcat.embed.core
     
