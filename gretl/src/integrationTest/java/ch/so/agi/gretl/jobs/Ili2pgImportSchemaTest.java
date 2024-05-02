@@ -123,13 +123,13 @@ public class Ili2pgImportSchemaTest {
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);
             Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT setting FROM afu_schutzbauten_ilidata.t_ili2db_settings WHERE tag ILIKE 'ch.ehi.ili2db.metaConfigFileName'");
+            ResultSet rs = s.executeQuery("SELECT setting FROM simple_table_ilidata.t_ili2db_settings WHERE tag ILIKE 'ch.ehi.ili2db.metaConfigFileName'");
 
             if(!rs.next()) {
                 fail();
             }
 
-            assertTrue(rs.getString(1).contains("ilidata:metaconfig_so_afu_schutzbauten_20231212_ohne_constraints_ini_001"));
+            assertTrue(rs.getString(1).contains("ilidata:metaconfig_simple_table_ini_20240502"));
 
             if(rs.next()) {
                 fail();
@@ -150,13 +150,13 @@ public class Ili2pgImportSchemaTest {
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);
             Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT setting FROM afu_schutzbauten_file.t_ili2db_settings WHERE tag ILIKE 'ch.ehi.ili2db.metaConfigFileName'");
+            ResultSet rs = s.executeQuery("SELECT setting FROM simple_table_metaconfigfile.t_ili2db_settings WHERE tag ILIKE 'ch.ehi.ili2db.metaConfigFileName'");
 
             if(!rs.next()) {
                 fail();
             }
 
-            assertTrue(rs.getString(1).contains("so_afu_schutzbauten_20231212_ohne_constraints.ini"));
+            assertTrue(rs.getString(1).contains("simple_table_ini_20240502.ini"));
 
             if(rs.next()) {
                 fail();

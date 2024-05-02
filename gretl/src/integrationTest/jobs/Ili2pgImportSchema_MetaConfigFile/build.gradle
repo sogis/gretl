@@ -12,6 +12,7 @@ defaultTasks 'ili2pgschemaimport'
 
 task ili2pgschemaimport(type: Ili2pgImportSchema){
     database = [db_uri, db_user, db_pass]
-    dbschema = "afu_schutzbauten_file"
-    metaConfig = "so_afu_schutzbauten_20231212_ohne_constraints.ini"
+    dbschema = "simple_table_metaconfigfile"
+    modeldir = "%ILI_FROM_DB;" + rootProject.projectDir.toString() + ";https://geo.so.ch/models;http://models.interlis.ch"
+    metaConfig = "simple_table_ini_20240502.ini"
 }
