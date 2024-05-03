@@ -5,7 +5,6 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import ch.so.agi.gretl.testutil.DbDriversReachableTest;
 import org.junit.experimental.categories.Category;

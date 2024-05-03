@@ -3,8 +3,8 @@ plugins {
     id 'eclipse'
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.21.0'
-    id 'org.cyclonedx.bom' version '1.7.4'
+    alias libs.plugins.plugin.publish
+    alias libs.plugins.cyclonedx.bom
 }
 
 java {
@@ -14,7 +14,6 @@ java {
 
 compileJava.options.encoding = 'US-ASCII'
 
-apply from: '../dependencies.gradle'
 apply from: 'integration-test.gradle'
 
 // to get the latest SNAPSHOT uncomment the following lines
@@ -66,69 +65,71 @@ configurations {
 dependencies {
     api gradleApi()
   
-    api ilivalidatorDependency
-    api ilivalidatorCustomFunctionsDependency
-    api ilivalidatorCustomFunctionsGeometriesDependency
-    api geowCustomFunctionsDependency
-    api (ili2pgDependency) {
+    api libs.ili.validator
+    api libs.ili.custom.validator.functions
+    api libs.ili.custom.validator.geometries
+    api libs.geow.custom.functions
+    api (libs.ili2.pg) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
-    api (ili2gpkgDependency) {
+    api (libs.ili2.gpkg) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
-    api (ioxWkfDependency) {
+    api (libs.iox.wkf) {
         // Exclude old dependencies. These get overriden anyways.
         // And they show on Snaphots...
-        exclude group: 'ch.interlis', module: 'ili2pg'        
+        exclude group: 'ch.interlis', module: 'ili2pg'
         exclude group: 'ch.interlis', module: 'ili2gpkg'
     }
-    api ioxIliDependency
-    api ehiSqlgenDependency
 
-    api (ioxFormatsDependency) {
+    api libs.iox.ili
+    api libs.ehi.sql.gen
+
+    api (libs.iox.formats) {
+        //todo: can we also use the libs.versions.toml versions here?
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
 
-    api av2chDependency
-    api av2geobauDependency
+    api libs.av2.ch
+    api libs.av2.geobau
     
-    api awsSdkS3Dependency
+    api libs.aws.sdk.s3
     
-    api apacheCommonsIoDependency
-    api apacheCommonsNetDependency
-    api apacheCommonsCodeDependency
-    api apacheHttpClientDependency
-    api apacheHttpClientMimeDependency
+    api libs.apache.commons.io
+    api libs.apache.commons.net
+    api libs.apache.commons.code
+    api libs.apache.http.client
+    api libs.apache.http.mime
     
-    api jacksonCoreDependency
-    api jacksonDatabindDependency
+    api libs.jackson.core
+    api libs.jackson.data.bind
     
-    api saxonDependency
+    api libs.saxon
     
-    api tomljDependency
+    api libs.tomlj
     
-    api freemarkerDependency
+    api libs.freemarker
     
-	api 'com.github.robtimus:sftp-fs:2.0.4'
+	api libs.sftp.fs
     
-    runtimeOnly postgresqlDependency
-    runtimeOnly sqliteJdbcDependency
-    runtimeOnly derbyDependency
-    runtimeOnly duckdbDependency
-    runtimeOnly oracleDependency
+    runtimeOnly libs.postgresql
+    runtimeOnly libs.sqlite.jdbc
+    runtimeOnly libs.derby
+    runtimeOnly libs.duckdb
+    runtimeOnly libs.oracle
     
-    testImplementation junitDependency
-    testImplementation testContainersDependency
-    testImplementation testContainersPostgresDependency
+    testImplementation libs.junit
+    testImplementation libs.test.containers.base
+    testImplementation libs.test.containers.postgresql
     
-    testImplementation mockWebServerDependency
+    testImplementation libs.mock.web.server
 
-    testImplementation testContainersOracleDependency
+    testImplementation libs.test.containers.oracle
 
-    testImplementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.69'
+    testImplementation libs.tomcat.embed.core
     
-    testImplementation 'org.apache.hadoop:hadoop-client:3.3.5'
-    integrationTestImplementation 'org.apache.hadoop:hadoop-client:3.3.5'
+    testImplementation libs.hadoop.client
+    integrationTestImplementation libs.hadoop.client
     
 }
 
