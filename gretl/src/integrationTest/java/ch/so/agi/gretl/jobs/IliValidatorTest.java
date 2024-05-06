@@ -28,7 +28,7 @@ public class IliValidatorTest {
     }
     
     @Test
-    public void validateOk_Ngk() throws Exception {
+    public void validateFail_Ngk() throws Exception {
         // Run validation
         GradleVariable[] gvs = null;
         assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidatorNgk", gvs, new StringBuffer(), new StringBuffer()));

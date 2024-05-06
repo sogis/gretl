@@ -73,8 +73,16 @@ dependencies {
     //api 'ch.interlis:ilivalidator:1.11.13+'
     api ilivalidatorCustomFunctionsGeometriesDependency
     api ilivalidatorCustomFunctionsDependency
-    api geowCustomFunctionsDependency
-    api geowNgkFunctionsDependency
+    api (geowCustomFunctionsDependency) {
+        exclude group: 'ch.interlis', module: 'iox-ili'
+        exclude group: 'ch.interlis', module: 'ili2c-tool'
+        exclude group: 'ch.interlis', module: 'ili2c-core'
+    }
+    api (geowNgkFunctionsDependency) {
+        exclude group: 'ch.interlis', module: 'iox-ili'
+        exclude group: 'ch.interlis', module: 'ili2c-tool'
+        exclude group: 'ch.interlis', module: 'ili2c-core'
+    }
 
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
