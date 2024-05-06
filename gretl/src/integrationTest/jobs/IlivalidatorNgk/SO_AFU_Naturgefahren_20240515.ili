@@ -1,0 +1,1036 @@
+INTERLIS 2.3;
+
+/** 
+ ------------------------------------------------------------------------------
+  Version    | wer   | Aenderung
+ ------------------------------------------------------------------------------
+  2022-01-01 | geo7  | Erstellung Fachmodell
+  2024-03-13 | GeoW  | Technische Überarbeitung
+  2024-05-01 | jek   | Korrekturen (Kommentare, Notation Wertebereiche, ...)
+  Mischmodel als Blaupause für constraintsbereinigtes Modell Weiterfahren mit CheckBefundSteinBlockschlagImAbklPerimeter
+ ==============================================================================
+*/
+!!@ technicalContact=mailto:agi@bd.so.ch
+MODEL SO_AFU_Naturgefahren_20240515 (de) 
+  AT "http://geo.so.ch/models/AFU" VERSION "2024-05-02" =
+
+  IMPORTS UNQUALIFIED Units, Time, CoordSys;
+  IMPORTS GeometryCHLV95_V1;
+  IMPORTS GeoW_FunctionsExt, NGK_SO_FunctionsExt, INTERLIS_ext;
+  
+  DOMAIN
+
+    Jaehrlichkeit = 0 .. 9999999;
+    JaehrlichkeitRestgefaehrdung = 300 .. 9999999;
+    JaehrlichkeitListe = (j_30,j_100,j_300,restgefaehrdung) ORDERED;
+    Einzelflaeche = SURFACE WITH (STRAIGHTS) VERTEX GeometryCHLV95_V1.Coord2 WITHOUT OVERLAPS > 0.1;
+
+    /** 
+      Beschreibung des Auftrags. Hier wird definiert,
+      - wer bestellt (Auftraggeber, z.B. Kanton)
+      - bei wem (Auftragnehmer =  Büro)
+      - für welches Gebiet (hier nur: Abklärungsperimeter, Prozessquelle wird unter Befunde definiert)
+      - welche Produkte (Nachführung, GKnM, etc.)
+      - welche Teilprozesse und Szenarien (Grundszenarien, freie Jährlichkeiten, etc.)
+      Der Auftragnehmer muss am Ende des Auftrages im Abklärungsperimeter deklarieren, bis zu welchem Grad die Beurteilung vorgenommen wurde. */
+    TOPIC Auftraege =
+
+    DOMAIN
+      /** Werte für Deklaration der Beurteilung */
+      Beurteilungsart = (
+        nicht_beurteilt,
+        beurteilung_nicht_noetig,
+        beurteilt_und_vollstaendig,
+        beurteilt_und_nicht_vollstaendig,
+        beurteilt_und_nicht_bestimmbar,
+        beurteilt_und_in_abklaerung
+      ) ORDERED;
+
+      /** Wertebereiche für Prozessquellenbeschreibung Hauptprozesse */
+      Hauptprozess = (
+        wasser,
+        rutschung,
+        sturz,
+        absenkung_einsturz
+      );
+
+      /** Art der Nachführung der Gefahrenkarte */
+      Deklaration = (
+        nachfuehrung,
+        beurteilung_nach_massnahmen,
+        neubeurteilung
+      ) ORDERED;
+
+    /** Auftragnehmer, Büro welches für Auftrag/Befund verantwortlich ist */
+    CLASS Autor =
+      /** Name des Büros */
+      Buero : MANDATORY TEXT*80;
+      /** Standort des Büros/Filiale, welche den Auftrag abwickelt  */
+      Filiale : MANDATORY TEXT*80;
+    END Autor;
+
+    CLASS Auftrag =
+      /** Eindeutige Bezeichnung des Auftrags. Beispiel: 128_Himmelried_Wasser_Sturz_2008  */
+      Kennung : MANDATORY TEXT*80;
+      /** Auftraggeber  */
+      Fachstelle : MANDATORY TEXT*80;
+      /** Jahr, in welchem der Auftrag abgeschlossen wurde. */
+      Abschlussjahr : MANDATORY 1970 .. 2050;
+      /** Art der Gefahrenbeurteilung -> siehe Wertebereich Deklarationen */
+      Deklaration : MANDATORY Deklaration;
+      Bemerkung : MTEXT*255;
+      !!@ name = "CheckAuftragVorhanden"
+      !!@ ilivalid.msg = "Es muss mindestens ein Auftrag erfasst sein"  
+      SET CONSTRAINT INTERLIS.objectCount(ALL) > 0;
+      !!@ name = "CheckAuftragKennungen"
+      !!@ ilivalid.msg = "Es gibt mehrere identische Kennungen."  
+      UNIQUE Kennung;
+    END Auftrag;
+
+    CLASS Bericht = 
+      /** Bezeichnung des Berichts (z.B. Technischer Bericht, Anhang, etc.) */
+      Bericht : MANDATORY TEXT*80;
+      /** Dateiname des Berichts inkl. Datum im Format YYYYMMDD */
+      Dateiname: MANDATORY TEXT*100;
+    END Bericht;
+
+    /** 
+      Mit dem Teilauftrag wird der entsprechende Hauptprozess einwirkungs- oder prozessquellenorientiert beurteilt.
+      Ein einwirkungsorientierter Teilauftrag beurteilt alle für den Einwirkungsraum relevanten Prozessquellen.
+      Die prozessquellenorientierte Beurteilung benennt explizit die zu beurteilenden Prozessquellen. Diese "alten"  
+      Prozessquellen werden beim Datenabgleich automatisch durch die neu beurteilten ersetzt.
+    */
+    CLASS Teilauftrag =
+      /** Im Teilauftrag abgeklärter Hauptprozess. Abgeklärte Teilprozesse siehe Abklärungsperimeter. */
+      Hauptprozess : MANDATORY Hauptprozess;
+      Bemerkung : MTEXT*255;
+      /** Abklärungsperimeter = Perimeter, welcher untersucht werden soll */
+      Name : MANDATORY TEXT*80;
+      /** True, falls für Wasser-Teilauftrag die Kennwerte gemäss Modell geliefert werden. */
+      Wasserkennwerte: MANDATORY BOOLEAN;
+      /** Für Ausnahmefall der Abklärung einer freien Jährlichkeit mittels Klasse BefundeJaehrlichkeit ist hier
+      die abzuklärende Jährlichkeit gesetzt. Im Normallfall NULL. */
+      Jaehrlichkeit : Jaehrlichkeit;
+      !!@ name = "CheckTeilauftragWasserKennwert"
+      !!@ ilivalid.msg = "Bei einem Teilauftrag mit Hauptprozess 'Wasser' müssen Kennwerte geliefert werden." 
+      MANDATORY CONSTRAINT (Hauptprozess != #wasser) OR Wasserkennwerte;
+    END Teilauftrag;
+
+    /** 
+      1-n Perimeter, für welche die Einwirkungen der Teilprozesse gemäss Beurteilungsart
+      abgeklärt wurde. Im einfachsten Fall wird nur ein einziger Perimeter erfasst, welcher 
+      den Teilaufträgen (Hauptprozesse) zugewiesen ist. Die Beurteilungsart ist für alle
+      Teilprozesse angegeben.
+      Bsp. komplexer Fall: Für ein Aussenquartier müssen lediglich die Wassergefahren geklärt 
+      werden. Folglich mehrere Perimeter im Auftrag. Der "Aussenquartier-Perimeter" ist lediglich
+      dem Teilauftrag mit Hauptprozess=Wasser zugeordnet. Er hat nur die Beurteilungen der 
+      Wasser-Teilprozesse ausgefüllt. Für alle Gefahren der anderen Hauptprozesse folgt 
+      im "Aussenquartier-Perimeter" implizit die Beurteilungsart "nicht beurteilt".
+    */
+    CLASS Abklaerungsperimeter =
+      Geometrie : MANDATORY Einzelflaeche;
+      w_Ueberschwemmung_statisch : Beurteilungsart;
+      w_Ueberschwemmung_dynamisch : Beurteilungsart;
+      w_Uebermurung : Beurteilungsart;
+      w_Ufererosion : Beurteilungsart;
+      ea_Einsturz : Beurteilungsart;
+      ea_Absenkung : Beurteilungsart;
+      s_Stein_Blockschlag : Beurteilungsart;
+      s_Berg_Felssturz : Beurteilungsart;
+      r_Hangmure : Beurteilungsart;
+      r_Spontane_Rutschung : Beurteilungsart;
+      r_Permanente_Rutschung : Beurteilungsart;
+      /** Dient "nur" der Perimeter-Anzeige als Text zwecks editieren der Beziehung zum Teilauftrag.  */
+      Bezeichnung: TEXT*80;
+      Bemerkung : MTEXT*255;
+      !!@ name = "CheckAbklperimeterFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Abklärungsperimeter muss grösser als 100m2 sein."  
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS,"Geometrie") > 100;
+      !!@ name = "CheckAbklperimeterInnerhalbSO"
+      !!@ ilivalid.msg = "Der Abklärungsperimeter muss innerhalb des Kantons liegen."  
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.IsInsideExternalXtfResource("ch.so.agi.av.hoheitsgrenzen.xtf", "SO_Hoheitsgrenzen_Publikation_20170626.Hoheitsgrenzen.Kantonsgrenze.Geometrie", "c6db23e0-0536-4055-a50c-11d2d1e4c6ef", THIS, "Geometrie");
+      !!@ name = "CheckAbklperimeterKeineLoecher"
+      !!@ ilivalid.msg = "In der Abklärungsperimeter-Geometrie sind keine Löcher erlaubt."    
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetInnerRingsCount(THIS,  "Geometrie") == 0; 
+    END Abklaerungsperimeter;
+
+    ASSOCIATION Auftrag__Teilauftrag =
+      Teilauftrag_R -- {1..*} Teilauftrag;
+      Auftrag_R -<> {1} Auftrag;
+    END Auftrag__Teilauftrag;
+
+    ASSOCIATION Auftrag__Bericht =
+      Bericht_R -- {1..*} Bericht;
+      Auftrag_R -<> {1} Auftrag;
+    END Auftrag__Bericht;
+
+    ASSOCIATION Teilauftrag__Autor =
+      Teilauftrag_R -- {1..*} Teilauftrag;
+      Autor_R -- {1} Autor;
+    END Teilauftrag__Autor;
+
+    ASSOCIATION Abklaerungsperimeter__Teilauftrag =
+      Abklaerungsperimeter_R -- {1..*} Abklaerungsperimeter;
+      Teilauftrag_R -- {1..*} Teilauftrag;
+    END Abklaerungsperimeter__Teilauftrag;
+
+    CONSTRAINTS OF Teilauftrag =
+      !!@ name = "CheckTeilauftragEindeutigkeit"
+      !!@ ilivalid.msg = "Zu diesem Auftrag gibt es bereits einen Teilauftrag mit demselben Hauptprozess." 
+      UNIQUE Auftrag_R, Hauptprozess;
+    END;
+
+    CONSTRAINTS OF Abklaerungsperimeter =
+      !!@ name = "CheckAbklperimeterBeurteilungUeberschwemmung_statisch"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'w_Ueberschwemmung_statisch' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #wasser) OR DEFINED(w_Ueberschwemmung_statisch);
+      !!@ name = "CheckAbklperimeterBeurteilungUeberschwemmung_dynamisch"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'w_Ueberschwemmung_dynamisch' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #wasser) OR DEFINED(w_Ueberschwemmung_dynamisch);
+      !!@ name = "CheckAbklperimeterBeurteilungUebermurung"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'w_Uebermurung' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #wasser) OR DEFINED(w_Uebermurung);
+      !!@ name = "CheckAbklperimeterBeurteilungUfererosion"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'w_Ufererosion' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #wasser) OR DEFINED(w_Ufererosion);
+      !!@ name = "CheckAbklperimeterBeurteilungEinsturz"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'ea_Einsturz' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #absenkung_einsturz) OR DEFINED(ea_Einsturz);
+      !!@ name = "CheckAbklperimeterBeurteilungAbsenkung"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'ea_Absenkung' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #absenkung_einsturz) OR DEFINED(ea_Absenkung);
+      !!@ name = "CheckAbklperimeterBeurteilungSteinBlockschlag"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 's_Stein_Blockschlag' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #sturz) OR DEFINED(s_Stein_Blockschlag);
+      !!@ name = "CheckAbklperimeterBeurteilungBerg_Felssturz"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 's_Berg_Felssturz' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #sturz) OR DEFINED(s_Berg_Felssturz);
+      !!@ name = "CheckAbklperimeterBeurteilungHangmure"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'r_Hangmure' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #rutschung) OR DEFINED(r_Hangmure);
+      !!@ name = "CheckAbklperimeterBeurteilungSpontaneRutschung"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'r_Spontane_Rutschung' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #rutschung) OR DEFINED(r_Spontane_Rutschung);
+      !!@ name = "CheckAbklperimeterBeurteilungPermanenteRutschung"
+      !!@ ilivalid.msg = "Teilprozess Beurteilung 'r_Permanente_Rutschung' muss bei diesem Hauptprozess zwingend ausgefüllt werden." 
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Hauptprozess == #rutschung) OR DEFINED(r_Permanente_Rutschung);
+    END;
+
+  END Auftraege;
+
+  /** Im TOPIC Befunde werden die Prozessquellen definiert und die Befunde der Gefahrenbeurteilungen gespeichert. 
+      Pro Teilprozess wird je eine eigene Klasse zur Verfügung gestellt. 
+      Für die Teilprozesse Ueberschwemmung und Uebermurung können zusätzlich Kennwerte in eigenen Klassen gespeichert werden. 
+      Für Prozesse mit einer Jährlichkeit können auch Szenarien mit freier Jährlichkeit gespeichert werden. */
+  TOPIC Befunde =
+    DEPENDS ON Auftraege;
+
+    DOMAIN
+
+      /** Wertebereiche für Prozessquellenbeschreibung Teilprozesse */
+      Teilprozess = (
+        ueberschwemmung_statisch,
+        ueberschwemmung_dynamisch,
+        uebermurung,
+        ufererosion,
+        spontane_rutschung,
+        hangmure,
+        permanente_rutschung,
+        stein_blockschlag,
+        fels_bergsturz,     
+        einsturz,
+        absenkung        
+      ) ORDERED;
+     
+      /** Wertebereich für Prozessquellenbeschreibung für Prozess Stein/Blockschlag und Berg/Felssturz */
+      AspektForm = (
+        zylindrisch,
+        kubisch,
+        plattig,
+        tetraedrisch
+      );
+
+      /** Wertebereich für Befunde mit Jährlichkeiten --> Intensität */
+      Intensitaet = (
+        schwach,
+        mittel,
+        stark
+      ) ORDERED;
+
+      /** Wertebereiche für Prozess Rutsch: Beschleunigung */
+      rBeschleunigung = (
+        keine,
+        !!< 2fach Mittelwert von v  */
+        gering,
+        !!2fach bis 5fach Mittelwert von v  */
+        mittel,
+        !!> 5fach Mittelwert von v */ 
+        stark
+      ) ORDERED;
+
+      /** Wertebereich für Prozess Rutsch: Differentialbewegung */
+      rDifferentialbewegung = (
+        keine,
+        /** bis 2 cm/Jahr/10m  */
+        gering,
+        /** grösser 2 cm/Jahr/10m  */
+        hoch
+      ) ORDERED;
+
+      /** Wertebereich für Prozess Rutsch: Korrektur */
+      rKorrektur = (
+        keine,
+        entschaerfung1,
+        verschaerfung1,
+        verschaerfung2
+      ) ORDERED;
+
+      /** Wertebereich Rutschgeschwindigkeit */
+      rRutschgeschwindigkeit = (
+        keine,
+        /** 0-2 cm/Jahr */
+        substabil,
+        /** 2-10 cm/Jahr */
+        wenig_aktiv,
+        /** > 10 cm/Jahr */ 
+        aktiv
+      ) ORDERED;
+
+      /** Wertebereich für Prozess Rutsch: Tiefe Gleitfläche */
+      rTiefeGleitflaeche = (
+        keine,
+        /** oberflächlich: Tiefe 0 < t <= 2 m */
+        oberflaechlich,
+        /** mitteltief: Tiefe 2 < t <= 10 m */
+        mitteltief,
+        /** tief: Tiefe 10 < t <= 40 m */
+        tief,
+        /** sehr tief: Tiefe t > 40m */
+        sehr_tief,
+        /** unbestimmt: Tiefe t <= 40 m */
+        unbestimmt
+      ) ORDERED;
+     
+      /** Wertebereich für Teilprozess Ueberschwemmung: Fliesstiefe [cm] */
+      wFliesstiefeUeberschwemmung = (
+        von_0_bis_25_cm,
+        von_25_bis_50_cm,
+        von_50_bis_75_cm,
+        von_75_bis_100_cm,
+        von_100_bis_125_cm,
+        von_125_bis_150_cm,
+        von_150_bis_175_cm,
+        von_175_bis_200_cm,
+        von_200_bis_300_cm,
+        von_300_bis_400_cm,
+        mehr_als_400_cm
+      ) ORDERED;
+
+      /** Wertebereich für Teilprozess Uebermurung: Fliesstiefe [cm] */
+      wFliesstiefeUebermurung = (
+        bis_100_cm,
+        mehr_als_100_cm
+      ) ORDERED;
+
+      /** Standardwertebereich für Teilprozess Uebermurung: Fliessgeschwindigkeit [m/s] */
+      wUebermurungFliessgeschwindigkeit = (
+        bis_1_m_s,
+        mehr_als_1_m_s
+      ) ORDERED;
+
+      /** Standard Wertebereich für Prozess Ueberschwemmung: Fliessgeschwindigkeit [m/s] */
+      wUeberschwemmungFliessgeschwindigkeit = (
+        von_0_bis_0_5_m_s,
+        von_0_5_bis_1_m_s,
+        von_1_bis_2_m_s,
+        von_2_bis_3_m_s,
+        von_3_bis_4_m_s,
+        von_4_bis_5_m_s,
+        mehr_als_5_m_s
+      ) ORDERED;
+ 
+      /** Wertebereich für Teilprozesse Ueberschwemmung statisch & dynamisch, Spontane Rutschung;
+         Restgefährdung mit Intensitäten; */
+      IWCodeStandard = (
+        rot_stark_30,
+        rot_stark_100,
+        rot_stark_300,
+        rot_mittel_30,
+
+        blau_mittel_30,
+        blau_mittel_100,
+        blau_mittel_300,
+        gelb_mittel_300,
+        
+        blau_schwach_30,
+        blau_schwach_100,
+        gelb_schwach_100,
+        gelb_schwach_300,
+
+        restgefaehrdung_stark,
+        restgefaehrdung_mittel,
+        restgefaehrdung_schwach
+      ) ORDERED;
+
+      /** Wertebereich für Steinschlag und Blockschlag;
+      Restgefährdung mit Intensitäten; */
+      IWCodeSteinBlockschlag = (
+          rot_stark_30,
+          rot_stark_100,
+          rot_stark_300,
+          rot_mittel_30,
+  
+          blau_mittel_100,
+          blau_mittel_300,
+                    
+          blau_schwach_30,
+          blau_schwach_100,
+          gelb_schwach_300,
+  
+          restgefaehrdung_stark,
+          restgefaehrdung_mittel,
+          restgefaehrdung_schwach
+        ) ORDERED;
+
+      /** Wertebereich für Teilprozess: Uebermurung */
+      IWCodeUebermurung = (
+        rot_stark_30,
+        rot_stark_100,
+        rot_stark_300,
+
+        rot_mittel_30,
+        blau_mittel_100,
+        blau_mittel_300,
+
+        restgefaehrdung_stark,		
+        restgefaehrdung_mittel
+        ) ORDERED;
+
+      /** Wertebereich für Teilprozess: Berg- und Felssturz */
+      IWCodeBergFelssturz = (
+        rot_stark_30,
+        rot_stark_100,
+        rot_stark_300,
+        restgefaehrdung_stark
+      ) ORDERED;
+
+      /** Wertebereich für Permanente Rutschung, Absenkung, Einsturz */
+      IWCodePermanent = (
+        rot_stark_permanent,
+        blau_mittel_permanent,
+        gelb_schwach_permanent,
+        restgefaehrdung_stark,
+        restgefaehrdung_mittel,
+        restgefaehrdung_schwach
+      ) ORDERED;
+
+      /** Wertebereich für Absenkung und Einsturz */
+      IWCodeAbsenkungEinsturz = (
+        blau_mittel_permanent,
+        gelb_schwach_permanent
+      ) ORDERED;
+
+    /** Beschreibung der Prozessquelle */
+    CLASS Prozessquelle =
+      /** Innerhalb Teilauftrag eindeutiger Name der Prozessquelle. Bsp.: Dorfbach */
+      Kennung : MANDATORY TEXT*80;
+      Bemerkung : MTEXT*255;
+    END Prozessquelle;
+
+    /** Informationen zu Form und Ausdehnung der Prozessquelle SteinBlockschlag für die entsprechende Jährlichkeit
+     */
+    CLASS PQ_Jaehrlichkeit_SteinBlockschlag =
+      Jaehrlichkeit : MANDATORY Jaehrlichkeit;
+      Polygon : MANDATORY Einzelflaeche;
+      /** Beschreibung der Geologie */
+      Beschr_Geologie : MANDATORY MTEXT*255;  
+      Form : MANDATORY AspektForm;
+      Volumen : MANDATORY 0.000 .. 999999999.999 [Units.m3];
+    END PQ_Jaehrlichkeit_SteinBlockschlag;
+
+    /** Informationen zu Form und Ausdehnung der Prozessquelle BergFelssturz für die entsprechende Jährlichkeit
+     */
+    CLASS PQ_Jaehrlichkeit_BergFelssturz =
+      Jaehrlichkeit : MANDATORY Jaehrlichkeit;
+      Polygon : MANDATORY Einzelflaeche;
+      /** Beschreibung der Geologie */
+      Beschr_Geologie : MANDATORY MTEXT*255;  
+      Form : MANDATORY AspektForm;
+      Volumen : MANDATORY 0 .. 999999999 [Units.m3];
+    END PQ_Jaehrlichkeit_BergFelssturz;
+
+    CLASS PQ_Jaehrlichkeit_Rutsch_Mure_Base (ABSTRACT) = 
+      Jaehrlichkeit : MANDATORY Jaehrlichkeit;
+      Polygon : MANDATORY Einzelflaeche;
+      Beschr_Lockermaterial : MANDATORY MTEXT*255;
+      Mob_Schicht_Machtigkeit : MANDATORY 0.0 .. 999.0 [INTERLIS.m];
+      Krit_Hangneigung : MANDATORY 0..90 [Units.Angle_Degree];
+    END PQ_Jaehrlichkeit_Rutsch_Mure_Base;
+
+    /** Informationen zu Ausdehnung, ... der Prozessquelle SpontaneRutschung für die entsprechende Jährlichkeit
+     */
+    CLASS PQ_Jaehrlichkeit_SpontaneRutschung
+      EXTENDS PQ_Jaehrlichkeit_Rutsch_Mure_Base = 
+    END PQ_Jaehrlichkeit_SpontaneRutschung;
+
+    /** Informationen zu Ausdehnung, ... der Prozessquelle Hangmure für die entsprechende Jährlichkeit
+     */
+    CLASS PQ_Jaehrlichkeit_Hangmure
+      EXTENDS PQ_Jaehrlichkeit_Rutsch_Mure_Base = 
+    END PQ_Jaehrlichkeit_Hangmure;
+
+    /** Abstrakte Klasse für Befunde.
+        Prozess Wasser: Ueberschwemmung statisch/dynamisch, Uebermurung, Ufererosion
+        Prozess Rutsch: Hangmure, Spontane/Permanente Rutschung
+        Prozess Sturz: Stein-/Blockschlag, Berg-/Felssturz
+        Prozess Einsturz/Absenkung: Einsturz, Absenkung
+        Konkretisiert werden die Befunde durch sämtliche Teilprozesse, Kennwerte für Wasserprozesse und freie Befunde mit Jaehrlichkeit. */
+    CLASS Befund_Basis (ABSTRACT) =
+      Geometrie : MANDATORY SURFACE WITH (STRAIGHTS) VERTEX GeometryCHLV95_V1.Coord2 WITHOUT OVERLAPS > 0.1;
+      RestgefaehrdungJaehrlichkeit : JaehrlichkeitRestgefaehrdung;
+      Bemerkung : MTEXT*255;
+    END Befund_Basis;
+
+    /** Basisklasse für alle direkt der geometrielosen Prozessquelle zugewiesenen Kennwert-Klassen */
+    CLASS Kennwert_TextPQ (ABSTRACT) 
+      EXTENDS Befund_Basis = 
+    END Kennwert_TextPQ;
+
+    /** Basisklasse für alle direkt der geometrielosen Prozessquelle zugewiesenen Befunde */
+    CLASS Befund_TextPQ (ABSTRACT) 
+      EXTENDS Befund_Basis = 
+    END Befund_TextPQ;
+
+    /** Konkretisiert die Klasse Befund. Prozessquelle -> Hauptprozess muss Einsturz/Absenkung sein */
+    CLASS BefundAbsenkung
+    EXTENDS Befund_TextPQ =
+      IWCode : MANDATORY IWCodeAbsenkungEinsturz;
+    END BefundAbsenkung;
+
+    /** Konkretisiert die Klasse Befund. Prozessquelle -> Hauptprozess muss Einsturz/Absenkung sein */
+    CLASS BefundEinsturz
+    EXTENDS Befund_TextPQ = 
+      IWCode : MANDATORY IWCodeAbsenkungEinsturz;
+    END BefundEinsturz; 
+
+    /** Konkretisiert die Klasse Befund. Prozessquelle -> Hauptprozess muss Sturz sein */
+    CLASS BefundSteinBlockschlag
+    EXTENDS Befund_Basis =
+      IWCode : MANDATORY IWCodeSteinBlockschlag;
+    END BefundSteinBlockschlag;
+    
+    /** Konkretisiert die Klasse Befund. Prozessquelle -> Hauptprozess muss Sturz sein */
+    CLASS BefundBergFelssturz
+    EXTENDS Befund_Basis =   
+      IWCode : MANDATORY IWCodeBergFelssturz;
+    END BefundBergFelssturz;
+
+    /** Konkretisiert die Klasse Befund. Prozessquelle -> Hauptprozess muss Rutsch sein */
+    CLASS BefundHangmure
+    EXTENDS Befund_Basis =
+      IWCode : MANDATORY IWCodeStandard;
+    END BefundHangmure;
+    
+    /** Konkretisiert die Klasse Befund.
+    Für den Teilprozess permanente Rutschung sind die Kennwerte zu Rutschgeschwindigkeit, Tiefe der Gleitflaeche, Differentialbewegung, Beschleunigung und Korrekturwerte anzugeben.
+    Konkretisiert die Klasse Befund. Prozessquelle -> Hauptprozess muss Rutsch sein */
+    CLASS BefundPermanenteRutschung
+    EXTENDS Befund_TextPQ =
+      Rutschgeschwindigkeit : MANDATORY rRutschgeschwindigkeit;
+      Tiefe_Gleitflaeche : MANDATORY rTiefeGleitflaeche;
+      Differentialbewegung : MANDATORY rDifferentialbewegung;
+      Beschleunigung : MANDATORY rBeschleunigung;
+      Korrektur : MANDATORY rKorrektur;
+      IWCode : MANDATORY IWCodePermanent;
+    END BefundPermanenteRutschung;
+
+    CLASS BefundSpontaneRutschung
+    EXTENDS Befund_Basis =
+      IWCode : MANDATORY IWCodeStandard;
+    END BefundSpontaneRutschung;
+    
+    CLASS BefundUebermurung
+    EXTENDS Befund_TextPQ =
+      IWCode : MANDATORY IWCodeUebermurung;
+    END BefundUebermurung;
+    
+    CLASS BefundUeberschwemmungDynamisch
+    EXTENDS Befund_TextPQ =
+      IWCode : MANDATORY IWCodeStandard;
+    END BefundUeberschwemmungDynamisch;
+    
+    CLASS BefundUeberschwemmungStatisch
+    EXTENDS Befund_TextPQ =
+      IWCode : MANDATORY IWCodeStandard;
+    END BefundUeberschwemmungStatisch;
+    
+    CLASS BefundUfererosion
+    EXTENDS Befund_TextPQ =
+    END BefundUfererosion;
+
+    /** Befunde für freie Jährlichkeit. Hier sind Jährlichkeit, Intensität Teilprozess anzugeben. */
+    CLASS BefundJaehrlichkeit
+    EXTENDS Befund_TextPQ =
+      Jaehrlichkeit : MANDATORY Jaehrlichkeit; 
+      Intensitaet : MANDATORY Intensitaet;  
+      Teilprozess : MANDATORY Teilprozess;
+    END BefundJaehrlichkeit;
+
+    /** Befunde mit Kennwert (Fliesstiefe) für Prozess Ueberschwemmung.
+     */
+    CLASS KennwertUeberschwemmungFliesstiefe
+    EXTENDS Kennwert_TextPQ =
+      /** Mögliche Werte gemäss wFliesstiefe. Es sind gemäss Auftrag die Standard- oder detaillierten Werte abzufüllen. */
+      h : MANDATORY wFliesstiefeUeberschwemmung;
+      Jaehrlichkeit : MANDATORY JaehrlichkeitListe;
+    END KennwertUeberschwemmungFliesstiefe;
+
+    /** Befunde mit Kennwert (Fliessgeschwindigkeit) für Prozess Ueberschwemmung. */
+    CLASS KennwertUeberschwemmungFliessgeschwindigkeit
+    EXTENDS Kennwert_TextPQ =
+      /** Mögliche Werte gemäss wUeberschwemmungFliessgeschwindigkeit. 
+      Es sind gemäss Auftrag die Standard- oder detaillierten Werte abzufüllen. */
+      v : MANDATORY wUeberschwemmungFliessgeschwindigkeit;
+      Jaehrlichkeit : MANDATORY JaehrlichkeitListe;
+    END KennwertUeberschwemmungFliessgeschwindigkeit;
+
+    /** Befunde mit Kennwert (Fliesstiefe) für Prozess Uebermurung
+       Prozessquelle -> Hauptprozess muss Wasser sein */
+    CLASS KennwertUebermurungFliesstiefe
+    EXTENDS Kennwert_TextPQ =
+      /** Mögliche Werte gemäss wFliesstiefe. Es sind gemäss Auftrag die Standard- oder detaillierten Werte abzufüllen. */
+      h : MANDATORY wFliesstiefeUebermurung;
+      Jaehrlichkeit : MANDATORY JaehrlichkeitListe;
+    END KennwertUebermurungFliesstiefe;
+
+    /** Befunde mit Kennwert (Fliessgeschwindigkeit) für Prozess Uebermurung
+       Prozessquelle -> Hauptprozess muss Wasser sein */
+    CLASS KennwertUebermurungFliessgeschwindigkeit
+    EXTENDS Befund_TextPQ =
+      /** Mögliche Werte gemäss wUebermurungFliessgeschwindigkeit. Es sind gemäss Auftrag die Standard- oder detaillierten Werte abzufüllen. */
+      v : MANDATORY wUebermurungFliessgeschwindigkeit;
+      Jaehrlichkeit : MANDATORY JaehrlichkeitListe;
+    END KennwertUebermurungFliessgeschwindigkeit;
+    
+    ASSOCIATION Teilauftrag__Prozessquelle =
+      /** Ein Teilauftrag hat entweder keine oder eine Prozessquelle.
+         Hat ein Teilauftrag KEINE Prozessquelle, ist durch den Auftragnehmer eine Prozessquelle zu definieren. */
+      Prozessquelle_R -- {0..*} Prozessquelle;
+      Teilauftrag_R (EXTERNAL) -- {1} SO_AFU_Naturgefahren_20240515.Auftraege.Teilauftrag;
+    END Teilauftrag__Prozessquelle;
+
+    ASSOCIATION PQ_Jaehrlichkeit_SteinBlockschlag__Prozessquelle =
+      PQ_Jaehrlichkeit_SteinBlockschlag_R -- {0..*} PQ_Jaehrlichkeit_SteinBlockschlag;
+      Prozessquelle_R -<> {1} Prozessquelle;
+      !!@ name = "CheckBefundSteinBlockschlag"  
+      !!@ ilivalid.msg = "Zugordneter Befund passt nicht zum Hauptprozess."
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #sturz;
+    END PQ_Jaehrlichkeit_SteinBlockschlag__Prozessquelle;
+
+    ASSOCIATION PQ_Jaehrlichkeit_SpontaneRutschung__Prozessquelle =
+      PQ_Jaehrlichkeit_SpontaneRutschung_R -- {0..*} PQ_Jaehrlichkeit_SpontaneRutschung;
+      Prozessquelle_R -<> {1} Prozessquelle;
+      !!@ name = "CheckBefundSpontaneRutschung"  
+      !!@ ilivalid.msg = "Zugordneter Befund passt nicht zum Hauptprozess."
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #rutschung;
+    END PQ_Jaehrlichkeit_SpontaneRutschung__Prozessquelle;
+
+    ASSOCIATION PQ_Jaehrlichkeit_Hangmure__Prozessquelle =
+      PQ_Jaehrlichkeit_Hangmure_R -- {0..*} PQ_Jaehrlichkeit_Hangmure;
+      Prozessquelle_R -<> {1} Prozessquelle;
+      !!@ name = "CheckBefundHangmure"  
+      !!@ ilivalid.msg = "Zugordneter Befund passt nicht zum Hauptprozess."
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #rutschung;
+    END PQ_Jaehrlichkeit_Hangmure__Prozessquelle;
+
+    ASSOCIATION PQ_Jaehrlichkeit_BergFelssturz__Prozessquelle =
+      PQ_Jaehrlichkeit_BergFelssturz_R -- {0..*} PQ_Jaehrlichkeit_BergFelssturz;
+      Prozessquelle_R -<> {1} Prozessquelle;
+      !!@ name = "CheckBefundBergFelssturz"  
+      !!@ ilivalid.msg = "Zugordneter Befund passt nicht zum Hauptprozess."
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #sturz;
+    END PQ_Jaehrlichkeit_BergFelssturz__Prozessquelle;
+
+    ASSOCIATION PQ_Jaehrlichkeit_SteinBlockschlag__BefundSteinBlockschlag =
+      BefundSteinBlockschlag_R -- {1..*} BefundSteinBlockschlag;
+      PQ_Jaehrlichkeit_SteinBlockschlag_R -- {1} PQ_Jaehrlichkeit_SteinBlockschlag;
+    END PQ_Jaehrlichkeit_SteinBlockschlag__BefundSteinBlockschlag;
+
+    ASSOCIATION PQ_Jaehrlichkeit_SpontaneRutschung__BefundSpontaneRutschung =
+      BefundSpontaneRutschung_R -- {1..*} BefundSpontaneRutschung;
+      PQ_Jaehrlichkeit_SpontaneRutschung_R -- {1} PQ_Jaehrlichkeit_SpontaneRutschung;
+    END PQ_Jaehrlichkeit_SpontaneRutschung__BefundSpontaneRutschung;
+
+    ASSOCIATION PQ_Jaehrlichkeit_Hangmure__BefundHangmure =
+      BefundHangmure_R -- {1..*} BefundHangmure;
+      PQ_Jaehrlichkeit_Hangmure_R -- {1} PQ_Jaehrlichkeit_Hangmure;
+    END PQ_Jaehrlichkeit_Hangmure__BefundHangmure;
+
+    ASSOCIATION PQ_Jaehrlichkeit_BergFelssturz__BefundBergFelssturz =
+      BefundBergFelssturz_R -- {1..*} BefundBergFelssturz;
+      PQ_Jaehrlichkeit_BergFelssturz_R -- {1} PQ_Jaehrlichkeit_BergFelssturz;
+    END PQ_Jaehrlichkeit_BergFelssturz__BefundBergFelssturz;
+
+    ASSOCIATION Prozessquelle__Befund_TextPQ =
+      Befund_TextPQ_R -- {0..*} Befund_TextPQ;
+      Prozessquelle_R -- {1} Prozessquelle;
+    END Prozessquelle__Befund_TextPQ;
+
+    ASSOCIATION Prozessquelle__Kennwert_TextPQ =
+      Kennwert_TextPQ_R -- {0..*} Kennwert_TextPQ;
+      Prozessquelle_R -- {1} Prozessquelle;
+    END Prozessquelle__Kennwert_TextPQ;
+
+    /** Fliessrichtungspfeile zeigen die Richtung des Wassers an */
+    CLASS Fliessrichtungspfeil =
+      Geometrie : MANDATORY GeometryCHLV95_V1.Coord2;
+      Azimuth : MANDATORY GeometryCHLV95_V1.Orientation;
+      Jaehrlichkeit : MANDATORY JaehrlichkeitListe;
+    END Fliessrichtungspfeil;
+
+    ASSOCIATION Prozessquelle__Fliessrichtungspfeil =
+      Fliessrichtungspfeil_R -- {0..*} Fliessrichtungspfeil;
+      Prozessquelle_R -- {1} Prozessquelle;
+      !!@ name = "CheckFliessrichtungspfeilZuHauptprozess"
+      !!@ ilivalid.msg = "R-Pfeile dürfen nur Hauptprozess Wasser zugeordnet sein."
+      MANDATORY CONSTRAINT DEFINED(Fliessrichtungspfeil_R) AND Prozessquelle_R->Teilauftrag_R->Hauptprozess == #wasser;
+    END Prozessquelle__Fliessrichtungspfeil;
+
+    CONSTRAINTS OF BefundSteinBlockschlag =
+      !!@ name = "CheckBefundSteinBlockschlagHauptprozess"
+      !!@ ilivalid.msg = "BefundSteinBlockschlag muss einem Teilauftrag des Hauptprozess-Typs 'Sturz' zugeordnet sein."
+      MANDATORY CONSTRAINT PQ_Jaehrlichkeit_SteinBlockschlag_R->Prozessquelle_R->Teilauftrag_R->Hauptprozess == #sturz;
+      !!@ name = "CheckBefundSteinBlockschlagKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle."
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SteinBlockschlag_R->Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundSteinBlockschlagJaehrlichkeit-30"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_30) OR (IWCode == #rot_mittel_30) OR (IWCode == #blau_schwach_30)) OR (PQ_Jaehrlichkeit_SteinBlockschlag_R->Jaehrlichkeit == 30);
+      !!@ name = "CheckBefundSteinBlockschlagJaehrlichkeit-100"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_100) OR (IWCode == #blau_mittel_100)) OR (PQ_Jaehrlichkeit_SteinBlockschlag_R->Jaehrlichkeit == 100);
+      !!@ name = "CheckBefundSteinBlockschlagJaehrlichkeit-300"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_300) OR (IWCode == #blau_mittel_300)) OR (PQ_Jaehrlichkeit_SteinBlockschlag_R->Jaehrlichkeit == 300);
+      !!@ name = "CheckBefundSteinBlockschlagImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."  
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(PQ_Jaehrlichkeit_SteinBlockschlag_R->Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundSteinBlockschlagFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."  
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundSteinBlockschlagKeineUeberlappung-30"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_30 OR IWCode == #blau_schwach_30 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SteinBlockschlag_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundSteinBlockschlagKeineUeberlappung-100"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_100 OR IWCode == #blau_mittel_100 OR IWCode == #blau_schwach_100 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SteinBlockschlag_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundSteinBlockschlagKeineUeberlappung-300"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_300 OR IWCode == #blau_mittel_300 OR IWCode == #gelb_schwach_300 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SteinBlockschlag_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundSteinBlockschlagKeineUeberlappung-Restgef"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Restgefährdung."
+      SET CONSTRAINT WHERE IWCode == #restgefaehrdung_stark OR IWCode == #restgefaehrdung_mittel OR IWCode == #restgefaehrdung_schwach: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SteinBlockschlag_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+
+    CONSTRAINTS OF BefundBergFelssturz =
+      !!@ name = "CheckBefundBergFelssturzHauptprozess"
+      !!@ ilivalid.msg = "BefundBergFelssturz muss Teilauftrag des Hauptprozess-Typs 'Sturz' zugeordnet sein"
+      MANDATORY CONSTRAINT PQ_Jaehrlichkeit_BergFelssturz_R->Prozessquelle_R->Teilauftrag_R->Hauptprozess == #sturz;
+      !!@ name = "CheckBefundBergFelssturzKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle."
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_BergFelssturz_R->Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundBergFelssturzImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(PQ_Jaehrlichkeit_BergFelssturz_R->Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundBergFelssturzFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundBergFelssturzKeineUeberlappung-30"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_30 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_BergFelssturz_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundBergFelssturzKeineUeberlappung-100"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_100 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_BergFelssturz_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundBergFelssturzKeineUeberlappung-300"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_300 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_BergFelssturz_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundBergFelssturzKeineUeberlappung-Restgef"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Restgefaehrdung."
+      SET CONSTRAINT WHERE IWCode == #restgefaehrdung_stark : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_BergFelssturz_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+
+    CONSTRAINTS OF BefundHangmure =
+      !!@ name = "CheckBefundHangmureHauptprozess"
+      !!@ ilivalid.msg = "BefundHangmure muss Teilauftrag des Hauptprozess-Typs 'Rutschung' zugeordnet sein"
+      MANDATORY CONSTRAINT PQ_Jaehrlichkeit_Hangmure_R->Prozessquelle_R->Teilauftrag_R->Hauptprozess == #rutschung;
+      !!@ name = "CheckBefundHangmureKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle." 
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode (GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_Hangmure_R->Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundHangmureJaehrlichkeit-30"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_30) OR (IWCode == #rot_mittel_30) OR (IWCode == #blau_schwach_30)) OR (PQ_Jaehrlichkeit_Hangmure_R->Jaehrlichkeit == 30);
+      !!@ name = "CheckBefundHangmureJaehrlichkeit-100"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_100) OR (IWCode == #blau_mittel_100)) OR (PQ_Jaehrlichkeit_Hangmure_R->Jaehrlichkeit == 100);
+      !!@ name = "CheckBefundHangmureJaehrlichkeit-300"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_300) OR (IWCode == #blau_mittel_300)) OR (PQ_Jaehrlichkeit_Hangmure_R->Jaehrlichkeit == 300); 
+      !!@ name = "CheckBefundHangmureImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(PQ_Jaehrlichkeit_Hangmure_R->Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundHangmureFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundHangmureKeineUeberlappung-30"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_30 OR IWCode == #rot_mittel_30 OR IWCode == #blau_schwach_30 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_Hangmure_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundHangmureKeineUeberlappung-100"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_100 OR IWCode == #blau_mittel_100 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_Hangmure_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundHangmureKeineUeberlappung-300"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_300 OR IWCode == #blau_mittel_300 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_Hangmure_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundHangmureKeineUeberlappung-Restgef"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Restgefaehrdung."
+      SET CONSTRAINT WHERE IWCode == #restgefaehrdung_stark OR IWCode == #restgefaehrdung_mittel OR IWCode == #restgefaehrdung_schwach: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_Hangmure_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+
+    CONSTRAINTS OF BefundUfererosion =
+      !!@ name = "CheckBefundUfererosionHauptprozess"
+      !!@ ilivalid.msg = "BefundUfererosion muss Teilauftrag des Hauptprozess-Typs 'Wasser' zugeordnet sein"
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #wasser;
+      !!@ name = "CheckBefundUfererosionImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+    END;
+  
+    CONSTRAINTS OF BefundAbsenkung =
+      !!@ name = "CheckBefundAbsenkungHauptprozess"
+      !!@ ilivalid.msg = "BefundAbsenkung muss Teilauftrag des Hauptprozess-Typs 'Absenkung_Einsturz' zugeordnet sein" 
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #absenkung_einsturz;
+      !!@ name = "CheckBefundAbsenkungKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle."
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundAbsenkungImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundAbsenkungFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundAbsenkungKeineUeberlappung-permanent"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und IWCode."
+      SET CONSTRAINT WHERE IWCode == #blau_mittel_permanent OR IWCode == #gelb_schwach_permanent: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+   
+    CONSTRAINTS OF BefundEinsturz =
+      !!@ name = "CheckBefundEinsturzHauptprozess"
+      !!@ ilivalid.msg = "BefundEinsturz muss Teilauftrag des Hauptprozess-Typs 'Absenkung_Einsturz' zugeordnet sein"
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #absenkung_einsturz;
+      !!@ name = "CheckBefundEinsturzKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle."  
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundEinsturzImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundEinsturzFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundeEinsturzKeineUeberlappung-permanent"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und IWCode."
+      SET CONSTRAINT WHERE IWCode == #blau_mittel_permanent OR IWCode == #gelb_schwach_permanent: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+
+    CONSTRAINTS OF BefundPermanenteRutschung =
+      !!@ name = "CheckBefundPermanenteRutschungHauptprozess"
+      !!@ ilivalid.msg = "BefundPermanenteRutschung muss Teilauftrag des Hauptprozess-Typs 'Rutschung' zugeordnet sein" 
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #rutschung;
+      !!@ name = "CheckBefundPermanenteRutschungImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundPermanenteRutschungFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundePermanenteRutschungKeineUeberlappung-permanent"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und IWCode."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_permanent OR IWCode == #blau_mittel_permanent OR IWCode == #gelb_schwach_permanent: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundePermanenteRutschungKeineUeberlappung-Restgef"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und IWCode."
+      SET CONSTRAINT WHERE IWCode == #restgefaehrdung_stark OR IWCode == #restgefaehrdung_mittel OR IWCode == #restgefaehrdung_schwach: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+
+    CONSTRAINTS OF BefundSpontaneRutschung =
+      !!@ name = "CheckBefundSpontaneRutschungHauptprozess"
+      !!@ ilivalid.msg = "BefundSpontaneRutschung muss Teilauftrag des Hauptprozess-Typs 'Rutschung' zugeordnet sein"
+      MANDATORY CONSTRAINT PQ_Jaehrlichkeit_SpontaneRutschung_R->Prozessquelle_R->Teilauftrag_R->Hauptprozess == #rutschung;
+      !!@ name = "CheckBefundSpontaneRutschungKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle."  
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SpontaneRutschung_R->Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundSpontaneRutschungJaehrlichkeit-30"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_30) OR (IWCode == #rot_mittel_30) OR (IWCode == #blau_schwach_30)) OR (PQ_Jaehrlichkeit_SpontaneRutschung_R->Jaehrlichkeit == 30);
+      !!@ name = "CheckBefundSpontaneRutschungJaehrlichkeit-100"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_100) OR (IWCode == #blau_mittel_100)) OR (PQ_Jaehrlichkeit_SpontaneRutschung_R->Jaehrlichkeit == 100);
+      !!@ name = "CheckBefundSpontaneRutschungJaehrlichkeit-300"
+      !!@ ilivalid.msg = "Die Jährlichkeit stimmt nicht mit der Jährlichkeit der Prozessquelle überein."
+      MANDATORY CONSTRAINT NOT((IWCode == #rot_stark_300) OR (IWCode == #blau_mittel_300)) OR (PQ_Jaehrlichkeit_SpontaneRutschung_R->Jaehrlichkeit == 300);
+      !!@ name = "CheckBefundSpontaneRutschungImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(PQ_Jaehrlichkeit_SpontaneRutschung_R->Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundSpontaneRutschungFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundSpontaneRutschungKeineUeberlappung-30"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_30 OR IWCode == #rot_mittel_30 OR IWCode == #blau_schwach_30 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SpontaneRutschung_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundSpontaneRutschungKeineUeberlappung-100"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_100 OR IWCode == #blau_mittel_100 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SpontaneRutschung_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundSpontaneRutschungKeineUeberlappung-300"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_300 OR IWCode == #blau_mittel_300 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SpontaneRutschung_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundSpontaneRutschungKeineUeberlappung-Restgef"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Restgefährdung."
+      SET CONSTRAINT WHERE IWCode == #restgefaehrdung_stark OR IWCode == #restgefaehrdung_mittel OR IWCode == #restgefaehrdung_schwach : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "PQ_Jaehrlichkeit_SpontaneRutschung_R->Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+
+    CONSTRAINTS OF BefundUebermurung =
+      !!@ name = "CheckBefundUebermurungHauptprozess"
+      !!@ ilivalid.msg = "BefundUebermurung muss Teilauftrag des Hauptprozess-Typs 'Wasser' zugeordnet sein" 
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #wasser;
+      !!@ name = "CheckBefundUebermurungKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle."  
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundUebermurungImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundUebermurungFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundUebermurungKeineUeberlappung-30"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_30 OR IWCode == #rot_mittel_30 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundUebermurungKeineUeberlappung-100"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_100 OR IWCode == #blau_mittel_100 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundUebermurungKeineUeberlappung-300"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_300 OR IWCode == #blau_mittel_300 : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+    
+    CONSTRAINTS OF BefundUeberschwemmungDynamisch =
+      !!@ name = "CheckBefundUeberschwemmungDynamischHauptprozess"
+      !!@ ilivalid.msg = "BefundUeberschwemmungDynamisch muss Teilauftrag des Hauptprozess-Typs 'Wasser' zugeordnet sein"
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #wasser;
+      !!@ name = "CheckBefundUeberschwemmungDynamischKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle."  
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundUeberschwemmungDynamischImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundUeberschwemmungDynamischFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundUeberschwemmungDynamischKeineUeberlappung-30"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_30 OR IWCode == #rot_mittel_30 OR IWCode == #blau_schwach_30: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundUeberschwemmungDynamischKeineUeberlappung-100"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_100 OR IWCode == #blau_mittel_100 OR IWCode == #blau_schwach_100 OR IWCode == #gelb_schwach_100: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundUeberschwemmungDynamischKeineUeberlappung-300"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_300 OR IWCode == #blau_mittel_300 OR IWCode == #gelb_schwach_300: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundUeberschwemmungDynamischKeineUeberlappung-Restgef"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Restgefährdung."
+      SET CONSTRAINT WHERE IWCode == #restgefaehrdung_stark OR IWCode == #restgefaehrdung_mittel: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+       
+    CONSTRAINTS OF BefundUeberschwemmungStatisch =
+      !!@ name = "CheckBefundUeberschwemmungStatischHauptprozess"
+      !!@ ilivalid.msg = "BefundUeberschwemmungStatisch muss Teilauftrag des Hauptprozess-Typs 'Wasser' zugeordnet sein"
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #wasser;
+      !!@ name = "CheckBefundUeberschwemmungStatischKeineUeberragung"
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleichem IWCode und Prozessquelle."    
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"IWCode");
+      !!@ name = "CheckBefundUeberschwemmungStatischImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundUeberschwemmungStatischFlaechenGroesse"
+      !!@ ilivalid.msg = "Der Befund muss grösser als 5m2 sein."
+      MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "Geometrie") > 5;
+      !!@ name = "CheckBefundUeberschwemmungStatischKeineUeberlappung-30"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_30 OR IWCode == #rot_mittel_30 OR IWCode == #blau_schwach_30: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundUeberschwemmungStatischKeineUeberlappung-100"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_100 OR IWCode == #blau_mittel_100 OR IWCode == #blau_schwach_100 OR IWCode == #gelb_schwach_100: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundUeberschwemmungStatischKeineUeberlappung-300"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Jährlichkeit."
+      SET CONSTRAINT WHERE IWCode == #rot_stark_300 OR IWCode == #blau_mittel_300 OR IWCode == #gelb_schwach_300: INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundUeberschwemmungStatischKeineUeberlappung-Restgef"
+      !!@ ilivalid.msg = "Ungültige Überlappung von Befundsflächen mit gleicher Prozessquelle und Restgefährdung."
+      SET CONSTRAINT WHERE IWCode == #restgefaehrdung_stark OR IWCode == #restgefaehrdung_mittel OR IWCode == #restgefaehrdung_schwach : INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"),UNDEFINED, >> Geometrie);
+    END;
+     
+    CONSTRAINTS OF BefundJaehrlichkeit =
+      !!@ name = "CheckBefundBefundJaehrlichkeitHauptprozess"
+      !!@ ilivalid.msg = "BefundJaehrlichkeit muss Teilauftrag des Hauptprozess-Typs 'Wasser' zugeordnet sein"  
+      MANDATORY CONSTRAINT Prozessquelle_R->Teilauftrag_R->Hauptprozess == #wasser; 
+      !!@ name = "CheckBefundBefundJaehrlichkeitFlaechendeckung"
+      !!@ ilivalid.msg = "BefundJaehrlichkeit ist nicht flächendeckend."  
+      SET CONSTRAINT INTERLIS.areAreas(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), UNDEFINED, >> Geometrie);
+      !!@ name = "CheckBefundJaehrlichkeitImAbklPerimeter"
+      !!@ ilivalid.msg = "Befund liegt nicht innerhalb des Abklärungsperimeters."
+      MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(GeoW_FunctionsExt.Union(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), UNDEFINED, THIS, "Geometrie"));
+      !!@ name = "CheckBefundJaehrlichkeitKeineUeberragung"
+      !!@ ilivalid.msg = "ungültige Ueberragung bei Befund mit gleicher Jaehrlichkeit und Prozessquelle!"
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"Jaehrlichkeit");
+    END;
+
+    CONSTRAINTS OF KennwertUeberschwemmungFliesstiefe =
+      !!@ name = "CheckKennwertUeberschwemmungFliesstiefeKeineUeberragungH"  
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleicher Fliesstiefe und Prozessquelle." 
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"h");
+      !!@ name = "CheckKennwertUeberschwemmungFliesstiefeKeineUeberragungJaehrlichkeit"  
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleicher Jährlichkeit und Prozessquelle."  
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"Jaehrlichkeit");
+    END;
+
+    CONSTRAINTS OF KennwertUeberschwemmungFliessgeschwindigkeit =
+      !!@ name = "CheckKennwertUeberschwemmungFliessgeschwindigkeitKeineUeberragungH" 
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleicher Jährlichkeit und Prozessquelle."
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"Jaehrlichkeit");
+    END;
+
+    CONSTRAINTS OF KennwertUebermurungFliesstiefe =
+      !!@ name = "CheckKennwertUebermurungFliesstiefeKeineUeberragungH" 
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleicher Fliesstiefe und Prozessquelle." 
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"h");
+      !!@ name = "CheckKennwertUebermurungFliesstiefeKeineUeberragungJaehrlichkeit"  
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleicher Jährlichkeit und Prozessquelle."  
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"Jaehrlichkeit");
+    END;
+
+    CONSTRAINTS OF KennwertUebermurungFliessgeschwindigkeit =
+      !!@ name = "CheckKennwertUebermurungFliessgeschwindigkeitKeineUeberragungH" 
+      !!@ ilivalid.msg = "Ungültiger Überstand bei Befund mit gleicher Jährlichkeit und Prozessquelle."   
+      SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(GeoW_FunctionsExt.GetInGroups(ALL, "Prozessquelle_R"), "Geometrie" ,"Jaehrlichkeit");
+    END;
+
+    CONSTRAINTS OF Prozessquelle =
+      !!@ name = "CheckProzessquelleBefundKennwertJaehrlichkeit"
+      !!@ ilivalid.msg = "Eine Prozessquelle muss mit mindestens einem Objekt der Subklassen von Befund_TextPQ, Kennwert_TextPQ oder einem Objekt der PQ_Jaehrlichkeit_*-Klassen verknüpft sein."
+      MANDATORY CONSTRAINT (DEFINED(Befund_TextPQ_R) OR DEFINED(Kennwert_TextPQ_R)) OR (DEFINED(PQ_Jaehrlichkeit_SteinBlockschlag_R) OR DEFINED(PQ_Jaehrlichkeit_BergFelssturz_R) OR DEFINED(PQ_Jaehrlichkeit_SpontaneRutschung_R) OR DEFINED(PQ_Jaehrlichkeit_Hangmure_R));
+
+      !!@ name = "CheckWasserkennwerte"
+      !!@ ilivalid.msg = "Es muss mindestens ein Objekt jeder Kennwert-Klasse verknüpft sein, da Wasserkennwerte auf TRUE gesetzt ist."
+      MANDATORY CONSTRAINT NOT(Teilauftrag_R->Wasserkennwerte) OR DEFINED(Kennwert_TextPQ_R);
+
+      !!@ name = "CheckProzessquelleKennung"       
+      !!@ ilivalid.msg = "Die Kennung ist innerhalb dieses Teilauftrags nicht eindeutig."  
+      UNIQUE Kennung, Teilauftrag_R;
+    END;
+    
+  END Befunde;  
+
+END SO_AFU_Naturgefahren_20240515.

@@ -70,7 +70,11 @@ dependencies {
   
     api ilivalidatorDependency
     //api 'ch.interlis:ilivalidator:1.11.13+'
+    api ilivalidatorCustomFunctionsGeometriesDependency
     api ilivalidatorCustomFunctionsDependency
+    api geowCustomFunctionsDependency
+    api geowNgkFunctionsDependency
+
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }

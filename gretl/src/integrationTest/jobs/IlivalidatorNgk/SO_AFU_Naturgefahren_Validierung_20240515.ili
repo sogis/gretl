@@ -1,0 +1,35 @@
+INTERLIS 2.3;
+/**
+*!!------------------------------------------------------------------------------
+*!! Version    | wer | Änderung
+*!!------------------------------------------------------------------------------
+*!! 2023-11-28 | MS  | Initialversion Basis
+*!! 2024-04-10 | MS  | Anpassungen an NatGef-Modell 20240501
+*!!==============================================================================
+*/
+!!@ technicalContact = "mailto:agi@bd.so.ch";
+CONTRACTED MODEL SO_AFU_Naturgefahren_Validierung_20240515 (de)
+AT "https://afu.so.ch"
+VERSION "2024-04-10"  =
+  IMPORTS SO_AFU_Naturgefahren_20240515,MinimalRuntimeSystem01,Text;
+
+  VIEW TOPIC Naturgefahren_Validierung =
+  DEPENDS ON SO_AFU_Naturgefahren_20240515.Auftraege;
+
+    VIEW v_Auftraege
+      PROJECTION OF SO_AFU_Naturgefahren_20240515.Auftraege.Auftrag; 
+    =
+      ALL OF Auftrag;
+      !!@ name = "CheckAuftragEntsprichtDateiname"
+      !!@ ilivalid.msg = "Die Kennung des Auftrags im XTF muss dem Dateinamen des XTF entsprechen"
+      MANDATORY CONSTRAINT Text.concat(Text.concat("/home/gradle/project/afu_naturgefahren_import/upload/", Kennung),".xtf")==PARAMETER MinimalRuntimeSystem01.CurrentTransferfile;
+      
+      !!@ name = "CheckAuftragGenauEiner"
+      !!@ ilivalid.msg = "Die Klasse Auftrag muss beim Import genau einen Auftrag enthalten."
+      SET CONSTRAINT INTERLIS.objectCount(ALL) == 1;
+
+    END v_Auftraege;
+
+  END Naturgefahren_Validierung;
+
+END SO_AFU_Naturgefahren_Validierung_20240515.

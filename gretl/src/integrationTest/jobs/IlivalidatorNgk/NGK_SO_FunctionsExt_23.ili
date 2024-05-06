@@ -1,0 +1,12 @@
+INTERLIS 2.3;
+CONTRACTED MODEL NGK_SO_FunctionsExt
+  AT "http://geo.so.ch/models/AFU" VERSION "2024-02-26" =
+    !!@ fn.description = "Prüft bei der Objektmenge, dass die gemäss dem geordneten Enum oder aufsteigend sortierten numerischen Wert jeweils kleineren Flächen innerhalb der grösseren Flächen liegen. Die Sortierung des Enums muss von der kleinsten zur grössten Fläche erfolgen (mittels ORDERED).";
+    !!@ fn.param = "Objects: Zu prüfende Objektmenge.";
+    !!@ fn.param = "GeometryAttr: Pfad zur Geometrie.";
+    !!@ fn.param = "CodeAttr: Pfad zum Enum oder numerischen Attribut";
+    !!@ fn.return = "Boolean";
+    !!@ fn.since = "2024-01-23";
+    !!sample = "SET CONSTRAINT NGK_SO_FunctionsExt.IsInsideAreaByCode(ALL, "Geometrie" ,"Code");";
+    FUNCTION IsInsideAreaByCode (Objects: OBJECTS OF ANYCLASS; GeometryAttr: TEXT; CodeAttr: TEXT): BOOLEAN;
+END NGK_SO_FunctionsExt. 
