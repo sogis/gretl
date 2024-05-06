@@ -44,7 +44,7 @@ public class OgdMetaPublisherStepTest {
         
         // Validate
         Settings settings = new Settings();
-        settings.setValue(Validator.SETTING_ILIDIRS, Validator.SETTING_DEFAULT_ILIDIRS + ";src/main/resources/ogdmetapublisher/ili/");
+        settings.setValue(Validator.SETTING_ILIDIRS, "src/main/resources/ogdmetapublisher/ili/;" + Validator.SETTING_DEFAULT_ILIDIRS);
 
         Path xtfFile = Paths.get(outputPath.toFile().getAbsolutePath(), "meta-ch.so.hba.kantonale_gebaeude.xtf");
         boolean valid = Validator.runValidation(xtfFile.toString(), settings);

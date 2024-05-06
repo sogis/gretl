@@ -10,5 +10,4 @@ task validate(type: IliValidator){
     allObjectsAccessible = true
     configFile = file("SO_AFU_Naturgefahren_20240515-gretl.ini")
     logFile = "ilivalidator.log"
-    
 }
