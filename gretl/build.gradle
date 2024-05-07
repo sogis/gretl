@@ -37,6 +37,7 @@ configurations.all {
         force 'ch.interlis:ili2c-tool:5.4.0' 
         force 'ch.interlis:ili2c-core:5.4.0'
         force 'ch.interlis:ili2gpkg:5.1.0'
+        force 'ch.interlis:iox-ili:1.22.0'
     }
 }
 
@@ -71,6 +72,18 @@ dependencies {
     api ilivalidatorDependency
     //api 'ch.interlis:ilivalidator:1.11.13+'
     api ilivalidatorCustomFunctionsDependency
+    api ilivalidatorCustomFunctionsGeometriesDependency
+    api (geowCustomFunctionsDependency) {
+        exclude group: 'ch.interlis', module: 'iox-ili'
+        exclude group: 'ch.interlis', module: 'ili2c-tool'
+        exclude group: 'ch.interlis', module: 'ili2c-core'
+    }
+    api (geowNgkFunctionsDependency) {
+        exclude group: 'ch.interlis', module: 'iox-ili'
+        exclude group: 'ch.interlis', module: 'ili2c-tool'
+        exclude group: 'ch.interlis', module: 'ili2c-core'
+    }
+
     api (ili2pgDependency) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }

@@ -12,6 +12,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.interlis2.validator.Validator;
 
+import java.io.File;
 import java.util.List;
 
 public class AbstractValidatorTask extends DefaultTask {
@@ -26,6 +27,9 @@ public class AbstractValidatorTask extends DefaultTask {
     @InputFile
     @Optional
     public Object configFile = null;
+    @InputFile
+    @Optional
+    public Object metaConfigFile = null;
     @Input
     @Optional
     public boolean forceTypeValidation = false;
@@ -71,6 +75,13 @@ public class AbstractValidatorTask extends DefaultTask {
         }
         if (configFile != null) {
             settings.setValue(Validator.SETTING_CONFIGFILE, this.getProject().file(configFile).getPath());
+        }
+        if (metaConfigFile != null ) {
+            if (metaConfigFile instanceof File) {
+                settings.setValue(Validator.SETTING_META_CONFIGFILE, this.getProject().file(metaConfigFile).getPath());                
+            } else {
+                settings.setValue(Validator.SETTING_META_CONFIGFILE, metaConfigFile.toString());                                
+            }
         }
         if (forceTypeValidation) {
             settings.setValue(Validator.SETTING_FORCE_TYPE_VALIDATION, Validator.TRUE);

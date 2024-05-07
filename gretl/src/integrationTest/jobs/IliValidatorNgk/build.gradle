@@ -1,0 +1,12 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+defaultTasks 'validate'
+
+task validate(type: IliValidator){
+    dataFiles = ["NGK_SO_Testbeddata.xtf"]
+    //metaConfigFile = file("SO_AFU_Naturgefahren_20240515-gretl-meta.ini")
+    metaConfigFile = "ilidata:SO_AFU_Naturgefahren_20240515-gretl-meta"
+    logFile = "ilivalidator.log"
+}

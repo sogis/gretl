@@ -17,6 +17,7 @@ configurations.all {
         force 'ch.interlis:ili2c-tool:5.4.0' 
         force 'ch.interlis:ili2c-core:5.4.0'
         force 'ch.interlis:ili2gpkg:5.1.0'
+        force 'ch.interlis:iox-ili:1.22.0'
     }
 }
 
