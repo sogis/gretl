@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+    <HEADERSECTION SENDER="SOGIS-INTERLIS-REPOSITORY-CREATOR" VERSION="2.3">
+        <MODELS>
+            <MODEL NAME="DatasetIdx16" VERSION="2022-10-10" URI="mailto:ce@eisenhutinformatik.ch"></MODEL>
+        </MODELS>
+    </HEADERSECTION>
+    <DATASECTION>
+        <DatasetIdx16.DataIndex BID="b1">
+            <DatasetIdx16.DataIndex.DatasetMetadata TID="037f8229-ac14-42de-a299-81038f229790">
+                <id>metaconfig_simple_table_ini_20240502</id>
+                <version>2024-02-18</version>
+                <publishingDate>2024-02-18</publishingDate>
+                <owner>mailto:bjsvwweb</owner>
+                <title>
+                    <DatasetIdx16.MultilingualText>
+                        <LocalisedText>
+                            <DatasetIdx16.LocalisedText>
+                                <Text>simple_table_ini_20240502</Text>
+                            </DatasetIdx16.LocalisedText>
+                        </LocalisedText>
+                    </DatasetIdx16.MultilingualText>
+                </title>
+                <shortDescription>
+                    <DatasetIdx16.MultilingualMText>
+                        <LocalisedText>
+                            <DatasetIdx16.LocalisedMText>
+                                <Text>Metaconfig file for simple_table_ini_20240502 - ('simple_table_ini_20240502', '.ini')</Text>
+                            </DatasetIdx16.LocalisedMText>
+                        </LocalisedText>
+                    </DatasetIdx16.MultilingualMText>
+                </shortDescription>
+                <categories>
+                    <DatasetIdx16.Code_>
+                        <value>http://codes.interlis.ch/type/metaconfig</value>
+                    </DatasetIdx16.Code_>
+                    <DatasetIdx16.Code_>
+                        <value>http://codes.interlis.ch/model/SO_AFU_Schutzbauten_20231212</value>
+                    </DatasetIdx16.Code_>
+                </categories>
+                <files>
+                    <DatasetIdx16.DataFile>
+                        <fileFormat>text/plain</fileFormat>
+                        <file>
+                            <DatasetIdx16.File>
+                                <path>files/simple_table_ini_20240502.ini</path>
+                            </DatasetIdx16.File>
+                        </file>
+                    </DatasetIdx16.DataFile>
+                </files>
+            </DatasetIdx16.DataIndex.DatasetMetadata>
+        </DatasetIdx16.DataIndex>
+    </DATASECTION>
+</TRANSFER>
