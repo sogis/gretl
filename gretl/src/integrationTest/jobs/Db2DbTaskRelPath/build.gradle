@@ -10,9 +10,9 @@ def db_pass = "dmluser"
 
 defaultTasks 'relativePath'
 
-task relativePath(type: Db2Db) {
-    sourceDb =  [db_uri, db_user, db_pass]
-    targetDb = [db_uri, db_user, db_pass]
+tasks.register('relativePath', Db2Db){
+    sourceDb =  [db_uri,db_user,db_pass]
+    targetDb = [db_uri,db_user,db_pass]
     transferSets = [
             new TransferSet('sql/relativePath.sql', 'relativepath.albums_dest', true)
     ];

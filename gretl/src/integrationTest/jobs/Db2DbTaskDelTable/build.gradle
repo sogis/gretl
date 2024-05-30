@@ -10,7 +10,7 @@ def db_pass = "dmluser"
 
 defaultTasks 'sourceToDestWithDelete'
 
-task sourceToDestWithDelete(type: Db2Db) {
+tasks.register('sourceToDestWithDelete', Db2Db){
     sourceDb =  [db_uri,db_user,db_pass]
     targetDb = [db_uri,db_user,db_pass]
     transferSets = [

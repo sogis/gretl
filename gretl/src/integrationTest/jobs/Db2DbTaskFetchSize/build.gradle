@@ -10,9 +10,9 @@ def db_pass = "dmluser"
 
 defaultTasks 'fetchSizeTask'
 
-task fetchSizeTask(type: Db2Db) {
-    sourceDb =  [db_uri, db_user, db_pass]
-    targetDb = [db_uri, db_user, db_pass]
+tasks.register('fetchSizeTask', Db2Db){
+    sourceDb =  [db_uri,db_user,db_pass]
+    targetDb = [db_uri,db_user,db_pass]
     fetchSize = 10
     transferSets = [
             new TransferSet('sql/fetchSize.sql', 'db2dbtaskfetchsize.target_data', true)
