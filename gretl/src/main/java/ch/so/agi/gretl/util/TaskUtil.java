@@ -1,10 +1,12 @@
 package ch.so.agi.gretl.util;
 
+import ch.so.agi.gretl.api.Connector;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
+import org.gradle.api.provider.ListProperty;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Utility Class with methods used in the Tasks.
@@ -41,5 +43,15 @@ public class TaskUtil {
         File absolute = gradleProject.file(filePath);
 
         return absolute;
+    }
+
+    public static Connector getDatabaseConnectorObject(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+        return new Connector(databaseUri, databaseUser, databasePassword);
     }
 }

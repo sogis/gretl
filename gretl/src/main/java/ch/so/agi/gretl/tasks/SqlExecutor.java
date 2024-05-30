@@ -45,7 +45,7 @@ public abstract class SqlExecutor extends DefaultTask {
     public void executeSQLExecutor() {
 
         String taskName = this.getName();
-        Connector database = buildDatabaseConnector();
+        Connector database = TaskUtil.getDatabaseConnectorObject(getDatabase().get());
 
         if (!getSqlFiles().isPresent()) {
             throw new GradleException("sqlFiles is null");
@@ -85,17 +85,5 @@ public abstract class SqlExecutor extends DefaultTask {
         }
 
         return files;
-    }
-
-    private Connector buildDatabaseConnector(){
-        List<String> databaseDetails = getDatabase().get();
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-        return new Connector(databaseUri, databaseUser, databasePassword);
     }
 }
