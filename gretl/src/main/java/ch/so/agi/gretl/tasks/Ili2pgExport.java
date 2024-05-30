@@ -36,29 +36,29 @@ public abstract class Ili2pgExport extends Ili2pgAbstractTask {
         if (getExportModels().isPresent()) {
             settings.setExportModels(getExportModels().get());
         }
-        FileCollection dataFilesCollection=null;
+        FileCollection dataFilesCollection;
         Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
             dataFilesCollection=(FileCollection)dataFile;
         }else {
             dataFilesCollection=getProject().files(dataFile);
         }
-        if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
+        if (dataFilesCollection.isEmpty()) {
             return;
         }
-        List<String> files = new ArrayList<String>();
+        List<String> files = new ArrayList<>();
         for (java.io.File fileObj : dataFilesCollection) {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }
         List<String> datasetNames=null;
-        Object dataset = getDataset().get();
-        if (dataset != null) {
+        if (getDataset().isPresent()) {
+            Object dataset = getDataset().get();
             if(dataset instanceof String) {
-                datasetNames=new ArrayList<String>();
+                datasetNames=new ArrayList<>();
                 datasetNames.add((String)dataset);
             }else {
-                datasetNames=(java.util.List)dataset;
+                datasetNames=(List)dataset;
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
@@ -67,11 +67,7 @@ public abstract class Ili2pgExport extends Ili2pgAbstractTask {
         
         int i=0;
         for(String xtfFilename:files) {
-            if (Ili2db.isItfFilename(xtfFilename)) {
-                settings.setItfTransferfile(true);
-            }else {
-                settings.setItfTransferfile(false);
-            }
+            settings.setItfTransferfile(Ili2db.isItfFilename(xtfFilename));
             if(datasetNames!=null) {
                 settings.setDatasetName(datasetNames.get(i));
             }

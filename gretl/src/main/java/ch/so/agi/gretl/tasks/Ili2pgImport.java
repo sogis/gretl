@@ -32,14 +32,13 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
         }
         
         // Liste mit saemtlicheen Dateipfaeden oder ilidata-Ids.
-        List<String> files = new ArrayList<String>();
+        List<String> files = new ArrayList<>();
 
-        FileCollection dataFilesCollection = null;
+        FileCollection dataFilesCollection;
         Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
             dataFilesCollection = (FileCollection) dataFile;
-            
-            if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
+            if (dataFilesCollection.isEmpty()) {
                 return;
             }
             
@@ -78,11 +77,11 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
         if (getDataset().isPresent()) {
             Object dataset = getDataset().get();
             if(dataset instanceof String) {
-                datasetNames=new ArrayList<String>();
+                datasetNames=new ArrayList<>();
                 datasetNames.add((String)dataset);
             } else if (dataset instanceof FileCollection) {
                 Set<File> datasetFiles = ((FileTree)dataset).getFiles();
-                datasetNames = new ArrayList<String>();                
+                datasetNames = new ArrayList<>();
                 for (File datasetFile : datasetFiles) {
                     if (getDatasetSubstring().isPresent()) {
                         Range<Integer> datasetSubstring = getDatasetSubstring().get();
@@ -96,7 +95,7 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
                     }
                 }
             } else {
-                datasetNames=new ArrayList<String>();
+                datasetNames=new ArrayList<>();
                 if (getDatasetSubstring().isPresent()) {
                     List<String> fileNames = (List)dataset;
                     Range<Integer> datasetSubstring = getDatasetSubstring().get();
@@ -126,11 +125,7 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
         try {
             int i=0;
             for(String xtfFilename:files) {
-                if (Ili2db.isItfFilename(xtfFilename)) {
-                    settings.setItfTransferfile(true);
-                }else {
-                    settings.setItfTransferfile(false);
-                }
+                settings.setItfTransferfile(Ili2db.isItfFilename(xtfFilename));
                 if(datasetNames!=null) {
                     settings.setDatasetName(datasetNames.get(i));
                 }

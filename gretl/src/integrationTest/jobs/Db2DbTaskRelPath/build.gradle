@@ -15,5 +15,5 @@ tasks.register('relativePath', Db2Db){
     targetDb = [db_uri,db_user,db_pass]
     transferSets = [
             new TransferSet('sql/relativePath.sql', 'relativepath.albums_dest', true)
-    ];
+    ]
 }

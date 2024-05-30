@@ -16,7 +16,7 @@ tasks.register('aToB', Db2Db){
     sqlParameters = [srcTable:'albums_src']
     transferSets = [
             new TransferSet('statementChain_AToB.sql', 'db2dbtaskchain.albums_intermediate', true)
-    ];
+    ]
 }
 
 tasks.register('bToA', Db2Db){
@@ -25,5 +25,5 @@ tasks.register('bToA', Db2Db){
     targetDb = [db_uri,db_user,db_pass]
     transferSets = [
             new TransferSet('statementChain_BToA.sql', 'db2dbtaskchain.albums_dest', true)
-    ];
+    ]
 }

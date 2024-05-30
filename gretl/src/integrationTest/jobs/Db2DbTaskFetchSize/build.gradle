@@ -16,5 +16,5 @@ tasks.register('fetchSizeTask', Db2Db){
     fetchSize = 10
     transferSets = [
             new TransferSet('sql/fetchSize.sql', 'db2dbtaskfetchsize.target_data', true)
-    ];
+    ]
 }

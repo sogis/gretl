@@ -7,6 +7,8 @@ import org.gradle.api.tasks.TaskAction;
 import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
+import java.util.List;
+
 public abstract class Ili2pgValidate extends Ili2pgAbstractTask {
 
     @TaskAction
@@ -22,10 +24,10 @@ public abstract class Ili2pgValidate extends Ili2pgAbstractTask {
         if (getDataset().isPresent()) {
             Object dataset = getDataset().get();
             if (dataset instanceof String) {
-                datasetNames = new java.util.ArrayList<String>();
+                datasetNames = new java.util.ArrayList<>();
                 datasetNames.add((String) dataset);
             } else {
-                datasetNames = (java.util.List) dataset;
+                datasetNames = (List) dataset;
             }
         }
 

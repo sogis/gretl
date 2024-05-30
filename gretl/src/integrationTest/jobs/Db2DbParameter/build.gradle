@@ -16,5 +16,5 @@ tasks.register('src2dest', Db2Db){
     sqlParameters = [srcTable:'src1']
     transferSets = [
             new TransferSet('src.sql', 'parameterlist.dest', false)
-    ];
+    ]
 }

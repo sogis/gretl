@@ -15,5 +15,5 @@ tasks.register('sourceToDestWithDelete', Db2Db){
     targetDb = [db_uri,db_user,db_pass]
     transferSets = [
             new TransferSet('deleteTableSuccesful.sql', 'deletedesttablecontent.albums_dest', true)
-    ];
+    ]
 }

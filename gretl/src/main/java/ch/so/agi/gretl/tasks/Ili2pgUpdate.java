@@ -26,14 +26,14 @@ public abstract class Ili2pgUpdate extends Ili2pgAbstractTask {
         if (!getDataFile().isPresent()) {
             return;
         }
-        FileCollection dataFilesCollection=null;
+        FileCollection dataFilesCollection;
         Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
             dataFilesCollection=(FileCollection)dataFile;
         }else {
             dataFilesCollection=getProject().files(dataFile);
         }
-        if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
+        if (dataFilesCollection.isEmpty()) {
             return;
         }
         List<String> files = new ArrayList<String>();
@@ -48,7 +48,7 @@ public abstract class Ili2pgUpdate extends Ili2pgAbstractTask {
                 datasetNames=new ArrayList<String>();
                 datasetNames.add((String)dataset);
             }else {
-                datasetNames=(java.util.List)dataset;
+                datasetNames=(List)dataset;
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
@@ -65,11 +65,7 @@ public abstract class Ili2pgUpdate extends Ili2pgAbstractTask {
         try {
             int i=0;
             for(String xtfFilename:files) {
-                if (Ili2db.isItfFilename(xtfFilename)) {
-                    settings.setItfTransferfile(true);
-                }else {
-                    settings.setItfTransferfile(false);
-                }
+                settings.setItfTransferfile(Ili2db.isItfFilename(xtfFilename));
                 if(datasetNames!=null) {
                     settings.setDatasetName(datasetNames.get(i));
                 }

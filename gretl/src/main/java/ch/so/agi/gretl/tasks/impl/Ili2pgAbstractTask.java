@@ -214,7 +214,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             settings.setTransferFileFormat(Config.ILIGML20);
         }
         if (isDisableRounding().get()) {
-            settings.setDisableRounding(true);;
+            settings.setDisableRounding(true);
         }
 
         Connector database = TaskUtil.getDatabaseConnectorObject(getDatabase().get());

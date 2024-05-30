@@ -35,8 +35,8 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
         }
         
         // Liste mit saemtlicheen Dateipfaeden oder ilidata-Ids.
-        List<String> files = new ArrayList<String>();        
-        FileCollection dataFilesCollection = null;
+        List<String> files = new ArrayList<>();
+        FileCollection dataFilesCollection;
         Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
             dataFilesCollection = (FileCollection) dataFile;
@@ -81,11 +81,11 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
         if (getDataFile().isPresent()) {
             Object dataset = getDataset().get();
             if(dataset instanceof String) {
-                datasetNames=new ArrayList<String>();
+                datasetNames=new ArrayList<>();
                 datasetNames.add((String)dataset);
             } else if (dataset instanceof FileCollection) {
                 Set<File> datasetFiles = ((FileTree)dataset).getFiles();
-                datasetNames = new ArrayList<String>();
+                datasetNames = new ArrayList<>();
                 Range<Integer> datasetSubstring = getDatasetSubstring().isPresent() ? getDatasetSubstring().get() : null;
                 for (File datasetFile : datasetFiles) {
                     if (datasetSubstring != null) {
@@ -99,7 +99,7 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
                     }
                 }
             } else {
-                datasetNames=new ArrayList<String>();
+                datasetNames=new ArrayList<>();
                 if (getDatasetSubstring().isPresent()) {
                     List<String> fileNames = (List)dataset;
                     Range<Integer> datasetSubstring = getDatasetSubstring().get();
@@ -111,7 +111,7 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
                         }
                     }
                 } else {
-                    datasetNames=(java.util.List)dataset;
+                    datasetNames=(List)dataset;
                 }
             }
             if(files.size()!=datasetNames.size()) {
@@ -129,11 +129,7 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
         try {
             int i=0;
             for(String xtfFilename:files) {
-                if (Ili2db.isItfFilename(xtfFilename)) {
-                    settings.setItfTransferfile(true);
-                }else {
-                    settings.setItfTransferfile(false);
-                }
+                settings.setItfTransferfile(Ili2db.isItfFilename(xtfFilename));
                 if(datasetNames!=null) {
                     settings.setDatasetName(datasetNames.get(i));
                 }
