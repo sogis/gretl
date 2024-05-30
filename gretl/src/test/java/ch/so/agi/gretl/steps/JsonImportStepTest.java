@@ -25,8 +25,7 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.TestUtil;
 
-public class JsonImportStepTest {    
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
+public class JsonImportStepTest {
 
     @ClassRule
     public static PostgreSQLContainer postgres = 
@@ -35,7 +34,7 @@ public class JsonImportStepTest {
         .withUsername(TestUtil.PG_DDLUSR_USR)
         .withPassword(TestUtil.PG_DDLUSR_PWD)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     public JsonImportStepTest() {
         LogEnvironment.initStandalone();

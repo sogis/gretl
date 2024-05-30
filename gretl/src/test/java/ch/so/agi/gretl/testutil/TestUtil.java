@@ -9,12 +9,14 @@ import java.io.IOException;
 
 public class TestUtil {
     public static final String PG_CONNECTION_URI = System.getProperty("gretltest_dburi_pg");
+    public static final String PG_DB_NAME = "gretl";
     public static final String PG_DDLUSR_USR = "ddluser";
     public static final String PG_DDLUSR_PWD = "ddluser";
     public static final String PG_DMLUSR_USR = "dmluser";
     public static final String PG_DMLUSR_PWD = "dmluser";
     public static final String PG_READERUSR_USR = "readeruser";
     public static final String PG_READERUSR_PWD = "readeruser";
+    public static final String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
 
     public static File createFile(TemporaryFolder folder, String stm, String fileName) throws IOException {
         File sqlFile = folder.newFile(fileName);

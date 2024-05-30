@@ -26,7 +26,6 @@ import ch.so.agi.gretl.testutil.DbTest;
 import ch.so.agi.gretl.testutil.TestUtil;
 
 public class PublisherStepDb2LocalTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     static final public String DM01AVCH24LV95D="DM01AVCH24LV95D";
     
     @ClassRule
@@ -36,7 +35,7 @@ public class PublisherStepDb2LocalTest {
         .withUsername(TestUtil.PG_DDLUSR_USR)
         .withPassword(TestUtil.PG_DDLUSR_PWD)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2)):null;
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2)):null;
     
     final protected Path localTestOut = Paths.get("build").resolve("out");
     public PublisherStepDb2LocalTest() {

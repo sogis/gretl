@@ -6,9 +6,10 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.DbTest;
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.EmptyFileException;
+import ch.so.agi.gretl.util.FileStylingDefinition;
+import ch.so.agi.gretl.util.FileStylingDefinitionTest;
 import ch.so.agi.gretl.util.GretlException;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
@@ -19,6 +20,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,48 +31,62 @@ import java.util.List;
  * Tests for the SqlExecutorStep
  */
 public class SqlExecutorStepTest {
-    private GretlLogger log;
-    
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+
     @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(TestUtil.PG_DDLUSR_USR)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                .withDatabaseName(TestUtil.PG_DB_NAME)
+                .withUsername(TestUtil.PG_DDLUSR_USR)
+                .withInitScript("init_postgresql.sql")
+                .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+
+    // Create temporary folder for saving sqlfiles
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
+    private GretlLogger log;
 
     public SqlExecutorStepTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
-    // Create temporary folder for saving sqlfiles
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-
     @Before
     public void initialize() throws Exception {
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-        createTestDb(sourceDb);
+        createTestDb(initializeConnector());
     }
 
     @After
     public void finalise() throws Exception {
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-        clearTestDb(sourceDb);
+        clearTestDb(initializeConnector());
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        if (!postgres.isRunning()) {
+            postgres.start();
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if (postgres.isRunning()) {
+            postgres.stop();
+        }
+    }
+
+    private Connector initializeConnector() {
+        return new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
     }
 
     @Test
     public void executeWithoutFilesThrowsGretlException() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
-        List<File> sqlListe = new ArrayList<>();
+        Connector connector = initializeConnector();
+        SqlExecutorStep step = new SqlExecutorStep();
+        List<File> sqlList = new ArrayList<>();
 
         try {
-            x.execute(sourceDb, sqlListe);
+            step.execute(connector, sqlList);
         } catch (GretlException e) {
             Assert.assertEquals("no file", e.getType());
         }
@@ -78,12 +94,11 @@ public class SqlExecutorStepTest {
 
     @Test
     public void executeWithoutDbThrowsGretlException() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = null;
-        List<File> sqlListe = createCorrectSqlFiles();
+        SqlExecutorStep step = new SqlExecutorStep();
+        List<File> sqlList = createCorrectSqlFiles();
 
         try {
-            x.execute(sourceDb, sqlListe);
+            step.execute(null, sqlList);
         } catch (GretlException e) {
             Assert.assertEquals("no database", e.getType());
         }
@@ -91,15 +106,13 @@ public class SqlExecutorStepTest {
 
     @Test
     public void executeWithWrongFileExtensionsThrowsGretlException() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
-        List<File> sqlListe = createCorrectSqlFiles();
-        sqlListe.add(createSqlFileWithWrongExtension());
+        Connector connector = initializeConnector();
+        SqlExecutorStep step = new SqlExecutorStep();
+        List<File> sqlList = createCorrectSqlFiles();
+        sqlList.add(createSqlFileWithWrongExtension());
 
         try {
-            x.execute(sourceDb, sqlListe);
+            step.execute(connector, sqlList);
         } catch (GretlException e) {
             Assert.assertEquals("no .sql-Extension", e.getType());
         }
@@ -107,59 +120,56 @@ public class SqlExecutorStepTest {
 
     @Test
     public void executeEmptyFileThrowsEmptyFileException() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
+        Connector connector = initializeConnector();
+        SqlExecutorStep step = new SqlExecutorStep();
         List<File> sqlListe = createCorrectSqlFiles();
         sqlListe.add(createEmptySqlFile());
 
         try {
-            x.execute(sourceDb, sqlListe);
+            step.execute(connector, sqlListe);
         } catch (EmptyFileException e) {
-            Assert.assertThat(e.getMessage(), containsString("File must not be empty"));
+            Assert.assertTrue(e.getMessage().contains("File must not be empty"));
         }
     }
 
     @Test
     public void executeWithInexistentFilePathThrowsGretlException() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
-        List<File> sqlListe = new ArrayList<>();
-        sqlListe.add(new File("/inexistent/path/to/file.sql"));
+        Connector connector = initializeConnector();
+        SqlExecutorStep step = new SqlExecutorStep();
+        List<File> sqlList = new ArrayList<>();
+        sqlList.add(new File("/inexistent/path/to/file.sql"));
 
         try {
-            x.execute(sourceDb, sqlListe);
+            step.execute(connector, sqlList);
         } catch (GretlException e) {
-            Assert.assertEquals("GretlException must be of type: " + GretlException.TYPE_FILE_NOT_READABLE, e.getType(),
-                    GretlException.TYPE_FILE_NOT_READABLE);
+            Assert.assertEquals(
+                    String.format("GretlException must be of type: %s", GretlException.TYPE_FILE_NOT_READABLE),
+                    e.getType(), GretlException.TYPE_FILE_NOT_READABLE
+            );
         }
     }
 
     @Test
     public void executeWrongQueryThrowsSQLException() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
-        List<File> sqlListe = createWrongSqlFile();
+        Connector connector = initializeConnector();
+        SqlExecutorStep step = new SqlExecutorStep();
+        List<File> sqlList = createWrongSqlFile();
 
         try {
-            x.execute(sourceDb, sqlListe);
+            step.execute(connector, sqlList);
         } catch (SQLException e) {
-            Assert.assertThat(e.getMessage(), containsString("Error while executing the sqlstatement."));
+            Assert.assertTrue(e.getMessage().contains("Error while executing the sqlstatement."));
         }
-
     }
 
     @Test
     public void executeSQLFileWithoutStatementThrowsGretlException() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
+        Connector connector = initializeConnector();
+        SqlExecutorStep step = new SqlExecutorStep();
         List<File> sqlListe = createSqlFileWithoutStatement();
 
         try {
-            x.execute(sourceDb, sqlListe);
+            step.execute(connector, sqlListe);
         } catch (GretlException e) {
             Assert.assertEquals("no statement in sql-file", e.getType());
         }
@@ -167,33 +177,29 @@ public class SqlExecutorStepTest {
 
     @Test
     public void executePositiveTest() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
+        Connector connector = initializeConnector();
+        SqlExecutorStep step = new SqlExecutorStep();
         List<File> sqlListe = createCorrectSqlFiles();
-
-        x.execute(sourceDb, sqlListe);
+        step.execute(connector, sqlListe);
     }
     
     @Test
     public void executeDuckDB_Ok() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:duckdb::memory:", null, null);
-
-        List<File> sqlListe = createSelectSqlFile();
-
-        x.execute(sourceDb, sqlListe);
+        Connector connector = new Connector("jdbc:duckdb::memory:", null, null);
+        SqlExecutorStep step = new SqlExecutorStep();
+        List<File> sqlList = createSelectSqlFile();
+        step.execute(connector, sqlList);
     }
+
     
     @Test
     public void executeDuckDB_Fail() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:duckdb::memory:", null, null);
-
-        List<File> sqlListe = createFailingSelectSqlFile();
+        Connector connector = new Connector("jdbc:duckdb::memory:", null, null);
+        SqlExecutorStep step = new SqlExecutorStep();
+        List<File> sqlList = createFailingSelectSqlFile();
 
         try {
-            x.execute(sourceDb, sqlListe);
+            step.execute(connector, sqlList);
         } catch (SQLException e) {
             Assert.assertTrue(e.getMessage().contains("Referenced column \"asdf\" not found in FROM clause"));
         }
@@ -202,25 +208,19 @@ public class SqlExecutorStepTest {
     @Category(DbTest.class)
     @Test
     public void executePostgisVersionTest() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
-                TestUtil.PG_READERUSR_PWD);
+        Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
+        SqlExecutorStep step = new SqlExecutorStep();
 
-        File sqlFile = folder.newFile("postgisversion.sql");
-        FileWriter sqlWriter = null;
-        try {
-            sqlWriter = new FileWriter(sqlFile);
-            sqlWriter.write("SELECT PostGIS_Full_Version();");
-        } finally {
-            if (sqlWriter != null) {
-                sqlWriter.close();
-                sqlWriter = null;
-            }
+        URL resourceUrl = getClass().getResource("data/sql/postgisversion.sql");
+        if (resourceUrl == null) {
+            throw new IllegalArgumentException("Resource not found");
         }
-        List<File> sqlListe = new ArrayList<File>();
-        sqlListe.add(sqlFile);
 
-        x.execute(sourceDb, sqlListe);
+        File inputFile = new File(resourceUrl.toURI());
+        FileStylingDefinition.checkForUtf8(inputFile);
+        List<File> sqlList = new ArrayList<>();
+        sqlList.add(inputFile);
+        step.execute(connector, sqlList);
     }
 
     @Test

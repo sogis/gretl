@@ -22,7 +22,6 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.TestUtil;
 
 public class DatabaseDocumentExportStepTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
 
     @ClassRule
     public static PostgreSQLContainer postgres = 
@@ -31,7 +30,7 @@ public class DatabaseDocumentExportStepTest {
         .withUsername(TestUtil.PG_DDLUSR_USR)
         .withPassword(TestUtil.PG_DDLUSR_PWD)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     
     public DatabaseDocumentExportStepTest() {

@@ -27,15 +27,13 @@ import net.sf.saxon.s9api.SaxonApiException;
 public class PostgisRasterExportStepTest {
     private GretlLogger log;
     
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
         .newInstance().withDatabaseName("gretl")
         .withUsername(TestUtil.PG_DDLUSR_USR)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     public PostgisRasterExportStepTest() {
         LogEnvironment.initStandalone();

@@ -32,26 +32,26 @@ import static org.gradle.internal.impldep.org.testng.AssertJUnit.assertEquals;
 import static org.junit.Assert.fail;
 
 public class Db2DbStepTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-        
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(TestUtil.PG_DDLUSR_USR)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
 
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
+
+    @ClassRule
+    public static PostgreSQLContainer<?> postgres =
+            (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                    .withDatabaseName(TestUtil.PG_DB_NAME)
+                    .withUsername(TestUtil.PG_DDLUSR_USR)
+                    .withInitScript("init_postgresql.sql")
+                    .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+
+    private final GretlLogger log;
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     public Db2DbStepTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    private GretlLogger log;
 
     @After
     public void finalise() throws Exception {

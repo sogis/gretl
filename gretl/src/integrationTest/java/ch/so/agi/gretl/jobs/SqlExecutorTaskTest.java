@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.jobs;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
@@ -19,7 +20,6 @@ import java.sql.Statement;
 import java.util.HashSet;
 
 public class SqlExecutorTaskTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     
     @ClassRule
     public static PostgreSQLContainer postgres = 
@@ -27,7 +27,7 @@ public class SqlExecutorTaskTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
     
     /*
     Tests that a chain of statements executes properly
