@@ -9,57 +9,35 @@ import java.util.List;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 
-public class Ili2pgExport extends Ili2pgAbstractTask {
-
-    private Boolean export3 = false;
-    private String exportModels;
-    private Object dataFile;
-
+public abstract class Ili2pgExport extends Ili2pgAbstractTask {
     @Input
     @Optional
-    public Boolean isExport3() {
-        return export3;
-    }
-
+    public abstract Property<Boolean> isExport3();
     @Input
     @Optional
-    public String getExportModels() {
-        return exportModels;
-    }
+    public abstract Property<String> getExportModels();
 
     @OutputFiles
-    public Object getDataFile() {
-        return dataFile;
-    }
-
-    public void setExport3(Boolean export3) {
-        this.export3 = export3;
-    }
-
-    public void setExportModels(String exportModels) {
-        this.exportModels = exportModels;
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
+    public abstract Property<Object> getDataFile();
 
     @TaskAction
     public void exportData() {
         Config settings = createConfig();
         int function = Config.FC_EXPORT;
-        if (dataFile == null) {
+        if (!getDataFile().isPresent()) {
             return;
         }
-        if (export3) {
+        if (isExport3().get()) {
             settings.setVer3_export(true);
         }
-        if (exportModels != null) {
-            settings.setExportModels(exportModels);
+        if (getExportModels().isPresent()) {
+            settings.setExportModels(getExportModels().get());
         }
         FileCollection dataFilesCollection=null;
+        Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
             dataFilesCollection=(FileCollection)dataFile;
         }else {
@@ -73,7 +51,8 @@ public class Ili2pgExport extends Ili2pgAbstractTask {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }
-        java.util.List<String> datasetNames=null;
+        List<String> datasetNames=null;
+        Object dataset = getDataset().get();
         if (dataset != null) {
             if(dataset instanceof String) {
                 datasetNames=new ArrayList<String>();

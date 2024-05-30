@@ -10,7 +10,7 @@ def db_pass = "ddluser"
 
 defaultTasks 'ili2pgdelete'
 
-task ili2pgschemaimport(type: Ili2pgImportSchema){
+tasks.register("ili2pgschemaimport", Ili2pgImportSchema) {
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24LV95"
     dbschema = "dm01"
@@ -18,17 +18,18 @@ task ili2pgschemaimport(type: Ili2pgImportSchema){
     createBasketCol = true
 }
 
-
-task ili2pgreplace(type: Ili2pgReplace, dependsOn: 'ili2pgschemaimport') {
+tasks.register("ili2pgreplace", Ili2pgReplace) {
+    dependsOn: 'ili2pgschemaimport'
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24LV95"
     dbschema = "dm01"
     disableValidation = true
     dataset = "kammersrohr"
     dataFile = file("254900.itf")
-} 
+}
 
-task ili2pgdelete(type: Ili2pgDelete, dependsOn: 'ili2pgreplace') {
+tasks.register('ili2pgdelete', Ili2pgDelete) {
+    dependsOn: 'ili2pgreplace'
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24LV95"
     dbschema = "dm01"

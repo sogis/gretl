@@ -11,28 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import groovy.lang.Range;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
 
-public class Ili2pgImport extends Ili2pgAbstractTask {
-    private Object dataFile;
+public abstract class Ili2pgImport extends Ili2pgAbstractTask {
     @InputFiles
-    public Object getDataFile(){
-        return dataFile;
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
+    public abstract Property<Object> getDataFile();
 
     @TaskAction
     public void importData() {
         Config settings = createConfig();
         int function = Config.FC_IMPORT;
-        if (dataFile == null) {
+        if (!getDataFile().isPresent()) {
             return;
         }
         
@@ -40,6 +35,7 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
         List<String> files = new ArrayList<String>();
 
         FileCollection dataFilesCollection = null;
+        Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
             dataFilesCollection = (FileCollection) dataFile;
             
@@ -79,7 +75,8 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
         }
 
         List<String> datasetNames = null;
-        if (dataset != null) {
+        if (getDataset().isPresent()) {
+            Object dataset = getDataset().get();
             if(dataset instanceof String) {
                 datasetNames=new ArrayList<String>();
                 datasetNames.add((String)dataset);
@@ -87,7 +84,8 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
                 Set<File> datasetFiles = ((FileTree)dataset).getFiles();
                 datasetNames = new ArrayList<String>();                
                 for (File datasetFile : datasetFiles) {
-                    if (datasetSubstring != null) {  
+                    if (getDatasetSubstring().isPresent()) {
+                        Range<Integer> datasetSubstring = getDatasetSubstring().get();
                         if (datasetSubstring.size() > 1) {
                             datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.getFrom(), datasetSubstring.getTo()));
                         } else {
@@ -99,8 +97,9 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
                 }
             } else {
                 datasetNames=new ArrayList<String>();
-                if (datasetSubstring != null) {
-                    List<String> fileNames = (java.util.List)dataset;
+                if (getDatasetSubstring().isPresent()) {
+                    List<String> fileNames = (List)dataset;
+                    Range<Integer> datasetSubstring = getDatasetSubstring().get();
                     for (String fileName : fileNames) {
                         if (datasetSubstring.size() > 1) {
                             datasetNames.add(fileName.substring(datasetSubstring.getFrom(), datasetSubstring.getTo()));
@@ -109,7 +108,7 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
                         }
                     }
                 } else {
-                    datasetNames=(java.util.List)dataset;
+                    datasetNames=(List)dataset;
                 }
             }
             if(files.size()!=datasetNames.size()) {
@@ -118,9 +117,9 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
         }
         
         ch.ehi.basics.logging.FileListener fileLogger=null;
-        if(logFile!=null){
+        if(getLogFile().isPresent()){
             // setup logger here, so that multiple file imports result in one logfile
-            java.io.File logFilepath=this.getProject().file(logFile);
+            java.io.File logFilepath=this.getProject().file(getLogFile().get());
             fileLogger=new FileLogger(logFilepath);
             EhiLogger.getInstance().addListener(fileLogger);
         }
