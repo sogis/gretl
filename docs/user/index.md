@@ -47,9 +47,14 @@ apply plugin: 'ch.so.agi.gretl'
 buildscript {
     repositories {
         maven { url "https://jars.interlis.ch" }
-        maven { url "http://jars.umleditor.org" }
+        maven { 
+                url "http://jars.umleditor.org" 
+                allowInsecureProtocol = true
+        }
         maven { url "https://repo.osgeo.org/repository/release/" }
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://s01.oss.sonatype.org/service/local/repositories/releases/content/" }
+        maven { url "https://s01.oss.sonatype.org/service/local/repositories/snapshots/content/" }
         mavenCentral()
     }
     dependencies {
