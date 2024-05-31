@@ -40,7 +40,7 @@ public class Db2DbStepTest {
             (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                     .withDatabaseName(TestUtil.PG_DB_NAME)
                     .withUsername(TestUtil.PG_DDLUSR_USR)
-                    .withInitScript("init_postgresql.sql")
+                    .withInitScript("data/sql/init_postgresql.sql")
                     .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     private final GretlLogger log;
@@ -64,8 +64,8 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors; ", "query.sql");
-            File sqlFile2 = TestUtil.createFile(folder, "SELECT * FROM colors; ", "query2.sql");
+            File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors; ", "query.sql");
+            File sqlFile2 = TestUtil.createTempFile(folder, "SELECT * FROM colors; ", "query2.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)));
@@ -186,7 +186,7 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = TestUtil.createFile(folder, "SELECT BLABLABLA FROM colors", "query.sql");
+            File sqlFile = TestUtil.createTempFile(folder, "SELECT BLABLABLA FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)));
@@ -223,7 +223,7 @@ public class Db2DbStepTest {
 
             stmt.execute("CREATE TABLE colors_copy (rot integer, gruen integer)");
 
-            File sqlFile = TestUtil.createFile(folder, "SELECT rot, gruen, blau, farbname FROM colors", "query.sql");
+            File sqlFile = TestUtil.createTempFile(folder, "SELECT rot, gruen, blau, farbname FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)));
@@ -262,7 +262,7 @@ public class Db2DbStepTest {
 
             stmt.execute("CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname integer)");
 
-            File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors", "query.sql");
+            File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)));
@@ -287,7 +287,7 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors", "query.sql");
+            File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)));
@@ -322,7 +322,7 @@ public class Db2DbStepTest {
             con.close();
         }
 
-        File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors;", "query.sql");
+        File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors;", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)));
@@ -354,7 +354,7 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors", "query.sql");
+            File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)));
@@ -378,7 +378,7 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = TestUtil.createFile(folder, "SELECT güggeliblau FROM colors_copy", "query.sql");
+            File sqlFile = TestUtil.createTempFile(folder, "SELECT güggeliblau FROM colors_copy", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)));
@@ -414,7 +414,7 @@ public class Db2DbStepTest {
             preparePgGeomSourceSinkTables(schemaName, con);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder,
+            File queryFile = TestUtil.createTempFile(folder,
                     String.format("select ST_AsBinary(geom) as geom from %s.source", schemaName), "select.sql");
 
             Connector src = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
@@ -446,7 +446,7 @@ public class Db2DbStepTest {
             preparePgGeomSourceSinkTables(schemaName, con);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder,
+            File queryFile = TestUtil.createTempFile(folder,
                     String.format("select ST_AsText(geom) as geom from %s.source", schemaName), "select.sql");
 
             Connector src = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
@@ -478,7 +478,7 @@ public class Db2DbStepTest {
             preparePgGeomSourceSinkTables(schemaName, con);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder,
+            File queryFile = TestUtil.createTempFile(folder,
                     String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName), "select.sql");
 
             Connector src = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
@@ -520,7 +520,7 @@ public class Db2DbStepTest {
             prepareSinkTable(schemaName, targetCon);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes",
+            File queryFile = TestUtil.createTempFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes",
                     "select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
@@ -571,7 +571,7 @@ public class Db2DbStepTest {
             prepareSinkTable(schemaName, targetCon);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes",
+            File queryFile = TestUtil.createTempFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes",
                     "select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
@@ -693,7 +693,7 @@ public class Db2DbStepTest {
             String select = String.format(
                     "select myint, myfloat, mytext, mydate, mytime, myuuid, ST_AsText(mygeom) as mygeom_wkt from %s.dtypes",
                     schemaName);
-            File queryFile = TestUtil.createFile(folder, select, "select.sql");
+            File queryFile = TestUtil.createTempFile(folder, select, "select.sql");
 
             Connector src = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR,
                     TestUtil.PG_READERUSR_PWD);

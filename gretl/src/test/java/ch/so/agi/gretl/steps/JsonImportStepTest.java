@@ -3,16 +3,11 @@ package ch.so.agi.gretl.steps;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -33,7 +28,7 @@ public class JsonImportStepTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(TestUtil.PG_DDLUSR_USR)
         .withPassword(TestUtil.PG_DDLUSR_PWD)
-        .withInitScript("init_postgresql.sql")
+        .withInitScript("data/sql/init_postgresql.sql")
         .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     public JsonImportStepTest() {
@@ -48,7 +43,7 @@ public class JsonImportStepTest {
     @Test
     public void importJsonObject_Ok() throws Exception {
         Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
-        File jsonFile = TestUtil.createFile(folder, "{\"foo\":\"bar\"}", "test1.json");
+        File jsonFile = TestUtil.createTempFile(folder, "{\"foo\":\"bar\"}", "test1.json");
 
         String schemaName = "jsonimport";
         String tableName = "jsonobject";
@@ -82,7 +77,7 @@ public class JsonImportStepTest {
     @Test
     public void appendJsonObject_Ok() throws Exception {
         Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
-        File jsonFile = TestUtil.createFile(folder, "{\"foo\":\"bar\"}", "test2.json");
+        File jsonFile = TestUtil.createTempFile(folder, "{\"foo\":\"bar\"}", "test2.json");
         
         String schemaName = "jsonimport";
         String tableName = "jsonobject";
@@ -114,7 +109,7 @@ public class JsonImportStepTest {
     @Test
     public void importJsonArray_Ok() throws Exception {
         Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
-        File jsonFile = TestUtil.createFile(folder, "[{\"type\":\"building\"}, {\"type\":\"street\"}]", "test3.json");
+        File jsonFile = TestUtil.createTempFile(folder, "[{\"type\":\"building\"}, {\"type\":\"street\"}]", "test3.json");
 
         String schemaName = "jsonimport";
         String tableName = "jsonarray";

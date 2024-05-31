@@ -34,7 +34,7 @@ public class PublisherStepDb2LocalTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(TestUtil.PG_DDLUSR_USR)
         .withPassword(TestUtil.PG_DDLUSR_PWD)
-        .withInitScript("init_postgresql.sql")
+        .withInitScript("data/sql/init_postgresql.sql")
         .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2)):null;
     
     final protected Path localTestOut = Paths.get("build").resolve("out");

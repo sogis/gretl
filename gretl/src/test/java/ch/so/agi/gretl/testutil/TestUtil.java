@@ -6,6 +6,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
+import java.util.Objects;
 
 public class TestUtil {
     public static final String PG_CONNECTION_URI = System.getProperty("gretltest_dburi_pg");
@@ -18,12 +20,23 @@ public class TestUtil {
     public static final String PG_READERUSR_PWD = "readeruser";
     public static final String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
 
-    public static File createFile(TemporaryFolder folder, String stm, String fileName) throws IOException {
+    public static File createTempFile(TemporaryFolder folder, String stm, String fileName) throws IOException {
         File sqlFile = folder.newFile(fileName);
-        BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
-        writer.write(stm);
-        writer.close();
 
-        return sqlFile;
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(sqlFile))) {
+            bw.write(stm);
+            return sqlFile;
+        }
+    }
+
+    public static File getResourceFile(String resourcePath) throws Exception {
+        Objects.requireNonNull(resourcePath);
+        URL resourceUrl = TestUtil.class.getClassLoader().getResource(resourcePath);
+
+        if (resourceUrl == null) {
+            throw new IllegalArgumentException("Resource not found " + resourcePath);
+        }
+
+        return new File(resourceUrl.toURI());
     }
 }

@@ -4,11 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -22,7 +18,6 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.TestUtil;
-import net.sf.saxon.s9api.SaxonApiException;
 
 public class PostgisRasterExportStepTest {
     private GretlLogger log;
@@ -32,7 +27,7 @@ public class PostgisRasterExportStepTest {
         (PostgreSQLContainer) new PostgisContainerProvider()
         .newInstance().withDatabaseName("gretl")
         .withUsername(TestUtil.PG_DDLUSR_USR)
-        .withInitScript("init_postgresql.sql")
+        .withInitScript("data/sql/init_postgresql.sql")
         .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     public PostgisRasterExportStepTest() {
