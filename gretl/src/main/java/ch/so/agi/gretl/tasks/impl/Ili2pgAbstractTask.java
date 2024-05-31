@@ -61,14 +61,14 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> isImportTid();
+    public abstract Property<Boolean> getIsImportTid();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isExportTid();
+    public abstract Property<Boolean> getIsExportTid();
     @Input
     @Optional
-    public abstract Property<Boolean>  isImportBid();
+    public abstract Property<Boolean> getIsImportBid();
     @InputFile
     @Optional
     public abstract Property<File> getPreScript();
@@ -79,7 +79,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> isDeleteData();
+    public abstract Property<Boolean> getIsDeleteData();
 
     @OutputFile
     @Optional
@@ -87,46 +87,46 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> isTrace();
+    public abstract Property<Boolean> getIsTrace();
 
     @InputFile
     @Optional
     public abstract Property<File> getValidConfigFile();
     @Input
     @Optional
-    public abstract Property<Boolean> isDisableValidation();
+    public abstract Property<Boolean> getIsDisableValidation();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isDisableAreaValidation();
+    public abstract Property<Boolean> getIsDisableAreaValidation();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isForceTypeValidation();
+    public abstract Property<Boolean> getIsForceTypeValidation();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isStrokeArcs();
+    public abstract Property<Boolean> getIsStrokeArcs();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isSkipPolygonBuilding();
+    public abstract Property<Boolean> getIsSkipPolygonBuilding();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isSkipGeometryErrors();
+    public abstract Property<Boolean> getIsSkipGeometryErrors();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isIligml20();
+    public abstract Property<Boolean> getIsIligml20();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isDisableRounding();
+    public abstract Property<Boolean> getIsDisableRounding();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isFailOnException();
+    public abstract Property<Boolean> getIsFailOnException();
 
     @Input
     @Optional
@@ -163,13 +163,13 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (getTopics().isPresent()) {
             settings.setTopics(getTopics().get());
         }
-        if (isImportTid().get()) {
+        if (getIsImportTid().get()) {
             settings.setImportTid(true);
         }        
-        if (isExportTid().get()) {
+        if (getIsExportTid().get()) {
             settings.setExportTid(true);
         }
-        if (isImportBid().get()) {
+        if (getIsImportBid().get()) {
             settings.setImportBid(true);
         }
         if (getPreScript().isPresent()) {
@@ -178,7 +178,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (getPostScript().isPresent()) {
             settings.setPostScript(this.getProject().file(getPostScript().get()).getPath());
         }
-        if (isDeleteData().get()) {
+        if (getIsDeleteData().get()) {
             settings.setDeleteMode(Config.DELETE_DATA);
         }
         if(function!=Config.FC_IMPORT && function!=Config.FC_UPDATE && function!=Config.FC_REPLACE) {
@@ -186,34 +186,34 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
                 settings.setLogfile(this.getProject().file(getLogFile().get()).getPath());
             }
         }
-        if (isTrace().get()) {
+        if (getIsTrace().get()) {
             EhiLogger.getInstance().setTraceFilter(false);
         }
         if (getValidConfigFile().isPresent()) {
             settings.setValidConfigFile(this.getProject().file(getValidConfigFile().get()).getPath());
         }
-        if (isDisableValidation().get()) {
+        if (getIsDisableValidation().get()) {
             settings.setValidation(false);
         }
-        if (isDisableAreaValidation().get()) {
+        if (getIsDisableAreaValidation().get()) {
             settings.setDisableAreaValidation(true);
         }
-        if (isForceTypeValidation().get()) {
+        if (getIsForceTypeValidation().get()) {
             settings.setOnlyMultiplicityReduction(true);
         }
-        if (isStrokeArcs().get()) {
+        if (getIsStrokeArcs().get()) {
             settings.setStrokeArcs(settings.STROKE_ARCS_ENABLE);
         }
-        if (isSkipPolygonBuilding().get()) {
+        if (getIsSkipPolygonBuilding().get()) {
             Ili2db.setSkipPolygonBuilding(settings);
         }
-        if (isSkipGeometryErrors().get()) {
+        if (getIsSkipGeometryErrors().get()) {
             settings.setSkipGeometryErrors(true);
         }
-        if (isIligml20().get()) {
+        if (getIsIligml20().get()) {
             settings.setTransferFileFormat(Config.ILIGML20);
         }
-        if (isDisableRounding().get()) {
+        if (getIsDisableRounding().get()) {
             settings.setDisableRounding(true);
         }
 
@@ -230,7 +230,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             conn.commit();
             database.close();
         } catch (Exception e) {
-            if (e instanceof Ili2dbException && !isFailOnException().get()) {
+            if (e instanceof Ili2dbException && !getIsFailOnException().get()) {
                 log.lifecycle(e.getMessage());
                 return;
             }

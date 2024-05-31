@@ -15,7 +15,7 @@ import org.gradle.api.tasks.*;
 public abstract class Ili2pgExport extends Ili2pgAbstractTask {
     @Input
     @Optional
-    public abstract Property<Boolean> isExport3();
+    public abstract Property<Boolean> getIsExport3();
     @Input
     @Optional
     public abstract Property<String> getExportModels();
@@ -30,7 +30,7 @@ public abstract class Ili2pgExport extends Ili2pgAbstractTask {
         if (!getDataFile().isPresent()) {
             return;
         }
-        if (isExport3().get()) {
+        if (getIsExport3().get()) {
             settings.setVer3_export(true);
         }
         if (getExportModels().isPresent()) {

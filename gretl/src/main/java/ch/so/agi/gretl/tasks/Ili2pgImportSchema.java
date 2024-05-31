@@ -22,11 +22,11 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> isOneGeomPerTable();
+    public abstract Property<Boolean> getIsOneGeomPerTable();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isSetupPgExt();
+    public abstract Property<Boolean> getIsSetupPgExt();
 
     @OutputFile
     @Optional
@@ -50,86 +50,99 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateSingleEnumTab();
+    public abstract Property<Boolean> getIsCreateSingleEnumTab();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateEnumTabs();
+    public abstract Property<Boolean> getIsCreateEnumTabs();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateEnumTxtCol();
+    public abstract Property<Boolean> getIsCreateEnumTxtCol();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateEnumColAsItfCode();
+    public abstract Property<Boolean> getIsCreateEnumColAsItfCode();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateEnumTabsWithId();
+    public abstract Property<Boolean> getIsCreateEnumTabsWithId();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateImportTabs();
+    public abstract Property<Boolean> getIsCreateImportTabs();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isBeautifyEnumDispName();
+    public abstract Property<Boolean> getIsBeautifyEnumDispName();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isNoSmartMapping();
+    public abstract Property<Boolean> getIsNoSmartMapping();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isSmart1Inheritance();
+    public abstract Property<Boolean> getIsSmart1Inheritance();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isSmart2Inheritance();
+    public abstract Property<Boolean> getIsSmart2Inheritance();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCoalesceCatalogueRef();
+    public abstract Property<Boolean> getIsCoalesceCatalogueRef();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCoalesceMultiSurface();
+    public abstract Property<Boolean> getIsCoalesceMultiSurface();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCoalesceMultiLine();
+    public abstract Property<Boolean> getIsCoalesceMultiLine();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isExpandMultilingual();
+    public abstract Property<Boolean> getIsExpandMultilingual();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCoalesceJson();
+    public abstract Property<Boolean> getIsCoalesceJson();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCoalesceArray();
+    public abstract Property<Boolean> getIsCoalesceArray();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateTypeConstraint();
+    public abstract Property<Boolean> getIsCreateTypeConstraint();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateFk();
+    public abstract Property<Boolean> getIsCreateFk();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateFkIdx();
+    public abstract Property<Boolean> getIsCreateFkIdx();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateUnique();
+    public abstract Property<Boolean> getIsCreateUnique();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateNumChecks();
+    public abstract Property<Boolean> getIsCreateNumChecks();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateTextChecks();
+    public abstract Property<Boolean> getIsCreateTextChecks();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateDateTimeChecks();
+    public abstract Property<Boolean> getIsCreateDateTimeChecks();
+
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateStdCols();
+    public abstract Property<Boolean> getIsCreateStdCols();
     @Input
     @Optional
     public abstract Property<String> getT_id_Name();
@@ -141,42 +154,42 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public abstract Property<Long> getIdSeqMax();
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateTypeDiscriminator();
+    public abstract Property<Boolean> getIsCreateTypeDiscriminator();
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateGeomIdx();
+    public abstract Property<Boolean> getIsCreateGeomIdx();
     @Input
     @Optional
-    public abstract Property<Boolean> isDisableNameOptimization();
+    public abstract Property<Boolean> getIsDisableNameOptimization();
     @Input
     @Optional
-    public abstract Property<Boolean> isNameByTopic();
+    public abstract Property<Boolean> getIsNameByTopic();
     @Input
     @Optional
     public abstract Property<Integer> getMaxNameLength();
     @Input
     @Optional
-    public abstract Property<Boolean> isSqlEnableNull();
+    public abstract Property<Boolean> getIsSqlEnableNull();
     @Input
     @Optional
-    public abstract Property<Boolean> isSqlColsAsText();
+    public abstract Property<Boolean> getIsSqlColsAsText();
     @Input
     @Optional
-    public abstract Property<Boolean> isSqlExtRefCols();
+    public abstract Property<Boolean> getIsSqlExtRefCols();
     @Input
     @Optional
-    public abstract Property<Boolean> isKeepAreaRef();
+    public abstract Property<Boolean> getIsKeepAreaRef();
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateTidCol();
+    public abstract Property<Boolean> getIsCreateTidCol();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateBasketCol();
+    public abstract Property<Boolean> getIsCreateBasketCol();
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateDatasetCol();
+    public abstract Property<Boolean> getIsCreateDatasetCol();
 
     @Input
     @Optional
@@ -184,7 +197,7 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> isCreateMetaInfo();
+    public abstract Property<Boolean> getIsCreateMetaInfo();
 
     @TaskAction
     public void importSchema() {
@@ -212,10 +225,10 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
     }
 
     private void init(Config settings) {
-        if (isOneGeomPerTable().get()) {
+        if (getIsOneGeomPerTable().get()) {
             settings.setOneGeomPerTable(true);
         }
-        if (isSetupPgExt().get()) {
+        if (getIsSetupPgExt().get()) {
             settings.setSetupPgExt(true);
         }
         if (getDropscript().isPresent()) {
@@ -237,76 +250,76 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
         if (getDefaultSrsCode().isPresent()) {
             settings.setDefaultSrsCode(getDefaultSrsCode().get());
         }
-        if (isCreateSingleEnumTab().get()) {
+        if (getIsCreateSingleEnumTab().get()) {
             settings.setCreateEnumDefs(settings.CREATE_ENUM_DEFS_SINGLE);
         }
-        if (isCreateEnumTabs().get()) {
+        if (getIsCreateEnumTabs().get()) {
             settings.setCreateEnumDefs(settings.CREATE_ENUM_DEFS_MULTI);
         }
-        if (isCreateEnumTxtCol().get()) {
+        if (getIsCreateEnumTxtCol().get()) {
             settings.setCreateEnumCols(settings.CREATE_ENUM_TXT_COL);
         }
-        if (isCreateEnumColAsItfCode().get()) {
+        if (getIsCreateEnumColAsItfCode().get()) {
             settings.setCreateEnumColAsItfCode(settings.CREATE_ENUMCOL_AS_ITFCODE_YES);
         }
-        if (isCreateEnumTabsWithId().get()) {
+        if (getIsCreateEnumTabsWithId().get()) {
             settings.setCreateEnumDefs(Config.CREATE_ENUM_DEFS_MULTI_WITH_ID);
         }
-        if (isCreateImportTabs().get()) {
+        if (getIsCreateImportTabs().get()) {
             settings.setCreateImportTabs(true);
         }
-        if (isBeautifyEnumDispName().get()) {
+        if (getIsBeautifyEnumDispName().get()) {
             settings.setBeautifyEnumDispName(settings.BEAUTIFY_ENUM_DISPNAME_UNDERSCORE);
         }
-        if (isNoSmartMapping().get()) {
+        if (getIsNoSmartMapping().get()) {
             Ili2db.setNoSmartMapping(settings);
         }
-        if (isSmart1Inheritance().get()) {
+        if (getIsSmart1Inheritance().get()) {
             settings.setInheritanceTrafo(settings.INHERITANCE_TRAFO_SMART1);
         }
-        if (isSmart2Inheritance().get()) {
+        if (getIsSmart2Inheritance().get()) {
             settings.setInheritanceTrafo(settings.INHERITANCE_TRAFO_SMART2);
         }
-        if (isCoalesceCatalogueRef().get()) {
+        if (getIsCoalesceCatalogueRef().get()) {
             settings.setCatalogueRefTrafo(settings.CATALOGUE_REF_TRAFO_COALESCE);
         }
-        if (isCoalesceMultiSurface().get()) {
+        if (getIsCoalesceMultiSurface().get()) {
             settings.setMultiSurfaceTrafo(settings.MULTISURFACE_TRAFO_COALESCE);
         }
-        if (isCoalesceMultiLine().get()) {
+        if (getIsCoalesceMultiLine().get()) {
             settings.setMultiLineTrafo(settings.MULTILINE_TRAFO_COALESCE);
         }
-        if (isExpandMultilingual().get()) {
+        if (getIsExpandMultilingual().get()) {
             settings.setMultilingualTrafo(settings.MULTILINGUAL_TRAFO_EXPAND);
         }
-        if (isCoalesceJson().get()) {
+        if (getIsCoalesceJson().get()) {
             settings.setJsonTrafo(settings.JSON_TRAFO_COALESCE);
         }
-        if (isCoalesceArray().get()) {
+        if (getIsCoalesceArray().get()) {
             settings.setArrayTrafo(settings.ARRAY_TRAFO_COALESCE);
         }
-        if (isCreateTypeConstraint().get()) {
+        if (getIsCreateTypeConstraint().get()) {
             settings.setCreateTypeConstraint(true);
         }
-        if (isCreateFk().get()) {
+        if (getIsCreateFk().get()) {
             settings.setCreateFk(settings.CREATE_FK_YES);
         }
-        if (isCreateFkIdx().get()) {
+        if (getIsCreateFkIdx().get()) {
             settings.setCreateFkIdx(settings.CREATE_FKIDX_YES);
         }
-        if (isCreateUnique().get()) {
+        if (getIsCreateUnique().get()) {
             settings.setCreateUniqueConstraints(true);
         }
-        if (isCreateNumChecks().get()) {
+        if (getIsCreateNumChecks().get()) {
             settings.setCreateNumChecks(true);
         }
-        if (isCreateTextChecks().get()) {
+        if (getIsCreateTextChecks().get()) {
             settings.setCreateTextChecks(true);
         }
-        if (isCreateDateTimeChecks().get()) {
+        if (getIsCreateDateTimeChecks().get()) {
             settings.setCreateDateTimeChecks(true);
         }
-        if (isCreateStdCols().get()) {
+        if (getIsCreateStdCols().get()) {
             settings.setCreateStdCols(settings.CREATE_STD_COLS_ALL);
         }
         if (getT_id_Name().isPresent()) {
@@ -318,46 +331,46 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
         if (getIdSeqMax().isPresent()) {
             settings.setMaxIdSeqValue(getIdSeqMax().get());
         }
-        if (isCreateTypeDiscriminator().get()) {
+        if (getIsCreateTypeDiscriminator().get()) {
             settings.setCreateTypeDiscriminator(settings.CREATE_TYPE_DISCRIMINATOR_ALWAYS);
         }
-        if (isCreateGeomIdx().get()) {
+        if (getIsCreateGeomIdx().get()) {
             settings.setValue(Config.CREATE_GEOM_INDEX, Config.TRUE);
         }
-        if (isDisableNameOptimization().get()) {
+        if (getIsDisableNameOptimization().get()) {
             settings.setNameOptimization(settings.NAME_OPTIMIZATION_DISABLE);
         }
-        if (isNameByTopic().get()) {
+        if (getIsNameByTopic().get()) {
             settings.setNameOptimization(settings.NAME_OPTIMIZATION_TOPIC);
         }
         if (getMaxNameLength().isPresent()) {
             settings.setMaxSqlNameLength(getMaxNameLength().get().toString());
         }
-        if (isSqlEnableNull().get()) {
+        if (getIsSqlEnableNull().get()) {
             settings.setSqlNull(settings.SQL_NULL_ENABLE);
         }
-        if (isSqlColsAsText().get()) {
+        if (getIsSqlColsAsText().get()) {
             settings.setSqlColsAsText(settings.SQL_COLS_AS_TEXT_ENABLE);
         }
-        if (isSqlExtRefCols().get()) {
+        if (getIsSqlExtRefCols().get()) {
             settings.setSqlExtRefCols(settings.SQL_EXTREF_ENABLE);
         }
-        if (isKeepAreaRef().get()) {
+        if (getIsKeepAreaRef().get()) {
             settings.setAreaRef(settings.AREA_REF_KEEP);
         }
-        if (isCreateTidCol().get()) {
+        if (getIsCreateTidCol().get()) {
             settings.setTidHandling(settings.TID_HANDLING_PROPERTY);
         }
-        if (isCreateBasketCol().get()) {
+        if (getIsCreateBasketCol().get()) {
             settings.setBasketHandling(settings.BASKET_HANDLING_READWRITE);
         }
-        if (isCreateDatasetCol().get()) {
+        if (getIsCreateDatasetCol().get()) {
             settings.setCreateDatasetCols(settings.CREATE_DATASET_COL);
         }
         if (getTranslation().isPresent()) {
             settings.setIli1Translation(getTranslation().get());
         }
-        if (isCreateMetaInfo().get()) {
+        if (getIsCreateMetaInfo().get()) {
             settings.setCreateMetaInfo(true);
         }
     }

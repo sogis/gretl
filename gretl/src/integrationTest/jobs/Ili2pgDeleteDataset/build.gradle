@@ -19,7 +19,7 @@ tasks.register("ili2pgschemaimport", Ili2pgImportSchema) {
 }
 
 tasks.register("ili2pgreplace", Ili2pgReplace) {
-    dependsOn: 'ili2pgschemaimport'
+    dependsOn 'ili2pgschemaimport'
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24LV95"
     dbschema = "dm01"
@@ -29,7 +29,7 @@ tasks.register("ili2pgreplace", Ili2pgReplace) {
 }
 
 tasks.register('ili2pgdelete', Ili2pgDelete) {
-    dependsOn: 'ili2pgreplace'
+    dependsOn 'ili2pgreplace'
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24LV95"
     dbschema = "dm01"

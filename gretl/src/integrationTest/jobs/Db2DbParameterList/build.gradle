@@ -13,7 +13,7 @@ defaultTasks 'src2dest'
 tasks.register('src2dest', Db2Db){
     sourceDb =  [db_uri,db_user,db_pass]
     targetDb = [db_uri,db_user,db_pass]
-    sqlParameters = [srcTable:'src1']
+    sqlParameters = [[srcTable:'src1'],[srcTable:'src2']]
     transferSets = [
             new TransferSet('src.sql', 'parameterlist.dest', false)
     ]

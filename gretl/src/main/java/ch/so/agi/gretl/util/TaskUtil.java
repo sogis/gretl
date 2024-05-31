@@ -3,7 +3,6 @@ package ch.so.agi.gretl.util;
 import ch.so.agi.gretl.api.Connector;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.provider.ListProperty;
 
 import java.io.File;
 import java.util.List;
@@ -40,15 +39,14 @@ public class TaskUtil {
      * returns the absolute path.
      */
     public static File createAbsolutePath(Object filePath, Project gradleProject) {
-        File absolute = gradleProject.file(filePath);
-
-        return absolute;
+        return gradleProject.file(filePath);
     }
 
     public static Connector getDatabaseConnectorObject(List<String> databaseDetails){
         if (databaseDetails.size() != 3) {
             throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
         }
+
         String databaseUri = databaseDetails.get(0);
         String databaseUser = databaseDetails.get(1);
         String databasePassword = databaseDetails.get(2);

@@ -45,11 +45,16 @@ public abstract class SqlExecutor extends DefaultTask {
     public void executeSQLExecutor() {
 
         String taskName = this.getName();
-        Connector database = TaskUtil.getDatabaseConnectorObject(getDatabase().get());
+
+        if(!getDatabase().isPresent()) {
+            throw new GradleException("database is null");
+        }
 
         if (!getSqlFiles().isPresent()) {
             throw new GradleException("sqlFiles is null");
         }
+
+        Connector database = TaskUtil.getDatabaseConnectorObject(getDatabase().get());
 
         List<File> files = convertToFileList(getSqlFiles());
 
