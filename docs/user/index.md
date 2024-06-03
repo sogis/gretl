@@ -1033,7 +1033,7 @@ task importData(type: Ili2pgImport){
     database = [db_uri, db_user, db_pass]
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
     dataset = dataFile
-    datasetSubstring = 0..4
+    datasetSubstring = (0..4).toList()
     logFile = "ili2pg.log"
 }
 ```

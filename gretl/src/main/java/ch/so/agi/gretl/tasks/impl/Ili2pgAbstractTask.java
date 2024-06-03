@@ -8,9 +8,10 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
-import groovy.lang.Range;
 
+import groovy.lang.Range;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
@@ -19,13 +20,12 @@ import org.gradle.api.tasks.OutputFile;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.List;
 
 public abstract class Ili2pgAbstractTask extends DefaultTask {
     protected GretlLogger log;
 
     @Input
-    public abstract Property<List<String>> getDatabase();
+    public abstract ListProperty<String> getDatabase();
 
     @Input
     @Optional
@@ -61,14 +61,14 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsImportTid();
+    public abstract Property<Boolean> getImportTid();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsExportTid();
+    public abstract Property<Boolean> getExportTid();
     @Input
     @Optional
-    public abstract Property<Boolean> getIsImportBid();
+    public abstract Property<Boolean> getImportBid();
     @InputFile
     @Optional
     public abstract Property<File> getPreScript();
@@ -79,7 +79,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsDeleteData();
+    public abstract Property<Boolean> getDeleteData();
 
     @OutputFile
     @Optional
@@ -87,50 +87,50 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsTrace();
+    public abstract Property<Boolean> getTrace();
 
     @InputFile
     @Optional
     public abstract Property<File> getValidConfigFile();
     @Input
     @Optional
-    public abstract Property<Boolean> getIsDisableValidation();
+    public abstract Property<Boolean> getDisableValidation();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsDisableAreaValidation();
+    public abstract Property<Boolean> getDisableAreaValidation();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsForceTypeValidation();
+    public abstract Property<Boolean> getForceTypeValidation();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsStrokeArcs();
+    public abstract Property<Boolean> getStrokeArcs();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsSkipPolygonBuilding();
+    public abstract Property<Boolean> getSkipPolygonBuilding();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsSkipGeometryErrors();
+    public abstract Property<Boolean> getSkipGeometryErrors();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsIligml20();
+    public abstract Property<Boolean> getIligml20();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsDisableRounding();
+    public abstract Property<Boolean> getDisableRounding();
 
     @Input
     @Optional
-    public abstract Property<Boolean> getIsFailOnException();
+    public abstract Property<Boolean> getFailOnException();
 
     @Input
     @Optional
-    public abstract Property<Range<Integer>> getDatasetSubstring();
+    public abstract ListProperty<Integer> getDatasetSubstring();
 
     protected void run(int function, Config settings) {
         log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
@@ -163,13 +163,13 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (getTopics().isPresent()) {
             settings.setTopics(getTopics().get());
         }
-        if (getIsImportTid().get()) {
+        if (getImportTid().getOrElse(false)) {
             settings.setImportTid(true);
         }        
-        if (getIsExportTid().get()) {
+        if (getExportTid().getOrElse(false)) {
             settings.setExportTid(true);
         }
-        if (getIsImportBid().get()) {
+        if (getImportBid().getOrElse(false)) {
             settings.setImportBid(true);
         }
         if (getPreScript().isPresent()) {
@@ -178,7 +178,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         if (getPostScript().isPresent()) {
             settings.setPostScript(this.getProject().file(getPostScript().get()).getPath());
         }
-        if (getIsDeleteData().get()) {
+        if (getDeleteData().getOrElse(false)) {
             settings.setDeleteMode(Config.DELETE_DATA);
         }
         if(function!=Config.FC_IMPORT && function!=Config.FC_UPDATE && function!=Config.FC_REPLACE) {
@@ -186,34 +186,34 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
                 settings.setLogfile(this.getProject().file(getLogFile().get()).getPath());
             }
         }
-        if (getIsTrace().get()) {
+        if (getTrace().getOrElse(false)) {
             EhiLogger.getInstance().setTraceFilter(false);
         }
         if (getValidConfigFile().isPresent()) {
             settings.setValidConfigFile(this.getProject().file(getValidConfigFile().get()).getPath());
         }
-        if (getIsDisableValidation().get()) {
+        if (getDisableValidation().getOrElse(false)) {
             settings.setValidation(false);
         }
-        if (getIsDisableAreaValidation().get()) {
+        if (getDisableAreaValidation().getOrElse(false)) {
             settings.setDisableAreaValidation(true);
         }
-        if (getIsForceTypeValidation().get()) {
+        if (getForceTypeValidation().getOrElse(false)) {
             settings.setOnlyMultiplicityReduction(true);
         }
-        if (getIsStrokeArcs().get()) {
+        if (getStrokeArcs().getOrElse(false)) {
             settings.setStrokeArcs(settings.STROKE_ARCS_ENABLE);
         }
-        if (getIsSkipPolygonBuilding().get()) {
+        if (getSkipPolygonBuilding().getOrElse(false)) {
             Ili2db.setSkipPolygonBuilding(settings);
         }
-        if (getIsSkipGeometryErrors().get()) {
+        if (getSkipGeometryErrors().getOrElse(false)) {
             settings.setSkipGeometryErrors(true);
         }
-        if (getIsIligml20().get()) {
+        if (getIligml20().getOrElse(false)) {
             settings.setTransferFileFormat(Config.ILIGML20);
         }
-        if (getIsDisableRounding().get()) {
+        if (getDisableRounding().getOrElse(false)) {
             settings.setDisableRounding(true);
         }
 
@@ -230,7 +230,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             conn.commit();
             database.close();
         } catch (Exception e) {
-            if (e instanceof Ili2dbException && !getIsFailOnException().get()) {
+            if (e instanceof Ili2dbException && !getFailOnException().get()) {
                 log.lifecycle(e.getMessage());
                 return;
             }

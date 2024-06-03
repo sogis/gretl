@@ -27,5 +27,5 @@ tasks.register("ili2pgimport", Ili2pgImport) {
         include "*.xtf"
     }
     dataset = [ 'A_Dataset', 'B_Dataset']
-    datasetSubstring = 0..4
+    datasetSubstring = (0..4).toList()
 }

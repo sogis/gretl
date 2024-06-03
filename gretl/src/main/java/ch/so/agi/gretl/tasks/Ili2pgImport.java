@@ -84,11 +84,12 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
                 datasetNames = new ArrayList<>();
                 for (File datasetFile : datasetFiles) {
                     if (getDatasetSubstring().isPresent()) {
-                        Range<Integer> datasetSubstring = getDatasetSubstring().get();
+                        List<Integer> datasetSubstring = getDatasetSubstring().get();
                         if (datasetSubstring.size() > 1) {
-                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.getFrom(), datasetSubstring.getTo()));
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.get(0), datasetSubstring.get(1)));
                         } else {
-                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.getFrom()));
+                            int from = datasetSubstring.size() == 1 ? datasetSubstring.get(0) : 0;
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(from));
                         }
                     } else {
                         datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", ""));
@@ -98,12 +99,13 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
                 datasetNames=new ArrayList<>();
                 if (getDatasetSubstring().isPresent()) {
                     List<String> fileNames = (List)dataset;
-                    Range<Integer> datasetSubstring = getDatasetSubstring().get();
+                    List<Integer> datasetSubstring = getDatasetSubstring().get();
                     for (String fileName : fileNames) {
                         if (datasetSubstring.size() > 1) {
-                            datasetNames.add(fileName.substring(datasetSubstring.getFrom(), datasetSubstring.getTo()));
+                            datasetNames.add(fileName.substring(datasetSubstring.get(0), datasetSubstring.get(1)));
                         } else {
-                            datasetNames.add(fileName.substring(datasetSubstring.getFrom()));
+                            int from = datasetSubstring.size() == 1 ? datasetSubstring.get(0) : 0;
+                            datasetNames.add(fileName.substring(from));
                         }
                     }
                 } else {
