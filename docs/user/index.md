@@ -1234,6 +1234,8 @@ Die Parameter sind analog wie bei Ili2pgImport.
 
 Prüft die Daten ohne diese in eine Datei zu exportieren. Der Task ist erfolgreich, wenn keine Fehler gefunden werden und ist nicht erfolgreich, wenn Fehler gefunden werden. Mit der Option `failOnException=false` ist der Task erfolgreich, auch wenn Fehler gefunden werden.
 
+Mit dem Parameter `--models`, `--topics`, `--baskets` oder `--dataset` wird definiert, welche Daten geprüft werden. Parameter `--dataset` akzeptiert auch eine Liste von Datasets.
+
 Beispiel:
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
