@@ -50,7 +50,7 @@ public class CsvExport extends DefaultTask {
     }
     @Input
     @Optional
-    public Boolean isFirstLineIsHeader() {
+    public Boolean getFirstLineIsHeader() {
         return firstLineIsHeader;
     }
     @Input
