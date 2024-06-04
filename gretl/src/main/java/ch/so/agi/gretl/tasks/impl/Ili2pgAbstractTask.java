@@ -227,7 +227,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             conn.commit();
             database.close();
         } catch (Exception e) {
-            if (e instanceof Ili2dbException && !getFailOnException().getOrElse(false)) {
+            if (e instanceof Ili2dbException && !getFailOnException().getOrElse(true)) {
                 log.lifecycle(e.getMessage());
                 return;
             }
