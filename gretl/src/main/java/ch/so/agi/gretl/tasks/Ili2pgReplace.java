@@ -90,7 +90,8 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
                 for (File datasetFile : datasetFiles) {
                     if (datasetSubstring != null) {
                         if (datasetSubstring.size() > 1) {
-                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.get(0), datasetSubstring.get(1)));
+                            int rangeTo = datasetSubstring.get(datasetSubstring.size() - 1);
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.get(0), rangeTo));
                         } else {
                             int from = datasetSubstring.size() == 1 ? datasetSubstring.get(0) : 0;
                             datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(from));
@@ -106,7 +107,8 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
                     List<Integer> datasetSubstring = getDatasetSubstring().get();
                     for (String fileName : fileNames) {
                         if (datasetSubstring.size() > 1) {
-                            datasetNames.add(fileName.substring(datasetSubstring.get(0), datasetSubstring.get(1)));
+                            int rangeTo = datasetSubstring.get(datasetSubstring.size() - 1);
+                            datasetNames.add(fileName.substring(datasetSubstring.get(0), rangeTo));
                         } else {
                             int from = datasetSubstring.size() == 1 ? datasetSubstring.get(0) : 0;
                             datasetNames.add(fileName.substring(from));

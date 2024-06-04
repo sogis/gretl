@@ -86,7 +86,6 @@ dependencies {
     api libs.ehi.sql.gen
 
     api (libs.iox.formats) {
-        //todo: can we also use the libs.versions.toml versions here?
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
 

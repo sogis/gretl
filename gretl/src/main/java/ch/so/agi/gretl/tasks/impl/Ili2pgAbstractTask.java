@@ -22,7 +22,7 @@ import java.io.File;
 import java.sql.SQLException;
 
 public abstract class Ili2pgAbstractTask extends DefaultTask {
-    protected GretlLogger log;
+    protected GretlLogger log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
 
     @Input
     public abstract ListProperty<String> getDatabase();
@@ -133,8 +133,6 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     public abstract ListProperty<Integer> getDatasetSubstring();
 
     protected void run(int function, Config settings) {
-        log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
-
         if (!getDatabase().isPresent()) {
             throw new IllegalArgumentException("database must not be null");
         }
@@ -230,7 +228,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             conn.commit();
             database.close();
         } catch (Exception e) {
-            if (e instanceof Ili2dbException && !getFailOnException().get()) {
+            if (e instanceof Ili2dbException && !getFailOnException().getOrElse(false)) {
                 log.lifecycle(e.getMessage());
                 return;
             }
