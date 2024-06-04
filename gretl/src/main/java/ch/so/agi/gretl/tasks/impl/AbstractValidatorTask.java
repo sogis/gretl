@@ -72,30 +72,30 @@ public class AbstractValidatorTask extends DefaultTask {
 
     @Input
     @Optional
-    public Boolean isForceTypeValidation() {
+    public Boolean getForceTypeValidation() {
         return forceTypeValidation;
     }
 
     @Input
     @Optional
-    public Boolean isDisableAreaValidation() {
+    public Boolean getDisableAreaValidation() {
         return disableAreaValidation;
     }
     @Input
     @Optional
-    public Boolean isMultiplicityOff() {
+    public Boolean getMultiplicityOff() {
         return multiplicityOff;
     }
 
     @Input
     @Optional
-    public Boolean isAllObjectsAccessible() {
+    public Boolean getAllObjectsAccessible() {
         return allObjectsAccessible;
     }
 
     @Input
     @Optional
-    public Boolean isSkipPolygonBuilding() {
+    public Boolean getSkipPolygonBuilding() {
         return skipPolygonBuilding;
     }
 
@@ -131,7 +131,7 @@ public class AbstractValidatorTask extends DefaultTask {
 
     @Input
     @Optional
-    public Boolean isFailOnError() {
+    public Boolean getFailOnError() {
         return failOnError;
     }
 

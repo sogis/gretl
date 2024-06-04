@@ -9,7 +9,6 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
-import groovy.lang.Range;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
