@@ -18,6 +18,7 @@ public class TestUtil {
     public static final String PG_DMLUSR_PWD = "dmluser";
     public static final String PG_READERUSR_USR = "readeruser";
     public static final String PG_READERUSR_PWD = "readeruser";
+    public static final String PG_INIT_SCRIPT_PATH = "data/sql/init_postgresql.sql";
     public static final String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
 
     public static File createTempFile(TemporaryFolder folder, String stm, String fileName) throws IOException {

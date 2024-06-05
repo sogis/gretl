@@ -30,7 +30,6 @@ import static org.junit.Assert.*;
  */
 public class SqlExecutorStepTest {
 
-    private static final String INIT_DB_SQL_PATH = "data/sql/init_postgresql.sql";
     private static final String POSTGIS_VERSION_SQL_PATH = "data/sql/postgisversion.sql";
     private static final String CREATE_TEST_DB_SQL_PATH = "data/sql/create_test_db.sql";
 
@@ -39,33 +38,33 @@ public class SqlExecutorStepTest {
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                 .withDatabaseName(TestUtil.PG_DB_NAME)
                 .withUsername(TestUtil.PG_DDLUSR_USR)
-                .withInitScript(INIT_DB_SQL_PATH)
+                .withInitScript(TestUtil.PG_INIT_SCRIPT_PATH)
                 .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-    private Connector connector;
-    private Connector duckDbConnector;
+    private final Connector connector;
+    private final Connector duckDbConnector;
 
     public SqlExecutorStepTest() {
         LogEnvironment.initStandalone();
+        connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        duckDbConnector = new Connector("jdbc:duckdb::memory:", null, null);
     }
 
     @Before
     public void initialize() throws Exception {
-        connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-        duckDbConnector = new Connector("jdbc:duckdb::memory:", null, null);
-        createTestDb(connector);
+        createTestDb();
     }
 
     @After
     public void finalise() throws Exception {
-        clearTestDb(connector);
-        if (connector != null && !connector.isClosed()) {
+        clearTestDb();
+        if (!connector.isClosed()) {
             connector.close();
         }
 
-        if (duckDbConnector != null && !duckDbConnector.isClosed()) {
+        if (!duckDbConnector.isClosed()) {
             duckDbConnector.close();
         }
     }
@@ -221,14 +220,14 @@ public class SqlExecutorStepTest {
         assertTrue(connector.isClosed());
     }
 
-    private void clearTestDb(Connector connector) throws Exception {
+    private void clearTestDb() throws Exception {
         try (Connection connection = connector.connect(); Statement statement = connection.createStatement()) {
             connection.setAutoCommit(true);
             statement.execute("DROP TABLE colors");
         }
     }
 
-    private void createTestDb(Connector connector) throws Exception {
+    private void createTestDb() throws Exception {
         try (Connection connection = connector.connect()) {
             connection.setAutoCommit(true);
 
