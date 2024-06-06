@@ -17,7 +17,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +30,6 @@ import static org.junit.Assert.*;
 public class SqlExecutorStepTest {
 
     private static final String POSTGIS_VERSION_SQL_PATH = "data/sql/postgisversion.sql";
-    private static final String CREATE_TEST_DB_SQL_PATH = "data/sql/create_test_db.sql";
 
     @ClassRule
     public static PostgreSQLContainer<?> postgres =
@@ -54,12 +52,12 @@ public class SqlExecutorStepTest {
 
     @Before
     public void initialize() throws Exception {
-        createTestDb();
+        TestUtil.createTestDb(this.connector, TestUtil.CREATE_TEST_DB_SQL_PATH);
     }
 
     @After
     public void finalise() throws Exception {
-        clearTestDb();
+        TestUtil.clearTestDb(connector);
         if (!connector.isClosed()) {
             connector.close();
         }
@@ -218,24 +216,6 @@ public class SqlExecutorStepTest {
         }
 
         assertTrue(connector.isClosed());
-    }
-
-    private void clearTestDb() throws Exception {
-        try (Connection connection = connector.connect(); Statement statement = connection.createStatement()) {
-            connection.setAutoCommit(true);
-            statement.execute("DROP TABLE colors");
-        }
-    }
-
-    private void createTestDb() throws Exception {
-        try (Connection connection = connector.connect()) {
-            connection.setAutoCommit(true);
-
-            SqlExecutorStep step = new SqlExecutorStep();
-            File inputFile = TestUtil.getResourceFile(CREATE_TEST_DB_SQL_PATH);
-            FileStylingDefinition.checkForUtf8(inputFile);
-            step.execute(connector, Collections.singletonList(inputFile));
-        }
     }
 
     private File createSqlFileWithWrongExtension() throws Exception {
