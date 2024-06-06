@@ -24,22 +24,16 @@ import ch.so.agi.gretl.testutil.TestUtil;
 public class DatabaseDocumentExportStepTest {
 
     @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(TestUtil.PG_DDLUSR_USR)
-        .withPassword(TestUtil.PG_DDLUSR_PWD)
-        .withInitScript("data/sql/init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
-
-    
-    public DatabaseDocumentExportStepTest() {
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                .withDatabaseName(TestUtil.PG_DB_NAME)
+                .withUsername(TestUtil.PG_DDLUSR_USR)
+                .withPassword(TestUtil.PG_DDLUSR_PWD)
+                .withInitScript(TestUtil.PG_INIT_SCRIPT_PATH)
+                .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-    private GretlLogger log;
     
     // TODO: 
     // Die mühsamen self-signed Zertifikate des AIO können schlecht getestet werden. A) Nur intern B) Filenamen können sich ändern.
@@ -58,6 +52,7 @@ public class DatabaseDocumentExportStepTest {
 
         Connection con = connector.connect();
         con.setAutoCommit(false);
+
         try {
             Statement stmt = con.createStatement();
             

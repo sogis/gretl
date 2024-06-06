@@ -17,17 +17,18 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.S3Test;
 
 public class S3DownloadStepTest {
-    private String s3AccessKey = System.getProperty("s3AccessKey");
-    private String s3SecretKey = System.getProperty("s3SecretKey");
-    private String s3BucketName = System.getProperty("s3BucketName");
-
-    public S3DownloadStepTest() {
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
+    private final String s3AccessKey;
+    private final String s3SecretKey;
+    private final String s3BucketName;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-    private GretlLogger log;
+
+    public S3DownloadStepTest() {
+        this.s3AccessKey = System.getProperty("s3AccessKey");
+        this.s3SecretKey = System.getProperty("s3SecretKey");
+        this.s3BucketName = System.getProperty("s3BucketName");
+    }
         
     @Test
     @Category(S3Test.class)

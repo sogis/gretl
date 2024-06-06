@@ -40,17 +40,10 @@ public class Db2DbStepTest {
                     .withInitScript(TestUtil.PG_INIT_SCRIPT_PATH)
                     .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
-    private final GretlLogger log;
     private Connector connector;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-
-    public Db2DbStepTest() {
-        LogEnvironment.initStandalone();
-        this.log = LogEnvironment.getLogger(this.getClass());
-//        this.connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-    }
 
     @Before
     public void initialize() throws Exception {
@@ -71,20 +64,18 @@ public class Db2DbStepTest {
     public void faultFreeExecutionTest() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors; ", "query.sql");
         File sqlFile2 = TestUtil.createTempFile(folder, "SELECT * FROM colors; ", "query2.sql");
-
         ArrayList<TransferSet> transferSets = new ArrayList<>(Arrays.asList(
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", Boolean.TRUE),
                 new TransferSet(sqlFile2.getAbsolutePath(), "colors_copy", Boolean.TRUE)
         ));
-
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         Db2DbStep db2db = new Db2DbStep();
+
         db2db.processAllTransferSets(sourceDb, targetDb, transferSets);
 
         try (Connection connection = this.connector.connect()) {
-            ResultSet rs = connection.createStatement()
-                    .executeQuery("SELECT * FROM colors_copy WHERE farbname = 'blau'");
+            ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM colors_copy WHERE farbname = 'blau'");
             while (rs.next()) {
                 assertEquals(rs.getObject("rot"), 0);
                 assertEquals(rs.getObject("farbname"), "blau");
@@ -118,7 +109,7 @@ public class Db2DbStepTest {
 
     @Test(expected = EmptyFileException.class)
     public void db2dbEmptyFileTest() throws Exception {
-        File sqlFile = folder.newFile("query.sql");
+        File sqlFile = TestUtil.createTempFile(folder, "", "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", Boolean.FALSE)
         ));
@@ -655,7 +646,6 @@ public class Db2DbStepTest {
         Connection con = sourceDb.connect();
         createTableInTestDb(con);
         writeExampleDataInTestDB(con);
-
     }
 
     private void createTableInTestDb(Connection con) throws Exception {
@@ -672,5 +662,4 @@ public class Db2DbStepTest {
         stmt.execute("INSERT INTO colors  VALUES (251,0,0,'rot')");
         stmt.execute("INSERT INTO colors  VALUES (0,0,255,'blau')");
     }
-
 }

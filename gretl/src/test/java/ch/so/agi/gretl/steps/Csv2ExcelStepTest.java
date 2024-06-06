@@ -39,12 +39,6 @@ public class Csv2ExcelStepTest {
    
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-   
-    private GretlLogger log;
-
-    public Csv2ExcelStepTest() {
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
     
     @Test
     public void encoding_iso_8859_1_Ok() throws Exception {
