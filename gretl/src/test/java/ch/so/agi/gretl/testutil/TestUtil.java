@@ -29,6 +29,9 @@ public class TestUtil {
     public static final String CREATE_TEST_DB_SQL_PATH = "data/sql/create_test_db.sql";
     public static final String CLEAR_TEST_DB_SQL_PATH = "data/sql/clear_test_db.sql";
     public static final String INSERT_COLORS_COPY_DATA_SQL_PATH = "data/sql/insert_colors_copy_data.sql";
+    public static final String COLORS_INSERT_DELETE_SQL_PATH = "data/sql/colors_insert_delete.sql";
+    public static final String COLORS_UPDATE_FARBNAME_SQL_PATH = "data/sql/colors_update_farbname.sql";
+    public static final String POSTGIS_VERSION_SQL_PATH = "data/sql/postgisversion.sql";
 
     public static File createTempFile(TemporaryFolder folder, String content, String fileName) throws IOException {
         File sqlFile = folder.newFile(fileName);

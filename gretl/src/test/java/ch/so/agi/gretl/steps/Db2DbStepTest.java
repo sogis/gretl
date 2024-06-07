@@ -2,11 +2,8 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.api.TransferSet;
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.DbTest;
 import ch.so.agi.gretl.testutil.TestUtil;
-import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.GretlException;
 import org.junit.*;
@@ -17,7 +14,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -84,7 +80,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void newlineAtEndOfFileTest() throws Exception {
+    public void newlineAtEndOfFileTest_Ok() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors;" + System.lineSeparator(), "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", true)
@@ -95,7 +91,7 @@ public class Db2DbStepTest {
      }
 
     @Test(expected = IOException.class)
-    public void fileWithMultipleStmtTest() throws Exception {
+    public void fileWithMultipleStmtTest_throwsIOException() throws Exception {
         String content = "SELECT * FROM colors;" + System.lineSeparator() + "SELECT * FROM colors;";
         File sqlFile = TestUtil.createTempFile(folder, content, "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
@@ -108,7 +104,7 @@ public class Db2DbStepTest {
     }
 
     @Test(expected = EmptyFileException.class)
-    public void db2dbEmptyFileTest() throws Exception {
+    public void db2dbEmptyFile_throwsEmptyFileException() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "", "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", Boolean.FALSE)
@@ -120,7 +116,7 @@ public class Db2DbStepTest {
     }
 
     @Test(expected = SQLException.class)
-    public void invalidSqlTest() throws Exception {
+    public void invalidSql_throwsSqlException() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "SELECT somethingInvalid FROM colors", "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", Boolean.FALSE)
@@ -136,8 +132,6 @@ public class Db2DbStepTest {
         try (Connection connection = this.connector.connect(); Statement stmt = connection.createStatement()) {
             // Hier muss die Spalte farbname entfernt werden, da die Tabelle colors_copy
             // ja gerade mit nicht genug Spalten angelegt werden soll!
-
-            // clear test db and call a different initialization sql file, where colors_copy has no farbname column
             stmt.execute("ALTER TABLE colors_copy DROP COLUMN farbname");
 
             File sqlFile = TestUtil.createTempFile(folder, "SELECT rot, gruen, blau, farbname FROM colors", "query.sql");
@@ -160,7 +154,7 @@ public class Db2DbStepTest {
     }
 
     @Test(expected = SQLException.class)
-    public void incompatibleDataTypeTest() throws Exception {
+    public void incompatibleDataType_throwsSqlException() throws Exception {
         try (Connection connection = this.connector.connect(); Statement stmt = connection.createStatement()) {
             stmt.execute("DROP TABLE colors_copy; CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname integer)");
 
@@ -179,7 +173,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void copyEmptyTableToOtherTableTest() throws Exception {
+    public void copyEmptyTableToOtherTable_Ok() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors", "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", Boolean.FALSE)
@@ -192,7 +186,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void deleteTest() throws Exception {
+    public void deleteTest_returnsCorrectCount() throws Exception {
         Connector connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         TestUtil.execute(connector, TestUtil.getResourceFile(TestUtil.INSERT_COLORS_COPY_DATA_SQL_PATH));
         File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors;", "query.sql");
@@ -212,12 +206,13 @@ public class Db2DbStepTest {
             rs.next();
             int i = rs.getInt(1);
             connection.commit();
-            assertEquals(i, 3);
+
+            assertEquals(3, i);
         }
     }
 
     @Test
-    public void closeConnectionsTest() throws Exception {
+    public void closeConnectionsTest_connectionsClosed() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors", "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(
                 Collections.singletonList(
@@ -235,7 +230,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void closeConnectionsAfterFailedTest() throws Exception {
+    public void closeConnectionsAfterFailedTest_connectionsClosed() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "SELECT güggeliblau FROM colors_copy", "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(
                 Collections.singletonList(
@@ -247,13 +242,14 @@ public class Db2DbStepTest {
         Db2DbStep db2db = new Db2DbStep();
 
         Assert.assertThrows(SQLException.class, () -> db2db.processAllTransferSets(sourceDb, targetDb, transferSets));
+        boolean isclosed = sourceDb.isClosed();
         Assert.assertTrue("SourceConnection is not closed", sourceDb.isClosed());
         Assert.assertTrue("TargetConnection is not closed", targetDb.isClosed());
     }
 
     @Category(DbTest.class)
     @Test
-    public void canWriteGeomFromWkbTest() throws Exception {
+    public void canWriteGeomFromWkbTest_Ok() throws Exception {
         String schemaName = "GeomFromWkbTest";
 
         try (Connection con = connectToPreparedPgDb(schemaName)) {
@@ -284,7 +280,7 @@ public class Db2DbStepTest {
 
     @Category(DbTest.class)
     @Test
-    public void canWriteGeomFromWktTest() throws Exception {
+    public void canWriteGeomFromWktTest_Ok() throws Exception {
         String schemaName = "GeomFromWktTest";
 
         try (Connection con = connectToPreparedPgDb(schemaName)) {
@@ -315,7 +311,7 @@ public class Db2DbStepTest {
 
     @Category(DbTest.class)
     @Test
-    public void canWriteGeomFromGeoJsonTest() throws Exception {
+    public void canWriteGeomFromGeoJsonTest_Ok() throws Exception {
         String schemaName = "GeomFromGeoJsonTest";
 
         try (Connection con = connectToPreparedPgDb(schemaName)) {
@@ -349,7 +345,7 @@ public class Db2DbStepTest {
      */
     @Category(DbTest.class)
     @Test
-    public void positiveBulkLoadPostgisTest() throws Exception {
+    public void positiveBulkLoadPostgisTest_Ok() throws Exception {
         int numRows = 300000;
         String schemaName = "BULKLOAD2POSTGIS";
         File sqliteDb = createTmpDb(schemaName);
@@ -396,7 +392,7 @@ public class Db2DbStepTest {
      */
     @Category(DbTest.class)
     @Test
-    public void positiveSqlite2PostgisTest() throws Exception {
+    public void positiveSqlite2PostgisTest_Ok() throws Exception {
         String schemaName = "SQLITE2POSTGIS";
         File sqliteDb = createTmpDb(schemaName);
 
@@ -444,7 +440,7 @@ public class Db2DbStepTest {
      */
     @Category(DbTest.class)
     @Test
-    public void positivePostgis2SqliteTest() throws Exception {
+    public void positivePostgis2SqliteTest_Ok() throws Exception {
         String schemaName = "POSTGIS2SQLITE";
         File sqliteDb = createTmpDb(schemaName);
 
@@ -486,49 +482,48 @@ public class Db2DbStepTest {
         String create = String.format(
                 "CREATE TABLE %s.DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT VARCHAR(50), MYGEOM GEOMETRY(LINESTRING,2056))",
                 schemaName);
-
-        Statement s = con.createStatement();
-        s.addBatch(create);
-
         String grant = String.format(
                 "GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO %s",
                 schemaName,
                 TestUtil.PG_DMLUSR_USR
         );
 
-        s.addBatch(grant);
-        s.executeBatch();
-        con.commit();
+        try (Statement statement = con.createStatement()) {
+            statement.addBatch(create);
+            statement.addBatch(grant);
+            statement.executeBatch();
+            con.commit();
+        }
     }
 
     private static void createSqliteSrcTable(int numRows, Connection con) throws SQLException {
-        String create = "CREATE TABLE DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT TEXT, MYWKT TEXT)";
-        Statement sCreate = con.createStatement();
-        sCreate.execute(create);
-
+        String createQuery = "CREATE TABLE DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT TEXT, MYWKT TEXT)";
+        String insertQuery = "INSERT INTO DTYPES VALUES(?, ?, ?, ?)";
         Random random = new Random();
 
-        PreparedStatement ps = con.prepareStatement("INSERT INTO DTYPES VALUES(?, ?, ?, ?)");
-        for (int i = 0; i < numRows; i++) {
-            ps.setInt(1, random.nextInt());
-            ps.setDouble(2, random.nextDouble());
-            ps.setString(3, UUID.randomUUID().toString());
-            ps.setString(4, GEOM_WKT);
-            ps.addBatch();
-        }
+        try (Statement statement = con.createStatement(); PreparedStatement ps = con.prepareStatement(insertQuery)) {
+            statement.execute(createQuery);
 
-        ps.executeBatch();
-        ps.close();
-        con.commit();
+            for (int i = 0; i < numRows; i++) {
+                ps.setInt(1, random.nextInt());
+                ps.setDouble(2, random.nextDouble());
+                ps.setString(3, UUID.randomUUID().toString());
+                ps.setString(4, GEOM_WKT);
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+        }
     }
 
     private static void createSqliteTargetTable(Connection con) throws SQLException {
-        String create = "CREATE TABLE DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT TEXT, MYDATE TEXT, MYTIME TEXT, "
+        String createQuery = "CREATE TABLE DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT TEXT, MYDATE TEXT, MYTIME TEXT, "
                 + "MYUUID TEXT, MYGEOM_WKT TEXT)";
 
-        Statement sCreate = con.createStatement();
-        sCreate.execute(create);
-        con.commit();
+        try (Statement statement = con.createStatement()) {
+            statement.execute(createQuery);
+            con.commit();
+        }
     }
 
     private static File createTmpDb(String name) throws IOException {
@@ -546,51 +541,52 @@ public class Db2DbStepTest {
     }
 
     private static void prepareSrcTable(String schemaName, Connection con) throws SQLException {
-        Statement s = con.createStatement();
-
-        String rawCreate = "CREATE TABLE %s.DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT VARCHAR(50), MYDATE DATE, MYTIME TIME, "
-                + "MYUUID UUID, MYGEOM GEOMETRY(LINESTRING,2056))";
-        String create = String.format(rawCreate, schemaName);
-        s.addBatch(create);
-
-        String insert = String.format(
+        String createQuery = String.format(
+                "CREATE TABLE %s.DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT VARCHAR(50), MYDATE DATE, MYTIME TIME, "
+                + "MYUUID UUID, MYGEOM GEOMETRY(LINESTRING,2056))",
+                schemaName
+        );
+        String insertQuery = String.format(
                 "INSERT INTO %s.DTYPES VALUES(15, 9.99, 'Hello Db2Db', CURRENT_DATE, CURRENT_TIME, '%s', ST_GeomFromText('%s', 2056))",
-                schemaName, UUID.randomUUID(), GEOM_WKT);
-        s.addBatch(insert);
+                schemaName,
+                UUID.randomUUID(),
+                GEOM_WKT
+        );
+        String grantQuery = String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_READERUSR_USR);
 
-        String grant = String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s", schemaName,
-                TestUtil.PG_READERUSR_USR);
-        s.addBatch(grant);
-        s.executeBatch();
-
-        con.commit();
+        try (Statement statement = con.createStatement()) {
+            statement.addBatch(createQuery);
+            statement.addBatch(insertQuery);
+            statement.addBatch(grantQuery);
+            statement.executeBatch();
+            con.commit();
+        }
     }
 
     private static void assertEqualGeomInSourceAndSink(Connection con, String schemaName) throws SQLException {
-        Statement check = con.createStatement();
-        ResultSet rs = check
-                .executeQuery(String.format("select ST_AsText(geom) as geom_text from %s.sink", schemaName));
-        rs.next();
-        String geomRes = rs.getString(1).trim().toUpperCase();
+        String selectQuery = String.format("select ST_AsText(geom) as geom_text from %s.sink", schemaName);
+        String expectedMessage = "The transferred geometry is not equal to the geometry in the source table";
 
-        Assert.assertEquals("The transferred geometry is not equal to the geometry in the source table", GEOM_WKT,
-                geomRes);
+        try (Statement statement = con.createStatement()) {
+            ResultSet rs = statement.executeQuery(selectQuery);
+            rs.next();
+
+            String geomRes = rs.getString(1).trim().toUpperCase();
+            Assert.assertEquals(expectedMessage, GEOM_WKT, geomRes);
+        }
     }
 
     private static void preparePgGeomSourceSinkTables(String schemaName, Connection con) throws SQLException {
-        Statement prep = con.createStatement();
-        prep.addBatch(String.format("CREATE TABLE %s.SOURCE (geom geometry(LINESTRING,2056) );", schemaName));
-        prep.addBatch(String.format("CREATE TABLE %s.SINK (geom geometry(LINESTRING,2056) );", schemaName));
-        prep.addBatch(
-                String.format("INSERT INTO %s.SOURCE VALUES ( ST_GeomFromText('%s', 2056) )", schemaName, GEOM_WKT));
+        try (Statement statement = con.createStatement()) {
+            statement.addBatch(String.format("CREATE TABLE %s.SOURCE (geom geometry(LINESTRING,2056) );", schemaName));
+            statement.addBatch(String.format("CREATE TABLE %s.SINK (geom geometry(LINESTRING,2056) );", schemaName));
+            statement.addBatch(String.format("INSERT INTO %s.SOURCE VALUES ( ST_GeomFromText('%s', 2056) )", schemaName, GEOM_WKT));
+            statement.addBatch(String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_READERUSR_USR));
+            statement.addBatch(String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_DMLUSR_USR));
 
-        prep.addBatch(
-                String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_READERUSR_USR));
-        prep.addBatch(String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO %s", schemaName,
-                TestUtil.PG_DMLUSR_USR));
-
-        prep.executeBatch();
-        con.commit();
+            statement.executeBatch();
+            con.commit();
+        }
     }
 
     private void dropSchema(String schemaName, Connection con) throws SQLException {
@@ -598,17 +594,17 @@ public class Db2DbStepTest {
             return;
         }
 
-        Statement s = con.createStatement();
-        s.execute(String.format("drop schema %s cascade", schemaName));
+        try (Statement statement = con.createStatement()) {
+            statement.execute(String.format("drop schema %s cascade", schemaName));
+        }
     }
 
     private static Connection connectToPreparedPgDb(String schemaName) throws Exception {
         String url = postgres.getJdbcUrl();
         String user = postgres.getUsername();
         String password = postgres.getPassword();
-                
-        Connection con = DriverManager.getConnection(url, user, password);
 
+        Connection con = DriverManager.getConnection(url, user, password);
         con.setAutoCommit(false);
 
         Statement s = con.createStatement();
@@ -622,23 +618,17 @@ public class Db2DbStepTest {
         return con;
     }
 
-    private void clearTestDb(Connector sourceDb) throws Exception {
-        Connection con = sourceDb.connect();
-        con.setAutoCommit(true);
-        try {
-            Statement stmt = con.createStatement();
+    private void clearTestDb(Connector connector) throws Exception {
+        try (Connection connection = connector.connect(); Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(true);
+
             try {
-                stmt.execute("DROP TABLE colors");
-            } catch (SQLException e) {
-            }
-            ;
+                statement.execute("DROP TABLE colors");
+            } catch (SQLException ignored) {}
+
             try {
-                stmt.execute("DROP TABLE colors_copy");
-            } catch (SQLException e) {
-            }
-            ;
-        } finally {
-            con.close();
+                statement.execute("DROP TABLE colors_copy");
+            } catch (SQLException ignored) {}
         }
     }
 
@@ -648,18 +638,19 @@ public class Db2DbStepTest {
         writeExampleDataInTestDB(con);
     }
 
-    private void createTableInTestDb(Connection con) throws Exception {
-        con.setAutoCommit(true);
-        Statement stmt = con.createStatement();
-        stmt.execute("CREATE TABLE colors ( " + "  rot integer, " + "  gruen integer, " + "  blau integer, "
-                + "  farbname VARCHAR(200))");
-        stmt.execute("CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname VARCHAR(200))");
+    private void createTableInTestDb(Connection connection) throws Exception {
+        connection.setAutoCommit(true);
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE colors (rot integer, gruen integer, blau integer, farbname VARCHAR(200))");
+            statement.execute("CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname VARCHAR(200))");
+        }
     }
 
-    private void writeExampleDataInTestDB(Connection con) throws Exception {
-        Statement stmt = con.createStatement();
-        stmt.execute("INSERT INTO colors  VALUES (255,0,0,'rot')");
-        stmt.execute("INSERT INTO colors  VALUES (251,0,0,'rot')");
-        stmt.execute("INSERT INTO colors  VALUES (0,0,255,'blau')");
+    private void writeExampleDataInTestDB(Connection connection) throws Exception {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("INSERT INTO colors  VALUES (255,0,0,'rot')");
+            statement.execute("INSERT INTO colors  VALUES (251,0,0,'rot')");
+            statement.execute("INSERT INTO colors  VALUES (0,0,255,'blau')");
+        }
     }
 }

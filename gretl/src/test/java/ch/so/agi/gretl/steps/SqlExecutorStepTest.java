@@ -15,7 +15,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +27,6 @@ import static org.junit.Assert.*;
  * Tests for the SqlExecutorStep
  */
 public class SqlExecutorStepTest {
-
-    private static final String POSTGIS_VERSION_SQL_PATH = "data/sql/postgisversion.sql";
 
     @ClassRule
     public static PostgreSQLContainer<?> postgres =
@@ -82,7 +79,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeWithoutDb_ThrowsGretlException() throws Exception {
         SqlExecutorStep step = new SqlExecutorStep();
-        List<File> sqlList = createCorrectSqlFiles();
+        List<File> sqlList = getCorrectSqlFiles();
 
         try {
             step.execute(null, sqlList);
@@ -94,7 +91,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeWithWrongFileExtensions_ThrowsGretlException() throws Exception {
         SqlExecutorStep step = new SqlExecutorStep();
-        List<File> sqlList = createCorrectSqlFiles();
+        List<File> sqlList = getCorrectSqlFiles();
         sqlList.add(createSqlFileWithWrongExtension());
 
         try {
@@ -107,7 +104,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeEmptyFile_ThrowsEmptyFileException() throws Exception {
         SqlExecutorStep step = new SqlExecutorStep();
-        List<File> sqlList = createCorrectSqlFiles();
+        List<File> sqlList = getCorrectSqlFiles();
         sqlList.add(createEmptySqlFile());
 
         try {
@@ -157,7 +154,7 @@ public class SqlExecutorStepTest {
 
     @Test
     public void executePositiveTest_Ok() throws Exception {
-        List<File> sqlListe = createCorrectSqlFiles();
+        List<File> sqlListe = getCorrectSqlFiles();
 
         try {
             new SqlExecutorStep().execute(connector, sqlListe);
@@ -191,7 +188,7 @@ public class SqlExecutorStepTest {
     @Category(DbTest.class)
     @Test
     public void executePostgisVersionTest() throws Exception {
-        File inputFile = TestUtil.getResourceFile(POSTGIS_VERSION_SQL_PATH);
+        File inputFile = TestUtil.getResourceFile(TestUtil.POSTGIS_VERSION_SQL_PATH);
         FileStylingDefinition.checkForUtf8(inputFile);
         List<File> sqlList = Collections.singletonList(inputFile);
 
@@ -207,7 +204,7 @@ public class SqlExecutorStepTest {
 
     @Test
     public void checkIfConnectionIsClosed() throws Exception {
-        List<File> sqlList = createCorrectSqlFiles();
+        List<File> sqlList = getCorrectSqlFiles();
 
         try {
             new SqlExecutorStep().execute(connector, sqlList);
@@ -216,6 +213,14 @@ public class SqlExecutorStepTest {
         }
 
         assertTrue(connector.isClosed());
+    }
+
+    private List<File> getCorrectSqlFiles() throws Exception {
+        return new ArrayList<>(Arrays.asList(
+                TestUtil.getResourceFile(TestUtil.COLORS_INSERT_DELETE_SQL_PATH),
+                TestUtil.getResourceFile(TestUtil.COLORS_UPDATE_FARBNAME_SQL_PATH)
+            )
+        );
     }
 
     private File createSqlFileWithWrongExtension() throws Exception {
@@ -239,14 +244,6 @@ public class SqlExecutorStepTest {
         return new ArrayList<>(Collections.singletonList(sqlFile));
     }
 
-    private List<File> createCorrectSqlFiles() throws Exception {
-        String content = "INSERT INTO colors\nVALUES (124,252,0,'LawnGreen');\n\nDELETE FROM colors WHERE gruen=0;";
-        File sqlFile = TestUtil.createTempFile(folder, content, "query.sql");
-        content = "UPDATE colors\nSET farbname='grün'\nWHERE farbname='LawnGreen';";
-        File sqlFile2 = TestUtil.createTempFile(folder, content, "query1.sql");
-        return new ArrayList<>(Arrays.asList(sqlFile, sqlFile2));
-    }
-    
     private List<File> createSelectSqlFile() throws Exception {
         String content = "SELECT 1;";
         File sqlFile = TestUtil.createTempFile(folder, content, "query.sql");
