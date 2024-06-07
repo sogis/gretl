@@ -48,12 +48,12 @@ public class SqlExecutorStepTest {
     }
 
     @Before
-    public void initialize() throws Exception {
+    public void before() throws Exception {
         TestUtil.createTestDb(this.connector, TestUtil.CREATE_TEST_DB_SQL_PATH);
     }
 
     @After
-    public void finalise() throws Exception {
+    public void after() throws Exception {
         TestUtil.clearTestDb(connector);
         if (!connector.isClosed()) {
             connector.close();

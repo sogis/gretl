@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,6 +16,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -50,12 +52,12 @@ public class Csv2ExcelStepTest {
         settings.setValue(CsvReader.ENCODING, "ISO-8859-1");
         settings.setValue(Validator.SETTING_MODELNAMES, "SO_HBA_Gebaeude_20230111");
 
-        Path csvPath = Paths.get("src/test/resources/data/csv2parquet/kantonale_gebaeude/20230124_sap_Gebaeude.csv");
+        File csvFile = TestUtil.getResourceFile(TestUtil.SAP_GEBAEUDE_CSV_PATH);
         Path outputPath = folder.newFolder().toPath();
         
         // Run
         Csv2ExcelStep csv2excelStep = new Csv2ExcelStep();
-        csv2excelStep.execute(csvPath, outputPath, settings);
+        csv2excelStep.execute(csvFile.toPath(), outputPath, settings);
 
         // Validate
         FileInputStream fis = new FileInputStream(Paths.get(outputPath.toFile().getAbsolutePath(), "20230124_sap_Gebaeude.xlsx").toFile());        

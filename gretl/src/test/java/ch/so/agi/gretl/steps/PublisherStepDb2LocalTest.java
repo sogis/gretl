@@ -26,39 +26,44 @@ import ch.so.agi.gretl.testutil.DbTest;
 import ch.so.agi.gretl.testutil.TestUtil;
 
 public class PublisherStepDb2LocalTest {
-    static final public String DM01AVCH24LV95D="DM01AVCH24LV95D";
+
+    private static final String DM01AVCH24LV95D="DM01AVCH24LV95D";
+    private static final Path localTestOut = Paths.get("build").resolve("out");
     
     @ClassRule
-    public static PostgreSQLContainer postgres = System.getProperty("dburl")==null?
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(TestUtil.PG_DDLUSR_USR)
-        .withPassword(TestUtil.PG_DDLUSR_PWD)
-        .withInitScript("data/sql/init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2)):null;
-    
-    final protected Path localTestOut = Paths.get("build").resolve("out");
+    public static PostgreSQLContainer<?> postgres = System.getProperty("dbUrl") == null
+            ? (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                .withDatabaseName(TestUtil.PG_DB_NAME)
+                .withUsername(TestUtil.PG_DDLUSR_USR)
+                .withPassword(TestUtil.PG_DDLUSR_PWD)
+                .withInitScript(TestUtil.PG_INIT_SCRIPT_PATH)
+                .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2))
+            : null;
+
+    private final String dbUrl;
+    private final String dbUser;
+    private final String dbPassword;
+    private final String dbSchema;
+
     public PublisherStepDb2LocalTest() {
-        super();
+        this.dbUrl = System.getProperty("dbUrl", postgres != null ? postgres.getJdbcUrl() : null);
+        this.dbUser = System.getProperty("dbusr", TestUtil.PG_DDLUSR_USR);
+        this.dbPassword = System.getProperty("dbPassword", TestUtil.PG_DDLUSR_PWD);
+        this.dbSchema = "publisher";
     }
-    protected Path getTargetPath() {
-        return localTestOut;
-    }
-    String dburl=System.getProperty("dburl",postgres!=null?postgres.getJdbcUrl():null); 
-    String dbuser=System.getProperty("dbusr",TestUtil.PG_DDLUSR_USR);
-    String dbpwd=System.getProperty("dbpwd",TestUtil.PG_DDLUSR_PWD); 
-    final protected String DB_SCHEMA="publisher";
+
     @Category(DbTest.class)
     @Test
     public void db_allNew() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        final Date SRC_DATA_DATE = AbstractPublisherStepTest.SRC_DATA_DATE_0;
+        
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         String datasetName="av";
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -67,14 +72,14 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     Config config=new Config();
                     new ch.ehi.ili2pg.PgMain().initConfig(config);
                     config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
+                    config.setDburl(dbUrl);
+                    config.setDbusr(dbUser);
+                    config.setDbpwd(dbPassword);
+                    config.setDbschema(dbSchema);
                     config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
                     if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                         config.setItfTransferfile(true);
@@ -91,12 +96,12 @@ public class PublisherStepDb2LocalTest {
                     Ili2db.run(config,null);
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,datasetName,null,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -122,12 +127,12 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_allNew_modelsToPublish() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -136,14 +141,14 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     Config config=new Config();
                     new ch.ehi.ili2pg.PgMain().initConfig(config);
                     config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
+                    config.setDburl(dbUrl);
+                    config.setDbusr(dbUser);
+                    config.setDbpwd(dbPassword);
+                    config.setDbschema(dbSchema);
                     config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
                     if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                         config.setItfTransferfile(true);
@@ -159,12 +164,12 @@ public class PublisherStepDb2LocalTest {
                     Ili2db.run(config,null);
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,DM01AVCH24LV95D,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,DM01AVCH24LV95D,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -190,12 +195,12 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_allNew_modelsToPublish_NotSimple_Fail() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -204,14 +209,14 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     Config config=new Config();
                     new ch.ehi.ili2pg.PgMain().initConfig(config);
                     config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
+                    config.setDburl(dbUrl);
+                    config.setDbusr(dbUser);
+                    config.setDbpwd(dbPassword);
+                    config.setDbschema(dbSchema);
                     config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
                     if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                         config.setItfTransferfile(true);
@@ -227,13 +232,13 @@ public class PublisherStepDb2LocalTest {
                     Ili2db.run(config,null);
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
             try {
-                step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,DM01AVCH24LV95D,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
+                step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,DM01AVCH24LV95D,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
                 Assert.fail();
             }catch(IllegalArgumentException ex) {
                 Assert.assertEquals("modelsToPublish <DM01AVCH24LV95D> can only be used with simple models", ex.getMessage());
@@ -250,13 +255,13 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_UserFormats_allNew() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         final String datasetName="simple";
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -265,14 +270,14 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     Config config=new Config();
                     new ch.ehi.ili2pg.PgMain().initConfig(config);
                     config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
+                    config.setDburl(dbUrl);
+                    config.setDbusr(dbUser);
+                    config.setDbpwd(dbPassword);
+                    config.setDbschema(dbSchema);
                     config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_SIMPLE_FILENAME).toString());
                     if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                         config.setItfTransferfile(true);
@@ -289,12 +294,12 @@ public class PublisherStepDb2LocalTest {
                     Ili2db.run(config,null);
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -326,21 +331,21 @@ public class PublisherStepDb2LocalTest {
             db_UserFormats_allNew();
         }
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_1;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         final String datasetName="simple";
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -386,13 +391,13 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_UserFormats_ModelDir_AV() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         String datasetName="av";
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -401,14 +406,14 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     Config config=new Config();
                     new ch.ehi.ili2pg.PgMain().initConfig(config);
                     config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
+                    config.setDburl(dbUrl);
+                    config.setDbusr(dbUser);
+                    config.setDbpwd(dbPassword);
+                    config.setDbschema(dbSchema);
                     config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
                     if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                         config.setItfTransferfile(true);
@@ -425,12 +430,12 @@ public class PublisherStepDb2LocalTest {
                     Ili2db.run(config,null);
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -456,13 +461,13 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_UserFormats_NoModelDir_AV() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         String datasetName="av";
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -471,14 +476,14 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     Config config=new Config();
                     new ch.ehi.ili2pg.PgMain().initConfig(config);
                     config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
+                    config.setDburl(dbUrl);
+                    config.setDbusr(dbUser);
+                    config.setDbpwd(dbPassword);
+                    config.setDbschema(dbSchema);
                     config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
                     if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                         config.setItfTransferfile(true);
@@ -495,12 +500,12 @@ public class PublisherStepDb2LocalTest {
                     Ili2db.run(config,null);
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             //settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -526,13 +531,13 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_regionsRegEx() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         List<String> publishedRegions=new ArrayList<String>();
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -541,15 +546,15 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     for(String datasetName:new String[] {"2501","2502"}) {
                         Config config=new Config();
                         new ch.ehi.ili2pg.PgMain().initConfig(config);
                         config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                        config.setDburl(dburl);
-                        config.setDbusr(dbuser);
-                        config.setDbpwd(dbpwd);
-                        config.setDbschema(DB_SCHEMA);
+                        config.setDburl(dbUrl);
+                        config.setDbusr(dbUser);
+                        config.setDbpwd(dbPassword);
+                        config.setDbschema(dbSchema);
                         config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".itf").toString());
                         if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                             config.setItfTransferfile(true);
@@ -565,12 +570,12 @@ public class PublisherStepDb2LocalTest {
                     }
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,null,false, targetPath,"[0-9][0-9][0-9][0-9]",null,publishedRegions,null,null,settings,localTestOut, null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,null,null,false, targetPath,"[0-9][0-9][0-9][0-9]",null,publishedRegions,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -600,13 +605,13 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_regionsList() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         List<String> publishedRegions=new ArrayList<String>();
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -615,15 +620,15 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     for(String datasetName:new String[] {"2501","2502"}) {
                         Config config=new Config();
                         new ch.ehi.ili2pg.PgMain().initConfig(config);
                         config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                        config.setDburl(dburl);
-                        config.setDbusr(dbuser);
-                        config.setDbpwd(dbpwd);
-                        config.setDbschema(DB_SCHEMA);
+                        config.setDburl(dbUrl);
+                        config.setDbusr(dbUser);
+                        config.setDbpwd(dbPassword);
+                        config.setDbschema(dbSchema);
                         config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".itf").toString());
                         if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                             config.setItfTransferfile(true);
@@ -641,12 +646,12 @@ public class PublisherStepDb2LocalTest {
             }
             List<String> regions=new ArrayList<String>();
             regions.add("2501");
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,null,false, targetPath,null,regions,publishedRegions,null,null,settings,localTestOut, null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,null,null,false, targetPath,null,regions,publishedRegions,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -676,13 +681,13 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_regionsRegEx_UserFormats() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         List<String> publishedRegions=new ArrayList<String>();
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -691,15 +696,15 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     for(String datasetName:new String[] {"SimpleCoord23a","SimpleCoord23b"}) {
                         Config config=new Config();
                         new ch.ehi.ili2pg.PgMain().initConfig(config);
                         config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                        config.setDburl(dburl);
-                        config.setDbusr(dbuser);
-                        config.setDbpwd(dbpwd);
-                        config.setDbschema(DB_SCHEMA);
+                        config.setDburl(dbUrl);
+                        config.setDbusr(dbUser);
+                        config.setDbpwd(dbPassword);
+                        config.setDbschema(dbSchema);
                         config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".xtf").toString());
                         if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                             config.setItfTransferfile(true);
@@ -715,12 +720,12 @@ public class PublisherStepDb2LocalTest {
                     }
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,null,true, targetPath,"SimpleCoord23[a-z]",null,publishedRegions,null,null,settings,localTestOut, null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,null,null,true, targetPath,"SimpleCoord23[a-z]",null,publishedRegions,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();
@@ -753,13 +758,13 @@ public class PublisherStepDb2LocalTest {
     @Test
     public void db_regionsRegEx_UserFormats_AV() throws Exception {
         final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        Path targetFolder=localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         Connection jdbcConnection=null;
         List<String> publishedRegions=new ArrayList<String>();
         try{
             // prepare
             Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
+            jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             {
                 // delete output folder
                 if(Files.exists(targetFolder)) {
@@ -768,15 +773,15 @@ public class PublisherStepDb2LocalTest {
                 // import data into db
                 {
                     Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
+                    stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
                     for(String datasetName:new String[] {"2501","2502"}) {
                         Config config=new Config();
                         new ch.ehi.ili2pg.PgMain().initConfig(config);
                         config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                        config.setDburl(dburl);
-                        config.setDbusr(dbuser);
-                        config.setDbpwd(dbpwd);
-                        config.setDbschema(DB_SCHEMA);
+                        config.setDburl(dbUrl);
+                        config.setDbusr(dbUser);
+                        config.setDbpwd(dbPassword);
+                        config.setDbschema(dbSchema);
                         config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".itf").toString());
                         if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
                             config.setItfTransferfile(true);
@@ -792,12 +797,12 @@ public class PublisherStepDb2LocalTest {
                     }
                 }
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
+            Path targetPath = localTestOut.toAbsolutePath();
             PublisherStep step=new PublisherStep();
             Settings settings=new Settings();
             settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
             settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,null,true, targetPath,"[0-9][0-9][0-9][0-9]",null,publishedRegions,null,null,settings,localTestOut, null);
+            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,null,null,true, targetPath,"[0-9][0-9][0-9][0-9]",null,publishedRegions,null,null,settings,localTestOut, null);
         }finally{
             if(jdbcConnection!=null) {
                 jdbcConnection.close();

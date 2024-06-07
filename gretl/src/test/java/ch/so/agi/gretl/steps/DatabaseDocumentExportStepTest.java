@@ -1,16 +1,12 @@
 package ch.so.agi.gretl.steps;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Statement;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -20,6 +16,10 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.TestUtil;
+
+import javax.xml.crypto.Data;
+
+import static org.junit.Assert.*;
 
 public class DatabaseDocumentExportStepTest {
 
@@ -32,36 +32,50 @@ public class DatabaseDocumentExportStepTest {
                 .withInitScript(TestUtil.PG_INIT_SCRIPT_PATH)
                 .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
+    private final GretlLogger log;
+    private Connector connector;
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    public DatabaseDocumentExportStepTest() {
+        this.log = LogEnvironment.getLogger(this.getClass());
+    }
     
     // TODO: 
     // Die mühsamen self-signed Zertifikate des AIO können schlecht getestet werden. A) Nur intern B) Filenamen können sich ändern.
     // https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis
     // Manuell getestet...
+
+    @Before
+    public void before() throws Exception {
+        this.connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
+    }
+
+    @After
+    public void after() throws Exception {
+        if (!this.connector.isClosed()) {
+            this.connector.close();
+        }
+    }
     
     @Test
     public void exportDocuments_Ok() throws Exception {
-        Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
-
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
-        
         File targetDir = folder.newFolder();
 
-        Connection con = connector.connect();
-        con.setAutoCommit(false);
+        try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
+            con.setAutoCommit(false);
 
-        try {
-            Statement stmt = con.createStatement();
-            
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
             //https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis
             //http://geo.so.ch/models/ilimodels.xml
             //http://models.geo.admin.ch/ilimodels.xml
+
             stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://models.geo.admin.ch/ilimodels.xml');");
             con.commit();
 
@@ -69,13 +83,11 @@ public class DatabaseDocumentExportStepTest {
             databaseDocumentExport.execute(connector, schemaName+"."+tableName, columnName, targetDir.getAbsolutePath(), "ada_", "pdf");
 
             File resultFile = Paths.get(targetDir.getAbsolutePath(), "ada_ilimodels.xml.pdf").toFile();
-            assertTrue(resultFile.exists() == true);
+            assertTrue(resultFile.exists());
             assertTrue(resultFile.length() > 60L);
-            
+
             String content = new String(Files.readAllBytes(Paths.get(resultFile.getAbsolutePath())));
             assertTrue(content.contains("IliRepository"));
-        } finally {
-            con.close();
         }
     }
 
@@ -83,18 +95,13 @@ public class DatabaseDocumentExportStepTest {
     // https://stackoverflow.com/questions/1884230/httpurlconnection-doesnt-follow-redirect-from-http-to-https
     @Test
     public void exportDocuments_Fail() throws Exception {
-        Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
-
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
-        
         File targetDir = folder.newFolder();
 
-        Connection con = connector.connect();
-        con.setAutoCommit(false);
-        try {
-            Statement stmt = con.createStatement();
+        try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
+            con.setAutoCommit(false);
             
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
@@ -106,28 +113,22 @@ public class DatabaseDocumentExportStepTest {
             databaseDocumentExport.execute(connector, schemaName+"."+tableName, columnName, targetDir.getAbsolutePath(), "ada_", "pdf");
 
             File resultFile = Paths.get(targetDir.getAbsolutePath(), "ada_ilimodels.xml.pdf").toFile();
-            assertTrue(resultFile.exists() == false);
-        } finally {
-            con.close();
+            assertFalse(resultFile.exists());
         }
-    } 
+    }
     
     @Test 
     public void exportDocuments_WithoutPrefix_Ok() throws Exception {
-        Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
-
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
-        
         File targetDir = folder.newFolder();
-        System.out.println("targetDir: " + targetDir.getAbsolutePath());
 
-        Connection con = connector.connect();
-        con.setAutoCommit(false);
-        try {
-            Statement stmt = con.createStatement();
-            
+        log.debug("targetDir: " + targetDir.getAbsolutePath());
+
+        try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
+            con.setAutoCommit(false);
+
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
@@ -138,32 +139,26 @@ public class DatabaseDocumentExportStepTest {
             databaseDocumentExport.execute(connector, schemaName+"."+tableName, columnName, targetDir.getAbsolutePath(), null, "pdf");
 
             File resultFile = Paths.get(targetDir.getAbsolutePath(), "ilimodels.xml.pdf").toFile();
-            assertTrue(resultFile.exists() == true);            
+            assertTrue(resultFile.exists());
             assertTrue(resultFile.length() > 60L);
-            
+
             String content = new String(Files.readAllBytes(Paths.get(resultFile.getAbsolutePath())));
             assertTrue(content.contains("IliRepository"));
-        } finally {
-            con.close();
         }
     }
     
     @Test 
     public void exportDocuments_WithoutFileNameExtension_Ok() throws Exception {
-        Connector connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
-
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
         
         File targetDir = folder.newFolder();
-        System.out.println("targetDir: " + targetDir.getAbsolutePath());
+        log.debug("targetDir: " + targetDir.getAbsolutePath());
 
-        Connection con = connector.connect();
-        con.setAutoCommit(false);
-        try {
-            Statement stmt = con.createStatement();
-            
+        try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
+            con.setAutoCommit(false);
+
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
@@ -174,13 +169,11 @@ public class DatabaseDocumentExportStepTest {
             databaseDocumentExport.execute(connector, schemaName+"."+tableName, columnName, targetDir.getAbsolutePath(), null, null);
 
             File resultFile = Paths.get(targetDir.getAbsolutePath(), "ilimodels.xml").toFile();
-            assertTrue(resultFile.exists() == true);                        
+            assertTrue(resultFile.exists());
             assertTrue(resultFile.length() > 60L);
-            
+
             String content = new String(Files.readAllBytes(Paths.get(resultFile.getAbsolutePath())));
             assertTrue(content.contains("IliRepository"));
-        } finally {
-            con.close();
         }
     }
 }

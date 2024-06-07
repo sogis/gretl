@@ -2,10 +2,12 @@ package ch.so.agi.gretl.steps;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.interlis2.validator.Validator;
 import org.junit.Rule;
@@ -20,14 +22,6 @@ public class OgdMetaPublisherStepTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-   
-    private GretlLogger log;
-
-    private static final Configuration testConf = new Configuration();
-
-    public OgdMetaPublisherStepTest() {
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
     
     // TODO
     // Test mit Subdatasets
@@ -35,12 +29,12 @@ public class OgdMetaPublisherStepTest {
     @Test
     public void single_resource_no_identifier_Ok() throws Exception {
         // Prepare
-        Path configPath = Paths.get("src/test/resources/data/ogdmetapublisher/kantonale_gebaeude/ch.so.hba.kantonale_gebaeude.toml");
+        File configFile = TestUtil.getResourceFile(TestUtil.KANTONALE_GEBAEUDE_TOML_PATH);
         Path outputPath = folder.newFolder().toPath();
        
         // Run
         OgdMetaPublisherStep ogdMetaPublisherStep = new OgdMetaPublisherStep();
-        ogdMetaPublisherStep.execute(configPath, outputPath);
+        ogdMetaPublisherStep.execute(configFile.toPath(), outputPath);
         
         // Validate
         Settings settings = new Settings();

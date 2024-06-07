@@ -42,13 +42,13 @@ public class Db2DbStepTest {
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
-    public void initialize() throws Exception {
+    public void before() throws Exception {
         this.connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(this.connector);
     }
 
     @After
-    public void finalise() throws Exception {
+    public void after() throws Exception {
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         clearTestDb(sourceDb);
         if (!this.connector.isClosed()) {
@@ -501,9 +501,11 @@ public class Db2DbStepTest {
         String insertQuery = "INSERT INTO DTYPES VALUES(?, ?, ?, ?)";
         Random random = new Random();
 
-        try (Statement statement = con.createStatement(); PreparedStatement ps = con.prepareStatement(insertQuery)) {
+        try (Statement statement = con.createStatement()) {
             statement.execute(createQuery);
+        }
 
+        try (PreparedStatement ps = con.prepareStatement(insertQuery)) {
             for (int i = 0; i < numRows; i++) {
                 ps.setInt(1, random.nextInt());
                 ps.setDouble(2, random.nextDouble());
@@ -511,9 +513,10 @@ public class Db2DbStepTest {
                 ps.setString(4, GEOM_WKT);
                 ps.addBatch();
             }
-
             ps.executeBatch();
         }
+
+        con.commit();
     }
 
     private static void createSqliteTargetTable(Connection con) throws SQLException {

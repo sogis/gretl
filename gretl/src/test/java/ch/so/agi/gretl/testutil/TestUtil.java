@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -32,6 +31,21 @@ public class TestUtil {
     public static final String COLORS_INSERT_DELETE_SQL_PATH = "data/sql/colors_insert_delete.sql";
     public static final String COLORS_UPDATE_FARBNAME_SQL_PATH = "data/sql/colors_update_farbname.sql";
     public static final String POSTGIS_VERSION_SQL_PATH = "data/sql/postgisversion.sql";
+    public static final String AGGLOPROGRAMME_GPKG_PATH = "data/gpkg2shp/aggloprogramme.gpkg";
+    public static final String ADMINISTRATIVE_EINSTELLUNGEN_GPKG_PATH = "data/gpkg2dxf/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg";
+    public static final String SAP_GEBAEUDE_CSV_PATH = "data/csv2parquet/kantonale_gebaeude/20230124_sap_Gebaeude.csv";
+    public static final String BEWILLIGTE_ERDWAERMEANLAGEN_CSV_PATH = "data/csv2parquet/bewilligte_erdwaermeanlagen/bewilligte_erdwaermeanlagen_excel_export.csv";
+    public static final String DATE_DATATYPES_CSV_PATH = "data/csv2parquet/data_datatypes/date_datatypes.csv";
+    public static final String BEWILLIGTE_ERDWAERMEANLAGEN_SEMIKOLON_HOCHKOMMA_CSV_PATH = "data/csv2parquet/bewilligte_erdwaermeanlagen/bewilligte_erdwaermeanlagen_semikolon_hochkomma.csv";
+    public static final String PLANREGISTER_XML_PATH = "data/gzip/planregister.xml";
+    public static final String AGI_ORTHOFOTO_META_TOML_PATH = "data/metapublisher/agi_orthofoto_1993_meta_pub/meta.toml";
+    public static final String AFU_ABBAUSTELLEN_META_TOML_PATH = "data/metapublisher/afu_abbaustellen_pub/meta.toml";
+    public static final String AGI_DM01SO_META_TOML_PATH = "data/metapublisher/agi_dm01so_pub/meta-dm01_so.toml";
+    public static final String KANTONALE_GEBAEUDE_TOML_PATH = "data/ogdmetapublisher/kantonale_gebaeude/ch.so.hba.kantonale_gebaeude.toml";
+    public static final String RASTER_GEOTIFF_SQL_PATH = "data/postgisrasterprocessor/prepare_raster_geotiff.sql";
+    public static final String RASTER_AAIGRID_SQL_PATH = "data/postgisrasterprocessor/prepare_raster_aaigrid.sql";
+    public static final String TARGET_TIF_PATH = "data/postgisrasterprocessor/target.tif";
+    public static final String TARGET_ASC_PATH = "data/postgisrasterprocessor/target.asc";
 
     public static File createTempFile(TemporaryFolder folder, String content, String fileName) throws IOException {
         File sqlFile = folder.newFile(fileName);

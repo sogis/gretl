@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.steps;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -25,8 +26,6 @@ import org.junit.rules.TemporaryFolder;
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.iom_j.csv.CsvReader;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
 
 import static org.junit.Assert.*;
 
@@ -45,16 +44,16 @@ public class Csv2ParquetStepTest {
         settings.setValue(CsvReader.ENCODING, "ISO-8859-1");
         settings.setValue(Validator.SETTING_MODELNAMES, "SO_HBA_Gebaeude_20230111");
 
-        Path csvPath = Paths.get("src/test/resources/data/csv2parquet/kantonale_gebaeude/20230124_sap_Gebaeude.csv");
+        File csvFile = TestUtil.getResourceFile(TestUtil.SAP_GEBAEUDE_CSV_PATH);
         Path outputPath = folder.newFolder().toPath();
         
         // Run
         Csv2ParquetStep csv2parquetStep = new Csv2ParquetStep();
-        csv2parquetStep.execute(csvPath, outputPath, settings);
+        csv2parquetStep.execute(csvFile.toPath(), outputPath, settings);
 
         // Validate
         org.apache.hadoop.fs.Path resultFile = new org.apache.hadoop.fs.Path(Paths
-                .get(outputPath.toString(), FilenameUtils.getBaseName(csvPath.toString()) + ".parquet").toString());
+                .get(outputPath.toString(), FilenameUtils.getBaseName(csvFile.toPath().toString()) + ".parquet").toString());
 
         try (ParquetReader<GenericRecord> reader = AvroParquetReader
                 .<GenericRecord>builder(HadoopInputFile.fromPath(resultFile, testConf)).build()
@@ -73,16 +72,16 @@ public class Csv2ParquetStepTest {
         settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, ";");            
         settings.setValue(Validator.SETTING_MODELNAMES, "Date_202306016");
 
-        Path csvPath = Paths.get("src/test/resources/data/csv2parquet/data_datatypes/date_datatypes.csv");
+        File csvFile = TestUtil.getResourceFile(TestUtil.DATE_DATATYPES_CSV_PATH);
         Path outputPath = folder.newFolder().toPath();
         
         // Run
         Csv2ParquetStep csv2parquetStep = new Csv2ParquetStep();
-        csv2parquetStep.execute(csvPath, outputPath, settings);
+        csv2parquetStep.execute(csvFile.toPath(), outputPath, settings);
 
         // Validate
         org.apache.hadoop.fs.Path resultFile = new org.apache.hadoop.fs.Path(Paths
-                .get(outputPath.toString(), FilenameUtils.getBaseName(csvPath.toString()) + ".parquet").toString());
+                .get(outputPath.toString(), FilenameUtils.getBaseName(csvFile.toPath().toString()) + ".parquet").toString());
 
         try (ParquetReader<GenericRecord> reader = AvroParquetReader
                 .<GenericRecord>builder(HadoopInputFile.fromPath(resultFile, testConf)).build()
@@ -116,17 +115,17 @@ public class Csv2ParquetStepTest {
         settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER, null);            
         settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, ";");            
         settings.setValue(Validator.SETTING_MODELNAMES, "SO_AFU_Bewilligte_Erdwaermeanlagen_20230616");
-        
-        Path csvPath = Paths.get("src/test/resources/data/csv2parquet/bewilligte_erdwaermeanlagen/bewilligte_erdwaermeanlagen_excel_export.csv");
+
+        File csvFile = TestUtil.getResourceFile(TestUtil.BEWILLIGTE_ERDWAERMEANLAGEN_CSV_PATH);
         Path outputPath = folder.newFolder().toPath();
         
         // Run
         Csv2ParquetStep csv2parquetStep = new Csv2ParquetStep();
-        csv2parquetStep.execute(csvPath, outputPath, settings);
+        csv2parquetStep.execute(csvFile.toPath(), outputPath, settings);
 
         // Validate
         org.apache.hadoop.fs.Path resultFile = new org.apache.hadoop.fs.Path(Paths
-                .get(outputPath.toString(), FilenameUtils.getBaseName(csvPath.toString()) + ".parquet").toString());
+                .get(outputPath.toString(), FilenameUtils.getBaseName(csvFile.toPath().toString()) + ".parquet").toString());
 
         try (ParquetReader<GenericRecord> reader = AvroParquetReader
                 .<GenericRecord>builder(HadoopInputFile.fromPath(resultFile, testConf)).build()
@@ -160,18 +159,18 @@ public class Csv2ParquetStepTest {
         Settings settings = new Settings();
         settings.setValue(IoxWkfConfig.SETTING_FIRSTLINE, IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER);
         settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER, null);            
-        settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, ";");            
+        settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, ";");
 
-        Path csvPath = TestUtil.getResourceFile("data/csv2parquet/bewilligte_erdwaermeanlagen/bewilligte_erdwaermeanlagen_excel_export.csv").toPath();
+        File csvFile = TestUtil.getResourceFile(TestUtil.BEWILLIGTE_ERDWAERMEANLAGEN_CSV_PATH);
         Path outputPath = folder.newFolder().toPath();
         
         // Run
         Csv2ParquetStep csv2parquetStep = new Csv2ParquetStep();
-        csv2parquetStep.execute(csvPath, outputPath, settings);
+        csv2parquetStep.execute(csvFile.toPath(), outputPath, settings);
         
         // Validate
         org.apache.hadoop.fs.Path resultFile = new org.apache.hadoop.fs.Path(Paths
-                .get(outputPath.toString(), FilenameUtils.getBaseName(csvPath.toString()) + ".parquet").toString());
+                .get(outputPath.toString(), FilenameUtils.getBaseName(csvFile.toPath().toString()) + ".parquet").toString());
 
         try (ParquetReader<GenericRecord> reader = AvroParquetReader
                 .<GenericRecord>builder(HadoopInputFile.fromPath(resultFile, testConf)).build()
@@ -206,16 +205,16 @@ public class Csv2ParquetStepTest {
         settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER, "'");            
         settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR, ";");            
         
-        Path csvPath = TestUtil.getResourceFile("data/csv2parquet/bewilligte_erdwaermeanlagen/bewilligte_erdwaermeanlagen_semikolon_hochkomma.csv").toPath();
+        File csvFile = TestUtil.getResourceFile(TestUtil.BEWILLIGTE_ERDWAERMEANLAGEN_SEMIKOLON_HOCHKOMMA_CSV_PATH);
         Path outputPath = folder.newFolder().toPath();
                 
         // Run
         Csv2ParquetStep csv2parquetStep = new Csv2ParquetStep();
-        csv2parquetStep.execute(csvPath, outputPath, settings);
+        csv2parquetStep.execute(csvFile.toPath(), outputPath, settings);
 
         // Validate
         org.apache.hadoop.fs.Path resultFile = new org.apache.hadoop.fs.Path(Paths
-                .get(outputPath.toString(), FilenameUtils.getBaseName(csvPath.toString()) + ".parquet").toString());
+                .get(outputPath.toString(), FilenameUtils.getBaseName(csvFile.toPath().toString()) + ".parquet").toString());
 
         try (ParquetReader<GenericRecord> reader = AvroParquetReader
                 .<GenericRecord>builder(HadoopInputFile.fromPath(resultFile, testConf)).build()

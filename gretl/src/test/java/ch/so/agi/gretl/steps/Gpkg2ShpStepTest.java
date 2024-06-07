@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -18,14 +19,9 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
 public class Gpkg2ShpStepTest {
-
-    public Gpkg2ShpStepTest() {
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
     
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-    private GretlLogger log;
     
 //    @Test
 //    public void dummy() throws Exception {
@@ -40,7 +36,7 @@ public class Gpkg2ShpStepTest {
     @Test 
     public void export_no_Geometry_Ok() throws Exception {
         String TEST_OUT = folder.newFolder().getAbsolutePath();
-        File gpkgFile = new File("src/test/resources/data/gpkg2shp/aggloprogramme.gpkg");
+        File gpkgFile = TestUtil.getResourceFile(TestUtil.AGGLOPROGRAMME_GPKG_PATH);
         
         Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
         gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
