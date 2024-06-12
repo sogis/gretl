@@ -30,10 +30,19 @@ public class JsonImportStepTest {
             .withInitScript(TestUtil.PG_INIT_SCRIPT_PATH)
             .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
+    private final String schemaName;
+    private final String tableName;
+    private final String columnName;
     private Connector connector;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    public JsonImportStepTest() {
+        this.schemaName = "jsonimport";
+        this.tableName = "jsonobject";
+        this.columnName = "json_text_col";
+    }
 
     @Before
     public void before() throws Exception {
@@ -50,16 +59,10 @@ public class JsonImportStepTest {
     @Test
     public void importJsonObject_Ok() throws Exception {
         File jsonFile = TestUtil.createTempFile(folder, "{\"foo\":\"bar\"}", "test1.json");
-        String schemaName = "jsonimport";
-        String tableName = "jsonobject";
-        String columnName = "json_text_col";
 
         try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
             con.setAutoCommit(false);
-            stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
-            stmt.execute("CREATE SCHEMA "+schemaName+";");
-            stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            con.commit();
+            initializeSchema(con, stmt);
 
             JsonImportStep jsonImportStep = new JsonImportStep();
             jsonImportStep.execute(connector, jsonFile, schemaName+"."+tableName, columnName, true);
@@ -77,17 +80,10 @@ public class JsonImportStepTest {
     @Test
     public void appendJsonObject_Ok() throws Exception {
         File jsonFile = TestUtil.createTempFile(folder, "{\"foo\":\"bar\"}", "test2.json");
-        String schemaName = "jsonimport";
-        String tableName = "jsonobject";
-        String columnName = "json_text_col";
 
         try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
             con.setAutoCommit(false);
-            stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
-            stmt.execute("CREATE SCHEMA "+schemaName+";");
-            stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES ('{\"yin\": \"yang\"}');");
-            con.commit();
+            initializeSchema(con, stmt);
 
             JsonImportStep jsonImportStep = new JsonImportStep();
             jsonImportStep.execute(connector, jsonFile, schemaName+"."+tableName, columnName, false);
@@ -103,16 +99,10 @@ public class JsonImportStepTest {
     @Test
     public void importJsonArray_Ok() throws Exception {
         File jsonFile = TestUtil.createTempFile(folder, "[{\"type\":\"building\"}, {\"type\":\"street\"}]", "test3.json");
-        String schemaName = "jsonimport";
-        String tableName = "jsonarray";
-        String columnName = "json_text_col";
         
         try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
             con.setAutoCommit(false);
-            stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
-            stmt.execute("CREATE SCHEMA "+schemaName+";");
-            stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            con.commit();
+            initializeSchema(con, stmt);
 
             JsonImportStep jsonImportStep = new JsonImportStep();
             jsonImportStep.execute(connector, jsonFile, schemaName+"."+tableName, columnName, true);
@@ -129,5 +119,12 @@ public class JsonImportStepTest {
 
             assertFalse(rs.next());
         }
+    }
+
+    private void initializeSchema(Connection connection, Statement statement) throws Exception {
+        statement.execute("DROP SCHEMA IF EXISTS " + this.schemaName + " CASCADE;");
+        statement.execute("CREATE SCHEMA " + this.schemaName+";");
+        statement.execute("CREATE TABLE " + this.schemaName + "."+this.tableName + " (id serial, " +this.columnName + " text);");
+        connection.commit();
     }
 }

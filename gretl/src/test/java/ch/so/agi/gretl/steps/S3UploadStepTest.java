@@ -36,17 +36,18 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3UploadStepTest {
-    private String s3AccessKey = System.getProperty("s3AccessKey");
-    private String s3SecretKey = System.getProperty("s3SecretKey");
-    private String s3BucketName = System.getProperty("s3BucketName");
+    private final String s3AccessKey;
+    private final String s3SecretKey;
+    private final String s3BucketName;
 
     public S3UploadStepTest() {
-        this.log = LogEnvironment.getLogger(this.getClass());
+        this.s3AccessKey = System.getProperty("s3AccessKey");
+        this.s3SecretKey = System.getProperty("s3SecretKey");
+        this.s3BucketName = System.getProperty("s3BucketName");
     }
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-    private GretlLogger log;
     
     @Test
     @Category(S3Test.class)

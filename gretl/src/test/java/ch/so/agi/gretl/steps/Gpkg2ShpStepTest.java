@@ -23,16 +23,6 @@ public class Gpkg2ShpStepTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     
-//    @Test
-//    public void dummy() throws Exception {
-//        String TEST_OUT = "/Users/stefan/tmp/shapefix/";
-//        File gpkgFile = new File("src/test/resources/data/gpkg2shp/verkehrszaehlstellen_edit.gpkg");
-//        
-//        Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
-//        gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
-//
-//    }
-    
     @Test 
     public void export_no_Geometry_Ok() throws Exception {
         String TEST_OUT = folder.newFolder().getAbsolutePath();
@@ -54,8 +44,7 @@ public class Gpkg2ShpStepTest {
     @Test
     public void export_Ok() throws Exception {
         String TEST_OUT = folder.newFolder().getAbsolutePath();
-        File gpkgFile = new File("src/test/resources/data/gpkg2shp/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg");
-
+        File gpkgFile = TestUtil.getResourceFile("data/gpkg2shp/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg");
         Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
         gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
         
@@ -84,8 +73,7 @@ public class Gpkg2ShpStepTest {
         String TEST_OUT = folder.newFolder().getAbsolutePath();
         //String TEST_OUT = "/Users/stefan/tmp/shp/";
 
-        File gpkgFile = new File("src/test/resources/data/gpkg2shp/ch.so.afu.abbaustellen.gpkg");
-
+        File gpkgFile = TestUtil.getResourceFile("data/gpkg2shp/ch.so.afu.abbaustellen.gpkg");
         Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
         gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
 

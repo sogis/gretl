@@ -17,8 +17,6 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.TestUtil;
 
-import javax.xml.crypto.Data;
-
 import static org.junit.Assert.*;
 
 public class DatabaseDocumentExportStepTest {
@@ -33,6 +31,9 @@ public class DatabaseDocumentExportStepTest {
                 .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     private final GretlLogger log;
+    private final String schemaName;
+    private final String tableName;
+    private final String columnName;
     private Connector connector;
 
     @Rule
@@ -40,6 +41,9 @@ public class DatabaseDocumentExportStepTest {
 
     public DatabaseDocumentExportStepTest() {
         this.log = LogEnvironment.getLogger(this.getClass());
+        this.schemaName = "ada_denkmalschutz";
+        this.tableName = "fachapplikation_rechtsvorschrift_link";
+        this.columnName = "multimedia_link";
     }
     
     // TODO: 
@@ -61,21 +65,11 @@ public class DatabaseDocumentExportStepTest {
     
     @Test
     public void exportDocuments_Ok() throws Exception {
-        String schemaName = "ada_denkmalschutz";
-        String tableName = "fachapplikation_rechtsvorschrift_link";
-        String columnName = "multimedia_link";
         File targetDir = folder.newFolder();
 
         try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
             con.setAutoCommit(false);
-
-            stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
-            stmt.execute("CREATE SCHEMA "+schemaName+";");
-            stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            //https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis
-            //http://geo.so.ch/models/ilimodels.xml
-            //http://models.geo.admin.ch/ilimodels.xml
-
+            initializeSchema(con, stmt);
             stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://models.geo.admin.ch/ilimodels.xml');");
             con.commit();
 
@@ -95,17 +89,11 @@ public class DatabaseDocumentExportStepTest {
     // https://stackoverflow.com/questions/1884230/httpurlconnection-doesnt-follow-redirect-from-http-to-https
     @Test
     public void exportDocuments_Fail() throws Exception {
-        String schemaName = "ada_denkmalschutz";
-        String tableName = "fachapplikation_rechtsvorschrift_link";
-        String columnName = "multimedia_link";
         File targetDir = folder.newFolder();
 
         try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
             con.setAutoCommit(false);
-            
-            stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
-            stmt.execute("CREATE SCHEMA "+schemaName+";");
-            stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
+            initializeSchema(con, stmt);
             stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('https://geo.so.ch/fubar');");
             con.commit();
 
@@ -119,19 +107,14 @@ public class DatabaseDocumentExportStepTest {
     
     @Test 
     public void exportDocuments_WithoutPrefix_Ok() throws Exception {
-        String schemaName = "ada_denkmalschutz";
-        String tableName = "fachapplikation_rechtsvorschrift_link";
-        String columnName = "multimedia_link";
         File targetDir = folder.newFolder();
 
         log.debug("targetDir: " + targetDir.getAbsolutePath());
 
         try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
             con.setAutoCommit(false);
+            initializeSchema(con, stmt);
 
-            stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
-            stmt.execute("CREATE SCHEMA "+schemaName+";");
-            stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
             stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://models.geo.admin.ch/ilimodels.xml');");
             con.commit();
 
@@ -149,19 +132,12 @@ public class DatabaseDocumentExportStepTest {
     
     @Test 
     public void exportDocuments_WithoutFileNameExtension_Ok() throws Exception {
-        String schemaName = "ada_denkmalschutz";
-        String tableName = "fachapplikation_rechtsvorschrift_link";
-        String columnName = "multimedia_link";
-        
         File targetDir = folder.newFolder();
         log.debug("targetDir: " + targetDir.getAbsolutePath());
 
         try (Connection con = connector.connect(); Statement stmt = con.createStatement()) {
             con.setAutoCommit(false);
-
-            stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
-            stmt.execute("CREATE SCHEMA "+schemaName+";");
-            stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
+            initializeSchema(con, stmt);
             stmt.execute("INSERT INTO "+schemaName+"."+tableName+" ("+columnName+") VALUES('http://models.geo.admin.ch/ilimodels.xml');");
             con.commit();
 
@@ -175,5 +151,24 @@ public class DatabaseDocumentExportStepTest {
             String content = new String(Files.readAllBytes(Paths.get(resultFile.getAbsolutePath())));
             assertTrue(content.contains("IliRepository"));
         }
+    }
+
+    /**
+     * Creates a schema and facghapplikation table to test against
+     * @param connection the db connection
+     * @param statement the statement
+     * @throws Exception if execution fails
+     *
+     * <ul>
+     * <li><a href="https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis">Docs</a></li>
+     * <li><a href="http://geo.so.ch/models/ilimodels.xml">Docs</a></li>
+     * <li><a href="http://models.geo.admin.ch/ilimodels.xml">Docs</a></li>
+     * </ul>
+     */
+    private void initializeSchema(Connection connection, Statement statement) throws Exception {
+        statement.execute("DROP SCHEMA IF EXISTS " + this.schemaName + " CASCADE;");
+        statement.execute("CREATE SCHEMA " + this.schemaName + ";");
+        statement.execute("CREATE TABLE " + this.schemaName + "." + this.tableName + " (id serial, " + this.columnName + " text);");
+        connection.commit();
     }
 }

@@ -19,14 +19,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class GzipStepTest {
-    
-    public GzipStepTest() {
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
 
     private final GretlLogger log;
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    public GzipStepTest() {
+        this.log = LogEnvironment.getLogger(this.getClass());
+    }
 
     @Test
     public void compress_file_Ok() throws Exception {

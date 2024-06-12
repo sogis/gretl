@@ -46,6 +46,7 @@ public class TestUtil {
     public static final String RASTER_AAIGRID_SQL_PATH = "data/postgisrasterprocessor/prepare_raster_aaigrid.sql";
     public static final String TARGET_TIF_PATH = "data/postgisrasterprocessor/target.tif";
     public static final String TARGET_ASC_PATH = "data/postgisrasterprocessor/target.asc";
+    public static final String S3_BUCKET_DIR_PATH = "data/s3bucket2bucket";
 
     public static File createTempFile(TemporaryFolder folder, String content, String fileName) throws IOException {
         File sqlFile = folder.newFile(fileName);
