@@ -1,5 +1,19 @@
 package ch.so.agi.gretl.steps;
 
+import ch.ehi.basics.settings.Settings;
+import ch.ehi.ili2db.base.Ili2db;
+import ch.ehi.ili2db.base.Ili2dbException;
+import ch.ehi.ili2db.gui.Config;
+import ch.ehi.ili2pg.PgMain;
+import ch.so.agi.gretl.testutil.DbTest;
+import ch.so.agi.gretl.testutil.TestUtil;
+import org.interlis2.validator.Validator;
+import org.junit.*;
+import org.junit.experimental.categories.Category;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,21 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-import ch.ehi.ili2db.base.Ili2dbException;
-import ch.ehi.ili2pg.PgMain;
-import org.interlis2.validator.Validator;
-import org.junit.*;
-import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.PostgisContainerProvider;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-
-import ch.ehi.basics.settings.Settings;
-import ch.ehi.ili2db.base.Ili2db;
-import ch.ehi.ili2db.gui.Config;
-import ch.so.agi.gretl.testutil.DbTest;
-import ch.so.agi.gretl.testutil.TestUtil;
-
+import static ch.ehi.ili2db.gui.Config.BASKET_HANDLING_READWRITE;
 import static ch.so.agi.gretl.steps.AbstractPublisherStepTest.*;
 
 public class PublisherStepDb2LocalTest {
@@ -94,8 +94,8 @@ public class PublisherStepDb2LocalTest {
         ) {
             deleteOutputFolder(targetFolder);
             dropDbSchema(stmt);
-            initConfig(datasetName, Config.BASKET_HANDLING_READWRITE, null);
-            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, false, null, null);
+            initConfig(datasetName, BASKET_HANDLING_READWRITE, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, false, null, null, null);
         }
 
         // verify
@@ -127,7 +127,7 @@ public class PublisherStepDb2LocalTest {
             deleteOutputFolder(targetFolder);
             dropDbSchema(stmt);
             initConfig();
-            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, DM01AVCH24LV95D, false, null, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, DM01AVCH24LV95D, false, null, null, null);
         }
 
         // verify
@@ -158,10 +158,10 @@ public class PublisherStepDb2LocalTest {
         ) {
             deleteOutputFolder(targetFolder);
             dropDbSchema(stmt);
-            initConfig(null, Config.BASKET_HANDLING_READWRITE, null);
+            initConfig(null, BASKET_HANDLING_READWRITE, null);
 
             try {
-                publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, DM01AVCH24LV95D, false, null, null);
+                publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, DM01AVCH24LV95D, false, null, null, null);
                 Assert.fail();
             } catch (IllegalArgumentException ex) {
                 Assert.assertEquals("modelsToPublish <DM01AVCH24LV95D> can only be used with simple models", ex.getMessage());
@@ -181,8 +181,8 @@ public class PublisherStepDb2LocalTest {
         ) {
             deleteOutputFolder(targetFolder);
             dropDbSchema(stmt);
-            initConfig(datasetName, Config.BASKET_HANDLING_READWRITE, Arrays.asList("files", SRC_DATA_SIMPLE_FILENAME));
-            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, false, null, null);
+            initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", SRC_DATA_SIMPLE_FILENAME));
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, false, null, null, null);
         }
     }
 
@@ -198,7 +198,7 @@ public class PublisherStepDb2LocalTest {
         final String datasetName="simple";
 
         try (Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
-            publishDataset(jdbcConnection, SRC_DATA_DATE_1, datasetName, null, true, null, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_1, datasetName, null, true, null, null, null);
         }
 
         // verify
@@ -252,8 +252,8 @@ public class PublisherStepDb2LocalTest {
         ) {
             deleteOutputFolder(targetFolder);
             dropDbSchema(stmt);
-            initConfig(datasetName, Config.BASKET_HANDLING_READWRITE, null);
-            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, true, null, null);
+            initConfig(datasetName, BASKET_HANDLING_READWRITE, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, true, null, null, null);
         }
 
         // verify
@@ -285,8 +285,8 @@ public class PublisherStepDb2LocalTest {
         ) {
             deleteOutputFolder(targetFolder);
             dropDbSchema(stmt);
-            initConfig(datasetName, Config.BASKET_HANDLING_READWRITE, null);
-            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, true, null, null);
+            initConfig(datasetName, BASKET_HANDLING_READWRITE, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, true, null, null, null);
         }
 
         // verify
@@ -320,10 +320,10 @@ public class PublisherStepDb2LocalTest {
             dropDbSchema(stmt);
 
             for (String datasetName : new String[] {"2501","2502"}) {
-                initConfig(datasetName, Config.BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".itf"));
+                initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".itf"));
             }
 
-            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, false, "[0-9][0-9][0-9][0-9]", publishedRegions);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, false, "[0-9][0-9][0-9][0-9]", null, publishedRegions);
         }
 
         // verify
@@ -355,36 +355,15 @@ public class PublisherStepDb2LocalTest {
             Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             Statement stmt = jdbcConnection.createStatement();
         ) {
-            // delete output folder
-            if (Files.exists(targetFolder)) {
-                PublisherStep.deleteFileTree(targetFolder);
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+
+            for (String datasetName : new String[] {"2501","2502"}) {
+                initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".itf"));
             }
-
-            stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
-            PgMain pgMain = new PgMain();
-            pgMain.initConfig(config);
-
-            for (String datasetName:new String[] {"2501","2502"}) {
-                config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".itf").toString());
-
-                if (config.getXtffile() != null && Ili2db.isItfFilename(config.getXtffile())){
-                    config.setItfTransferfile(true);
-                }
-
-                config.setDatasetName(datasetName);
-                config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                Ili2db.readSettingsFromDb(config);
-                Ili2db.run(config,null);
-            }
-
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
 
             List<String> regions = Collections.singletonList("2501");
-            PublisherStep step = new PublisherStep();
-            step.publishDatasetFromDb(SRC_DATA_DATE_0,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,null,null,false, localTestOut.toAbsolutePath(),null,regions,publishedRegions,null,null,settings,localTestOut, null);
-
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, false, null, regions, publishedRegions);
         }
 
         Assert.assertTrue(Files.exists(targetFolder));
@@ -413,35 +392,17 @@ public class PublisherStepDb2LocalTest {
         List<String> publishedRegions=new ArrayList<>();
 
         try (
-                Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-                Statement stmt = jdbcConnection.createStatement();
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement();
         ) {
-            if (Files.exists(targetFolder)) {
-                PublisherStep.deleteFileTree(targetFolder);
-            }
-
-            stmt.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
-            PgMain pgMain = new PgMain();
-            pgMain.initConfig(config);
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
 
             for (String datasetName : new String[] {"SimpleCoord23a","SimpleCoord23b"}) {
-                config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".xtf").toString());
-                if (config.getXtffile() != null && Ili2db.isItfFilename(config.getXtffile())) {
-                    config.setItfTransferfile(true);
-                }
-
-                config.setDatasetName(datasetName);
-                config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                Ili2db.readSettingsFromDb(config);
-                Ili2db.run(config,null);
+                initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".xtf"));
             }
 
-            Path targetPath = localTestOut.toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE_0,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,null,null,true, targetPath,"SimpleCoord23[a-z]",null,publishedRegions,null,null,settings,localTestOut, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, true, "SimpleCoord23[a-z]", null, publishedRegions);
         }
 
         // verify
@@ -472,38 +433,23 @@ public class PublisherStepDb2LocalTest {
     @Category(DbTest.class)
     public void db_regionsRegEx_UserFormats_AV() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        List<String> publishedRegions=new ArrayList<>();
+        List<String> publishedRegions = new ArrayList<>();
 
         try (
             Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             Statement stmt = jdbcConnection.createStatement();
         ) {
-            if (Files.exists(targetFolder)) {
-                PublisherStep.deleteFileTree(targetFolder);
-            }
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
 
-            stmt.execute("DROP SCHEMA IF EXISTS " + dbSchema + " CASCADE");
             PgMain pgMain = new PgMain();
             pgMain.initConfig(config);
 
             for (String datasetName : new String[] {"2501","2502"}) {
-                config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".itf").toString());
-                if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                    config.setItfTransferfile(true);
-                }
-
-                config.setDatasetName(datasetName);
-                config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                Ili2db.readSettingsFromDb(config);
-                Ili2db.run(config,null);
+                initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".itf"));
             }
 
-            Path targetPath = localTestOut.toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE_0,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,dbSchema,null,null,null,true, targetPath,"[0-9][0-9][0-9][0-9]",null,publishedRegions,null,null,settings,localTestOut, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, true, "[0-9][0-9][0-9][0-9]", null, publishedRegions);
         }
 
         // verify
@@ -572,7 +518,7 @@ public class PublisherStepDb2LocalTest {
         return path;
     }
 
-    private void publishDataset(Connection jdbcConnection, Date dataIdent, String datasetName, String modelsToPublish, boolean userFormats, String regionRegex, List<String> publishedRegions) throws Exception {
+    private void publishDataset(Connection jdbcConnection, Date dataIdent, String datasetName, String modelsToPublish, boolean userFormats, String regionRegex, List<String> regionsToPublish, List<String> publishedRegions) throws Exception {
         Path targetPath = localTestOut.toAbsolutePath();
         Settings settings = new Settings();
         settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
@@ -590,7 +536,7 @@ public class PublisherStepDb2LocalTest {
                 userFormats,
                 targetPath,
                 regionRegex,
-                null,
+                regionsToPublish,
                 publishedRegions,
                 null,
                 null,
