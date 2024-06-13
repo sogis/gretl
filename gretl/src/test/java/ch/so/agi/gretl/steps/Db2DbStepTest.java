@@ -242,13 +242,12 @@ public class Db2DbStepTest {
         Db2DbStep db2db = new Db2DbStep();
 
         Assert.assertThrows(SQLException.class, () -> db2db.processAllTransferSets(sourceDb, targetDb, transferSets));
-        boolean isclosed = sourceDb.isClosed();
         Assert.assertTrue("SourceConnection is not closed", sourceDb.isClosed());
         Assert.assertTrue("TargetConnection is not closed", targetDb.isClosed());
     }
 
-    @Category(DbTest.class)
     @Test
+    @Category(DbTest.class)
     public void canWriteGeomFromWkbTest_Ok() throws Exception {
         String schemaName = "GeomFromWkbTest";
 
@@ -278,8 +277,8 @@ public class Db2DbStepTest {
         }
     }
 
-    @Category(DbTest.class)
     @Test
+    @Category(DbTest.class)
     public void canWriteGeomFromWktTest_Ok() throws Exception {
         String schemaName = "GeomFromWktTest";
 
@@ -309,8 +308,8 @@ public class Db2DbStepTest {
         }
     }
 
-    @Category(DbTest.class)
     @Test
+    @Category(DbTest.class)
     public void canWriteGeomFromGeoJsonTest_Ok() throws Exception {
         String schemaName = "GeomFromGeoJsonTest";
 
@@ -343,8 +342,8 @@ public class Db2DbStepTest {
      * Test's loading several hundred thousand rows from sqlite to postgis. Loading
      * 300'000 rows should take about 15 seconds
      */
-    @Category(DbTest.class)
     @Test
+    @Category(DbTest.class)
     public void positiveBulkLoadPostgisTest_Ok() throws Exception {
         int numRows = 300000;
         String schemaName = "BULKLOAD2POSTGIS";
@@ -390,8 +389,8 @@ public class Db2DbStepTest {
      * Tests if the sqlite datatypes and geometry as wkt are transferred faultfree
      * from sqlite to postgis
      */
-    @Category(DbTest.class)
     @Test
+    @Category(DbTest.class)
     public void positiveSqlite2PostgisTest_Ok() throws Exception {
         String schemaName = "SQLITE2POSTGIS";
         File sqliteDb = createTmpDb(schemaName);
@@ -438,8 +437,8 @@ public class Db2DbStepTest {
      * Tests if the "special" datatypes (Date, Time, GUID, Geometry, ..) are
      * transferred faultfree from Postgis to sqlite
      */
-    @Category(DbTest.class)
     @Test
+    @Category(DbTest.class)
     public void positivePostgis2SqliteTest_Ok() throws Exception {
         String schemaName = "POSTGIS2SQLITE";
         File sqliteDb = createTmpDb(schemaName);

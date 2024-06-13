@@ -1,15 +1,12 @@
 package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.testutil.S3Test;
+import ch.so.agi.gretl.testutil.S3TestHelper;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
@@ -19,8 +16,6 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -34,6 +29,7 @@ public class S3Bucket2BucketStepTest {
     private final String s3Endpoint;
     private final String s3Region;
     private final String acl;
+    private final S3TestHelper s3TestHelper;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -46,6 +42,7 @@ public class S3Bucket2BucketStepTest {
         this.s3Endpoint = "https://s3.eu-central-1.amazonaws.com";
         this.s3Region = "eu-central-1";
         this.acl = "public-read";
+        this.s3TestHelper = new S3TestHelper(this.s3AccessKey, this.s3SecretKey, this.s3Region, this.s3Endpoint);
     }
     
     @Test
@@ -53,15 +50,15 @@ public class S3Bucket2BucketStepTest {
     public void copyFiles_Ok() throws Exception {
         File sourceObject = TestUtil.getResourceFile(TestUtil.S3_BUCKET_DIR_PATH);
         Map<String,String> metadata = new HashMap<>();
-        S3Client s3client = getS3Client();
+        S3Client s3Client = s3TestHelper.getS3Client();
 
-        deleteObjects(s3client, Arrays.asList("foo.txt", "bar.txt", "download.txt"));
-        uploadFiles(sourceObject, metadata);
+        deleteObjects(s3Client, Arrays.asList("foo.txt", "bar.txt", "download.txt"));
+        s3TestHelper.upload(sourceObject, metadata, s3SourceBucketName, acl);
         copyFiles(metadata);
 
         // Check result. 
         ListObjectsRequest listObjects = ListObjectsRequest.builder().bucket(s3TargetBucketName).build();
-        ListObjectsResponse res = s3client.listObjects(listObjects);
+        ListObjectsResponse res = s3Client.listObjects(listObjects);
         List<S3Object> objects = res.contents();
         
         List<String> keyList = new ArrayList<>();
@@ -73,23 +70,7 @@ public class S3Bucket2BucketStepTest {
         assertTrue(keyList.contains("bar.txt"));
         assertTrue(keyList.contains("download.txt"));
         assertEquals(3, keyList.size());
-        deleteFiles(s3client);
-    }
-
-    private S3Client getS3Client() {
-        return S3Client.builder()
-                .credentialsProvider(getCredentialsProvider())
-                .region(getRegion())
-                .endpointOverride(URI.create(s3Endpoint))
-                .build();
-    }
-
-    private AwsCredentialsProvider getCredentialsProvider() {
-        return StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-    }
-
-    private Region getRegion() {
-        return Region.of(s3Region);
+        deleteFiles(s3Client);
     }
 
     /**
@@ -109,16 +90,6 @@ public class S3Bucket2BucketStepTest {
 
             s3Client.deleteObject(deleteObjectRequest);
         }
-    }
-
-    /**
-     * Upload files from a directory
-     * @param sourceObject directory for S3 bucket data on the local system
-     * @param metadata metadata
-     */
-    private void uploadFiles(File sourceObject, Map<String, String> metadata) throws FileNotFoundException, URISyntaxException {
-        S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3SourceBucketName, s3Endpoint, s3Region, acl, null, metadata);
     }
 
     /**

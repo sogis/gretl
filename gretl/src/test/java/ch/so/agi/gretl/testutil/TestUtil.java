@@ -57,6 +57,19 @@ public class TestUtil {
         }
     }
 
+    /**
+     * Retrieves a file from the resources directory.
+     *
+     * <p>This method attempts to locate the resource specified by the given path and return it as a {@link File}.
+     * The resource path must be non-null and point to an existing resource in the classpath. If the resource cannot
+     * be found, an {@link IllegalArgumentException} is thrown.</p>
+     *
+     * @param resourcePath the path to the resource file, relative to the classpath.
+     * @return a {@link File} object representing the resource.
+     * @throws NullPointerException if {@code resourcePath} is null.
+     * @throws IllegalArgumentException if the resource cannot be found at the specified path.
+     * @throws Exception if an error occurs while converting the resource URL to a URI.
+     */
     public static File getResourceFile(String resourcePath) throws Exception {
         Objects.requireNonNull(resourcePath);
         URL resourceUrl = TestUtil.class.getClassLoader().getResource(resourcePath);

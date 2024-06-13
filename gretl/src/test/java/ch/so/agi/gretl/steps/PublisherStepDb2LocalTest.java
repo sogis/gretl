@@ -474,7 +474,6 @@ public class PublisherStepDb2LocalTest {
         }
     }
 
-    // TODO - probably make a private class which will hold some of the stuff like connection and then just execute individual methods? Will reduce list of params at least...
     private void deleteOutputFolder(Path targetFolder) throws IOException {
         Objects.requireNonNull(targetFolder);
         if (Files.exists(targetFolder)) {
@@ -490,7 +489,6 @@ public class PublisherStepDb2LocalTest {
         PgMain pgMain = new PgMain();
         pgMain.initConfig(config);
 
-        // FIXME
         if (filePaths != null && !filePaths.isEmpty()) {
             Path resultPath = resolvePath(SRC_TEST_DATA, filePaths);
             config.setXtffile(resultPath.toString());

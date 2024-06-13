@@ -1,21 +1,17 @@
 package ch.so.agi.gretl.steps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.nio.file.Paths;
-
+import ch.so.agi.gretl.api.Connector;
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
-import ch.so.agi.gretl.api.Connector;
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.testutil.TestUtil;
+import java.io.File;
+import java.nio.file.Paths;
+
+import static org.junit.Assert.assertEquals;
 
 public class PostgisRasterExportStepTest {
     
@@ -66,7 +62,7 @@ public class PostgisRasterExportStepTest {
     @Test
     public void export_aaigrid_Ok() throws Exception {
         // Prepare
-        File sqlFile = new File("src/test/resources/data/postgisrasterprocessor/prepare_raster_aaigrid.sql");
+        File sqlFile = TestUtil.getResourceFile("data/postgisrasterprocessor/prepare_raster_aaigrid.sql");
         String outFileName = "outfile.asc";
 
         // TODO this file is missing in the resources, what should be actually tested here?
