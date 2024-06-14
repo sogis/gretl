@@ -1,23 +1,20 @@
 package ch.so.agi.gretl.steps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
+import ch.so.agi.gretl.api.Connector;
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
-import ch.so.agi.gretl.api.Connector;
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.testutil.TestUtil;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class JsonImportStepTest {
 

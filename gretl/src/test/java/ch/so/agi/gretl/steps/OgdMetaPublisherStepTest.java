@@ -1,22 +1,18 @@
 package ch.so.agi.gretl.steps;
 
-import static org.junit.Assert.assertTrue;
+import ch.ehi.basics.settings.Settings;
+import ch.so.agi.gretl.testutil.TestUtil;
+import org.interlis2.validator.Validator;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import ch.so.agi.gretl.testutil.TestUtil;
-import org.apache.hadoop.conf.Configuration;
-import org.interlis2.validator.Validator;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import ch.ehi.basics.settings.Settings;
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
+import static org.junit.Assert.assertTrue;
 
 public class OgdMetaPublisherStepTest {
 

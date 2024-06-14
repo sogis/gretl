@@ -1,11 +1,5 @@
 package ch.so.agi.gretl.steps;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.util.Date;
-import java.util.List;
-
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -15,8 +9,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opengis.feature.type.AttributeDescriptor;
 
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 public class Gpkg2ShpStepTest {
     
