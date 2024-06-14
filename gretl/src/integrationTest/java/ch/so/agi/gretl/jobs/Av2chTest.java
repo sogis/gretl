@@ -11,16 +11,10 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.fs.FileUtil;
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Rule;
 import org.junit.Test;
 
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
-import org.junit.rules.TemporaryFolder;
 
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.BuildResult;
@@ -38,7 +32,7 @@ public class Av2chTest {
             classpath.add(new File(line));
         }
 
-        BuildResult result = GradleRunner.create()
+        GradleRunner.create()
             .withProjectDir(projectDir)
             .withPluginClasspath(classpath)
             .withArguments("--init-script", initScript.getAbsolutePath(), "transform")
@@ -51,10 +45,10 @@ public class Av2chTest {
 
         String resultString = new String(Files.readAllBytes(resultFile.toPath()), StandardCharsets.ISO_8859_1);
 
-        assertThat(resultString, containsString("DM01 Interlis Converter"));
-        assertThat(resultString, containsString("MODL DM01AVCH24LV95D"));
-        assertThat(resultString, containsString("TABL LFP3Nachfuehrung"));
-        assertThat(resultString, containsString("OBJE 2540 2514 2611693.294 1233674.211 111.9 1 3 1"));
+        assertTrue(resultString.contains("DM01 Interlis Converter"));
+        assertTrue(resultString.contains("MODL DM01AVCH24LV95D"));
+        assertTrue(resultString.contains("TABL LFP3Nachfuehrung"));
+        assertTrue(resultString.contains("OBJE 2540 2514 2611693.294 1233674.211 111.9 1 3 1"));
     }
 
     @Test
