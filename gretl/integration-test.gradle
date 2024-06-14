@@ -19,11 +19,19 @@ sourceSets {
     }
 }
 
+tasks.register("writePluginClassPath"){
+    doLast {
+        def buildDirectory = project.layout.buildDirectory.get()
+        new File(buildDirectory.getAsFile(), "pluginClassPath.txt").text =
+                sourceSets.integrationTest.runtimeClasspath.files.join("\n")
+    }
+}
+
 /**
  * Task for executing the integration tests. It references the 
  * classes and runtime classpath of the integration test source set.
  */
-task jarTest(type: Test) {
+task jarTest(type: Test, dependsOn: writePluginClassPath) {
     description = 'Runs integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 

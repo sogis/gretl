@@ -130,7 +130,6 @@ dependencies {
     
     testImplementation libs.hadoop.client
     integrationTestImplementation libs.hadoop.client
-    
 }
 
 gradlePlugin {
