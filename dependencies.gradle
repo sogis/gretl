@@ -1,7 +1,7 @@
 ext {
     // dependencies version
-    ioxIliVersion = '1.22.0'
-    ilivalidatorVersion = '1.14.0'
+    ioxIliVersion = '1.23.0'
+    ilivalidatorVersion = '1.14.2'
     ilivalidatorCustomFunctions = '1.1.50'
     ilivalidatorCustomFunctionsGeometriesVersion = '0.0.8'
     geowCustomFunctionsVersion = '0.2.0'

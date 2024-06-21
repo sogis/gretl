@@ -34,10 +34,10 @@ def ftppwd = System.getProperty('ftppwd',properties.get('ftppwd'))
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.4.0' 
-        force 'ch.interlis:ili2c-core:5.4.0'
+        force 'ch.interlis:ili2c-tool:5.5.3' 
+        force 'ch.interlis:ili2c-core:5.5.3'
         force 'ch.interlis:ili2gpkg:5.1.0'
-        force 'ch.interlis:iox-ili:1.22.0'
+        force 'ch.interlis:iox-ili:1.23.0'
     }
 }
 

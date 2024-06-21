@@ -6,6 +6,9 @@ defaultTasks 'validate'
 
 task validate(type: IliValidator){
     dataFiles = ["NGK_SO_Testbeddata.xtf"]
+    // Dockerimage funktioniert nicht, wenn im lokalen ini file wiederum
+    // ein lokale config file verwendet wird. Ohne src/integrationTest/jobs..
+    // funktioniert er ohne Docker nicht. Müsste genauer angeschaut werden.
     //metaConfigFile = file("SO_AFU_Naturgefahren_20240515-gretl-meta.ini")
     metaConfigFile = "ilidata:SO_AFU_Naturgefahren_20240515-gretl-meta"
     logFile = "ilivalidator.log"

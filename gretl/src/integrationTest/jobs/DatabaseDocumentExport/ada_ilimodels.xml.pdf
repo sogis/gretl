@@ -34,6 +34,7 @@
     V_D D_M D_M FDCS                                        020xxx
       OeREB RDPPF RDPP PLR                                  0205xx
     VBS DDPS DDPS DDPS                                      021xxx
+    SBFI SEFRI SEFRI SERI                                   022xxx
 
   TID schema for registered models in this repository (ili2_4):
     CHBase      1005xx (base modules)
@@ -62,6 +63,7 @@
     V_D D_M D_M FDCS                                        520xxx
       OeREB RDPPF RDPP PLR                                  5205xx
     VBS DDPS DDPS DDPS                                      521xxx
+    SBFI SEFRI SEFRI SERI                                   522xxx
 -->
 
 </HEADERSECTION>
@@ -1734,6 +1736,31 @@
       <md5>2449ec7bcc775802b09cb428de2bf255</md5>
     </IliRepository20.RepositoryIndex.ModelMetadata>
 
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="100526">
+      <Name>Geometry3D_V2</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>CH/CHBase_Part8_GEOMETRY3D_V2.ili</File>
+      <Version>2023-10-18</Version>
+      <publishingDate>2023-10-18</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>Units</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>CoordSys</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>Geometry_V2</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/CH/</Issuer>
+      <technicalContact>mailto:models@geo.admin.ch</technicalContact>
+      <furtherInformation>https://www.geo.admin.ch/de/geoinformation-schweiz/geobasisdaten/geodata-models.html</furtherInformation>
+      <md5>404cf9f2831ff070ab0f0539524422f2</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+
+
   </IliRepository20.RepositoryIndex>
 
 <!-- =================================================================== -->
@@ -3399,7 +3426,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="001068">
       <Name>Nutzungsplanung_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>ARE/Nutzungsplanung_V1_2.ili</File>
+      <File>obsolete/Nutzungsplanung_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -3427,7 +3454,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="001069">
       <Name>PlansDAffectation_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>ARE/PlansDAffectation_V1_2.ili</File>
+      <File>obsolete/PlansDAffectation_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -3458,7 +3485,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="001070">
       <Name>PianiDiUtilizzazione_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>ARE/PianiDiUtilizzazione_V1_2.ili</File>
+      <File>obsolete/PianiDiUtilizzazione_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -3489,7 +3516,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="001071">
       <Name>Planungszonen_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>ARE/Planungszonen_V1_1.ili</File>
+      <File>obsolete/Planungszonen_V1_1_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -3517,7 +3544,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="001072">
       <Name>Zones_reservees_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>ARE/Zones_reservees_V1_1.ili</File>
+      <File>obsolete/Zones_reservees_V1_1_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -3548,7 +3575,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="001073">
       <Name>ZoneDiPianificazione_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>ARE/ZoneDiPianificazione_V1_1.ili</File>
+      <File>obsolete/ZoneDiPianificazione_V1_1_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -3670,6 +3697,186 @@
       <technicalContact>mailto:info@are.admin.ch</technicalContact>
       <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
       <md5>9a4a3d3137f6693d7bf824d147f43121</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="001077">
+      <Name>Planungszonen_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>ARE/Planungszonen_V1_1.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-03-31</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>76.1</Tags>
+      <Issuer>https://models.geo.admin.ch/ARE/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>e98a093b3e4c9d499230fd6b7180f496</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="001078">
+      <Name>Zones_reservees_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>ARE/Zones_reservees_V1_1.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-03-31</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Planungszonen_V1_1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>76.1</Tags>
+      <Issuer>https://models.geo.admin.ch/ARE/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>0ab39c3b1679b54decd63e46bc1cae98</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="001079">
+      <Name>ZoneDiPianificazione_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>ARE/ZoneDiPianificazione_V1_1.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-03-31</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Planungszonen_V1_1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>76.1</Tags>
+      <Issuer>https://models.geo.admin.ch/ARE/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>08b3447c202de2d3e1009aa72f931bb7</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="001080">
+      <Name>Nutzungsplanung_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>ARE/Nutzungsplanung_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-03-31</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>73.1</Tags>
+      <Issuer>https://models.geo.admin.ch/ARE/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>be431c8480c0d3fa466c63f4f6ac0c20</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="001081">
+      <Name>PlansDAffectation_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>ARE/PlansDAffectation_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-03-31</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Nutzungsplanung_V1_2</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>73.1</Tags>
+      <Issuer>https://models.geo.admin.ch/ARE/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>4bbac1dc40efd4ca09384a13369ee5f8</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="001082">
+      <Name>PianiDiUtilizzazione_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>ARE/PianiDiUtilizzazione_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-03-31</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Nutzungsplanung_V1_2</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>73.1</Tags>
+      <Issuer>https://models.geo.admin.ch/ARE/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>f7ca73e988fdfa0a3e54334158fc0547</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
@@ -4361,7 +4568,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="003001">
       <Name>KGS_PBC_LV03_V2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BABS/KGS_PBC_V2.ili</File>
+      <File>BABS/replaced/KGS_PBC_V2.ili</File>
       <Version>2015-04-18</Version>
       <publishingDate>2015-08-05</publishingDate>
       <dependsOnModel>
@@ -4382,7 +4589,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="003002">
       <Name>KGS_PBC_LV95_V2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BABS/KGS_PBC_V2.ili</File>
+      <File>BABS/replaced/KGS_PBC_V2.ili</File>
       <Version>2015-04-18</Version>
       <publishingDate>2015-08-05</publishingDate>
       <dependsOnModel>
@@ -4467,6 +4674,33 @@
       <technicalContact>mailto:Geographisches-Informationssystem@babs.admin.ch</technicalContact>
       <furtherInformation>https://www.babs.admin.ch/de/aufgabenbabs/kgs/inventar.html</furtherInformation>
       <md5>c2615272bfc69c045affee9c0783abb7</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="003006">
+      <Name>KGS_PBC_V2_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BABS/KGS_PBC_V2_1.ili</File>
+      <Version>2023-03-02</Version>
+      <publishingDate>2023-05-02</publishingDate>
+      <dependsOnModel>
+         <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>65.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BABS/</Issuer>
+      <technicalContact>mailto:Geographisches-Informationssystem@babs.admin.ch</technicalContact>
+      <furtherInformation>https://www.babs.admin.ch/de/aufgabenbabs/kgs/inventar.html</furtherInformation>
+      <md5>a92fd59c5088c48c16ec22a19e9fe664</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
@@ -5926,7 +6160,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004060">
       <Name>kt_Trockenwiesen_Codelisten_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Trockenwiesen_V1.ili</File>
+      <File>BAFU/replaced/kt_Trockenwiesen_V1.ili</File>
       <Version>2015-02-25</Version>
       <publishingDate>2015-05-18</publishingDate>
       <dependsOnModel>
@@ -8262,7 +8496,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004157">
       <Name>GEP_LV03_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/GEP_V1.ili</File>
+      <File>obsolete/GEP_V1_o0.ili</File>
       <Version>2016-11-22</Version>
       <publishingDate>2017-01-17</publishingDate>
       <dependsOnModel>
@@ -8289,7 +8523,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004158">
       <Name>GEP_LV95_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/GEP_V1.ili</File>
+      <File>obsolete/GEP_V1_o0ili</File>
       <Version>2016-11-22</Version>
       <publishingDate>2017-01-17</publishingDate>
       <dependsOnModel>
@@ -9666,7 +9900,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004217">
       <Name>PlanerischerGewaesserschutz_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/PlanerischerGewaesserschutz_V1_1.ili</File>
+      <File>BAFU/replaced/PlanerischerGewaesserschutz_V1_1.ili</File>
       <Version>2017-06-20</Version>
       <publishingDate>2017-06-23</publishingDate>
       <dependsOnModel>
@@ -9693,7 +9927,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004218">
       <Name>PlanerischerGewaesserschutz_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/PlanerischerGewaesserschutz_V1_1.ili</File>
+      <File>BAFU/replaced/PlanerischerGewaesserschutz_V1_1.ili</File>
       <Version>2017-06-20</Version>
       <publishingDate>2017-06-23</publishingDate>
       <dependsOnModel>
@@ -9720,7 +9954,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004219">
       <Name>LegendeEintrag_PlanGewaesserschutz_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LegendeEintrag_PlanGewaesserschutz_V1_1.ili</File>
+      <File>BAFU/replaced/LegendeEintrag_PlanGewaesserschutz_V1_1.ili</File>
       <Version>2017-06-20</Version>
       <publishingDate>2017-06-23</publishingDate>
       <dependsOnModel>
@@ -10042,7 +10276,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004232">
       <Name>NoisePollutionRegisterForMilitaryShootingRanges_Codelists_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/NoisePollutionRegisterForMilitaryShootingRanges_V1.ili</File>
+      <File>BAFU/replaced/NoisePollutionRegisterForMilitaryShootingRanges_V1.ili</File>
       <Version>2018-01-23</Version>
       <publishingDate>2018-02-07</publishingDate>
       <dependsOnModel>
@@ -10063,7 +10297,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004233">
       <Name>NoisePollutionRegisterForMilitaryShootingRanges_LV95_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/NoisePollutionRegisterForMilitaryShootingRanges_V1.ili</File>
+      <File>BAFU/replaced/NoisePollutionRegisterForMilitaryShootingRanges_V1.ili</File>
       <Version>2018-01-23</Version>
       <publishingDate>2018-02-07</publishingDate>
       <dependsOnModel>
@@ -10090,7 +10324,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004234">
       <Name>NoisePollutionRegisterForMilitaryShootingRanges_LV03_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/NoisePollutionRegisterForMilitaryShootingRanges_V1.ili</File>
+      <File>BAFU/replaced/NoisePollutionRegisterForMilitaryShootingRanges_V1.ili</File>
       <Version>2018-01-23</Version>
       <publishingDate>2018-02-07</publishingDate>
       <dependsOnModel>
@@ -10658,7 +10892,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004255">
       <Name>kt_Trockenwiesen_LV03_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Trockenwiesen_V1.ili</File>
+      <File>BAFU/replaced/kt_Trockenwiesen_V1.ili</File>
       <Version>2018-02-21</Version>
       <publishingDate>2018-02-21</publishingDate>
       <dependsOnModel>
@@ -10689,7 +10923,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004256">
       <Name>kt_Trockenwiesen_LV95_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Trockenwiesen_V1.ili</File>
+      <File>BAFU/replaced/kt_Trockenwiesen_V1.ili</File>
       <Version>2018-02-21</Version>
       <publishingDate>2018-02-21</publishingDate>
       <dependsOnModel>
@@ -12238,7 +12472,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004322">
       <Name>kt_Amphibien_Laichgebiete_Codelisten_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Amphibien_Laichgebiete_V1_1.ili</File>
+      <File>obsolete/kt_Amphibien_Laichgebiete_V1_1_o0.ili</File>
       <Version>2018-02-07</Version>
       <publishingDate>2018-08-14</publishingDate>
       <dependsOnModel>
@@ -12259,7 +12493,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004323">
       <Name>kt_Amphibien_Laichgebiete_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Amphibien_Laichgebiete_V1_1.ili</File>
+      <File>obsolete/kt_Amphibien_Laichgebiete_V1_1_o0.ili</File>
       <Version>2018-02-07</Version>
       <publishingDate>2018-08-14</publishingDate>
       <dependsOnModel>
@@ -12289,7 +12523,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004324">
       <Name>kt_Amphibien_Laichgebiete_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Amphibien_Laichgebiete_V1_1.ili</File>
+      <File>obsolete/kt_Amphibien_Laichgebiete_V1_1_o0.ili</File>
       <Version>2018-02-07</Version>
       <publishingDate>2018-08-14</publishingDate>
       <dependsOnModel>
@@ -12319,7 +12553,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004325">
       <Name>kt_Amphibien_Wanderobjekte_Codelisten_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Amphibien_Wanderobjekte_V1_1.ili</File>
+      <File>obsolete/kt_Amphibien_Wanderobjekte_V1_1_o0.ili</File>
       <Version>2018-02-07</Version>
       <publishingDate>2018-08-14</publishingDate>
       <dependsOnModel>
@@ -12340,7 +12574,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004326">
       <Name>kt_Amphibien_Wanderobjekte_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Amphibien_Wanderobjekte_V1_1.ili</File>
+      <File>obsolete/kt_Amphibien_Wanderobjekte_V1_1_o0.ili</File>
       <Version>2018-02-07</Version>
       <publishingDate>2018-08-14</publishingDate>
       <dependsOnModel>
@@ -12367,7 +12601,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004327">
       <Name>kt_Amphibien_Wanderobjekte_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Amphibien_Wanderobjekte_V1_1.ili</File>
+      <File>obsolete/kt_Amphibien_Wanderobjekte_V1_1_o0.ili</File>
       <Version>2018-02-07</Version>
       <publishingDate>2018-08-14</publishingDate>
       <dependsOnModel>
@@ -12765,7 +12999,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004344">
       <Name>SanierungWasserkraft_Codelisten_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/SanierungWasserkraft_V1_1.ili</File>
+      <File>BAFU/replaced/SanierungWasserkraft_V1_1.ili</File>
       <Version>2019-02-06</Version>
       <publishingDate>2019-02-11</publishingDate>
       <dependsOnModel>
@@ -12934,7 +13168,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004351">
       <Name>SanierungWasserkraft_LV03_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/SanierungWasserkraft_V1_1.ili</File>
+      <File>BAFU/replaced/SanierungWasserkraft_V1_1.ili</File>
       <Version>2019-03-04</Version>
       <publishingDate>2019-03-06</publishingDate>
       <dependsOnModel>
@@ -12965,7 +13199,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004352">
       <Name>SanierungWasserkraft_LV95_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/SanierungWasserkraft_V1_1.ili</File>
+      <File>BAFU/replaced/SanierungWasserkraft_V1_1.ili</File>
       <Version>2019-03-04</Version>
       <publishingDate>2019-03-06</publishingDate>
       <dependsOnModel>
@@ -14298,7 +14532,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004406">
       <Name>Hydrologische_Messnetze_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Hydrologische_Messnetze_V1.ili</File>
+      <File>BAFU/replaced/Hydrologische_Messnetze_V1.ili</File>
       <Version>2020-04-29</Version>
       <publishingDate>2020-04-29</publishingDate>
       <dependsOnModel>
@@ -14601,7 +14835,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004417">
       <Name>Naturereigniskataster_umfassend_LV95_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Naturereigniskataster_umfassend_V1.ili</File>
+      <File>obsolete/Naturereigniskataster_umfassend_V1_o0.ili</File>
       <Version>2020-08-11</Version>
       <publishingDate>2020-08-28</publishingDate>
       <dependsOnModel>
@@ -14625,7 +14859,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004418">
       <Name>LBK_Nationale_Uebersicht_LV95_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LBK_Nationale_Uebersicht_V1.ili</File>
+      <File>obsolete/LBK_Nationale_Uebersicht_V1_o1.ili</File>
       <Version>2020-10-21</Version>
       <publishingDate>2020-10-21</publishingDate>
       <dependsOnModel>
@@ -14650,7 +14884,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004419">
       <Name>LBK_Nationale_Uebersicht_LV03_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LBK_Nationale_Uebersicht_V1.ili</File>
+      <File>obsolete/LBK_Nationale_Uebersicht_V1_o1.ili</File>
       <Version>2020-10-21</Version>
       <publishingDate>2020-10-21</publishingDate>
       <dependsOnModel>
@@ -15346,7 +15580,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004452">
       <Name>Revitalisierung_Fliessgewaesser_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Revitalisierung_Fliessgewaesser_V1_1.ili</File>
+      <File>BAFU/replaced/Revitalisierung_Fliessgewaesser_V1_1.ili</File>
       <Version>2021-01-27</Version>
       <publishingDate>2021-03-08</publishingDate>
       <dependsOnModel>
@@ -15830,7 +16064,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004471">
       <Name>Laermempfindlichkeitsstufen_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Laermempfindlichkeitsstufen_V1_2.ili</File>
+      <File>obsolete/Laermempfindlichkeitsstufen_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -15858,7 +16092,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004472">
       <Name>DegreDeSensibiliteAuBruit_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/DegreDeSensibiliteAuBruit_V1_2.ili</File>
+      <File>obsolete/DegreDeSensibiliteAuBruit_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -15889,7 +16123,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004473">
       <Name>GradiDiSensibilitaAlRumore_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/GradiDiSensibilitaAlRumore_V1_2.ili</File>
+      <File>obsolete/GradiDiSensibilitaAlRumore_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -15920,7 +16154,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004474">
       <Name>Waldgrenzen_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Waldgrenzen_V1_2.ili</File>
+      <File>obsolete/Waldgrenzen_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -15948,7 +16182,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004475">
       <Name>LimitesDeLaForet_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LimitesDeLaForet_V1_2.ili</File>
+      <File>obsolete/LimitesDeLaForet_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -15979,7 +16213,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004476">
       <Name>MarginiDellaForesta_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/MarginiDellaForesta_V1_2.ili</File>
+      <File>obsolete/MarginiDellaForesta_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -16010,7 +16244,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004477">
       <Name>Waldabstandslinien_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Waldabstandslinien_V1_2.ili</File>
+      <File>obsolete/Waldabstandslinien_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -16038,7 +16272,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004478">
       <Name>DistancesParRapportALaForet_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/DistancesParRapportALaForet_V1_2.ili</File>
+      <File>obsolete/DistancesParRapportALaForet_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -16069,7 +16303,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004479">
       <Name>LineeDiDistanzaDallaForesta_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LineeDiDistanzaDallaForesta_V1_2.ili</File>
+      <File>obsolete/LineeDiDistanzaDallaForesta_V1_2_o1.ili</File>
       <Version>2021-11-19</Version>
       <publishingDate>2021-11-19</publishingDate>
       <dependsOnModel>
@@ -16144,7 +16378,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004482">
       <Name>ARA_DB_REP_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/ARA_DB_REP_V1_1.ili</File>
+      <File>BAFU/replaced/ARA_DB_REP_V1_1.ili</File>
       <Version>2021-11-23</Version>
       <publishingDate>2021-11-25</publishingDate>
       <dependsOnModel>
@@ -16225,7 +16459,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004485">
       <Name>ERKAS_Betriebe_Kataster_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/ERKAS_Betriebe_V2_0.ili</File>
+      <File>obsolete/ERKAS_Betriebe_V2_0_o0.ili</File>
       <Version>2021-10-11</Version>
       <publishingDate>2021-12-10</publishingDate>
       <dependsOnModel>
@@ -16246,7 +16480,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004486">
       <Name>ERKAS_Betriebe_Karte_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/ERKAS_Betriebe_V2_0.ili</File>
+      <File>obsolete/ERKAS_Betriebe_V2_0_o0.ili</File>
       <Version>2021-10-11</Version>
       <publishingDate>2021-12-10</publishingDate>
       <dependsOnModel>
@@ -16403,7 +16637,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004493">
       <Name>kt_Auengebiete_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Auengebiete_V1_1.ili</File>
+      <File>obsolete/kt_Auengebiete_V1_1_o0.ili</File>
       <Version>2022-02-08</Version>
       <publishingDate>2022-03-17</publishingDate>
       <dependsOnModel>
@@ -16433,7 +16667,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004494">
       <Name>kt_Hochmoore_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Hochmoore_V1_1.ili</File>
+      <File>obsolete/kt_Hochmoore_V1_1_o0.ili</File>
       <Version>2022-02-08</Version>
       <publishingDate>2022-03-17</publishingDate>
       <dependsOnModel>
@@ -16463,7 +16697,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004495">
       <Name>kt_Flachmoore_V1_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/kt_Flachmoore_V1_1.ili</File>
+      <File>obsolete/kt_Flachmoore_V1_1_o0.ili</File>
       <Version>2022-02-08</Version>
       <publishingDate>2022-03-17</publishingDate>
       <dependsOnModel>
@@ -16757,7 +16991,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004508">
       <Name>Trockenwiesen_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Trockenwiesen_V1_2.ili</File>
+      <File>obsolete/Trockenwiesen_V1_2_o0.ili</File>
       <Version>2022-06-02</Version>
       <publishingDate>2022-07-11</publishingDate>
       <dependsOnModel>
@@ -16894,7 +17128,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004514">
       <Name>LBK_Haupt_uebrigeStrassen_V1_2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/LBK_Haupt_uebrigeStrassen_V1_2.ili</File>
+      <File>BAFU/replaced/LBK_Haupt_uebrigeStrassen_V1_2.ili</File>
       <Version>2022-10-19</Version>
       <publishingDate>2022-11-17</publishingDate>
       <dependsOnModel>
@@ -16949,7 +17183,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="004516">
       <Name>Naturereigniskataster_MGDM_LV95_V1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAFU/Naturereigniskataster_MGDM_V1.ili</File>
+      <File>obsolete/Naturereigniskataster_MGDM_V1_o1.ili</File>
       <Version>2023-01-12</Version>
       <publishingDate>2023-01-16</publishingDate>
       <dependsOnModel>
@@ -16991,6 +17225,915 @@
       <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
       <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
       <md5>9da6a5136f6c872ac29e43c3f9f190c9</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004518">
+      <Name>SanierungWasserkraft_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/SanierungWasserkraft_V1_2.ili</File>
+      <Version>2023-03-07</Version>
+      <publishingDate>2023-03-13</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>WasserBase_Codelisten_V1_1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>WasserBase_LV95_V1_1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>192.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>1c2b6892d9588e9f1e110672b1f2d346</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004519">
+      <Name>kt_Amphibien_Laichgebiete_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/kt_Amphibien_Laichgebiete_V1_1.ili</File>
+      <Version>2022-11-18</Version>
+      <publishingDate>2023-03-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <!--precursorVersion>2018-02-07</precursorVersion-->
+      <Tags>29.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>f6ed4e2278dc43975d2510dd9b2b0663</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004520">
+      <Name>kt_Amphibien_Wanderobjekte_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/kt_Amphibien_Wanderobjekte_V1_1.ili</File>
+      <Version>2022-11-18</Version>
+      <publishingDate>2023-03-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <!--precursorVersion>2018-02-07</precursorVersion-->
+      <Tags>29.2</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>c74f5a0cb2d4063d918eac7f6b856924</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004521">
+      <Name>kt_Auengebiete_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/kt_Auengebiete_V1_1.ili</File>
+      <Version>2022-11-18</Version>
+      <publishingDate>2023-03-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2022-02-08</precursorVersion>
+      <Tags>26.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>56664392eb2aff4832d7707ec4ac9b78</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004522">
+      <Name>kt_Hochmoore_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/kt_Hochmoore_V1_1.ili</File>
+      <Version>2022-11-18</Version>
+      <publishingDate>2023-03-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2022-02-08</precursorVersion>
+      <Tags>27.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>dd3e10464401b77356075272aef161f3</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004523">
+      <Name>kt_Flachmoore_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/kt_Flachmoore_V1_1.ili</File>
+      <Version>2022-11-18</Version>
+      <publishingDate>2023-03-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2022-02-08</precursorVersion>
+      <Tags>28.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>b4fe938c44c50dd789acb97ac4d0c897</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004524">
+      <Name>kt_Trockenwiesen_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/kt_Trockenwiesen_V1_1.ili</File>
+      <Version>2022-11-18</Version>
+      <publishingDate>2023-03-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>189.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>50db47818d3fb03f55c254acfb6209ca</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004525">
+      <Name>NonVectorData_HyGeo100_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/NonVectorData_HyGeo100_V1.ili</File>
+      <Version>2023-01-16</Version>
+      <publishingDate>2023-03-29</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>135.5</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>e3445e95759b2fbc934ebe855b4f3f8c</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004526">
+      <Name>Laermempfindlichkeitsstufen_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Laermempfindlichkeitsstufen_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>145.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>ef8d498cf536e56567c27a900dc90a18</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004527">
+      <Name>DegreDeSensibiliteAuBruit_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/DegreDeSensibiliteAuBruit_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Laermempfindlichkeitsstufen_V1_2</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>145.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>dfa7709225e68c175c14fe5514b83ff7</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004528">
+      <Name>GradiDiSensibilitaAlRumore_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/GradiDiSensibilitaAlRumore_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Laermempfindlichkeitsstufen_V1_2</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>145.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>5b99cbdb3e3daa61dc2fd0054196f323</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004529">
+      <Name>Waldgrenzen_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Waldgrenzen_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>157.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>7683254443bfac52c4e8b1ac6885de5e</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004530">
+      <Name>LimitesDeLaForet_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/LimitesDeLaForet_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Waldgrenzen_V1_2</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>157.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>68710492d6f78ddad9e7ee4c1380caa8</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004531">
+      <Name>MarginiDellaForesta_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/MarginiDellaForesta_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Waldgrenzen_V1_2</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>157.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>7dbe1c7840b426cc0c3c2997603280d1</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004532">
+      <Name>Waldabstandslinien_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Waldabstandslinien_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>159.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>f7958c925989600ebf5b2bf5e09b6485</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004533">
+      <Name>DistancesParRapportALaForet_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/DistancesParRapportALaForet_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Waldabstandslinien_V1_2</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>159.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>9f05ec49095620f51ef771c2ade8aeb8</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004534">
+      <Name>LineeDiDistanzaDallaForesta_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/LineeDiDistanzaDallaForesta_V1_2.ili</File>
+      <Version>2023-03-20</Version>
+      <publishingDate>2023-04-03</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Waldabstandslinien_V1_2</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-11-19</precursorVersion>
+      <Tags>159.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:info@are.admin.ch</technicalContact>
+      <furtherInformation>https://www.are.admin.ch/mgm</furtherInformation>
+      <md5>022a7fc2963f3ddb4e76364f7d2fedf4</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004535">
+      <Name>LBK_Nationale_Uebersicht_LV95_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/LBK_Nationale_Uebersicht_V1.ili</File>
+      <Version>2023-04-11</Version>
+      <publishingDate>2023-04-21</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>NonVector_Base_LV95_V3_1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2020-10-21</precursorVersion>
+      <Tags>120.1,120.2,120.3,120.4</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>7a65eac53f677845727dce547a3d02f2</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004536">
+      <Name>LBK_Nationale_Uebersicht_LV03_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/LBK_Nationale_Uebersicht_V1.ili</File>
+      <Version>2023-04-11</Version>
+      <publishingDate>2023-04-21</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV03_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>NonVector_Base_LV03_V3_1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2020-10-21</precursorVersion>
+      <Tags>120.1,120.2,120.3,120.4</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>7a65eac53f677845727dce547a3d02f2</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004537">
+      <Name>PlanerischerGewaesserschutz_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/PlanerischerGewaesserschutz_V1_2.ili</File>
+      <Version>2023-05-01</Version>
+      <publishingDate>2023-05-12</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>InternationalCodes_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>130.1,131.1,132.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>572deef1ac9aacc213b362278f3eac90</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+    
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004538">
+      <Name>NoisePollutionRegisterForMilitaryShootingRanges_Codelists_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/NoisePollutionRegisterForMilitaryShootingRanges_V1_1.ili</File>
+      <Version>2023-06-06</Version>
+      <publishingDate>2023-07-12</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>177.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>be53b92dff2bf38e22fccb5fb7f7be59</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004539">
+      <Name>NoisePollutionRegisterForMilitaryShootingRanges_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/NoisePollutionRegisterForMilitaryShootingRanges_V1_1.ili</File>
+      <Version>2023-06-06</Version>
+      <publishingDate>2023-07-12</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>177.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>be53b92dff2bf38e22fccb5fb7f7be59</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004540">
+      <Name>ARA_DB_REP_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/ARA_DB_REP_V1_2.ili</File>
+      <Version>2023-07-11</Version>
+      <publishingDate>2023-07-12</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>128.1,134.5</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>7be85f73b79b6d66846e6340b34a92a6</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004541">
+      <Name>Naturereigniskataster_MGDM_LV95_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Naturereigniskataster_MGDM_V1.ili</File>
+      <Version>2023-05-31</Version>
+      <publishingDate>2023-07-18</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Text</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2023-01-12</precursorVersion>
+      <Tags>167.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>bd7aecaeca58d858d7e36d662dcca538</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004542">
+      <Name>Naturereigniskataster_umfassend_LV95_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Naturereigniskataster_umfassend_V1.ili</File>
+      <Version>2023-05-31</Version>
+      <publishingDate>2023-07-18</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Naturereigniskataster_MGDM_LV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Text</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+       <precursorVersion>2020-08-11</precursorVersion>
+      <Tags>167.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>b1cf3553bd5e11ba2ec44e987292ce53</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004543">
+      <Name>LBK_Haupt_uebrigeStrassen_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/LBK_Haupt_uebrigeStrassen_V1_2.ili</File>
+      <Version>2023-01-24</Version>
+      <publishingDate>2023-09-01</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2022-10-19</precursorVersion>
+      <Tags>144.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>b34e7efc3050df940b202bdb73c34f86</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004544">
+      <Name>Revitalisierung_Fliessgewaesser_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Revitalisierung_Fliessgewaesser_V1_2.ili</File>
+      <Version>2023-06-23</Version>
+      <publishingDate>2023-10-14</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>WasserBase_Codelisten_V1_1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>WasserBase_LV95_V1_1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>191.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>8116292a533f2bf0a1ed08654ecf6868</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004545">
+      <Name>Trockenwiesen_V1_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Trockenwiesen_V1_2.ili</File>
+      <Version>2023-11-15</Version>
+      <publishingDate>2023-11-21</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2022-06-02</precursorVersion>     
+      <Tags>186.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>c996b4b7212c94c2cd4f8a81fc4f8274</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004546">
+      <Name>Hydrologische_Messnetze_V1_1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/Hydrologische_Messnetze_V1_1.ili</File>
+      <Version>2023-12-19</Version>
+      <publishingDate>2024-01-24</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CodeISO</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>133.4,135.2,135.3</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>http://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>66a4c81e20db74216bbd11f4ad7a56ce</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004547">
+      <Name>GEP_LV03_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/GEP_V1.ili</File>
+      <Version>2023-08-22</Version>
+      <publishingDate>2024-01-30</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV03_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2016-11-22</precursorVersion>
+      <Tags>129.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>http://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>5445355efa8c4f2d265d2036fc4bb7a5</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004548">
+      <Name>GEP_LV95_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/GEP_V1.ili</File>
+      <Version>2023-08-22</Version>
+      <publishingDate>2024-01-30</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2016-11-22</precursorVersion>
+      <Tags>129.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>http://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>5445355efa8c4f2d265d2036fc4bb7a5</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004549">
+      <Name>ERKAS_Betriebe_Kataster_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/ERKAS_Betriebe_V2_0.ili</File>
+      <Version>2024-03-21</Version>
+      <publishingDate>2024-04-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-10-11</precursorVersion>
+      <Tags>112.1,113.1,205.2,207.1,208.1,209.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>797bac3367dd4ab8da1a379afcd94ae0</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="004550">
+      <Name>ERKAS_Betriebe_Karte_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAFU/ERKAS_Betriebe_V2_0.ili</File>
+      <Version>2024-03-21</Version>
+      <publishingDate>2024-04-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2021-10-11</precursorVersion>
+      <Tags>210.1,212.2,214.1,215.1,216.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAFU/</Issuer>
+      <technicalContact>mailto:gis@bafu.admin.ch</technicalContact>
+      <furtherInformation>https://www.bafu.admin.ch/geodatenmodelle</furtherInformation>
+      <md5>797bac3367dd4ab8da1a379afcd94ae0</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
@@ -19657,7 +20800,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="008101">
       <Name>HaltestellenOeV_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAV/HaltestellenOeV_V2_0.ili</File>
+      <File>obsolete/HaltestellenOeV_V2_0_o0.ili</File>
       <Version>2020-10-19</Version>
       <publishingDate>2020-11-23</publishingDate>
       <dependsOnModel>
@@ -19684,7 +20827,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="008102">
       <Name>ArretsTP_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAV/ArretsTP_V2_0.ili</File>
+      <File>obsolete/ArretsTP_V2_0_o0.ili</File>
       <Version>2020-10-19</Version>
       <publishingDate>2020-11-23</publishingDate>
       <dependsOnModel>
@@ -19815,6 +20958,102 @@
       <technicalContact>mailto:gis@bav.admin.ch</technicalContact>
       <furtherInformation>https://www.bav.admin.ch/bav/de/home/allgemeine-themen/fachthemen/geoinformation/geobasisdaten/einschraenkungen_binnenschifffahrt.html</furtherInformation>
       <md5>ae89948bcbeec21ca8249b34983743b7</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="008107">
+      <Name>SectoralPlanForSubterraneanFreightTransportInfrastructure_V1_4</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>obsolete/SectoralPlanForSubterraneanFreightTransportInfrastructure_V1_4_o0.ili</File>
+      <Version>2022-06-20</Version>
+      <publishingDate>2023-10-18</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>BaseModel_SectoralPlans_LV95_V1_4</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>226</Tags>
+      <Issuer>https://models.geo.admin.ch/BAV/</Issuer>
+      <technicalContact>mailto:gis@bav.admin.ch</technicalContact>
+      <furtherInformation>https://www.bav.admin.ch/bav/de/home/allgemeine-themen/fachthemen/raeumliche-abstimmung/sug.html</furtherInformation>
+      <md5>823723ac38ddf01876fab4568a9a2829</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="008108">
+      <Name>SectoralPlanForSubterraneanFreightTransportInfrastructure_V1_4</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAV/SectoralPlanForSubterraneanFreightTransportInfrastructure_V1_4.ili</File>
+      <Version>2023-10-10</Version>
+      <publishingDate>2023-11-21</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>BaseModel_SectoralPlans_LV95_V1_4</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2022-06-20</precursorVersion>
+      <Tags>226</Tags>
+      <Issuer>https://models.geo.admin.ch/BAV/</Issuer>
+      <technicalContact>mailto:gis@bav.admin.ch</technicalContact>
+      <furtherInformation>https://www.bav.admin.ch/bav/de/home/allgemeine-themen/fachthemen/raeumliche-abstimmung/sug.html</furtherInformation>
+      <md5>e08713dd9618b0c33a163b18708fbe0f</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="008109">
+      <Name>HaltestellenOeV_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAV/HaltestellenOeV_V2_0.ili</File>
+      <Version>2024-03-20</Version>
+      <publishingDate>2024-04-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>TransportunternehmenOeV_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2020-10-19</precursorVersion>
+      <Tags>98.2</Tags>
+      <Issuer>https://models.geo.admin.ch/BAV/</Issuer>
+      <technicalContact>mailto:gis@bav.admin.ch</technicalContact>
+      <furtherInformation>https://www.bav.admin.ch/bav/de/home/themen-a-z/geoinformation/geobasisdaten/haltestellen-des-oeffentlichen-verkehrs.html</furtherInformation>
+      <md5>06ccd53de0748ea0eac6148a1d271b7b</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="008110">
+      <Name>ArretsTP_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAV/ArretsTP_V2_0.ili</File>
+      <Version>2024-03-20</Version>
+      <publishingDate>2024-04-11</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>HaltestellenOeV_V2_0</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>EntreprisesTP_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2020-10-19</precursorVersion>
+      <Tags>98.2</Tags>
+      <Issuer>https://models.geo.admin.ch/BAV/</Issuer>
+      <technicalContact>mailto:gis@bav.admin.ch</technicalContact>
+      <furtherInformation>https://www.bav.admin.ch/bav/fr/home/themes-a-z/geoinformation/geodonnees-de-base/arrets-des-transports-publics.html</furtherInformation>
+      <md5>a571a08da1ae1b8ea777639e03a7787f</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
@@ -21050,7 +22289,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="009046">
       <Name>CadastreOfObstacleLimitationSurfaces_V2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BAZL/CadastreOfObstacleLimitationSurfaces_V2.ili</File>
+      <File>obsolete/CadastreOfObstacleLimitationSurfaces_V2_o0.ili</File>
       <Version>2022-03-29</Version>
       <publishingDate>2022-05-06</publishingDate>
       <dependsOnModel>
@@ -21069,6 +22308,31 @@
       <technicalContact>mailto:gis@bazl.admin.ch</technicalContact>
       <furtherInformation>https://www.bazl.admin.ch/geoinformation</furtherInformation>
       <md5>d61c3dc35ce9f1c84e5076fb9ef7292c</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="009047">
+      <Name>CadastreOfObstacleLimitationSurfaces_V2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BAZL/CadastreOfObstacleLimitationSurfaces_V2.ili</File>
+      <Version>2024-01-19</Version>
+      <publishingDate>2024-02-15</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>INTERLIS_ext</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>WithLatestModification_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2022-03-29</precursorVersion>
+      <Tags>106.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BAZL/</Issuer>
+      <technicalContact>mailto:gis@bazl.admin.ch</technicalContact>
+      <furtherInformation>https://www.bazl.admin.ch/geoinformation</furtherInformation>
+      <md5>d43d828a9d87f36a4b9915141783e57a</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
@@ -22716,6 +23980,140 @@
       <furtherInformation>http://www.bfe.admin.ch/geoinformation</furtherInformation>
       <md5>025274b041c99d2ab0e253d8fde89fd1</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
+    
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="010066">
+      <Name>FloodMapsForDamsUnderSupervisionByFederalGovernment_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BFE/FloodMapsForDamsUnderSupervisionByFederalGovernment_V1.ili</File>
+      <Version>2023-03-21</Version>
+      <publishingDate>2023-04-21</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>220.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BFE/</Issuer>
+      <technicalContact>mailto:geoinformation@bfe.admin.ch</technicalContact>
+      <furtherInformation>https://www.bfe.admin.ch/geoinformation</furtherInformation>
+      <md5>f1a6711bacd7ff5f668bcff01da9b1b6</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="010067">
+      <Name>SupplyTerritoriesOfThermalNetworks</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BFE/SupplyTerritoriesOfThermalNetworks_V1.ili</File>
+      <Version>2023-05-17</Version>
+      <publishingDate>2023-09-01</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/BFE/</Issuer>
+      <technicalContact>mailto:geoinformation@bfe.admin.ch</technicalContact>
+      <furtherInformation>https://www.bfe.admin.ch/geoinformation</furtherInformation>
+      <md5>7240eb976b0936c09501dd8eb8da76e5</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="010068">
+      <Name>PipelinesystemUnderSupervisionByFederalGovernment_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BFE/PipelinesystemUnderSupervisionByFederalGovernment_V1.ili</File>
+      <Version>2023-06-19</Version>
+      <publishingDate>2023-10-14</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>222.1,223.1</Tags>      
+      <Issuer>https://models.geo.admin.ch/BFE/</Issuer>
+      <technicalContact>mailto:geoinformation@bfe.admin.ch</technicalContact>
+      <furtherInformation>https://www.bfe.admin.ch/geoinformation</furtherInformation>
+      <md5>a6adbfa4f7eab74d8e343b116b16d8ec</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+    
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="010069">
+      <Name>PipelinesystemUnderSupervisionByFederalGovernmentExtended_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BFE/PipelinesystemUnderSupervisionByFederalGovernmentExtended_V1.ili</File>
+      <Version>2023-06-19</Version>
+      <publishingDate>2023-10-14</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>PipelinesystemUnderSupervisionByFederalGovernment_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/BFE/</Issuer>
+      <technicalContact>mailto:geoinformation@bfe.admin.ch</technicalContact>
+      <furtherInformation>https://www.bfe.admin.ch/geoinformation</furtherInformation>
+      <md5>db0dc4eb37d242aed2f51f68c59623de</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>    
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="010070">
+      <Name>SolarAndWindEnergyProjects_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BFE/SolarAndWindEnergyProjects_V1.ili</File>
+      <Version>2023-11-10</Version>
+      <publishingDate>2024-01-24</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>229.1,230.1</Tags>      
+      <Issuer>https://models.geo.admin.ch/BFE/</Issuer>
+      <technicalContact>mailto:geoinformation@bfe.admin.ch</technicalContact>
+      <furtherInformation>https://www.bfe.admin.ch/geoinformation</furtherInformation>
+      <md5>5875f68f4ae5c50bd01b5b27a101aaee</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>    
+
 
 <!-- =================================================================== -->
 <!-- BFS OFS UST FSO                                              011xxx -->
@@ -25740,7 +27138,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="014121">
       <Name>LWB_Landwirtschaftliche_Zonengrenzen_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BLW/LWB_Landwirtschaftliche_Zonengrenzen_V2_0.ili</File>
+      <File>obsolete/LWB_Landwirtschaftliche_Zonengrenzen_V2_0_o0.ili</File>
       <Version>2023-01-01</Version>
       <publishingDate>2022-10-13</publishingDate>
       <dependsOnModel>
@@ -25779,7 +27177,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="014123">
       <Name>LWB_Hanglagen_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BLW/LWB_Hanglagen_V2_0.ili</File>
+      <File>obsolete/LWB_Hanglagen_V2_0_o0.ili</File>
       <Version>2023-01-01</Version>
       <publishingDate>2022-10-13</publishingDate>
       <dependsOnModel>
@@ -25803,7 +27201,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="014124">
       <Name>LWB_Nutzungsflaechen_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BLW/LWB_Nutzungsflaechen_V2_0.ili</File>
+      <File>obsolete/LWB_Nutzungsflaechen_V2_0_o0.ili</File>
       <Version>2023-01-01</Version>
       <publishingDate>2022-10-13</publishingDate>
       <dependsOnModel>
@@ -25851,7 +27249,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="014126">
       <Name>LWB_Biodiversitaetsfoerderflaechen_Qualitaet_II_und_Vernetzung_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BLW/LWB_Biodiversitaetsfoerderflaechen_Qualitaet_II_und_Vernetzung_V2_0.ili</File>
+      <File>obsolete/LWB_Biodiversitaetsfoerderflaechen_Qualitaet_II_und_Vernetzung_V2_0_o0.ili</File>
       <Version>2023-01-01</Version>
       <publishingDate>2022-10-13</publishingDate>
       <dependsOnModel>
@@ -25869,7 +27267,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="014127">
       <Name>LWB_Perimeter_LandwirtschaftlicheNutzflaeche_Soemmerung_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BLW/LWB_Perimeter_LandwirtschaftlicheNutzflaeche_Soemmerung_V2_0.ili</File>
+      <File>obsolete/LWB_Perimeter_LandwirtschaftlicheNutzflaeche_Soemmerung_V2_0_o0.ili</File>
       <Version>2023-01-01</Version>
       <publishingDate>2022-10-13</publishingDate>
       <dependsOnModel>
@@ -25893,7 +27291,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="014128">
       <Name>LWB_Bewirtschaftungseinheiten_V2_0</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>BLW/LWB_Bewirtschaftungseinheiten_V2_0.ili</File>
+      <File>obsolete/LWB_Bewirtschaftungseinheiten_V2_0_o0.ili</File>
       <Version>2023-01-01</Version>
       <publishingDate>2022-10-13</publishingDate>
       <dependsOnModel>
@@ -25942,6 +27340,175 @@
       <technicalContact>mailto:info@blw.admin.ch</technicalContact>
       <furtherInformation>https://www.blw.admin.ch/blw/de/home.html</furtherInformation>
       <md5>1051a00ccb5064640b09712ad91ce0ed</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="014130">
+      <Name>LWB_Landwirtschaftliche_Zonengrenzen_Kataloge_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BLW/LWB_Landwirtschaftliche_Zonengrenzen_V2_0.ili</File>
+      <Version>2023-03-17</Version>
+      <publishingDate>2023-04-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2023-01-01</precursorVersion>      
+      <Tags>149.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BLW/</Issuer>
+      <technicalContact>mailto:info@blw.admin.ch</technicalContact>
+      <furtherInformation>https://www.blw.admin.ch/blw/de/home/politik/datenmanagement/geografisches-informationssystem-gis/landiwirtschaftliche-zonengrenzen.html</furtherInformation>
+      <md5>d713c343cce5261043867aee98b7c9f3</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="014131">
+      <Name>LWB_Landwirtschaftliche_Zonengrenzen_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BLW/LWB_Landwirtschaftliche_Zonengrenzen_V2_0.ili</File>
+      <Version>2023-03-17</Version>
+      <publishingDate>2023-04-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LWB_Landwirtschaftliche_Zonengrenzen_Kataloge_V2_0</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2023-01-01</precursorVersion>         
+      <Tags>149.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BLW/</Issuer>
+      <technicalContact>mailto:info@blw.admin.ch</technicalContact>
+      <furtherInformation>https://www.blw.admin.ch/blw/de/home/politik/datenmanagement/geografisches-informationssystem-gis/landiwirtschaftliche-zonengrenzen.html</furtherInformation>
+      <md5>d713c343cce5261043867aee98b7c9f3</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="014132">
+      <Name>LWB_Hanglagen_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BLW/LWB_Hanglagen_V2_0.ili</File>
+      <Version>2023-03-17</Version>
+      <publishingDate>2023-04-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2023-01-01</precursorVersion>   
+      <Tags>152.1,152.2</Tags>
+      <Issuer>https://models.geo.admin.ch/BLW/</Issuer>
+      <technicalContact>mailto:info@blw.admin.ch</technicalContact>
+      <furtherInformation>https://www.blw.admin.ch/blw/de/home/politik/datenmanagement/geografisches-informationssystem-gis/hanglagen.html</furtherInformation>
+      <md5>aec962840fb773c224918bc55b873a27</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="014133">
+      <Name>LWB_Nutzungsflaechen_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BLW/LWB_Nutzungsflaechen_V2_0.ili</File>
+      <Version>2023-03-17</Version>
+      <publishingDate>2023-04-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>Units</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LWB_Bewirtschaftungseinheiten_V2_0</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CoordSys</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2023-01-01</precursorVersion>   
+      <Tags>153.1</Tags>
+      <Issuer>https://models.geo.admin.ch/BLW/</Issuer>
+      <technicalContact>mailto:info@blw.admin.ch</technicalContact>
+      <furtherInformation>https://www.blw.admin.ch/blw/de/home/politik/datenmanagement/geografisches-informationssystem-gis/landwirtschaftliche-kulturflaechen.html</furtherInformation>
+      <md5>651ba2e2007d432fcbfb1639739541bc</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="014134">
+      <Name>LWB_Biodiversitaetsfoerderflaechen_Qualitaet_II_und_Vernetzung_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BLW/LWB_Biodiversitaetsfoerderflaechen_Qualitaet_II_und_Vernetzung_V2_0.ili</File>
+      <Version>2023-03-17</Version>
+      <publishingDate>2023-04-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CoordSys</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2023-01-01</precursorVersion>   
+      <Tags>153.3</Tags>
+      <Issuer>https://models.geo.admin.ch/BLW/</Issuer>
+      <technicalContact>mailto:info@blw.admin.ch</technicalContact>
+      <furtherInformation>https://www.blw.admin.ch/blw/de/home/politik/datenmanagement/geografisches-informationssystem-gis/landwirtschaftliche-kulturflaechen.html</furtherInformation>
+      <md5>d4d85c43dbb5311d52d1f476574aa472</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="014135">
+      <Name>LWB_Perimeter_LandwirtschaftlicheNutzflaeche_Soemmerung_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BLW/LWB_Perimeter_LandwirtschaftlicheNutzflaeche_Soemmerung_V2_0.ili</File>
+      <Version>2023-03-17</Version>
+      <publishingDate>2023-04-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CatalogueObjects_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LocalisationCH_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CoordSys</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2023-01-01</precursorVersion>   
+      <Tags>153.5</Tags>
+      <Issuer>https://models.geo.admin.ch/BLW/</Issuer>
+      <technicalContact>mailto:info@blw.admin.ch</technicalContact>
+      <furtherInformation>https://www.blw.admin.ch/blw/de/home/politik/datenmanagement/geografisches-informationssystem-gis/landwirtschaftliche-kulturflaechen.html</furtherInformation>
+      <md5>fd3e59b77b24c8e15cb7eef14b75c00f</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="014136">
+      <Name>LWB_Bewirtschaftungseinheiten_V2_0</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>BLW/LWB_Bewirtschaftungseinheiten_V2_0.ili</File>
+      <Version>2023-03-17</Version>
+      <publishingDate>2023-04-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CHAdminCodes_V1</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>LWB_Landwirtschaftliche_Zonengrenzen_Kataloge_V2_0</value>
+        </IliRepository09.ModelName_>
+        <IliRepository09.ModelName_>
+          <value>CoordSys</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <precursorVersion>2023-01-01</precursorVersion>   
+      <Tags>153.6</Tags>
+      <Issuer>https://models.geo.admin.ch/BLW/</Issuer>
+      <technicalContact>mailto:info@blw.admin.ch</technicalContact>
+      <furtherInformation>https://www.blw.admin.ch/blw/de/home/politik/datenmanagement/geografisches-informationssystem-gis/landwirtschaftliche-kulturflaechen.html</furtherInformation>
+      <md5>9303620a3f88893afbc5d8112f276d45</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
@@ -26462,7 +28029,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="019015">
       <Name>PLZOCH1LV95D</Name>
       <SchemaLanguage>ili1</SchemaLanguage>
-      <File>Swisstopo/PLZO-CH_LV95_1d_ili1.ili</File>
+      <File>Swisstopo/replaced/PLZO-CH_LV95_1d_ili1.ili</File>
       <Version>2012-08-27</Version>
       <publishingDate>2012-11-01</publishingDate>
       <Tags>181.1</Tags>
@@ -26475,7 +28042,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="019016">
       <Name>NPALCH1MN95F</Name>
       <SchemaLanguage>ili1</SchemaLanguage>
-      <File>Swisstopo/PLZO-CH_LV95_1f_ili1.ili</File>
+      <File>Swisstopo/replaced/PLZO-CH_LV95_1f_ili1.ili</File>
       <Version>2012-08-27</Version>
       <publishingDate>2012-11-01</publishingDate>
       <Tags>181.1</Tags>
@@ -26488,7 +28055,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="019017">
       <Name>CAPLCH1MN95I</Name>
       <SchemaLanguage>ili1</SchemaLanguage>
-      <File>Swisstopo/PLZO-CH_LV95_1i_ili1.ili</File>
+      <File>Swisstopo/replaced/PLZO-CH_LV95_1i_ili1.ili</File>
       <Version>2012-08-27</Version>
       <publishingDate>2012-11-01</publishingDate>
       <Tags>181.1</Tags>
@@ -28453,7 +30020,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="019129">
       <Name>swissBOUNDARIES3D_ili2_LV95_V1_4</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>Swisstopo/swissBOUNDARIES3D_ili2_LV95_V1_4.ili</File>
+      <File>Swisstopo/replaced/swissBOUNDARIES3D_ili2_LV95_V1_4.ili</File>
       <Version>2023-01-01</Version>
       <publishingDate>2023-01-05</publishingDate>
       <dependsOnModel>
@@ -28471,7 +30038,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="019130">
       <Name>swissTLM3D_ili2_V2_1</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>Swisstopo/swissTLM3D_ili2_V2_1.ili</File>
+      <File>Swisstopo/replaced/swissTLM3D_ili2_V2_1.ili</File>
       <Version>2023-01-01</Version>
       <publishingDate>2023-03-07</publishingDate>
       <dependsOnModel>
@@ -28484,6 +30051,42 @@
       <technicalContact>mailto:geodata@swisstopo.ch</technicalContact>
       <furtherInformation>https://www.swisstopo.admin.ch</furtherInformation>
       <md5>f48f5f6fbb20c3ef439b0189599fef17</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="019131">
+      <Name>swissBOUNDARIES3D_ili2_LV95_V1_5</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>Swisstopo/swissBOUNDARIES3D_ili2_LV95_V1_5.ili</File>
+      <Version>2024-01-01</Version>
+      <publishingDate>2023-12-09</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>GeometryCHLV95_V1</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>39.3</Tags>
+      <Issuer>https://models.geo.admin.ch/Swisstopo/</Issuer>
+      <technicalContact>mailto:geodata@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.swisstopo.admin.ch/de/geodata/landscape/boundaries3d.html</furtherInformation>
+      <md5>64c466d94c0ddd7083173af3b6fc47d6</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="019132">
+      <Name>swissTLM3D_ili2_V2_2</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>Swisstopo/swissTLM3D_ili2_V2_2.ili</File>
+      <Version>2024-01-01</Version>
+      <publishingDate>2024-03-05</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>CoordSys</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>38.1</Tags>
+      <Issuer>https://models.geo.admin.ch/Swisstopo/</Issuer>
+      <technicalContact>mailto:geodata@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.swisstopo.admin.ch</furtherInformation>
+      <md5>cdc0ac12268c2820938a00e9b200435d</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
@@ -29244,7 +30847,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="020047">
       <Name>MD01MOCH24MN95F_ili2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>V_D/DM.01-AV-CH_LV95_24f_ili2.ili</File>
+      <File>V_D/replaced/DM.01-AV-CH_LV95_24f_ili2.ili</File>
       <Version>2018-02-16</Version>
       <publishingDate>2018-02-16</publishingDate>
       <dependsOnModel>
@@ -29430,7 +31033,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="020057">
       <Name>DM01AVCH24LV95D_ili2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>V_D/DM.01-AV-CH_LV95_24d_ili2.ili</File>
+      <File>V_D/replaced/DM.01-AV-CH_LV95_24d_ili2.ili</File>
       <Version>2020-04-28</Version>
       <publishingDate>2020-04-28</publishingDate>
       <dependsOnModel>
@@ -29559,7 +31162,7 @@
     <IliRepository09.RepositoryIndex.ModelMetadata TID="020063">
       <Name>MD01MUCH24MN95I_ili2</Name>
       <SchemaLanguage>ili2_3</SchemaLanguage>
-      <File>V_D/DM.01-AV-CH_LV95_24i_ili2.ili</File>
+      <File>V_D/replaced/DM.01-AV-CH_LV95_24i_ili2.ili</File>
       <Version>2020-12-28</Version>
       <publishingDate>2020-12-28</publishingDate>
       <dependsOnModel>
@@ -30204,6 +31807,27 @@
       <md5>f296665d877f42c545843e8a842b068c</md5>
     </IliRepository09.RepositoryIndex.ModelMetadata>
 
+<!-- =================================================================== -->
+<!-- SBFI SEFRI SEFRI SERI                                        022xxx -->
+ 
+    <IliRepository09.RepositoryIndex.ModelMetadata TID="022001">
+      <Name>SectoralPlanCERN_V1</Name>
+      <SchemaLanguage>ili2_3</SchemaLanguage>
+      <File>SBFI/SectoralPlanCERN_V1.ili</File>
+      <Version>2023-05-01</Version>
+      <publishingDate>2023-09-01</publishingDate>
+      <dependsOnModel>
+        <IliRepository09.ModelName_>
+          <value>BaseModel_SectoralPlans_LV95_V1_4</value>
+        </IliRepository09.ModelName_>
+      </dependsOnModel>
+      <Tags>xxx</Tags>
+      <Issuer>https://models.geo.admin.ch/SBFI/</Issuer>
+      <technicalContact>mailto:info@sbfi.admin.ch</technicalContact>
+      <furtherInformation>https://www.sbfi.admin.ch</furtherInformation>
+      <md5>5be6719bc454dc2ab710961e8286e14b</md5>
+    </IliRepository09.RepositoryIndex.ModelMetadata>
+
   </IliRepository09.RepositoryIndex>
 
 <!-- =================================================================== -->
@@ -30268,14 +31892,578 @@
 <!-- =================================================================== -->
 <!-- Swisstopo Swisstopo Swisstopo Swisstopo                      519xxx -->
 
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="519001">
+      <Name>OfficialIndexOfLocalities_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>Swisstopo/OfficialIndexOfLocalities_V1_0.ili</File>
+      <Version>2024-01-01</Version>
+      <publishingDate>2023-11-20</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>Text_V2</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>181.1</Tags>
+      <Issuer>https://models.geo.admin.ch/Swisstopo/</Issuer>
+      <technicalContact>mailto:plz@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.swisstopo.admin.ch/en/geodata/official-geographic-directories/directory-towns-cities.html</furtherInformation>
+      <md5>e502914386a54ee640310dc98117fc5c</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
 <!-- =================================================================== -->
 <!-- V_D D_M D_M FDCS                                             520xxx -->
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520001">
+      <Name>DMAV_Bodenbedeckung_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_Bodenbedeckung_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Geometrie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Modinfo_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Qualitaet_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.8</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>c06eeaa8c68f95f157b06f22dfeae29f</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520002">
+      <Name>DMAV_DauerndeBodenverschiebungen_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_DauerndeBodenverschiebungen_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.6</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>6015f4195a9e3dd91760c0c2ae86f787</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520003">
+      <Name>DMAV_Dienstbarkeitsgrenzen_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_Dienstbarkeitsgrenzen_V1_0.ili</File>
+      <Version>2023-10-17</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>Units</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Geometrie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Modinfo_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Topologie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.5</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>501e7acf5e14a4ab23ebaa95158c782d</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520004">
+      <Name>DMAV_Einzelobjekte_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_Einzelobjekte_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Geometrie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Modinfo_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Qualitaet_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.9</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>a9f02976e5c6ccb52a2e68e387bcce39</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520005">
+      <Name>DMAV_FixpunkteAVKategorie2_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_FixpunkteAVKategorie2_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Geometrie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Vermarkung_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Qualitaet_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.1</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>e910aa5e0fd2899e9537dfc049429968</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520006">
+      <Name>DMAV_FixpunkteAVKategorie3_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_FixpunkteAVKategorie3_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Geometrie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Vermarkung_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Qualitaet_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.2</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>95e49b733df5e227f24bf0ad328c61e7</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520007">
+      <Name>DMAV_FixpunkteLV_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_FixpunkteLV_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Geometrie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Vermarkung_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Qualitaet_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>719d9fe0db78f638a6f8c51c6851326a</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520008">
+      <Name>DMAV_Gebaeudeadressen_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_Gebaeudeadressen_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Modinfo_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.12</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>befd5c6f4d1b68aae640943de4d37c97</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520009">
+      <Name>DMAV_Grundstuecke_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_Grundstuecke_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>Units</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Geometrie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Topologie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Vermarkung_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Qualitaet_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.4</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>7df809ecfd16088e699411e75e5f2937</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520010">
+      <Name>DMAV_HoheitsgrenzenAV_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_HoheitsgrenzenAV_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>CHAdminCodes_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Topologie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Modinfo_V1_0</value>
+        </IliRepository20.ModelName_>
+     </dependsOnModel>
+      <Tags>228.3</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>43500a6558bc78cb0cf6655eeb654e16</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520011">
+      <Name>DMAV_HoheitsgrenzenLV_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_HoheitsgrenzenLV_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>fa0573fe8e6f566444635ef062472c37</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520012">
+      <Name>DMAV_Nomenklatur_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_Nomenklatur_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+     </dependsOnModel>
+      <Tags>228.7</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>cb5df03754cb9fab8ce755b0b9f937b3</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520013">
+      <Name>DMAV_PLZ_Ortschaft_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_PLZ_Ortschaft_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>7b7c61d865ff62303d207da60f66f08c</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520014">
+      <Name>DMAV_Rohrleitungen_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_Rohrleitungen_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Geometrie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Modinfo_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Qualitaet_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Topologie_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Grafik_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Tags>228.10</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>d8da1e19ac4b43918d5b96f8d41ef77a</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520015">
+      <Name>DMAV_Toleranzstufen_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAV_Toleranzstufen_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAVTYM_Modinfo_V1_0</value>
+        </IliRepository20.ModelName_>
+     </dependsOnModel>
+      <Tags>228.11</Tags>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>cfeda686bcd554b69a4c403f7545f8bb</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520016">
+      <Name>DMAVTYM_Alles_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAVTYM_Alles_V1_0.ili</File>
+      <Version>2023-10-17</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>DMAV_Bodenbedeckung_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_DauerndeBodenverschiebungen_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_Dienstbarkeitsgrenzen_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_Einzelobjekte_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_FixpunkteAVKategorie2_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_FixpunkteAVKategorie3_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_FixpunkteLV_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_Gebaeudeadressen_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_Grundstuecke_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_HoheitsgrenzenAV_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_HoheitsgrenzenLV_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_Nomenklatur_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_PLZ_Ortschaft_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_Rohrleitungen_V1_0</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>DMAV_Toleranzstufen_V1_0</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>f7d06652e607e8da3baed97dbd75301a</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520017">
+      <Name>DMAVTYM_Geometrie_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAVTYM_Geometrie_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>5515e4d715a3333ae8b8aecb92e0b246</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520018">
+      <Name>DMAVTYM_Grafik_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAVTYM_Grafik_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>Units</value>
+        </IliRepository20.ModelName_>
+        <IliRepository20.ModelName_>
+          <value>GeometryCHLV95_V2</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>b71375e0bcb059f8aff9f8d6e00170dd</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520019">
+      <Name>DMAVTYM_Modinfo_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAVTYM_Modinfo_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>2e820dde0a1ac20c51ccc594e4e5e8b5</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+     <IliRepository20.RepositoryIndex.ModelMetadata TID="520020">
+      <Name>DMAVTYM_Qualitaet_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAVTYM_Qualitaet_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <dependsOnModel>
+        <IliRepository20.ModelName_>
+          <value>Units</value>
+        </IliRepository20.ModelName_>
+      </dependsOnModel>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>968c2783a23dd3be52bcf2226d9231c1</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+     <IliRepository20.RepositoryIndex.ModelMetadata TID="520021">
+      <Name>DMAVTYM_Topologie_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAVTYM_Topologie_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>b296b69288cf61a7da926516c24abb37</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
+
+    <IliRepository20.RepositoryIndex.ModelMetadata TID="520022">
+      <Name>DMAVTYM_Vermarkung_V1_0</Name>
+      <SchemaLanguage>ili2_4</SchemaLanguage>
+      <File>V_D/DMAVTYM_Vermarkung_V1_0.ili</File>
+      <Version>2023-06-13</Version>
+      <publishingDate>2023-12-28</publishingDate>
+      <Issuer>https://models.geo.admin.ch/V_D/</Issuer>
+      <technicalContact>mailto:dmav@swisstopo.ch</technicalContact>
+      <furtherInformation>https://www.cadastre.ch/de/manual-av/method/dmav.html</furtherInformation>
+      <md5>2190de85f6b5bc329bbb162c43152004</md5>
+    </IliRepository20.RepositoryIndex.ModelMetadata>
 
 <!-- =================================================================== -->
 <!--   OeREB RDPPF RDPP PLR                                       5205xx -->
 
 <!-- =================================================================== -->
 <!-- VBS DDPS DDPS DDPS                                           521xxx -->
+
+<!-- =================================================================== -->
+<!-- SBFI SEFRI SEFRI SERI                                        522xxx -->
 
   </IliRepository20.RepositoryIndex>
 
