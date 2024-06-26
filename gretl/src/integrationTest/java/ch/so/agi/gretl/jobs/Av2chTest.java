@@ -20,8 +20,6 @@ public class Av2chTest {
         File projectDir = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2ch");
         List<File> classpath = IntegrationTestUtil.getPluginClassPaths();
 
-        IntegrationTestUtil.cleanFolder(new File(projectDir + "/output"));
-
         GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath(classpath)
@@ -48,8 +46,6 @@ public class Av2chTest {
         List<File> classpath = IntegrationTestUtil.getPluginClassPaths();
 
         try{
-            IntegrationTestUtil.cleanFolder(new File(projectDir + "/output"));
-
             GradleRunner.create()
                     .withProjectDir(projectDir)
                     .withPluginClasspath(classpath)
