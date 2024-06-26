@@ -1,10 +1,16 @@
 package ch.so.agi.gretl.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -158,5 +164,27 @@ public class IntegrationTestUtil {
         }
 
         return buildJobDirOption;
+    }
+
+    public static ArrayList<File> getPluginClassPaths() throws IOException {
+        ArrayList<File> classpath = new ArrayList<>();
+        File classpathFile = new File(System.getProperty("user.dir"),"build/integrationTest/resources/pluginClassPath.txt");
+        List<String> lines = Files.readAllLines(classpathFile.toPath(), StandardCharsets.UTF_8);
+        for (String line : lines) {
+            classpath.add(new File(line));
+        }
+        return classpath;
+    }
+
+    public static void cleanFolder(File projectDir) throws IOException {
+        for(File file : Objects.requireNonNull(projectDir.listFiles())){
+            if (!file.isDirectory()) {
+                Files.delete(file.toPath());
+            }
+        }
+    }
+
+    public static String getPathToInitScript(){
+        return new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/init.gradle").getAbsolutePath();
     }
 }

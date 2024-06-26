@@ -20,10 +20,15 @@ sourceSets {
 }
 
 tasks.register("writePluginClassPath"){
+    def buildDirectory = project.layout.buildDirectory.get()
+    def outputDir = file("$buildDirectory/integrationTest/resources")
+
+    inputs.files configurations.compileClasspath + configurations.runtimeClasspath
+    outputs.dir outputDir
+
     doLast {
-        def buildDirectory = project.layout.buildDirectory.get()
-        new File(buildDirectory.getAsFile(), "pluginClassPath.txt").text =
-                sourceSets.integrationTest.runtimeClasspath.files.join("\n")
+        outputDir.mkdirs()
+        file("$outputDir/pluginClassPath.txt").text = configurations.compileClasspath.files.join("\n") + "\n" + configurations.runtimeClasspath.files.join("\n")
     }
 }
 
@@ -31,7 +36,7 @@ tasks.register("writePluginClassPath"){
  * Task for executing the integration tests. It references the 
  * classes and runtime classpath of the integration test source set.
  */
-task jarTest(type: Test, dependsOn: writePluginClassPath) {
+task jarTest(type: Test) {
     description = 'Runs integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -49,7 +54,7 @@ task jarTest(type: Test, dependsOn: writePluginClassPath) {
     jvmArgs '-Xmx1g'
 }
 
-task jarS3Test(type: Test) {
+task jarS3Test(type: Test, dependsOn: writePluginClassPath) {
     description = 'Runs the S3 integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -66,7 +71,7 @@ task jarS3Test(type: Test) {
     jvmArgs '-Xmx1g'
 }
 
-task imageTest(type: Test){
+task imageTest(type: Test, dependsOn: writePluginClassPath){
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     
@@ -82,7 +87,7 @@ task imageTest(type: Test){
     classpath += sourceSets.integrationTest.runtimeClasspath
 }
 
-task imageS3Test(type: Test){
+task imageS3Test(type: Test, dependsOn: writePluginClassPath){
     description = 'Runs S3 integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
