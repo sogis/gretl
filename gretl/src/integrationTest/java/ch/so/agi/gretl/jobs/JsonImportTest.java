@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -20,7 +21,6 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 public class JsonImportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     
     private static String dbusr = "ddluser";
     private static String dbpwd = "ddluser";
@@ -33,7 +33,7 @@ public class JsonImportTest {
         .withUsername(dbusr)
         .withPassword(dbpwd)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void importJsonObject_Ok() throws Exception {

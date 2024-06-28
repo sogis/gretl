@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
@@ -15,7 +16,6 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 public class DatabaseDocumentExportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     
     @ClassRule
     public static PostgreSQLContainer postgres = 
@@ -23,7 +23,7 @@ public class DatabaseDocumentExportTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void exportOk() throws Exception {
