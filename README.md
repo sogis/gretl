@@ -43,6 +43,7 @@ There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC 
 ./gradlew stageJars
 cd runtimeImage/gretl
 docker build -t sogis/gretl .
+cd ../..
 ./gradlew gretl:jarTest 
 ./gradlew gretl:jarS3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
 ./gradlew gretl:imageTest 

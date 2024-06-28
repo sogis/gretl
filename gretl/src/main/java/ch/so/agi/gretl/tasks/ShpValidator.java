@@ -60,7 +60,7 @@ public class ShpValidator extends AbstractValidatorTask {
         }
 
         validationOk =new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && isFailOnError()) {
+        if (!validationOk && getFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

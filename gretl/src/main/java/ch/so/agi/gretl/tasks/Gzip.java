@@ -5,54 +5,40 @@ import java.io.IOException;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Internal;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.GzipStep;
 
-public class Gzip extends DefaultTask {
+public abstract class Gzip extends DefaultTask {
     protected GretlLogger log;
 
-    private File dataFile;
+    @InputFile
+    public abstract Property<File> getDataFile();
 
-    private File gzipFile;
-
-    @Internal
-    public File getDataFile() {
-        return dataFile;
-    }
-
-    @Internal
-    public File getGzipFile() {
-        return gzipFile;
-    }
-
-    public void setDataFile(File dataFile) {
-        this.dataFile = dataFile;
-    }
-
-    public void setGzipFile(File gzipFile) {
-        this.gzipFile = gzipFile;
-    }
+    @OutputFile
+    public abstract Property<File> getGzipFile();
 
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Gzip.class);
 
-        if (dataFile == null) {
+        if (!getDataFile().isPresent()) {
             throw new IllegalArgumentException("dataFile must not be null");
         }
 
-        if (gzipFile == null) {
-            throw new IllegalArgumentException("gzipFile must not be null");
+        if (!getGzipFile().isPresent()) {
+            getDataFile().set(new File(getDataFile().get().getAbsolutePath() + ".gz"));
         }
 
         GzipStep gzipStep = new GzipStep();
         try {
-            gzipStep.execute(dataFile, gzipFile);
-            log.lifecycle("Gzip file written: " + gzipFile.getAbsolutePath());
+            gzipStep.execute(getDataFile().get(), getGzipFile().get());
+            log.lifecycle("Gzip file written: " + getGzipFile().get().getAbsolutePath());
         } catch (IOException e) {
             throw new GradleException("Could not gzip file: " + e.getMessage());
         }

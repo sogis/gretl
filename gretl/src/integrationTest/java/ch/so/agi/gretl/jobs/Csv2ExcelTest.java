@@ -1,7 +1,6 @@
 package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
 import java.nio.file.Paths;

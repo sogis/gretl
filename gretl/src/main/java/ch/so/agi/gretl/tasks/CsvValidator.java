@@ -24,7 +24,7 @@ public class CsvValidator extends AbstractValidatorTask {
 
     @Input
     @Optional
-    public Boolean isFirstLineIsHeader() {
+    public Boolean getFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 
@@ -99,7 +99,7 @@ public class CsvValidator extends AbstractValidatorTask {
         }
 
         validationOk = new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && isFailOnError()) {
+        if (!validationOk && getFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

@@ -34,7 +34,7 @@ public class Csv2Excel extends DefaultTask {
     }
 
     @Internal
-    public Boolean isFirstLineIsHeader() {
+    public Boolean getFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 

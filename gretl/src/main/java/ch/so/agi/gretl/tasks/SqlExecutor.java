@@ -8,6 +8,8 @@ import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
@@ -15,13 +17,14 @@ import org.gradle.api.tasks.TaskAction;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * This Class represents the the Task which executes the SQLExecutorStep Only
+ * This Class represents the Task which executes the SQLExecutorStep Only
  * this Class should execute the SQLExecutorStep. Users must use this Class to
  * access SQLExecutorStep
  */
-public class SqlExecutor extends DefaultTask {
+public abstract class SqlExecutor extends DefaultTask {
     private static GretlLogger log;
 
     static {
@@ -29,84 +32,56 @@ public class SqlExecutor extends DefaultTask {
         log = LogEnvironment.getLogger(SqlExecutor.class);
     }
 
-
-    private Connector database;
-    private List<String> sqlFiles;
-    private Object sqlParameters = null;
+    @Input
+    public abstract ListProperty<String> getDatabase();
 
     @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    @Input
-    public List<String> getSqlFiles() {
-        return sqlFiles;
-    }
+    public abstract ListProperty<String> getSqlFiles();
     @Input
     @Optional
-    public Object getSqlParameters() {
-        return sqlParameters;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-
-        this.database = new Connector(databaseUri, databaseUser, databasePassword);
-    }
-
-    public void setSqlFiles(List<String> sqlFiles) {
-        this.sqlFiles = sqlFiles;
-    }
-
-    public void setSqlParameters(Object sqlParameters) {
-        this.sqlParameters = sqlParameters;
-    }
+    public abstract Property<Object> getSqlParameters();
 
     @TaskAction
     public void executeSQLExecutor() {
 
         String taskName = this.getName();
 
-        if (sqlFiles == null) {
+        if(!getDatabase().isPresent()) {
+            throw new GradleException("database is null");
+        }
+
+        if (!getSqlFiles().isPresent()) {
             throw new GradleException("sqlFiles is null");
         }
 
-        List<File> files = convertToFileList(sqlFiles);
+        Connector database = TaskUtil.getDatabaseConnectorObject(getDatabase().get());
+
+        List<File> files = convertToFileList(getSqlFiles());
 
         try {
             SqlExecutorStep step = new SqlExecutorStep(taskName);
-            if(sqlParameters==null) {
+            if(!getSqlParameters().isPresent()) {
                 step.execute(database, files, null);
-            }else if(sqlParameters instanceof java.util.Map) {
-                step.execute(database, files, (java.util.Map<String,String>)sqlParameters);
+            }else if(getSqlParameters().get() instanceof Map) {
+                step.execute(database, files, (Map<String,String>)getSqlParameters().get());
             }else {
-                java.util.List<java.util.Map<String,String>> paramList=(java.util.List<java.util.Map<String,String>>)sqlParameters;
-                for(java.util.Map<String,String> sqlParams:paramList) {
+                List<java.util.Map<String,String>> paramList=(List<Map<String,String>>)getSqlParameters().get();
+                for(Map<String,String> sqlParams:paramList) {
                     step.execute(database, files, sqlParams);
                 }
-                
             }
             log.info("Task start");
         } catch (Exception e) {
             log.error("Exception in creating / invoking SqlExecutorStep.", e);
-
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         }
     }
 
-    private List<File> convertToFileList(List<String> filePaths) {
+    private List<File> convertToFileList(ListProperty<String> filePaths) {
 
         List<File> files = new ArrayList<>();
 
-        for (String filePath : filePaths) {
+        for (String filePath : filePaths.get()) {
             if (filePath == null || filePath.length() == 0)
                 throw new IllegalArgumentException("Filepaths must not be null or empty");
 

@@ -8,7 +8,7 @@ def db_uri = "jdbc:sqlite::memory"
 def db_user = ""
 def db_pass = ""
 
-task querySqliteMaster(type: SqlExecutor){
+tasks.register('querySqliteMaster', SqlExecutor){
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['querySqliteMaster.sql']
 }

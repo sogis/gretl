@@ -86,7 +86,6 @@ dependencies {
     api libs.ehi.sql.gen
 
     api (libs.iox.formats) {
-        //todo: can we also use the libs.versions.toml versions here?
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
 
@@ -155,21 +154,22 @@ pluginBundle {
     }
 }
 
-task setupPluginUpload() {
+tasks.register('setupPluginUpload'){
     description = "Converts Gradle plugin publish key and secret from environment variable to system property. (Workaround)"
     doLast {
-	    def key=System.env.gradlePublishKey
-	    def secret = System.env.gradlePublishSecret
-	
-	    if( !key || !secret)
-	    {
-	        throw new RuntimeException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
-	    }
-	
-	    System.properties.setProperty("gradle.publish.key", key)
-	    System.properties.setProperty("gradle.publish.secret", secret)
+        def key=System.env.gradlePublishKey
+        def secret = System.env.gradlePublishSecret
+
+        if( !key || !secret)
+        {
+            throw new RuntimeException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
+        }
+
+        System.properties.setProperty("gradle.publish.key", key)
+        System.properties.setProperty("gradle.publish.secret", secret)
     }
 }
+
 tasks.publishPlugins.dependsOn tasks.setupPluginUpload
 
 test {
@@ -181,14 +181,17 @@ test {
     }
 }
 
-task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+tasks.register('dbTest', Test){
+    dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to a db server (pg, oracle, ...).'
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.DbTest'
     }
 }
-task sftpTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+
+tasks.register('sftpTest', Test){
+    dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to a SFTP server'
     useJUnit {
@@ -200,10 +203,11 @@ def s3AccessKey = System.getProperty('s3AccessKey',properties.get('s3AccessKey')
 def s3SecretKey = System.getProperty('s3SecretKey',properties.get('s3SecretKey'))
 def s3BucketName = System.getProperty('s3BucketName',properties.get('s3BucketName'))
 
-task s3Test(type: Test, dependsOn: [compileJava, compileTestJava]) {
+tasks.register('s3Test', Test){
+    dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to AWS S3.'
-    
+
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }

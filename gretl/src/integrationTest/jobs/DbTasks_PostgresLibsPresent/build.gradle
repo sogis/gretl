@@ -9,7 +9,8 @@ def db_pass = findProperty('gretltest_dbpwd') != null ? findProperty('gretltest_
 
 defaultTasks 'queryPostgresVersion'
 
-task queryPostgresVersion(type: SqlExecutor){
+tasks.register('queryPostgresVersion', SqlExecutor){
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['queryPostgresVersion.sql']
 }
+
