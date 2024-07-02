@@ -1,30 +1,28 @@
 package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.nio.file.Paths;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
 
 public class Csv2ExcelTest {
 
     @Test
-    public void convertCsv_Ok() throws Exception {        
-        // Run GRETL task
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Csv2Excel", gvs);
+    public void convertCsv_Ok() throws Exception {
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Csv2Excel");
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "convertData").build();
                 
         // Validate result
-        FileInputStream fis = new FileInputStream(Paths.get("src/integrationTest/jobs/Csv2Excel", "20230124_sap_Gebaeude.xlsx").toFile());        
+        FileInputStream fis = new FileInputStream(projectDirectory.getAbsolutePath() + "/20230124_sap_Gebaeude.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         XSSFSheet sheet = workbook.getSheetAt(0);
 

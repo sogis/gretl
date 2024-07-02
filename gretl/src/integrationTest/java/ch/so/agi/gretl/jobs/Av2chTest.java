@@ -3,24 +3,23 @@ package ch.so.agi.gretl.jobs;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.List;
 
+import org.gradle.api.GradleException;
+import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.Test;
 
 import ch.so.agi.gretl.util.IntegrationTestUtil;
-
-import org.gradle.testkit.runner.GradleRunner;
 
 import static org.junit.Assert.*;
 
 public class Av2chTest {
     @Test
     public void transformation_Ok() throws Exception {
-        File projectDir = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2ch");
-        IntegrationTestUtil.getGradleRunner(projectDir, "transform").build();
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2ch");
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "transform").build();
 
-        File resultFile = new File(projectDir + "/output/254900.itf");
+        File resultFile = new File(projectDirectory + "/output/254900.itf");
 
         long resultSize = resultFile.length();
         assertTrue("Size of result file is wrong.", resultSize > 580000);
@@ -36,10 +35,10 @@ public class Av2chTest {
     @Test 
     public void transformationFileSet_Ok() throws Exception {
 
-        File projectDir = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFileSet");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFileSet");
 
         try{
-            IntegrationTestUtil.getGradleRunner(projectDir, "transform").build();
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "transform").build();
         } catch (UnexpectedBuildFailure e) {
             System.out.println("Build failed with message: " + e.getMessage());
         }
@@ -53,12 +52,10 @@ public class Av2chTest {
     
     @Test
     public void transformation_Fail() throws Exception {
-        File projectDir = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFail");
-        try {
-            IntegrationTestUtil.getGradleRunner(projectDir, "transform").build();
-            fail("Expected an UnexpectedBuildFailure exception to be thrown");
-        } catch (UnexpectedBuildFailure e) {
-            System.out.println("Build failed with message: " + e.getMessage());
-        }
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFail");
+
+        assertThrows(GradleException.class, () -> {
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "transform").build();
+        });
     }
 }
