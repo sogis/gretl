@@ -18,13 +18,7 @@ public class Av2chTest {
     @Test
     public void transformation_Ok() throws Exception {
         File projectDir = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2ch");
-        List<File> classpath = IntegrationTestUtil.getPluginClassPaths();
-
-        GradleRunner.create()
-                .withProjectDir(projectDir)
-                .withPluginClasspath(classpath)
-                .withArguments("--init-script", IntegrationTestUtil.getPathToInitScript(), "transform")
-                .build();
+        IntegrationTestUtil.getGradleRunner(projectDir, "transform").build();
 
         File resultFile = new File(projectDir + "/output/254900.itf");
 
@@ -43,14 +37,9 @@ public class Av2chTest {
     public void transformationFileSet_Ok() throws Exception {
 
         File projectDir = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFileSet");
-        List<File> classpath = IntegrationTestUtil.getPluginClassPaths();
 
         try{
-            GradleRunner.create()
-                    .withProjectDir(projectDir)
-                    .withPluginClasspath(classpath)
-                    .withArguments("--init-script", IntegrationTestUtil.getPathToInitScript(), "transform")
-                    .build();
+            IntegrationTestUtil.getGradleRunner(projectDir, "transform").build();
         } catch (UnexpectedBuildFailure e) {
             System.out.println("Build failed with message: " + e.getMessage());
         }
@@ -65,15 +54,8 @@ public class Av2chTest {
     @Test
     public void transformation_Fail() throws Exception {
         File projectDir = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFail");
-        List<File> classpath = IntegrationTestUtil.getPluginClassPaths();
-
         try {
-            GradleRunner.create()
-                    .withProjectDir(projectDir)
-                    .withPluginClasspath(classpath)
-                    .withArguments("--init-script", IntegrationTestUtil.getPathToInitScript(), "transform")
-                    .build();
-
+            IntegrationTestUtil.getGradleRunner(projectDir, "transform").build();
             fail("Expected an UnexpectedBuildFailure exception to be thrown");
         } catch (UnexpectedBuildFailure e) {
             System.out.println("Build failed with message: " + e.getMessage());

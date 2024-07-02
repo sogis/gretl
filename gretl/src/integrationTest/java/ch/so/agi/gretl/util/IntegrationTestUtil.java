@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.util;
 
+import org.gradle.testkit.runner.GradleRunner;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -166,7 +168,15 @@ public class IntegrationTestUtil {
         return buildJobDirOption;
     }
 
-    public static ArrayList<File> getPluginClassPaths() throws IOException {
+    public static GradleRunner getGradleRunner(File projectDirectory, String taskName) throws IOException{
+        return GradleRunner.create()
+                .withProjectDir(projectDirectory)
+                .withPluginClasspath(getPluginClassPaths())
+                .withArguments("--init-script", IntegrationTestUtil.getPathToInitScript(), taskName)
+                .forwardOutput();
+    }
+
+    private static ArrayList<File> getPluginClassPaths() throws IOException {
         ArrayList<File> classpath = new ArrayList<>();
         File classpathFile = new File(System.getProperty("user.dir"),"build/integrationTest/resources/pluginClassPath.txt");
         List<String> lines = Files.readAllLines(classpathFile.toPath(), StandardCharsets.UTF_8);
@@ -174,14 +184,6 @@ public class IntegrationTestUtil {
             classpath.add(new File(line));
         }
         return classpath;
-    }
-
-    public static void cleanFolder(File projectDir) throws IOException {
-        for(File file : Objects.requireNonNull(projectDir.listFiles())){
-            if (!file.isDirectory()) {
-                Files.delete(file.toPath());
-            }
-        }
     }
 
     public static String getPathToInitScript(){
