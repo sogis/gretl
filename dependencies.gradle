@@ -5,6 +5,7 @@ ext {
     ilivalidatorCustomFunctionsVersion = '1.1.50'
     ilivalidatorCustomFunctionsGeometriesVersion = '0.0.8'
     geowCustomFunctionsVersion = '0.2.0'
+    geowNgkFunctionsVersion = '1.0.0'
     
     ili2pgVersion = '4.11.1'
     ili2gpkgVersion = '4.11.1'
@@ -51,6 +52,8 @@ ext {
     ilivalidatorCustomFunctionsDependency = [ group: 'io.github.sogis', name: 'ilivalidator-custom-functions', version: ilivalidatorCustomFunctionsVersion ]
     ilivalidatorCustomFunctionsGeometriesDependency = [ group: 'io.github.sogis', name: 'ilivalidator-custom-functions-geometries', version: ilivalidatorCustomFunctionsGeometriesVersion ]
     geowCustomFunctionsDependency = [ group: 'ch.geowerkstatt.ilivalidator.extensions.functions', name: 'geow-interlis-functions', version: geowCustomFunctionsVersion ]
+    geowNgkFunctionsDependency = [ group: 'ch.geowerkstatt.ilivalidator.extensions.functions', name: 'interlis-functions-ngk-so', version: geowNgkFunctionsVersion ]
+
     ili2pgDependency = [ group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion ]
     ili2gpkgDependency = [ group: 'ch.interlis', name: 'ili2gpkg', version: ili2gpkgVersion ]
     ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
