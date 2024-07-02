@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -169,11 +170,29 @@ public class IntegrationTestUtil {
     }
 
     public static GradleRunner getGradleRunner(File projectDirectory, String taskName) throws IOException{
+        return getGradleRunner(projectDirectory, taskName, null);
+    }
+
+    public static GradleRunner getGradleRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
+        List<String> arguments = getRunnerArguments(taskName, variables);
         return GradleRunner.create()
                 .withProjectDir(projectDirectory)
                 .withPluginClasspath(getPluginClassPaths())
-                .withArguments("--init-script", IntegrationTestUtil.getPathToInitScript(), taskName)
+                .withArguments(arguments)
                 .forwardOutput();
+    }
+
+    private static List<String> getRunnerArguments(String taskName, GradleVariable[] variables){
+        List<String> arguments = new ArrayList<>();
+        arguments.add("--init-script");
+        arguments.add(IntegrationTestUtil.getPathToInitScript());
+        arguments.add(taskName);
+        if(variables != null){
+            for(GradleVariable variable: variables){
+                arguments.add(variable.buildOptionString());
+            }
+        }
+        return arguments;
     }
 
     private static ArrayList<File> getPluginClassPaths() throws IOException {
