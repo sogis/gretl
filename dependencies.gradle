@@ -5,7 +5,7 @@ ext {
     ilivalidatorCustomFunctions = '1.1.50'
     ilivalidatorCustomFunctionsGeometriesVersion = '0.0.8'
     geowCustomFunctionsVersion = '0.2.0'
-    geowNgkFunctionsVersion = '1.0.0'
+    geowNgkFunctionsVersion = '1.0.1'
     
     ili2pgVersion = '5.1.0'
     ili2gpkgVersion = '5.1.0'
