@@ -9,7 +9,7 @@ ext {
     
     ili2pgVersion = '4.11.1'
     ili2gpkgVersion = '4.11.1'
-    ioxWkfVersion = '1.1.1'
+    ioxWkfVersion = '2.0.0'
     ehiSqlgenVersion = '1.16.0'
     
     ioxFormatsVersion = '0.0.29'
