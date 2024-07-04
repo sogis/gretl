@@ -106,6 +106,7 @@ dependencies {
 
     api (ioxFormatsDependency) {
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
+        exclude group: 'hsqldb', module: 'hsqldb'
     }
 
     api av2chDependency
