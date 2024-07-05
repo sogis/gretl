@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.jobs;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
@@ -16,7 +17,6 @@ import java.nio.file.Files;
 import static org.junit.Assert.assertEquals;
 
 public class PostgisRasterExportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
     @ClassRule
@@ -25,7 +25,7 @@ public class PostgisRasterExportTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void exportTiff() throws Exception {

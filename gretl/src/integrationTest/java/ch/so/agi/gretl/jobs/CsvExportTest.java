@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.jobs;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
@@ -20,7 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class CsvExportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
+
     private Connection connection = null;
 
     @ClassRule
@@ -29,7 +30,7 @@ public class CsvExportTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Before
     public void setup() {

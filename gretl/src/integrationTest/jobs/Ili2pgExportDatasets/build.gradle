@@ -10,7 +10,7 @@ def db_pass = "ddluser"
 
 defaultTasks 'ili2pgexport'
 
-task ili2pgschemaimport(type: Ili2pgImportSchema){
+tasks.register("ili2pgschemaimport", Ili2pgImportSchema) {
     database = [db_uri, db_user, db_pass]
     models = "Beispiel2"
     defaultSrsCode = "2056"
@@ -19,13 +19,16 @@ task ili2pgschemaimport(type: Ili2pgImportSchema){
     createBasketCol = true
 }
 
-task ili2pgimport(dependsOn:ili2pgschemaimport, type: Ili2pgImport){
+tasks.register("ili2pgimport", Ili2pgImport) {
+    dependsOn 'ili2pgschemaimport'
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
     dataFile = [ 'Beispiel2a.xtf', 'Beispiel2b.xtf']
     dataset = [ 'DatasetA', 'DatasetB']
 }
-task ili2pgexport(dependsOn:ili2pgimport, type: Ili2pgExport){
+
+tasks.register("ili2pgexport", Ili2pgExport) {
+    dependsOn 'ili2pgimport'
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
     dataFile = [ 'DatasetA-out.xtf', 'DatasetB-out.xtf']

@@ -9,6 +9,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.After;
 import org.junit.Before;
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
@@ -22,7 +23,6 @@ import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 import static org.junit.Assert.assertEquals;
 
 public class DatabaseDocumentExportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     private Connection connection = null;
 
     @ClassRule
@@ -31,7 +31,7 @@ public class DatabaseDocumentExportTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Before
     public void setup() {

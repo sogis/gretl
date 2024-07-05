@@ -58,7 +58,7 @@ public class GpkgValidator extends AbstractValidatorTask {
         initSettings(settings);
 
         validationOk = new GpkgValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && isFailOnError()) {
+        if (!validationOk && getFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

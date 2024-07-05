@@ -10,12 +10,13 @@ def db_pass = "dmluser"
 
 defaultTasks 'insertInto'
 
-task fillSrcTable(type: SqlExecutor){
+tasks.register('fillSrcTable', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['statementChain_fillSrcTable.sql']
 }
 
-task insertInto(type: SqlExecutor, dependsOn: 'fillSrcTable'){
+tasks.register('insertInto', SqlExecutor) {
+    dependsOn 'fillSrcTable'
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['statementChain_insertIntoDestTable.sql']
     sqlParameters = [srcTable:'albums_src']

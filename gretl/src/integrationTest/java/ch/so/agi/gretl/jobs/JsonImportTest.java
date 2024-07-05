@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import org.junit.*;
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -18,7 +19,6 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 public class JsonImportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
     private static String dbusr = "ddluser";
     private static String dbpwd = "ddluser";
@@ -33,7 +33,7 @@ public class JsonImportTest {
         .withUsername(dbusr)
         .withPassword(dbpwd)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Before
     public void setup() {

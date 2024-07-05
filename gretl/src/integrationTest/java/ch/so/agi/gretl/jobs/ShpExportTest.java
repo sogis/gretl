@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.jobs;
 
 import ch.interlis.ioxwkf.shp.ShapeReader;
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
@@ -26,7 +27,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 
 public class ShpExportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     private Connection connection = null;
 
     @ClassRule
@@ -35,7 +35,7 @@ public class ShpExportTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Before
     public void setup() {

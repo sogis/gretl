@@ -11,39 +11,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import groovy.lang.Range;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
 
-public class Ili2pgImport extends Ili2pgAbstractTask {
-    private Object dataFile;
+public abstract class Ili2pgImport extends Ili2pgAbstractTask {
     @InputFiles
-    public Object getDataFile(){
-        return dataFile;
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
+    public abstract Property<Object> getDataFile();
 
     @TaskAction
     public void importData() {
         Config settings = createConfig();
         int function = Config.FC_IMPORT;
-        if (dataFile == null) {
+        if (!getDataFile().isPresent()) {
             return;
         }
         
         // Liste mit saemtlicheen Dateipfaeden oder ilidata-Ids.
-        List<String> files = new ArrayList<String>();
+        List<String> files = new ArrayList<>();
 
-        FileCollection dataFilesCollection = null;
+        FileCollection dataFilesCollection;
+        Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
             dataFilesCollection = (FileCollection) dataFile;
-            
-            if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
+            if (dataFilesCollection.isEmpty()) {
                 return;
             }
             
@@ -79,37 +74,44 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
         }
 
         List<String> datasetNames = null;
-        if (dataset != null) {
+        if (getDataset().isPresent()) {
+            Object dataset = getDataset().get();
             if(dataset instanceof String) {
-                datasetNames=new ArrayList<String>();
+                datasetNames=new ArrayList<>();
                 datasetNames.add((String)dataset);
             } else if (dataset instanceof FileCollection) {
                 Set<File> datasetFiles = ((FileTree)dataset).getFiles();
-                datasetNames = new ArrayList<String>();                
+                datasetNames = new ArrayList<>();
                 for (File datasetFile : datasetFiles) {
-                    if (datasetSubstring != null) {  
+                    if (getDatasetSubstring().isPresent()) {
+                        List<Integer> datasetSubstring = getDatasetSubstring().get();
                         if (datasetSubstring.size() > 1) {
-                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.getFrom(), datasetSubstring.getTo()));
+                            int rangeTo = datasetSubstring.get(datasetSubstring.size() - 1);
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.get(0), rangeTo));
                         } else {
-                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(datasetSubstring.getFrom()));
+                            int from = datasetSubstring.size() == 1 ? datasetSubstring.get(0) : 0;
+                            datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", "").substring(from));
                         }
                     } else {
                         datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", ""));
                     }
                 }
             } else {
-                datasetNames=new ArrayList<String>();
-                if (datasetSubstring != null) {
-                    List<String> fileNames = (java.util.List)dataset;
+                datasetNames=new ArrayList<>();
+                if (getDatasetSubstring().isPresent()) {
+                    List<String> fileNames = (List)dataset;
+                    List<Integer> datasetSubstring = getDatasetSubstring().get();
                     for (String fileName : fileNames) {
                         if (datasetSubstring.size() > 1) {
-                            datasetNames.add(fileName.substring(datasetSubstring.getFrom(), datasetSubstring.getTo()));
+                            int rangeTo = datasetSubstring.get(datasetSubstring.size() - 1);
+                            datasetNames.add(fileName.substring(datasetSubstring.get(0), rangeTo));
                         } else {
-                            datasetNames.add(fileName.substring(datasetSubstring.getFrom()));
+                            int from = datasetSubstring.size() == 1 ? datasetSubstring.get(0) : 0;
+                            datasetNames.add(fileName.substring(from));
                         }
                     }
                 } else {
-                    datasetNames=(java.util.List)dataset;
+                    datasetNames=(List)dataset;
                 }
             }
             if(files.size()!=datasetNames.size()) {
@@ -118,20 +120,16 @@ public class Ili2pgImport extends Ili2pgAbstractTask {
         }
         
         ch.ehi.basics.logging.FileListener fileLogger=null;
-        if(logFile!=null){
+        if(getLogFile().isPresent()){
             // setup logger here, so that multiple file imports result in one logfile
-            java.io.File logFilepath=this.getProject().file(logFile);
+            java.io.File logFilepath=this.getProject().file(getLogFile().get());
             fileLogger=new FileLogger(logFilepath);
             EhiLogger.getInstance().addListener(fileLogger);
         }
         try {
             int i=0;
             for(String xtfFilename:files) {
-                if (Ili2db.isItfFilename(xtfFilename)) {
-                    settings.setItfTransferfile(true);
-                }else {
-                    settings.setItfTransferfile(false);
-                }
+                settings.setItfTransferfile(Ili2db.isItfFilename(xtfFilename));
                 if(datasetNames!=null) {
                     settings.setDatasetName(datasetNames.get(i));
                 }

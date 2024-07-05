@@ -36,7 +36,7 @@ tasks.register("writePluginClassPath"){
  * Task for executing the integration tests. It references the 
  * classes and runtime classpath of the integration test source set.
  */
-task jarTest(type: Test) {
+tasks.register('jarTest', Test){
     description = 'Runs integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -54,9 +54,10 @@ task jarTest(type: Test) {
     jvmArgs '-Xmx1g'
 }
 
-task jarS3Test(type: Test, dependsOn: writePluginClassPath) {
+tasks.register('jarS3Test', Test){
     description = 'Runs the S3 integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
+    dependsOn 'writePluginClassPath'
 
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.S3Test'
@@ -71,14 +72,15 @@ task jarS3Test(type: Test, dependsOn: writePluginClassPath) {
     jvmArgs '-Xmx1g'
 }
 
-task imageTest(type: Test, dependsOn: writePluginClassPath){
+tasks.register('imageTest', Test){
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    
+    dependsOn 'writePluginClassPath'
+
     useJUnit {
         excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
     }
-    
+
     systemProperty('GRETL_TESTTYPE', 'image')
 
     testLogging.showStandardStreams = true
@@ -87,9 +89,10 @@ task imageTest(type: Test, dependsOn: writePluginClassPath){
     classpath += sourceSets.integrationTest.runtimeClasspath
 }
 
-task imageS3Test(type: Test, dependsOn: writePluginClassPath){
+tasks.register('imageS3Test', Test){
     description = 'Runs S3 integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
+    dependsOn 'writePluginClassPath'
 
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.S3Test'

@@ -5,8 +5,8 @@ apply plugin: 'ch.so.agi.gretl'
 def pwd = rootProject.projectDir.toString()
 def db_uri = "jdbc:duckdb:$pwd/foo.duckdb".toString()
 
-def db_user = null
-def db_pass = null
+def db_user = ""
+def db_pass = ""
 
 defaultTasks 'importParquet'
 
@@ -18,14 +18,12 @@ tasks.register('initDuckDb', SqlExecutor) {
     
 tasks.register('createTable', SqlExecutor) {
     dependsOn 'initDuckDb'
-   
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['create_insert.sql']
 }
 
 tasks.register('importParquet', SqlExecutor) {
     dependsOn 'createTable'
-   
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['import_parquet.sql']
     sqlParameters = [pwd: "'"+pwd+"'"]

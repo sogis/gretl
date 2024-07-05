@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
@@ -17,7 +18,6 @@ import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 import static org.junit.Assert.*;
 
 public class Ili2pgValidateTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
     @ClassRule
@@ -27,7 +27,7 @@ public class Ili2pgValidateTest {
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withPassword(IntegrationTestUtilSql.PG_CON_DDLPASS)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void validateData_Ok() throws Exception {

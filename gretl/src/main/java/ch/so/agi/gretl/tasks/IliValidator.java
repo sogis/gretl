@@ -84,7 +84,7 @@ public class IliValidator extends AbstractValidatorTask {
         settings.setTransientObject(ch.interlis.iox_j.validator.Validator.CONFIG_CUSTOM_FUNCTIONS, userFunctions);
 
         validationOk = new Validator().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && isFailOnError()) {
+        if (!validationOk && getFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

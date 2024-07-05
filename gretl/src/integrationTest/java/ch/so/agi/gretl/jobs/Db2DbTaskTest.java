@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.jobs;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
@@ -12,10 +13,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 
-
-
 public class Db2DbTaskTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
     private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
     private Connection connection = null;
@@ -26,7 +24,7 @@ public class Db2DbTaskTest {
         .newInstance().withDatabaseName("gretl")
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Before
     public void setup() {
