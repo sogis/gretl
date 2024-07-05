@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -20,7 +21,7 @@ import org.junit.ClassRule;
 
 public class GpkgImportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
@@ -44,8 +45,10 @@ public class GpkgImportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgImport", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgImport");
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "gpkgimport", variables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);

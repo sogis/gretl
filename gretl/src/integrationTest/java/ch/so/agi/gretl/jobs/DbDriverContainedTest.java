@@ -4,11 +4,18 @@ import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.ClassRule;
 import org.junit.Test;
 import ch.so.agi.gretl.testutil.DbDriversReachableTest;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.OracleContainer;
+
+import java.io.File;
+import java.util.Objects;
+
+import static org.junit.Assert.assertEquals;
 
 public class DbDriverContainedTest {
     @ClassRule
@@ -18,13 +25,21 @@ public class DbDriverContainedTest {
     @Category(DbDriversReachableTest.class)
     @Test
     public void SqliteDriverContainedTest() throws Exception {
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/DbTasks_SqliteLibsPresent");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DbTasks_SqliteLibsPresent");
+
+        BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "querySqliteMaster").build();
+
+        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":querySqliteMaster")).getOutcome());
     }
 
     @Category(DbDriversReachableTest.class)
     @Test
     public void OracleDriverContainedTest() throws Exception {
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_ORA_CON_URI, oracle.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/DbTasks_OracleLibsPresent", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DbTasks_OracleLibsPresent");
+        GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_ORA_CON_URI, oracle.getJdbcUrl())};
+
+        BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "queryOracleVersion", variables).build();
+
+        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":queryOracleVersion")).getOutcome());
     }
 }

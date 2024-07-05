@@ -17,19 +17,12 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 public class Gpkg2ShpTest {
     @Test
     public void export_Ok() throws Exception {
-        String TEST_OUT = "src/integrationTest/jobs/Gpkg2Shp/out/";
-        
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/Gpkg2Shp/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")); 
-        Files.list(Paths.get(TEST_OUT)).filter(p -> p.toString().contains("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20")).forEach((p) -> {
-            try {
-                Files.deleteIfExists(p);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Gpkg2Shp", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gpkg2Shp");
+        String TEST_OUT = projectDirectory + "/out/";
+
+        deleteExistingFiles(projectDirectory, TEST_OUT);
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "gpkg2shp").build();
         
         //Check results
         {
@@ -44,5 +37,16 @@ public class Gpkg2ShpTest {
             assertEquals(127, featuresSource.getFeatures().size()); 
             assertEquals("CH1903+_LV95", featuresSource.getSchema().getCoordinateReferenceSystem().getName().toString());
         }
+    }
+
+    private void deleteExistingFiles(File projectDirectory, String testOutputFolder)  throws Exception {
+        Files.deleteIfExists(Paths.get(projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg"));
+        Files.list(Paths.get(testOutputFolder)).filter(p -> p.toString().contains("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20")).forEach((p) -> {
+            try {
+                Files.deleteIfExists(p);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

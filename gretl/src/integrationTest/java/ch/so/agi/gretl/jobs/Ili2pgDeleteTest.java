@@ -39,10 +39,12 @@ public class Ili2pgDeleteTest {
     public void deleteDataset_Ok() throws Exception {
         Connection con = null;
         try {                        
-            // create schema, import dataset and delete dataset
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgDeleteDataset", gvs);
-            
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgDeleteDataset");
+
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgdelete", variables).build();
+
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);
             Statement s = con.createStatement();
@@ -60,11 +62,5 @@ public class Ili2pgDeleteTest {
         } finally {
             IntegrationTestUtilSql.closeCon(con);
         }
-    }
-
-    private Config createConfig() {
-        Config settings = new Config();
-        new PgMain().initConfig(settings);
-        return settings;
     }
 }

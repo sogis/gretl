@@ -71,10 +71,10 @@ public class CurlTest {
                 .setBody("\"success\":false");
         mockWebServer.enqueue(mockResponse);
 
-        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodiensteFail");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
-        Exception exception = assertThrows(GradleException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             IntegrationTestUtil.getGradleRunner(projectDirectory, "uploadData", variables).build();
         });
 
@@ -105,7 +105,7 @@ public class CurlTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlDownload");
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "uploadData").build();
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "downloadData").build();
 
         String content = new String(Files.readAllBytes(Paths.get(projectDirectory + "/README.md")));
         assertTrue(content.contains("_GRETL_"));

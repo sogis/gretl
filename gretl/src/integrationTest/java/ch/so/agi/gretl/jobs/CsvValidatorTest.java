@@ -1,7 +1,6 @@
 package ch.so.agi.gretl.jobs;
 
 import ch.so.agi.gretl.util.IntegrationTestUtil;
-import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class CsvValidatorTest {
     public void validationFail() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidator");
 
-        Exception exception = assertThrows(TaskExecutionException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
         });
 

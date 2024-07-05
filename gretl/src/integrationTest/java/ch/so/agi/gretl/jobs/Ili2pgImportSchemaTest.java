@@ -3,6 +3,7 @@ package ch.so.agi.gretl.jobs;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -33,9 +34,13 @@ public class Ili2pgImportSchemaTest {
     public void schemaImportOk() throws Exception {
         Connection con = null;
         try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema", gvs);
-            
+
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportSchema");
+
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgschemaimport", variables).build();
+
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);
             Statement s = con.createStatement();
@@ -74,9 +79,12 @@ public class Ili2pgImportSchemaTest {
     public void schemaImport_Options1_Ok() throws Exception {
         Connection con = null;
         try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema_Options", gvs);
-            
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportSchema_Options");
+
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgschemaimport", variables).build();
+
             // check results
             // check sqlColsAsText mapping
             con = IntegrationTestUtilSql.connectPG(postgres);

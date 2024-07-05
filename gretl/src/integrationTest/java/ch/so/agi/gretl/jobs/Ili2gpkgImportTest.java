@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 
 import ch.ehi.ili2db.base.DbNames;
@@ -26,9 +27,11 @@ public class Ili2gpkgImportTest {
 
     @Test
     public void importOk() throws Exception {
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/Ili2gpkgImport/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")); 
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2gpkgImport", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2gpkgImport");
+
+        Files.deleteIfExists(Paths.get(projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg"));
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2gpkgimport").build();
 
         // check results
         {
@@ -38,7 +41,7 @@ public class Ili2gpkgImportTest {
             Connection connection = null;
             try {
                 connection = DriverManager.getConnection("jdbc:sqlite:" + new File(
-                        "src/integrationTest/jobs/Ili2gpkgImport/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")
+                        projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")
                                 .getAbsolutePath());
                 stmt = connection.createStatement();
                 rs = stmt.executeQuery("SELECT aname FROM nachfuehrungsgeometer");
@@ -66,9 +69,10 @@ public class Ili2gpkgImportTest {
     }
     @Test
     public void importFileSet() throws Exception {
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/Ili2gpkgImportFileSet/Beispiel2.gpkg")); 
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2gpkgImportFileSet", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2gpkgImportFileSet");
+        Files.deleteIfExists(Paths.get(projectDirectory + "/Beispiel2.gpkg"));
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2gpkgimport").build();
 
         // check results
         {
@@ -76,7 +80,7 @@ public class Ili2gpkgImportTest {
             ResultSet rs = null;
             Connection connection = null;
             connection = DriverManager.getConnection("jdbc:sqlite:" + new File(
-                    "src/integrationTest/jobs/Ili2gpkgImportFileSet/Beispiel2.gpkg")
+                    projectDirectory + "/Beispiel2.gpkg")
                             .getAbsolutePath());
             stmt = connection.createStatement();
             rs = stmt.executeQuery("SELECT count(*) FROM boflaechen");

@@ -25,7 +25,8 @@ import org.junit.ClassRule;
 
 public class GpkgExportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+    private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
@@ -36,7 +37,9 @@ public class GpkgExportTest {
 
     @Test
     public void exportTableOk() throws Exception {
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/GpkgExport/data.gpkg")); 
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgExport");
+
+        Files.deleteIfExists(Paths.get(projectDirectory+ "/data.gpkg"));
 
         String schemaName = "gpkgexport".toLowerCase();
         Connection con = null;
@@ -52,8 +55,7 @@ public class GpkgExportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgExport", gvs);
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "gpkgexport", gradleVariables).build();
 
             //check results
             {
@@ -87,7 +89,8 @@ public class GpkgExportTest {
     
     @Test
     public void exportTablesOk() throws Exception {
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/GpkgExportTables/data.gpkg")); 
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgExportTables");
+        Files.deleteIfExists(Paths.get(projectDirectory + "/data.gpkg"));
 
         String schemaName = "gpkgexport".toLowerCase();
         Connection con = null;
@@ -110,8 +113,7 @@ public class GpkgExportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgExportTables", gvs);
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "gpkgexport", gradleVariables).build();
 
             //check results
             for (int i=1; i<=2; i++) {

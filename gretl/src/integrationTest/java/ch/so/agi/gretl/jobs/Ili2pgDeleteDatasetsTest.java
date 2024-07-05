@@ -2,6 +2,9 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -34,9 +37,12 @@ public class Ili2pgDeleteDatasetsTest {
     public void deleteOk() throws Exception {
         Connection con = null;
         try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgDeleteDatasets", gvs);
-            
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgDeleteDatasets");
+
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgdelete", variables).build();
+
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);
             Statement s = con.createStatement();

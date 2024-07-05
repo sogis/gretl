@@ -2,6 +2,7 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -34,9 +35,12 @@ public class Ili2pgImportFileSetTest {
     public void importOk() throws Exception {
         Connection con = null;
         try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportFileSet", gvs);
-            
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportFileSet");
+
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgimport", variables).build();
+
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);
             Statement s = con.createStatement();

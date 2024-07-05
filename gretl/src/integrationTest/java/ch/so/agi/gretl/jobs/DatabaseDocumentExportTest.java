@@ -30,8 +30,6 @@ public class DatabaseDocumentExportTest {
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
-        
-        File targetDir = new File("src/integrationTest/jobs/DatabaseDocumentExport/");
 
         Connection con = null;
         try {
@@ -51,8 +49,11 @@ public class DatabaseDocumentExportTest {
 
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/DatabaseDocumentExport", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DatabaseDocumentExport");
+            GradleVariable[] variables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
+
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "databasedocumentexport", variables).build();
+
         } finally {
             IntegrationTestUtilSql.closeCon(con);
         }

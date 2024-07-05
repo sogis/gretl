@@ -10,6 +10,7 @@ import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -19,7 +20,8 @@ import java.sql.Statement;
 
 public class Db2DbTaskTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+    private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
@@ -36,6 +38,7 @@ public class Db2DbTaskTest {
 	@Test
 	public void fetchSizeParameterTest() throws Exception {
 		String schemaName = "db2dbTaskFetchSize".toLowerCase();
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskFetchSize");
 		Connection con = null;
 		try {
 			con = IntegrationTestUtilSql.connectPG(postgres);
@@ -54,9 +57,8 @@ public class Db2DbTaskTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-		    GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-		    IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskFetchSize", gvs);
-            
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "fetchSizeTask", gradleVariables).build();
+
             con = IntegrationTestUtilSql.connectPG(postgres);
             String countDestSql = String.format("select count(*) from %s.target_data", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
@@ -83,6 +85,7 @@ number of inserts (corresponding to the last statement)
     @Test
     public void taskChainTest() throws Exception {
         String schemaName = "db2dbTaskChain".toLowerCase();
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskChain");
         Connection con = null;
         try{
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -91,8 +94,7 @@ number of inserts (corresponding to the last statement)
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskChain", gvs);
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "bToA", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -118,6 +120,7 @@ number of inserts (corresponding to the last statement)
     @Test
     public void relativePathTest() throws Exception{
         String schemaName = "relativePath".toLowerCase();
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskRelPath");
         Connection con = null;
         try{
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -127,8 +130,7 @@ number of inserts (corresponding to the last statement)
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskRelPath", gvs);
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "relativePath", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -151,6 +153,7 @@ number of inserts (corresponding to the last statement)
     @Test
     public void deleteDestTableContent() throws Exception{
         String schemaName = "deleteDestTableContent".toLowerCase();
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskDelTable");
         Connection con = null;
         try{
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -162,8 +165,7 @@ number of inserts (corresponding to the last statement)
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskDelTable", gvs);
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "sourceToDestWithDelete", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -182,6 +184,7 @@ number of inserts (corresponding to the last statement)
     @Test
     public void parameter() throws Exception{
         String schemaName = "parameterList".toLowerCase();
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbParameter");
         Connection con = null;
         try{
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -197,8 +200,7 @@ number of inserts (corresponding to the last statement)
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbParameter", gvs);
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "src2dest", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -214,6 +216,7 @@ number of inserts (corresponding to the last statement)
     @Test
     public void parameterList() throws Exception{
         String schemaName = "parameterList".toLowerCase();
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbParameterList");
         Connection con = null;
         try{
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -233,8 +236,7 @@ number of inserts (corresponding to the last statement)
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbParameterList", gvs);
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "src2dest", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);

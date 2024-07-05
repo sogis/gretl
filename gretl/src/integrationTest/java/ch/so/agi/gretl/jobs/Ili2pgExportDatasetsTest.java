@@ -2,6 +2,7 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -41,15 +42,17 @@ public class Ili2pgExportDatasetsTest {
 
     @Test
     public void exportOk() throws Exception {
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgExportDatasets", gvs);
-        
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgExportDatasets");
+
+        GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgexport", variables).build();
         // check results
         {
-            assertXtfFile(new java.io.File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetA-out.xtf"));
+            assertXtfFile(new java.io.File( projectDirectory + "/DatasetA-out.xtf"));
         }
         {
-            assertXtfFile(new java.io.File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetB-out.xtf"));
+            assertXtfFile(new java.io.File(projectDirectory + "/DatasetB-out.xtf"));
         }
     }
 
