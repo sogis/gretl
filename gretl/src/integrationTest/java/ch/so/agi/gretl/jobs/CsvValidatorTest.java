@@ -20,7 +20,7 @@ public class CsvValidatorTest {
         assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":validate")).getOutcome());
     }
     @Test
-    public void validationFail() throws Exception {
+    public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidator");
 
         Exception exception = assertThrows(Exception.class, () -> {

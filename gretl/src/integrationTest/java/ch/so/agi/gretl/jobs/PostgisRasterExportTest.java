@@ -1,10 +1,7 @@
 package ch.so.agi.gretl.jobs;
 
 import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -15,13 +12,12 @@ import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.sql.Connection;
 
 import static org.junit.Assert.assertEquals;
 
 public class PostgisRasterExportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
     @ClassRule
     public static PostgreSQLContainer postgres = 

@@ -109,7 +109,7 @@ public class SqlExecutorTaskTest {
         String countDestSql = String.format("select title from %s.src", schemaName);
         stmt=connection.createStatement();
         ResultSet rs=stmt.executeQuery(countDestSql);
-        HashSet<String> titles=new HashSet<String>();
+        HashSet<String> titles=new HashSet<>();
         while(rs.next()) {
             String title=rs.getString(1);
             titles.add(title);
@@ -138,7 +138,7 @@ public class SqlExecutorTaskTest {
         String countDestSql = String.format("select title from %s.src", schemaName);
         stmt=connection.createStatement();
         ResultSet rs=stmt.executeQuery(countDestSql);
-        HashSet<String> titles=new HashSet<String>();
+        HashSet<String> titles=new HashSet<>();
         while(rs.next()) {
             String title=rs.getString(1);
             titles.add(title);

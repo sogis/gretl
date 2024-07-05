@@ -19,7 +19,7 @@ import java.sql.Statement;
 
 public class CsvImportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    private  GradleVariable[] gradleVariables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
+    private final GradleVariable[] gradleVariables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
 
     private Connection connection = null;
 
@@ -71,7 +71,7 @@ public class CsvImportTest {
         assertEquals("rot",rs.getString(4));
         assertEquals(new java.sql.Date(2017-1900,9-1,21),rs.getDate(5));
         assertEquals(new java.sql.Timestamp(2016-1900,8-1,22,13,15,22,450000000),rs.getTimestamp(6));
-        assertEquals(true,rs.getBoolean(7));
+        assertTrue(rs.getBoolean(7));
         if(rs.next()) {
             fail();
         }
@@ -108,7 +108,7 @@ public class CsvImportTest {
         assertEquals("rot",rs.getString(4));
         assertEquals(new java.sql.Date(2017-1900,9-1,21),rs.getDate(5));
         assertEquals(new java.sql.Timestamp(2016-1900,8-1,22,13,15,22,450000000),rs.getTimestamp(6));
-        assertEquals(true,rs.getBoolean(7));
+        assertTrue(rs.getBoolean(7));
         if(rs.next()) {
             fail();
         }

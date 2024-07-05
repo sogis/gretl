@@ -5,8 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.tasks.TaskExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

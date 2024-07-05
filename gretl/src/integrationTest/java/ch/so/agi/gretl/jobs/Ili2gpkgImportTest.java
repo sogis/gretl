@@ -16,11 +16,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 
 import ch.ehi.ili2db.base.DbNames;
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
 public class Ili2gpkgImportTest {

@@ -3,8 +3,6 @@ package ch.so.agi.gretl.jobs;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -63,7 +61,7 @@ public class Ili2pgDeleteDatasetsTest {
         assertEquals(0,rs.getInt(1));
 
         rs = s.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+"  FROM beispiel2."+DbNames.DATASETS_TAB);
-        HashSet<String> datasets=new HashSet<String>();
+        HashSet<String> datasets=new HashSet<>();
         while(rs.next()) {
             datasets.add(rs.getString(1));
         }

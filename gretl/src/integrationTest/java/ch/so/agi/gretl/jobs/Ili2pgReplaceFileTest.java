@@ -23,7 +23,7 @@ import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 public class Ili2pgReplaceFileTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
     private Connection connection = null;
 
     @ClassRule
@@ -88,7 +88,7 @@ public class Ili2pgReplaceFileTest {
         assertEquals(1, rs.getInt(1));
 
         rs = s.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+" FROM agi_av_mopublic."+DbNames.DATASETS_TAB);
-        HashSet<String> datasets=new HashSet<String>();
+        HashSet<String> datasets=new HashSet<>();
         while(rs.next()) {
             datasets.add(rs.getString(1));
         }

@@ -6,11 +6,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
 public class Gpkg2DxfTest {

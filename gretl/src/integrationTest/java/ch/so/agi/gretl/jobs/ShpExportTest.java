@@ -17,11 +17,8 @@ import com.vividsolutions.jts.geom.Point;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;

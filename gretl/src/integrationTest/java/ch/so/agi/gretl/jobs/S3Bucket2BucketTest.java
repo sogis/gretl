@@ -82,15 +82,14 @@ public class S3Bucket2BucketTest {
         List<S3Object> objects = res.contents();
         
         List<String> keyList = new ArrayList<String>();
-        for (ListIterator<S3Object> iterVals = objects.listIterator(); iterVals.hasNext(); ) {
-            S3Object myObject = iterVals.next();            
+        for (S3Object myObject : objects) {
             keyList.add(myObject.key());
         }
 
         assertTrue(keyList.contains("foo.txt"));
         assertTrue(keyList.contains("bar.txt"));
         assertTrue(keyList.contains("download.txt"));
-        assertTrue(keyList.size() == 3);
+        assertEquals(3, keyList.size());
         
         // Remove uploaded files from buckets.
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucket).key("foo.txt").build());

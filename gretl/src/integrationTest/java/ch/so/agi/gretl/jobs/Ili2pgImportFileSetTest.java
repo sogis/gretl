@@ -61,7 +61,7 @@ public class Ili2pgImportFileSetTest {
         assertEquals(4,rs.getInt(1));
 
         rs = s.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+"  FROM beispiel2."+DbNames.DATASETS_TAB);
-        HashSet<String> datasets=new HashSet<String>();
+        HashSet<String> datasets=new HashSet<>();
         while(rs.next()) {
             datasets.add(rs.getString(1));
         }

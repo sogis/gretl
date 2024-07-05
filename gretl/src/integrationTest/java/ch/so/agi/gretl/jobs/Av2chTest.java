@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-import org.gradle.api.GradleException;
 import org.junit.Test;
 
 import ch.so.agi.gretl.util.IntegrationTestUtil;

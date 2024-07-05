@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.jobs;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -21,7 +20,7 @@ public class GpkgValidatorTest {
         assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":validate")).getOutcome());
     }
     @Test
-    public void validationFail() throws Exception {
+    public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidatorFail");
 
         Exception exception = assertThrows(Exception.class, () -> {

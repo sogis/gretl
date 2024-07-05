@@ -27,7 +27,7 @@ import org.junit.ClassRule;
 
 public class GpkgExportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
     private Connection connection = null;
 
     @ClassRule
@@ -130,7 +130,7 @@ public class GpkgExportTest {
                 Gpkg2iox gpkg2iox = new Gpkg2iox();
                 gpkgConnection = DriverManager.getConnection("jdbc:sqlite:" + new File("src/integrationTest/jobs/GpkgExportTables/data.gpkg").getAbsolutePath());
                 stmt = gpkgConnection.createStatement();
-                rs = stmt.executeQuery("SELECT attr, the_geom FROM exportdata" + String.valueOf(i));
+                rs = stmt.executeQuery("SELECT attr, the_geom FROM exportdata" + i);
 
                 while (rs.next()) {
                     assertEquals("coord2d", rs.getString(1));
