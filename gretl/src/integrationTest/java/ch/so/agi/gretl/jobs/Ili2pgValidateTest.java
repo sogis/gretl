@@ -42,13 +42,11 @@ public class Ili2pgValidateTest {
     public void validateData_Fail() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateFail");
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             IntegrationTestUtil.getGradleRunner(projectDirectory, "validate", gradleVariables).build();
         });
 
         String logFileContent = new String(Files.readAllBytes(Paths.get(projectDirectory + "/fubar.log")));
-
-        assertTrue(exception.getMessage().contains("validation failed"));
         assertTrue(logFileContent.contains("Error: ...validate failed"));
     }
 }

@@ -82,6 +82,8 @@ public class SqlExecutorTaskTest {
         IntegrationTestUtilSql.createOrReplaceSchema(connection, schemaName);
         IntegrationTestUtilSql.createSqlExecuterTaskChainTables(connection, schemaName);
 
+        connection.commit();
+
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskRelPath");
 
         IntegrationTestUtil.getGradleRunner(projectDirectory, "relativePathConfiguration", gradleVariables).build();

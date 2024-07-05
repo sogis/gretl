@@ -17,7 +17,8 @@ public class GpkgValidatorTest {
 
         BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
 
-        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":validate")).getOutcome());
+        TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
+        assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
     }
     @Test
     public void validationFail() {

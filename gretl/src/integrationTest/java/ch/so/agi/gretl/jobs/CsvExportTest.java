@@ -4,7 +4,6 @@ import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
-import jdk.internal.org.jline.utils.Log;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -43,34 +42,30 @@ public class CsvExportTest {
     }
 
     @Test
-    public void exportOk() {
-        try {
-            seedDatabase();
+    public void exportOk() throws SQLException, IOException {
+        seedDatabase();
 
-            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvExport");
-            GradleVariable[] variables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvExport");
+        GradleVariable[] variables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
 
-            IntegrationTestUtil.getGradleRunner(projectDirectory, "csvexport", variables).build();
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "csvexport", variables).build();
 
-            // check results
-            System.out.println("cwd " + new File(".").getAbsolutePath());
-            LineNumberReader reader = getLineNumberReader(projectDirectory);
-            String line = reader.readLine();
+        // check results
+        System.out.println("cwd " + new File(".").getAbsolutePath());
+        LineNumberReader reader = getLineNumberReader(projectDirectory);
+        String line = reader.readLine();
 
-            assertEquals("\"t_id\",\"Aint\",\"adec\",\"atext\",\"aenum\",\"adate\",\"atimestamp\",\"aboolean\"", line);
-            line = reader.readLine();
-            assertEquals("\"1\",\"2\",\"3.4\",\"abc\",\"\",\"2013-10-21\",\"2015-02-16T08:35:45.000\",\"true\"", line);
-            line = reader.readLine();
-            assertEquals("\"2\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"", line);
+        assertEquals("\"t_id\",\"Aint\",\"adec\",\"atext\",\"aenum\",\"adate\",\"atimestamp\",\"aboolean\"", line);
+        line = reader.readLine();
+        assertEquals("\"1\",\"2\",\"3.4\",\"abc\",\"\",\"2013-10-21\",\"2015-02-16T08:35:45.000\",\"true\"", line);
+        line = reader.readLine();
+        assertEquals("\"2\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"", line);
 
-            reader.close();
-        } catch(Exception e){
-            Log.error("An error occurred: " + e.getMessage());
-        }
+        reader.close();
     }
 
     private LineNumberReader getLineNumberReader(File projectDirectory) throws FileNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(projectDirectory + "/CsvExport/data.csv");
+        FileInputStream fileInputStream = new FileInputStream(projectDirectory + "/data.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
         return new LineNumberReader(inputStreamReader);
     }

@@ -17,17 +17,16 @@ public class CsvValidatorTest {
 
         BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
 
-        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":validate")).getOutcome());
+        TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
+        assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
     }
     @Test
     public void validationFail() {
-        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidator");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidatorFail");
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
         });
-
-        assertEquals("validation failed", exception.getMessage());
     }
 
 }

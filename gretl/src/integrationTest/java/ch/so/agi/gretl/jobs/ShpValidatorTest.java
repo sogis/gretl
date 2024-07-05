@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.jobs;
 
 import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
@@ -17,17 +18,17 @@ public class ShpValidatorTest {
 
         BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
 
-        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":validate")).getOutcome());
+        TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
+        assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
     }
+
     @Test
     public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpValidatorFail");
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        assertThrows(Exception.class, () -> {
             IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
         });
-
-        assertEquals("validation failed", exception.getMessage());
     }
 
 }

@@ -49,7 +49,7 @@ public class Ili2pgValidateDatasetTest {
     
     @Test
     public void validateData_Fail() throws Exception {
-        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateMultipleDatasets");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateDatasetFail");
 
         assertThrows(Exception.class, () -> {
             IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
