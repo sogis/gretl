@@ -21,7 +21,8 @@ import static org.junit.Assert.assertEquals;
 
 public class PostgisRasterExportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+    private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
@@ -32,19 +33,18 @@ public class PostgisRasterExportTest {
 
     @Test
     public void exportTiff() throws Exception {
-        String jobPath = "src/integrationTest/jobs/PostgisRasterTiffExport/";
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PostgisRasterTiffExport");
         String exportFileName = "export.tif";
         String targetFileName = "target.tif";
         
         // Delete existing file from previous test runs.
-        File file = new File(jobPath, exportFileName);
+        File file = new File(projectDirectory, exportFileName);
         Files.deleteIfExists(file.toPath());
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob(jobPath, gvs);
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "exportTiff", gradleVariables).build();
         
-        long targetFileSize = new File(jobPath, targetFileName).length();
-        long exportFileSize = new File(jobPath, exportFileName).length();
+        long targetFileSize = new File(projectDirectory, targetFileName).length();
+        long exportFileSize = new File(projectDirectory, exportFileName).length();
 
         assertEquals(targetFileSize, exportFileSize);
     }
@@ -53,19 +53,18 @@ public class PostgisRasterExportTest {
     // in PostGIS.
     @Test
     public void exportGeoTiff() throws Exception {
-        String jobPath = "src/integrationTest/jobs/PostgisRasterGeotiffExport/";
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PostgisRasterGeotiffExport");
         String exportFileName = "export.tif";
         String targetFileName = "target.tif";
 
         // Delete existing file from previous test runs.
-        File file = new File(jobPath, exportFileName);
+        File file = new File(projectDirectory, exportFileName);
         Files.deleteIfExists(file.toPath());
         
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob(jobPath, gvs);
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "exportGeotiff", gradleVariables).build();
 
-        long targetFileSize = new File(jobPath, targetFileName).length();
-        long exportFileSize = new File(jobPath, exportFileName).length();
+        long targetFileSize = new File(projectDirectory, targetFileName).length();
+        long exportFileSize = new File(projectDirectory, exportFileName).length();
         
         assertEquals(targetFileSize, exportFileSize);
     }

@@ -2,12 +2,13 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
 public class SqlExecutorTaskDuckDbTest {
@@ -18,21 +19,20 @@ public class SqlExecutorTaskDuckDbTest {
     // GPKG importieren
     @Test
     public void multipleStuff_Ok() throws Exception {
-        String jobDir = "src/integrationTest/jobs/SqlExecutorTaskDuckDb";
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskDuckDb");
         String dbName = "foo.duckdb";
-        
+        Path pathToDatabase = Paths.get(projectDirectory.getPath(), dbName);
+
         // Prepare
-        if (Files.exists(Paths.get(jobDir, dbName))) {
-            Files.delete(Paths.get(jobDir, dbName));
+        if (Files.exists(pathToDatabase)) {
+            Files.delete(pathToDatabase);
         }
         
-        // Run job
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob(jobDir, gvs);
-        
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "importParquet").build();
+
         // Check result
-        // Vor allem die Parquet- und GPKG-Imports werden bereits im SQL geprüft: 
+        // vor allem die Parquet- und GPKG-Imports werden bereits im SQL geprüft:
         // Es wird ein SELECT auf die neue Tabelle gemacht.
-        assertTrue(Files.exists(Paths.get(jobDir, dbName)));
+        assertTrue(Files.exists(pathToDatabase));
     }
 }

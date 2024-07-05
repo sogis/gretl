@@ -3,11 +3,13 @@ package ch.so.agi.gretl.jobs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -21,7 +23,7 @@ import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 public class JsonImportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
     private static String dbusr = "ddluser";
     private static String dbpwd = "ddluser";
     private static String dbdatabase = "gretl";
@@ -53,8 +55,8 @@ public class JsonImportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/JsonImportObject", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportObject");
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "jsonimport", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -107,10 +109,8 @@ public class JsonImportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/JsonImportArray", gvs);
-
-//            Thread.sleep(1000*60*20);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportArray");
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "jsonimport", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);

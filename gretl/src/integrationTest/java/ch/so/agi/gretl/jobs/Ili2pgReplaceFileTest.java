@@ -2,6 +2,7 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -20,7 +21,8 @@ import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 public class Ili2pgReplaceFileTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+    private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
@@ -34,8 +36,8 @@ public class Ili2pgReplaceFileTest {
     public void importLocalFile_Ok() throws Exception {
         Connection con = null;
         try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgReplaceFile", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgReplaceFile");
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgimport", gradleVariables).build();
             
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -70,9 +72,9 @@ public class Ili2pgReplaceFileTest {
     public void importIlidataFile_Ok() throws Exception {
         Connection con = null;
         try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgReplaceIlidataFile", gvs);
-            
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgReplaceIlidataFile");
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgimport", gradleVariables).build();
+
             // check results
             con = IntegrationTestUtilSql.connectPG(postgres);
             Statement s = con.createStatement();

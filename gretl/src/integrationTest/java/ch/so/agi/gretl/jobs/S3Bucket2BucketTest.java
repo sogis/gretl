@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -37,34 +38,39 @@ import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3Bucket2BucketTest {
-    private String s3AccessKey = System.getProperty("s3AccessKey");
-    private String s3SecretKey = System.getProperty("s3SecretKey");
-    private String s3SourceBucket = "ch.so.agi.gretl.test";
-    private String s3TargetBucket = "ch.so.agi.gretl.test-copy";
 
     @Test
     @Category(S3Test.class)    
     public void uploadDirectory_Ok() throws Exception {
+        String s3AccessKey = System.getProperty("s3AccessKey");
+        String s3SecretKey = System.getProperty("s3SecretKey");
+        String s3SourceBucket = "ch.so.agi.gretl.test";
+        String s3TargetBucket = "ch.so.agi.gretl.test-copy";
+        String s3ClientUrl = "https://s3.eu-central-1.amazonaws.com";
+
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
         Region region = Region.of("eu-central-1");
         S3Client s3client = S3Client.builder()
                 .credentialsProvider(creds)
                 .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
+                .endpointOverride(URI.create(s3ClientUrl))
                 .build(); 
 
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("foo.txt").build());
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("bar.txt").build()); 
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("download.txt").build());
 
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3Bucket2Bucket");
+
         // Upload files  and copy files from one bucket to another.
-        GradleVariable[] gvs = { 
-                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
+        GradleVariable[] variables = {
+                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey),
                 GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
                 GradleVariable.newGradleProperty("s3SourceBucket", s3SourceBucket),
                 GradleVariable.newGradleProperty("s3TargetBucket", s3TargetBucket)
             };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3Bucket2Bucket", gvs);
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "copyfiles", variables).build();
 
         // Check result. 
         ListObjectsRequest listObjects = ListObjectsRequest

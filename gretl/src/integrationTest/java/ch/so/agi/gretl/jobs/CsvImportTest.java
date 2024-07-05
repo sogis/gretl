@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -21,7 +22,8 @@ import org.junit.ClassRule;
 
 public class CsvImportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+    private  GradleVariable[] gradleVariables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
+
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
@@ -45,8 +47,8 @@ public class CsvImportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/CsvImport", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvImport");
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "csvimport", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -89,8 +91,8 @@ public class CsvImportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/CsvImportBatchSize", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvImportBatchSize");
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "csvimport", gradleVariables).build();
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);

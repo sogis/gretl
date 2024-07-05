@@ -8,17 +8,16 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
 public class XslTransformerTest {
 
     @Test
     public void transformFile_Resource_Ok() throws Exception {
-        // Transform xml file
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformerResource", gvs);
-        
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/XslTransformerResource");
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "transform").build();
+
         // Check result
         byte[] bytes = Files.readAllBytes(Paths.get("src/integrationTest/jobs/XslTransformerResource", "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
         String fileContent = new String (bytes);
@@ -30,10 +29,10 @@ public class XslTransformerTest {
     
     @Test
     public void transformFile_File_Ok() throws Exception {
-        // Transform xml file
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformerFile", gvs);
-        
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/XslTransformerFile");
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "transform").build();
+
         // Check result
         byte[] bytes = Files.readAllBytes(Paths.get("src/integrationTest/jobs/XslTransformerFile", "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
         String fileContent = new String (bytes);
@@ -45,9 +44,9 @@ public class XslTransformerTest {
 
     @Test
     public void transformFileSet_Ok() throws Exception {
-        // Transform xml file
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/XslTransformerFileSet", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/XslTransformerFileSet");
+
+        IntegrationTestUtil.getGradleRunner(projectDirectory, "transform").build();
 
         // Check result
         assertTrue(new File("src/integrationTest/jobs/XslTransformerFileSet/MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf").exists());
