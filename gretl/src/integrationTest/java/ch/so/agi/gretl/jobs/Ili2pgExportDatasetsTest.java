@@ -3,10 +3,6 @@ package ch.so.agi.gretl.jobs;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.HashSet;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -14,8 +10,6 @@ import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
-import ch.ehi.ili2db.base.DbNames;
-import ch.interlis.iom.IomObject;
 import ch.interlis.iom_j.xtf.XtfReader;
 import ch.interlis.iox.EndBasketEvent;
 import ch.interlis.iox.EndTransferEvent;

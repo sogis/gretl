@@ -5,6 +5,8 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 import jdk.internal.org.jline.utils.Log;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
@@ -20,7 +22,8 @@ import java.sql.Statement;
 
 public class CsvExportTest {
     static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
+    private Connection connection = null;
+
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
@@ -28,6 +31,16 @@ public class CsvExportTest {
         .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
         .withInitScript("init_postgresql.sql")
         .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+
+    @Before
+    public void setup() {
+        connection = IntegrationTestUtilSql.connectPG(postgres);
+    }
+
+    @After
+    public void tearDown() {
+        IntegrationTestUtilSql.closeCon(connection);
+    }
 
     @Test
     public void exportOk() {
@@ -63,9 +76,6 @@ public class CsvExportTest {
     }
 
     private void seedDatabase() throws SQLException {
-        Connection connection = null;
-        try{
-            connection = IntegrationTestUtilSql.connectPG(postgres);
             String schemaName = "csvexport".toLowerCase();
             IntegrationTestUtilSql.createOrReplaceSchema(connection, schemaName);
             Statement s1 = connection.createStatement();
@@ -75,8 +85,5 @@ public class CsvExportTest {
             s1.close();
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(connection, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
             connection.commit();
-        }  finally{
-            IntegrationTestUtilSql.closeCon(connection);
-        }
     }
 }
