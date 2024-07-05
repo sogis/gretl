@@ -57,7 +57,6 @@ tasks.register('jarTest', Test){
 tasks.register('jarS3Test', Test){
     description = 'Runs the S3 integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    dependsOn 'writePluginClassPath'
 
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.S3Test'
@@ -75,7 +74,6 @@ tasks.register('jarS3Test', Test){
 tasks.register('imageTest', Test){
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    dependsOn 'writePluginClassPath'
 
     useJUnit {
         excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
@@ -92,7 +90,6 @@ tasks.register('imageTest', Test){
 tasks.register('imageS3Test', Test){
     description = 'Runs S3 integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    dependsOn 'writePluginClassPath'
 
     useJUnit {
         includeCategories 'ch.so.agi.gretl.testutil.S3Test'
