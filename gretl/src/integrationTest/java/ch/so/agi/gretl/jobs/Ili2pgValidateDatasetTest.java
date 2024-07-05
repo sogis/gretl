@@ -52,10 +52,10 @@ public class Ili2pgValidateDatasetTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateDatasetFail");
 
         assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
+            IntegrationTestUtil.getGradleRunner(projectDirectory, "validate", gradleVariables).build();
         });
 
-        String logFileContent = new String(Files.readAllBytes(Paths.get(projectDirectory + "/validation.log")));
+        String logFileContent = new String(Files.readAllBytes(Paths.get(projectDirectory.getPath(), "validation.log")));
 
         assertTrue(logFileContent.contains("Error: ...validate failed"));
     }
