@@ -118,6 +118,9 @@ dependencies {
     runtimeOnly libs.oracle
     
     testImplementation libs.junit
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.8'
+    testRuntimeOnly libs.junitEngine
+
     testImplementation libs.test.containers.base
     testImplementation libs.test.containers.postgresql
     
@@ -173,12 +176,13 @@ tasks.register('setupPluginUpload'){
 tasks.publishPlugins.dependsOn tasks.setupPluginUpload
 
 test {
-    useJUnit{
-        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
-        excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.SftpTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
-    }
+    useJUnitPlatform {}
+//    useJUnit{
+//        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
+//        excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
+//        excludeCategories 'ch.so.agi.gretl.testutil.SftpTest'
+//        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+//    }
 }
 
 tasks.register('dbTest', Test){

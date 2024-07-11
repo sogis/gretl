@@ -2,16 +2,19 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.api.TransferSet;
-import ch.so.agi.gretl.testutil.DbTest;
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.GretlException;
-import org.junit.*;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,14 +24,14 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
 
-import static org.gradle.internal.impldep.org.testng.AssertJUnit.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
+@Testcontainers
 public class Db2DbStepTest {
 
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
-    @ClassRule
+    @Container
     public static PostgreSQLContainer<?> postgres =
             (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                     .withDatabaseName(TestUtil.PG_DB_NAME)
@@ -38,16 +41,16 @@ public class Db2DbStepTest {
 
     private Connector connector;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         this.connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(this.connector);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         clearTestDb(sourceDb);
@@ -90,7 +93,7 @@ public class Db2DbStepTest {
         db2db.processAllTransferSets(this.connector, this.connector, transferSets);
      }
 
-    @Test(expected = IOException.class)
+    @Test
     public void fileWithMultipleStmtTest_throwsIOException() throws Exception {
         String content = "SELECT * FROM colors;" + System.lineSeparator() + "SELECT * FROM colors;";
         File sqlFile = TestUtil.createTempFile(folder, content, "query.sql");
@@ -98,33 +101,39 @@ public class Db2DbStepTest {
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", true)
         ));
 
-        Db2DbStep db2db = new Db2DbStep();
-        db2db.processAllTransferSets(this.connector, this.connector, transferSets);
-        Assert.fail();
+        assertThrows(IOException.class, () -> {
+            Db2DbStep db2db = new Db2DbStep();
+            db2db.processAllTransferSets(this.connector, this.connector, transferSets);
+            fail();
+        });
     }
 
-    @Test(expected = EmptyFileException.class)
+    @Test
     public void db2dbEmptyFile_throwsEmptyFileException() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "", "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", Boolean.FALSE)
         ));
 
-        Db2DbStep db2db = new Db2DbStep();
-        db2db.processAllTransferSets(this.connector, this.connector, transferSets);
-        Assert.fail("EmptyFileException müsste geworfen werden");
+        assertThrows(EmptyFileException.class, () -> {
+            Db2DbStep db2db = new Db2DbStep();
+            db2db.processAllTransferSets(this.connector, this.connector, transferSets);
+            fail("EmptyFileException müsste geworfen werden");
+        });
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void invalidSql_throwsSqlException() throws Exception {
         File sqlFile = TestUtil.createTempFile(folder, "SELECT somethingInvalid FROM colors", "query.sql");
         ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", Boolean.FALSE)
         ));
 
-        Db2DbStep db2db = new Db2DbStep();
-        db2db.processAllTransferSets(this.connector, this.connector, transferSets);
-        Assert.fail("EmptyFileException müsste geworfen werden");
+        assertThrows(SQLException.class, () -> {
+            Db2DbStep db2db = new Db2DbStep();
+            db2db.processAllTransferSets(this.connector, this.connector, transferSets);
+            fail("EmptyFileException müsste geworfen werden");
+        });
     }
 
     @Test
@@ -143,8 +152,7 @@ public class Db2DbStepTest {
             Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, transferSets);
-
-            Assert.fail("Eine Exception müsste geworfen werden. ");
+            fail("Eine Exception müsste geworfen werden.");
         } catch (GretlException ge) {
             boolean isMismatchException = GretlException.TYPE_COLUMN_MISMATCH.equals(ge.getType());
             if (!isMismatchException) {
@@ -153,7 +161,7 @@ public class Db2DbStepTest {
         }
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void incompatibleDataType_throwsSqlException() throws Exception {
         try (Connection connection = this.connector.connect(); Statement stmt = connection.createStatement()) {
             stmt.execute("DROP TABLE colors_copy; CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname integer)");
@@ -164,11 +172,13 @@ public class Db2DbStepTest {
             ));
             Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
             Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            Db2DbStep db2db = new Db2DbStep();
 
-            db2db.processAllTransferSets(sourceDb, targetDb, transferSets);
+            assertThrows(SQLException.class, () -> {
+                Db2DbStep db2db = new Db2DbStep();
+                db2db.processAllTransferSets(sourceDb, targetDb, transferSets);
+            });
 
-            Assert.fail("Eine Exception müsste geworfen werden. ");
+            fail("Eine Exception müsste geworfen werden.");
         }
     }
 
@@ -181,7 +191,6 @@ public class Db2DbStepTest {
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         Db2DbStep db2db = new Db2DbStep();
-
         db2db.processAllTransferSets(sourceDb, targetDb, transferSets);
     }
 
@@ -225,8 +234,8 @@ public class Db2DbStepTest {
         Db2DbStep db2db = new Db2DbStep();
         db2db.processAllTransferSets(sourceDb, targetDb, transferSets);
 
-        Assert.assertTrue("SourceConnection is not closed", sourceDb.isClosed());
-        Assert.assertTrue("TargetConnection is not closed", targetDb.isClosed());
+        assertTrue(sourceDb.isClosed(), "SourceConnection is not closed");
+        assertTrue(targetDb.isClosed(), "TargetConnection is not closed");
     }
 
     @Test
@@ -241,13 +250,13 @@ public class Db2DbStepTest {
         Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         Db2DbStep db2db = new Db2DbStep();
 
-        Assert.assertThrows(SQLException.class, () -> db2db.processAllTransferSets(sourceDb, targetDb, transferSets));
-        Assert.assertTrue("SourceConnection is not closed", sourceDb.isClosed());
-        Assert.assertTrue("TargetConnection is not closed", targetDb.isClosed());
+        assertThrows(SQLException.class, () -> db2db.processAllTransferSets(sourceDb, targetDb, transferSets));
+        assertTrue(sourceDb.isClosed(), "SourceConnection is not closed");
+        assertTrue(targetDb.isClosed(), "TargetConnection is not closed");
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void canWriteGeomFromWkbTest_Ok() throws Exception {
         String schemaName = "GeomFromWkbTest";
 
@@ -278,7 +287,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void canWriteGeomFromWktTest_Ok() throws Exception {
         String schemaName = "GeomFromWktTest";
 
@@ -309,7 +318,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void canWriteGeomFromGeoJsonTest_Ok() throws Exception {
         String schemaName = "GeomFromGeoJsonTest";
 
@@ -343,7 +352,7 @@ public class Db2DbStepTest {
      * 300'000 rows should take about 15 seconds
      */
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void positiveBulkLoadPostgisTest_Ok() throws Exception {
         int numRows = 300000;
         String schemaName = "BULKLOAD2POSTGIS";
@@ -380,7 +389,7 @@ public class Db2DbStepTest {
             ResultSet rs = checkStmt.executeQuery(checkSQL);
             rs.next();
 
-            Assert.assertEquals("Check Statement must return exactly " + numRows, numRows, rs.getInt(1));
+            assertEquals(numRows, rs.getInt(1), "Check Statement must return exactly " + numRows);
             dropSchema(schemaName, targetCon);
         }
     }
@@ -390,7 +399,7 @@ public class Db2DbStepTest {
      * from sqlite to postgis
      */
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void positiveSqlite2PostgisTest_Ok() throws Exception {
         String schemaName = "SQLITE2POSTGIS";
         File sqliteDb = createTmpDb(schemaName);
@@ -429,7 +438,7 @@ public class Db2DbStepTest {
             ResultSet rs = checkStmt.executeQuery(checkSql);
             rs.next();
 
-            Assert.assertEquals("Check Statement must return exactly one row", 1, rs.getInt(1));
+            assertEquals(1, rs.getInt(1), "Check Statement must return exactly one row");
         }
     }
 
@@ -438,7 +447,7 @@ public class Db2DbStepTest {
      * transferred faultfree from Postgis to sqlite
      */
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void positivePostgis2SqliteTest_Ok() throws Exception {
         String schemaName = "POSTGIS2SQLITE";
         File sqliteDb = createTmpDb(schemaName);
@@ -471,7 +480,7 @@ public class Db2DbStepTest {
             ResultSet rs = checkStmt.executeQuery(checkSQL);
             rs.next();
 
-            Assert.assertEquals("Check Statement must return exactly one row", 1, rs.getInt(1));
+            assertEquals(1, rs.getInt(1), "Check Statement must return exactly one row");
             dropSchema(schemaName, srcCon);
         }
     }
@@ -574,7 +583,7 @@ public class Db2DbStepTest {
             rs.next();
 
             String geomRes = rs.getString(1).trim().toUpperCase();
-            Assert.assertEquals(expectedMessage, GEOM_WKT, geomRes);
+            assertEquals(GEOM_WKT, geomRes, expectedMessage);
         }
     }
 

@@ -3,13 +3,13 @@ package ch.so.agi.gretl.testutil;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.steps.SqlExecutorStep;
 import ch.so.agi.gretl.util.FileStylingDefinition;
-import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.Objects;
@@ -48,13 +48,27 @@ public class TestUtil {
     public static final String TARGET_ASC_PATH = "data/postgisrasterprocessor/target.asc";
     public static final String S3_BUCKET_DIR_PATH = "data/s3bucket2bucket";
 
-    public static File createTempFile(TemporaryFolder folder, String content, String fileName) throws IOException {
-        File sqlFile = folder.newFile(fileName);
+    public static File createTempFile(Path directoryPath, String content, String fileName) throws IOException {
+        File sqlFile = new File(directoryPath.toString(), fileName);
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(sqlFile))) {
             bw.write(content);
             return sqlFile;
         }
+    }
+
+    public static Path createTempDir(Path parentDirPath, String dirname) throws IOException {
+        File directory = new File(parentDirPath.toString(), dirname);
+
+        if (directory.exists()) {
+            return directory.toPath();
+        }
+
+        if (!directory.mkdirs()) {
+            throw new IOException("Could not create directory: " + parentDirPath + File.separator + dirname);
+        }
+
+        return directory.toPath();
     }
 
     /**

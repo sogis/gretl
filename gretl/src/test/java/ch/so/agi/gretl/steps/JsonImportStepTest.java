@@ -2,23 +2,29 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@Testcontainers
 public class JsonImportStepTest {
 
-    @ClassRule
+    @Container
     public static PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
             .withDatabaseName(TestUtil.PG_DB_NAME)
@@ -32,8 +38,8 @@ public class JsonImportStepTest {
     private final String columnName;
     private Connector connector;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
     public JsonImportStepTest() {
         this.schemaName = "jsonimport";
@@ -41,12 +47,12 @@ public class JsonImportStepTest {
         this.columnName = "json_text_col";
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         this.connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_DDLUSR_USR, TestUtil.PG_DDLUSR_PWD);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         if (!this.connector.isClosed()) {
             this.connector.close();

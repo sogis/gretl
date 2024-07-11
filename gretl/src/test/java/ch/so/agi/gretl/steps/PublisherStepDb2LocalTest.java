@@ -5,14 +5,17 @@ import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.base.Ili2dbException;
 import ch.ehi.ili2db.gui.Config;
 import ch.ehi.ili2pg.PgMain;
-import ch.so.agi.gretl.testutil.DbTest;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.interlis2.validator.Validator;
-import org.junit.*;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,13 +29,15 @@ import java.util.*;
 
 import static ch.ehi.ili2db.gui.Config.BASKET_HANDLING_READWRITE;
 import static ch.so.agi.gretl.steps.AbstractPublisherStepTest.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@Testcontainers
 public class PublisherStepDb2LocalTest {
 
     private static final String DM01AVCH24LV95D = "DM01AVCH24LV95D";
     private static final Path localTestOut = Paths.get("build").resolve("out");
     
-    @ClassRule
+    @Container
     public static PostgreSQLContainer<?> postgres = System.getProperty("dbUrl") == null
             ? (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                 .withDatabaseName(TestUtil.PG_DB_NAME)
@@ -55,7 +60,7 @@ public class PublisherStepDb2LocalTest {
         this.dbSchema = "publisher";
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         this.config = new Config();
         config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR + AbstractPublisherStepTest.ILI_DIRS);
@@ -77,13 +82,13 @@ public class PublisherStepDb2LocalTest {
         config.setDefaultSrsCode("2056");
     }
 
-    @After
+    @AfterEach
     public void after() {
         this.config = null;
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_allNew() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         String datasetName = "av";
@@ -100,23 +105,23 @@ public class PublisherStepDb2LocalTest {
 
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
 
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
 
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_allNew_modelsToPublish() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
 
@@ -132,23 +137,23 @@ public class PublisherStepDb2LocalTest {
 
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
 
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
 
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_allNew_modelsToPublish_NotSimple_Fail() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
 
@@ -162,15 +167,15 @@ public class PublisherStepDb2LocalTest {
 
             try {
                 publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, DM01AVCH24LV95D, false, null, null, null);
-                Assert.fail();
+                fail("Expected IllegalArgumentException to be thrown");
             } catch (IllegalArgumentException ex) {
-                Assert.assertEquals("modelsToPublish <DM01AVCH24LV95D> can only be used with simple models", ex.getMessage());
+                assertEquals("modelsToPublish <DM01AVCH24LV95D> can only be used with simple models", ex.getMessage());
             }
         }
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_UserFormats_allNew() throws Exception {
         final String datasetName = "simple";
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
@@ -187,7 +192,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_UserFormats_firstHistory() throws Exception {
         {
             db_UserFormats_allNew();
@@ -203,45 +208,45 @@ public class PublisherStepDb2LocalTest {
 
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertTrue(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
 
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_1), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_1), PublisherStep.readPublishDate(targetFolderAktuell));
         }
 
         // verify history
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
 
             final Path targetFolderHistoryRoot = targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY);
             final Path targetFolderHistory = targetFolderHistoryRoot.resolve(PublisherStep.getDateTag(SRC_DATA_DATE_0));
-            Assert.assertTrue(Files.exists(targetFolderHistory));
-            Assert.assertTrue(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
-            Assert.assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-            Assert.assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
-            Assert.assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+            assertTrue(Files.exists(targetFolderHistory));
+            assertTrue(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
+            assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
+            assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
+            assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
 
             final Path targetFolderAktuellMeta = targetFolderHistory.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderHistory));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderHistory));
         }
 
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_UserFormats_ModelDir_AV() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         String datasetName="av";
@@ -258,23 +263,23 @@ public class PublisherStepDb2LocalTest {
 
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
 
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
 
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_UserFormats_NoModelDir_AV() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         String datasetName = "av";
@@ -291,23 +296,23 @@ public class PublisherStepDb2LocalTest {
 
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
 
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
 
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_regionsRegEx() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         List<String> publishedRegions = new ArrayList<>();
@@ -327,26 +332,26 @@ public class PublisherStepDb2LocalTest {
         }
 
         // verify
-        Assert.assertTrue(Files.exists(targetFolder));
+        assertTrue(Files.exists(targetFolder));
 
         final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-        Assert.assertTrue(Files.exists(targetFolderAktuell));
-        Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-        Assert.assertEquals(2,publishedRegions.size());
+        assertTrue(Files.exists(targetFolderAktuell));
+        assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+        assertEquals(2,publishedRegions.size());
         for (String controlRegion:new String[] {"2501","2502"}) {
-            Assert.assertTrue(publishedRegions.contains(controlRegion));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(publishedRegions.contains(controlRegion));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
         }
 
         final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-        Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-        Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-        Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-        Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
+        assertTrue(Files.exists(targetFolderAktuellMeta));
+        assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+        assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+        assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_regionsList() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         List<String> publishedRegions = new ArrayList<>();
@@ -366,27 +371,27 @@ public class PublisherStepDb2LocalTest {
             publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, false, null, regions, publishedRegions);
         }
 
-        Assert.assertTrue(Files.exists(targetFolder));
+        assertTrue(Files.exists(targetFolder));
 
         final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-        Assert.assertTrue(Files.exists(targetFolderAktuell));
-        Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-        Assert.assertEquals(1,publishedRegions.size());
+        assertTrue(Files.exists(targetFolderAktuell));
+        assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+        assertEquals(1,publishedRegions.size());
         for (String controlRegion : new String[] {"2501"}) {
-            Assert.assertTrue(publishedRegions.contains(controlRegion));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(publishedRegions.contains(controlRegion));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
         }
 
         final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-        Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-        Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-        Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-        Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
+        assertTrue(Files.exists(targetFolderAktuellMeta));
+        assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+        assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+        assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
     }
 
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_regionsRegEx_UserFormats() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         List<String> publishedRegions=new ArrayList<>();
@@ -407,30 +412,30 @@ public class PublisherStepDb2LocalTest {
 
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertEquals(2,publishedRegions.size());
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertEquals(2,publishedRegions.size());
 
             for (String controlRegion : new String[] {"SimpleCoord23a","SimpleCoord23b"}) {
-                Assert.assertTrue(publishedRegions.contains(controlRegion));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
+                assertTrue(publishedRegions.contains(controlRegion));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
             }
 
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag("dbTest")
     public void db_regionsRegEx_UserFormats_AV() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         List<String> publishedRegions = new ArrayList<>();
@@ -454,23 +459,23 @@ public class PublisherStepDb2LocalTest {
 
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertEquals(2,publishedRegions.size());
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertEquals(2,publishedRegions.size());
             for(String controlRegion:new String[] {"2501","2502"}) {
-                Assert.assertTrue(publishedRegions.contains(controlRegion));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
-                Assert.assertFalse(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
-                Assert.assertFalse(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
+                assertTrue(publishedRegions.contains(controlRegion));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+                assertFalse(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+                assertFalse(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
             }
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
 

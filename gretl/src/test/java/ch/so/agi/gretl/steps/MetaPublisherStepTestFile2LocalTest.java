@@ -1,9 +1,8 @@
 package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class MetaPublisherStepTestFile2LocalTest {
 
@@ -21,14 +21,14 @@ public class MetaPublisherStepTestFile2LocalTest {
     public static final String PATH_ELE_CONFIG = "config";
     public static final String GEOCAT_FTP_DIR_INT = "int";
     public static final String GEOCAT_FTP_DIR_PROD = "prod";
-        
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+
+    @TempDir
+    public Path folder;
 
     @Test
     public void publish_raster_geocat_Ok() throws Exception {
-        Path target = folder.newFolder("publish_raster_geocat_Ok").toPath();
-        Path geocatTarget = folder.newFolder("publish_raster_geocat_Ok_geocat").toPath();
+        Path target = TestUtil.createTempDir(folder, "publish_raster_geocat_Ok");
+        Path geocatTarget = TestUtil.createTempDir(folder, "publish_raster_geocat_Ok_geocat");
         String themePublication = "ch.so.agi.orthofoto_1993.grau";
 
         // Run step
@@ -51,7 +51,7 @@ public class MetaPublisherStepTestFile2LocalTest {
     @Test
     public void publish_simple_meta_Ok() throws Exception {
         // Prepare
-        Path target = folder.newFolder("publish_simple_meta_Ok").toPath();
+        Path target = TestUtil.createTempDir(folder, "publish_simple_meta_Ok");
         String themePublication = "ch.so.afu.abbaustellen";
 
         // Run step
@@ -79,8 +79,8 @@ public class MetaPublisherStepTestFile2LocalTest {
     @Test
     public void publish_simple_meta_geocat_Ok() throws Exception {
         // Prepare
-        Path target = folder.newFolder("publish_simple_meta_geocat_Ok").toPath();
-        Path geocatTarget = folder.newFolder("publish_simple_meta_geocat_Ok_geocat").toPath();
+        Path target = TestUtil.createTempDir(folder, "publish_simple_meta_geocat_Ok");
+        Path geocatTarget = TestUtil.createTempDir(folder, "publish_simple_meta_geocat_Ok_geocat");
         String themePublication = "ch.so.afu.abbaustellen";
         
         // Run step
@@ -100,7 +100,7 @@ public class MetaPublisherStepTestFile2LocalTest {
     @Test
     public void publish_regions_meta_Ok() throws Exception {
         // Prepare
-        Path target = folder.newFolder("publish_regions_meta_Ok").toPath();
+        Path target = TestUtil.createTempDir(folder, "publish_regions_meta_Ok");
         String themePublication = "ch.so.agi.av.dm01_so";
         List<String> regions = new ArrayList<String>() {{ 
             add("2463"); 
@@ -143,8 +143,8 @@ public class MetaPublisherStepTestFile2LocalTest {
     @Test
     public void publish_regions_meta_geocat_Ok() throws Exception {
         // Prepare
-        Path target = folder.newFolder("publish_regions_meta_Ok").toPath();
-        Path geocatTarget = folder.newFolder("publish_regions_meta_Ok_geocat").toPath();
+        Path target = TestUtil.createTempDir(folder, "publish_regions_meta_Ok");
+        Path geocatTarget = TestUtil.createTempDir(folder, "publish_regions_meta_Ok_geocat");
         String themePublication = "ch.so.agi.av.dm01_so";
         List<String> regions = new ArrayList<String>() {{ 
             add("2463"); 

@@ -2,17 +2,17 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.testutil.S3Test;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.TemporaryFolder;
+import ch.so.agi.gretl.testutil.TestUtil;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class S3DownloadStepTest {
 
@@ -21,8 +21,8 @@ public class S3DownloadStepTest {
     private final String s3BucketName;
     private final GretlLogger log;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
     public S3DownloadStepTest() {
         this.log = LogEnvironment.getLogger(this.getClass());
@@ -32,19 +32,19 @@ public class S3DownloadStepTest {
     }
 
     @Test
-    @Category(S3Test.class)
+    @Tag("s3Test")
     public void downloadFile_Ok() throws Exception {
         String s3EndPoint = "https://s3.eu-central-1.amazonaws.com";
         String s3Region = "eu-central-1";
         String key = "download.txt";
-        File downloadDir = folder.newFolder("downloadFile_Ok");
+        Path downloadDir = TestUtil.createTempDir(folder, "downloadFile_Ok");
 
         // Download a single file.
         S3DownloadStep s3DownloadStep = new S3DownloadStep();
-        s3DownloadStep.execute(s3AccessKey, s3SecretKey, s3BucketName, key, s3EndPoint, s3Region, downloadDir);
+        s3DownloadStep.execute(s3AccessKey, s3SecretKey, s3BucketName, key, s3EndPoint, s3Region, downloadDir.toFile());
 
         // Check result.
-        String content = new String(Files.readAllBytes(Paths.get(downloadDir.getAbsolutePath(), key)));
+        String content = new String(Files.readAllBytes(Paths.get(downloadDir.toAbsolutePath().toString(), key)));
         log.debug(content);
         assertEquals("fubar", content.substring(0, 5));
     }

@@ -3,15 +3,13 @@ package ch.so.agi.gretl.util;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SqlReaderTest {
     private static GretlLogger log;
@@ -21,12 +19,11 @@ public class SqlReaderTest {
         log = LogEnvironment.getLogger(SqlReaderTest.class);
     }
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
     @Test
     public void lineCommentsCleanRemoved() throws Exception {
-
         String lineComment = "--This is a singleline comment.";
         String statement = "select \"user\", \"admin\", \"alias\" from sqlkeywords";
 
@@ -36,7 +33,7 @@ public class SqlReaderTest {
 
         String parsedStatement = new SqlReader().readSqlStmt(sqlFile);
 
-        Assert.assertEquals("Line comment must be removed without changing the statement itself", statement,
+        assertEquals("Line comment must be removed without changing the statement itself", statement,
                 parsedStatement);
     }
 }

@@ -1,12 +1,10 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.testutil.S3Test;
 import ch.so.agi.gretl.testutil.S3TestHelper;
 import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
@@ -16,10 +14,11 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Path;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class S3Bucket2BucketStepTest {
     private final String s3AccessKey;
@@ -31,8 +30,8 @@ public class S3Bucket2BucketStepTest {
     private final String acl;
     private final S3TestHelper s3TestHelper;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
     public S3Bucket2BucketStepTest() {
         this.s3AccessKey = System.getProperty("s3AccessKey");
@@ -46,7 +45,7 @@ public class S3Bucket2BucketStepTest {
     }
     
     @Test
-    @Category(S3Test.class)
+    @Tag("s3Test")
     public void copyFiles_Ok() throws Exception {
         File sourceObject = TestUtil.getResourceFile(TestUtil.S3_BUCKET_DIR_PATH);
         Map<String,String> metadata = new HashMap<>();

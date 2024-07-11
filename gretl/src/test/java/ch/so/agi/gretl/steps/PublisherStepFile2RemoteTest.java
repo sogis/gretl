@@ -1,9 +1,8 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.testutil.SftpTest;
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
-import org.junit.BeforeClass;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
-@Category(SftpTest.class)
+@Tag("sftpTest")
 public class PublisherStepFile2RemoteTest extends AbstractPublisherStepTest {
     private static final String FTP_URL = System.getProperty("ftpurl");
     private static final String FTP_USER = System.getProperty("ftpusr");
@@ -23,7 +22,7 @@ public class PublisherStepFile2RemoteTest extends AbstractPublisherStepTest {
     private static FileSystem fileSystem = null;
     private static String path;
 
-    @BeforeClass
+    @BeforeAll
     public static void initFileSystem() {
         if (fileSystem != null) {
             return;

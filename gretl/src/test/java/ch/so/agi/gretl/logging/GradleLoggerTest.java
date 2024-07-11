@@ -2,17 +2,12 @@ package ch.so.agi.gretl.logging;
 
 import org.gradle.api.logging.LogLevel;
 import org.gradle.internal.logging.events.LogEvent;
-import org.gradle.internal.logging.events.OutputEvent;
 import org.gradle.internal.logging.slf4j.OutputEventListenerBackedLoggerContext;
 import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
-import java.util.logging.Logger;
 
 /**
  * Test-Class for Logger-Class
