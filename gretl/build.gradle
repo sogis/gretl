@@ -119,7 +119,7 @@ dependencies {
     
     testImplementation libs.junit
     testImplementation libs.junitTestContainers
-
+    testImplementation(libs.junitTestContainersPostgres)
     testRuntimeOnly libs.junitEngine
 
     testImplementation libs.test.containers.base

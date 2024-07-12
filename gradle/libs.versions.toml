@@ -75,6 +75,7 @@ duckdb = { group = "org.duckdb", name = "duckdb_jdbc", version.ref = "duckdbVers
 junit = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitVersion" }
 junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitVersion" }
 junitTestContainers = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "junitTestContainersVersion" }
+junitTestContainersPostgres = { group = "org.testcontainers", name = "postgresql", version.ref = "junitTestContainersVersion" }
 mock-ftp-server = { group = "org.mockftpserver", name = "MockFtpServer", version.ref = "mockFtpServerVersion" }
 mock-web-server = { group = "com.squareup.okhttp3", name ="mockwebserver", version.ref = "mockWebServerVersion"}
 test-containers-base = { group = "org.testcontainers", name = "testcontainers", version.ref = "testContainersVersion"}
