@@ -47,21 +47,19 @@ public class PublisherStepDb2LocalTest {
                 .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2))
             : null;
 
-    private final String dbUrl;
-    private final String dbUser;
-    private final String dbPassword;
-    private final String dbSchema;
+    private String dbUrl;
+    private String dbUser;
+    private String dbPassword;
+    private String dbSchema;
     private Config config;
 
-    public PublisherStepDb2LocalTest() {
+    @BeforeEach
+    public void before() {
         this.dbUrl = System.getProperty("dbUrl", postgres != null ? postgres.getJdbcUrl() : null);
         this.dbUser = System.getProperty("dbusr", TestUtil.PG_DDLUSR_USR);
         this.dbPassword = System.getProperty("dbPassword", TestUtil.PG_DDLUSR_PWD);
         this.dbSchema = "publisher";
-    }
 
-    @BeforeEach
-    public void before() {
         this.config = new Config();
         config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR + AbstractPublisherStepTest.ILI_DIRS);
         config.setDburl(dbUrl);
