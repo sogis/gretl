@@ -2,6 +2,7 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.api.TransferSet;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.GretlException;
@@ -255,7 +256,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void canWriteGeomFromWkbTest_Ok() throws Exception {
         String schemaName = "GeomFromWkbTest";
 
@@ -286,7 +287,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void canWriteGeomFromWktTest_Ok() throws Exception {
         String schemaName = "GeomFromWktTest";
 
@@ -317,7 +318,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void canWriteGeomFromGeoJsonTest_Ok() throws Exception {
         String schemaName = "GeomFromGeoJsonTest";
 
@@ -351,7 +352,7 @@ public class Db2DbStepTest {
      * 300'000 rows should take about 15 seconds
      */
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void positiveBulkLoadPostgisTest_Ok() throws Exception {
         int numRows = 300000;
         String schemaName = "BULKLOAD2POSTGIS";
@@ -398,7 +399,7 @@ public class Db2DbStepTest {
      * from sqlite to postgis
      */
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void positiveSqlite2PostgisTest_Ok() throws Exception {
         String schemaName = "SQLITE2POSTGIS";
         File sqliteDb = createTmpDb(schemaName);
@@ -446,7 +447,7 @@ public class Db2DbStepTest {
      * transferred faultfree from Postgis to sqlite
      */
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void positivePostgis2SqliteTest_Ok() throws Exception {
         String schemaName = "POSTGIS2SQLITE";
         File sqliteDb = createTmpDb(schemaName);

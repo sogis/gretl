@@ -2,14 +2,14 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.testutil.DbTest;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.FileStylingDefinition;
 import ch.so.agi.gretl.util.GretlException;
-import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.PostgisContainerProvider;
@@ -193,7 +193,7 @@ public class SqlExecutorStepTest {
     }
 
     @Test
-    @Category(DbTest.class)
+    @Tag(TestTags.DB_TEST)
     public void executePostgisVersionTest() throws Exception {
         File inputFile = TestUtil.getResourceFile(TestUtil.POSTGIS_VERSION_SQL_PATH);
         FileStylingDefinition.checkForUtf8(inputFile);

@@ -158,7 +158,7 @@ pluginBundle {
     }
 }
 
-tasks.register('setupPluginUpload'){
+tasks.register('setupPluginUpload') {
     description = "Converts Gradle plugin publish key and secret from environment variable to system property. (Workaround)"
     doLast {
         def key=System.env.gradlePublishKey
