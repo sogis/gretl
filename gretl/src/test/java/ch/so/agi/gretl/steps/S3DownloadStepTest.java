@@ -2,6 +2,7 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,7 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 public class S3DownloadStepTest {
-
     private final String s3AccessKey;
     private final String s3SecretKey;
     private final String s3BucketName;
@@ -32,7 +31,7 @@ public class S3DownloadStepTest {
     }
 
     @Test
-    @Tag("s3Test")
+    @Tag(TestTags.S3_TEST)
     public void downloadFile_Ok() throws Exception {
         String s3EndPoint = "https://s3.eu-central-1.amazonaws.com";
         String s3Region = "eu-central-1";

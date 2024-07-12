@@ -5,6 +5,7 @@ import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.base.Ili2dbException;
 import ch.ehi.ili2db.gui.Config;
 import ch.ehi.ili2pg.PgMain;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.interlis2.validator.Validator;
 import org.junit.jupiter.api.AfterEach;
@@ -33,12 +34,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 public class PublisherStepDb2LocalTest {
-
     private static final String DM01AVCH24LV95D = "DM01AVCH24LV95D";
     private static final Path localTestOut = Paths.get("build").resolve("out");
     
     @Container
-    public static PostgreSQLContainer<?> postgres = System.getProperty("dbUrl") == null
+    public PostgreSQLContainer<?> postgres = System.getProperty("dbUrl") == null
             ? (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                 .withDatabaseName(TestUtil.PG_DB_NAME)
                 .withUsername(TestUtil.PG_DDLUSR_USR)
@@ -121,7 +121,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_allNew_modelsToPublish() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
 
@@ -153,7 +153,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_allNew_modelsToPublish_NotSimple_Fail() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
 
@@ -175,7 +175,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_UserFormats_allNew() throws Exception {
         final String datasetName = "simple";
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
@@ -192,7 +192,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_UserFormats_firstHistory() throws Exception {
         {
             db_UserFormats_allNew();
@@ -246,7 +246,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_UserFormats_ModelDir_AV() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         String datasetName="av";
@@ -279,7 +279,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_UserFormats_NoModelDir_AV() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         String datasetName = "av";
@@ -312,7 +312,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_regionsRegEx() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         List<String> publishedRegions = new ArrayList<>();
@@ -351,7 +351,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_regionsList() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         List<String> publishedRegions = new ArrayList<>();
@@ -391,7 +391,7 @@ public class PublisherStepDb2LocalTest {
 
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_regionsRegEx_UserFormats() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         List<String> publishedRegions=new ArrayList<>();
@@ -435,7 +435,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_regionsRegEx_UserFormats_AV() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         List<String> publishedRegions = new ArrayList<>();

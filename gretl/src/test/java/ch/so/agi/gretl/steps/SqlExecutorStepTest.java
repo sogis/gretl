@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SqlExecutorStepTest {
 
     @Container
-    public static PostgreSQLContainer<?> postgres =
+    public PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                 .withDatabaseName(TestUtil.PG_DB_NAME)
                 .withUsername(TestUtil.PG_DDLUSR_USR)
@@ -130,9 +130,9 @@ public class SqlExecutorStepTest {
             step.execute(connector, sqlList);
         } catch (GretlException e) {
             assertEquals(
-                    String.format("GretlException must be of type: %s", GretlException.TYPE_FILE_NOT_READABLE),
+                    GretlException.TYPE_FILE_NOT_READABLE,
                     e.getType(),
-                    GretlException.TYPE_FILE_NOT_READABLE
+                    String.format("GretlException must be of type: %s", GretlException.TYPE_FILE_NOT_READABLE)
             );
         }
     }
@@ -192,8 +192,8 @@ public class SqlExecutorStepTest {
         }
     }
 
-    @Category(DbTest.class)
     @Test
+    @Category(DbTest.class)
     public void executePostgisVersionTest() throws Exception {
         File inputFile = TestUtil.getResourceFile(TestUtil.POSTGIS_VERSION_SQL_PATH);
         FileStylingDefinition.checkForUtf8(inputFile);

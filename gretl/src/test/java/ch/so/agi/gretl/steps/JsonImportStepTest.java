@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class JsonImportStepTest {
 
     @Container
-    public static PostgreSQLContainer<?> postgres =
+    public PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
             .withDatabaseName(TestUtil.PG_DB_NAME)
             .withUsername(TestUtil.PG_DDLUSR_USR)

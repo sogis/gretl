@@ -32,7 +32,7 @@ public class Db2DbStepTest {
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
     @Container
-    public static PostgreSQLContainer<?> postgres =
+    public PostgreSQLContainer<?> postgres =
             (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                     .withDatabaseName(TestUtil.PG_DB_NAME)
                     .withUsername(TestUtil.PG_DDLUSR_USR)
@@ -164,7 +164,8 @@ public class Db2DbStepTest {
     @Test
     public void incompatibleDataType_throwsSqlException() throws Exception {
         try (Connection connection = this.connector.connect(); Statement stmt = connection.createStatement()) {
-            stmt.execute("DROP TABLE colors_copy; CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname integer)");
+            stmt.execute("DROP TABLE colors_copy");
+            stmt.execute("CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname integer)");
 
             File sqlFile = TestUtil.createTempFile(folder, "SELECT * FROM colors", "query.sql");
             ArrayList<TransferSet> transferSets = new ArrayList<>(Collections.singletonList(
@@ -177,8 +178,6 @@ public class Db2DbStepTest {
                 Db2DbStep db2db = new Db2DbStep();
                 db2db.processAllTransferSets(sourceDb, targetDb, transferSets);
             });
-
-            fail("Eine Exception müsste geworfen werden.");
         }
     }
 
@@ -610,7 +609,7 @@ public class Db2DbStepTest {
         }
     }
 
-    private static Connection connectToPreparedPgDb(String schemaName) throws Exception {
+    private Connection connectToPreparedPgDb(String schemaName) throws Exception {
         String url = postgres.getJdbcUrl();
         String user = postgres.getUsername();
         String password = postgres.getPassword();

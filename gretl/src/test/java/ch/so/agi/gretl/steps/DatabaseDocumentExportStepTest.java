@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DatabaseDocumentExportStepTest {
 
     @Container
-    public static PostgreSQLContainer<?> postgres =
+    public PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                 .withDatabaseName(TestUtil.PG_DB_NAME)
                 .withUsername(TestUtil.PG_DDLUSR_USR)
@@ -51,7 +51,7 @@ public class DatabaseDocumentExportStepTest {
         this.tableName = "fachapplikation_rechtsvorschrift_link";
         this.columnName = "multimedia_link";
     }
-    
+
     // TODO: 
     // Die mühsamen self-signed Zertifikate des AIO können schlecht getestet werden. A) Nur intern B) Filenamen können sich ändern.
     // https://artplus.verw.rootso.org/MpWeb-apSolothurnDenkmal/download/2W8v0qRZQBC0ahDnZGut3Q?mode=gis

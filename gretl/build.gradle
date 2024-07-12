@@ -118,7 +118,8 @@ dependencies {
     runtimeOnly libs.oracle
     
     testImplementation libs.junit
-    testImplementation 'org.testcontainers:junit-jupiter:1.19.8'
+    testImplementation libs.junitTestContainers
+
     testRuntimeOnly libs.junitEngine
 
     testImplementation libs.test.containers.base

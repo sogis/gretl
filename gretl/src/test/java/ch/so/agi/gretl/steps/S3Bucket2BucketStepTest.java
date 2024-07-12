@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.testutil.S3TestHelper;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ public class S3Bucket2BucketStepTest {
     }
     
     @Test
-    @Tag("s3Test")
+    @Tag(TestTags.S3_TEST)
     public void copyFiles_Ok() throws Exception {
         File sourceObject = TestUtil.getResourceFile(TestUtil.S3_BUCKET_DIR_PATH);
         Map<String,String> metadata = new HashMap<>();

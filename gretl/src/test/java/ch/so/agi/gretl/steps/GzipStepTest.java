@@ -31,9 +31,9 @@ public class GzipStepTest {
 
     @Test
     public void compress_file_Ok() throws Exception {
-        File outDirectory = folder.resolve("transformFile_Ok").toFile();
+        Path outDirectory = TestUtil.createTempDir(folder, "transformFile_Ok");
         File dataFile = TestUtil.getResourceFile(TestUtil.PLANREGISTER_XML_PATH);
-        File gzipFile = Paths.get(outDirectory.getAbsolutePath(), "planregister.xml.gz").toFile();
+        File gzipFile = Paths.get(outDirectory.toAbsolutePath().toString(), "planregister.xml.gz").toFile();
         
         // Transform File
         GzipStep gzipStep = new GzipStep();
