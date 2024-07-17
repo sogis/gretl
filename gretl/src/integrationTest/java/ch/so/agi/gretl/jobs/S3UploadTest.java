@@ -7,32 +7,39 @@ import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.junit.jupiter.Container;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 class S3UploadTest {
+    @Container
+    public LocalStackContainer localStackContainer = new LocalStackContainer(S3TestHelper.getLocalstackImage())
+            .withServices(S3);
+
     private final S3TestHelper s3TestHelper;
     private final String s3AccessKey;
     private final String s3SecretKey;
     private final String s3BucketName;
 
-
     public S3UploadTest() {
-        this.s3AccessKey = System.getProperty("s3AccessKey");
-        this.s3SecretKey = System.getProperty("s3SecretKey");
+        this.s3AccessKey = localStackContainer.getAccessKey();
+        this.s3SecretKey = localStackContainer.getSecretKey();
         this.s3BucketName = System.getProperty("s3BucketName");
 
-        String s3Region = "eu-central-1";
-        String s3Endpoint = "https://s3.eu-central-1.amazonaws.com";
+        final URI s3Endpoint = localStackContainer.getEndpointOverride(S3);
+        final String s3Region = localStackContainer.getRegion();
         this.s3TestHelper = new S3TestHelper(this.s3AccessKey, this.s3SecretKey, s3Region, s3Endpoint);
     }
 

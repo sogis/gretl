@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.testutil;
 
 import ch.so.agi.gretl.steps.S3UploadStep;
+import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -15,12 +16,13 @@ import java.util.Map;
 import java.util.Objects;
 
 public class S3TestHelper {
+    private static final DockerImageName localstackImage = DockerImageName.parse("localstack/localstack:0.11.2");
     private final String s3AccessKey;
     private final String s3SecretKey;
     private final String s3Region;
-    private final String s3Endpoint;
+    private final URI s3Endpoint;
 
-    public S3TestHelper(String s3AccessKey, String s3SecretKey, String s3Region, String s3Endpoint) {
+    public S3TestHelper(String s3AccessKey, String s3SecretKey, String s3Region, URI s3Endpoint) {
         Objects.requireNonNull(s3AccessKey);
         Objects.requireNonNull(s3SecretKey);
         Objects.requireNonNull(s3Region);
@@ -29,6 +31,10 @@ public class S3TestHelper {
         this.s3SecretKey = s3SecretKey;
         this.s3Region = s3Region;
         this.s3Endpoint = s3Endpoint;
+    }
+
+    public static DockerImageName getLocalstackImage() {
+        return localstackImage;
     }
 
     /**
@@ -43,14 +49,14 @@ public class S3TestHelper {
             String acl
     ) throws FileNotFoundException, URISyntaxException {
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3Endpoint, s3Region, acl, null, metadata);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3Endpoint.toString(), s3Region, acl, null, metadata);
     }
 
     public S3Client getS3Client() {
         return S3Client.builder()
                 .credentialsProvider(getCredentialsProvider())
                 .region(getRegion())
-                .endpointOverride(URI.create(s3Endpoint))
+                .endpointOverride(s3Endpoint)
                 .build();
     }
 
