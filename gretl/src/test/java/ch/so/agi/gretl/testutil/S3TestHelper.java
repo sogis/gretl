@@ -7,6 +7,9 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,6 +61,14 @@ public class S3TestHelper {
                 .region(getRegion())
                 .endpointOverride(s3Endpoint)
                 .build();
+    }
+
+    public void createBucketIfNotExists(S3Client client, String bucketName) {
+        try {
+            client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build());
+        } catch (NoSuchBucketException e) {
+            client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+        }
     }
 
     private AwsCredentialsProvider getCredentialsProvider() {

@@ -3,6 +3,7 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.testutil.S3TestHelper;
 import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,40 +30,43 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 @Testcontainers
 public class S3Bucket2BucketStepTest {
     @Container
-    public LocalStackContainer localStackContainer = new LocalStackContainer(S3TestHelper.getLocalstackImage())
+    public static LocalStackContainer localStackContainer = new LocalStackContainer(S3TestHelper.getLocalstackImage())
             .withServices(S3);
 
-    private final String s3AccessKey;
-    private final String s3SecretKey;
-    private final String s3SourceBucketName;
-    private final String s3TargetBucketName;
-    private final URI s3Endpoint;
-    private final String s3Region;
-    private final String acl;
-    private final S3TestHelper s3TestHelper;
+    private static String s3AccessKey;
+    private static String s3SecretKey;
+    private static String s3SourceBucketName;
+    private static String s3TargetBucketName;
+    private static URI s3Endpoint;
+    private static String s3Region;
+    private static String acl;
+    private static S3TestHelper s3TestHelper;
 
     @TempDir
     public Path folder;
 
-    public S3Bucket2BucketStepTest() {
-        this.s3AccessKey = localStackContainer.getAccessKey();
-        this.s3SecretKey = localStackContainer.getSecretKey();
-        this.s3SourceBucketName = "ch.so.agi.gretl.test";
-        this.s3TargetBucketName = "ch.so.agi.gretl.test-copy";
-        this.s3Endpoint = localStackContainer.getEndpointOverride(S3);
-        this.s3Region = localStackContainer.getRegion();
-        this.acl = "public-read";
-        this.s3TestHelper = new S3TestHelper(this.s3AccessKey, this.s3SecretKey, this.s3Region, this.s3Endpoint);
+    @BeforeAll
+    public static void setUpClass() {
+        s3AccessKey = localStackContainer.getAccessKey();
+        s3SecretKey = localStackContainer.getSecretKey();
+        s3SourceBucketName = "ch.so.agi.gretl.test";
+        s3TargetBucketName = "ch.so.agi.gretl.test-copy";
+        s3Endpoint = localStackContainer.getEndpointOverride(S3);
+        s3Region = localStackContainer.getRegion();
+        acl = "public-read";
+        s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint);
     }
-    
+
     @Test
     @Tag(TestTags.S3_TEST)
     public void copyFiles_Ok() throws Exception {
+        S3Client s3Client = s3TestHelper.getS3Client();
+        s3TestHelper.createBucketIfNotExists(s3Client, s3SourceBucketName);
+        s3TestHelper.createBucketIfNotExists(s3Client, s3TargetBucketName);
+
         File sourceObject = TestUtil.getResourceFile(TestUtil.S3_BUCKET_DIR_PATH);
         Map<String,String> metadata = new HashMap<>();
-        S3Client s3Client = s3TestHelper.getS3Client();
-
-        deleteObjects(s3Client, Arrays.asList("foo.txt", "bar.txt", "download.txt"));
+        deleteObjects(s3Client, Arrays.asList("foo.txt", "bar.txt"));
         s3TestHelper.upload(sourceObject, metadata, s3SourceBucketName, acl);
         copyFiles(metadata);
 
@@ -78,8 +82,7 @@ public class S3Bucket2BucketStepTest {
 
         assertTrue(keyList.contains("foo.txt"));
         assertTrue(keyList.contains("bar.txt"));
-        assertTrue(keyList.contains("download.txt"));
-        assertEquals(3, keyList.size());
+        assertEquals(2, keyList.size());
         deleteFiles(s3Client);
     }
 
@@ -121,6 +124,5 @@ public class S3Bucket2BucketStepTest {
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucketName).key("bar.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
-        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
     }
 }
