@@ -25,7 +25,7 @@ public class S3TestHelper {
     private final String s3Region;
     private final URI s3Endpoint;
 
-    public S3TestHelper(String s3AccessKey, String s3SecretKey, String s3Region, URI s3Endpoint) {
+    public S3TestHelper(String s3AccessKey, String s3SecretKey, String s3Region, String s3Endpoint) {
         Objects.requireNonNull(s3AccessKey);
         Objects.requireNonNull(s3SecretKey);
         Objects.requireNonNull(s3Region);
@@ -33,7 +33,7 @@ public class S3TestHelper {
         this.s3AccessKey = s3AccessKey;
         this.s3SecretKey = s3SecretKey;
         this.s3Region = s3Region;
-        this.s3Endpoint = s3Endpoint;
+        this.s3Endpoint = URI.create(s3Endpoint);
     }
 
     public static DockerImageName getLocalstackImage() {

@@ -53,7 +53,7 @@ public class S3DownloadStepTest {
         s3BucketName = System.getProperty("s3BucketName");
         s3Endpoint = localStackContainer.getEndpointOverride(S3);
         s3Region = localStackContainer.getRegion();
-        s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint);
+        s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint.toString());
     }
 
     @Test
