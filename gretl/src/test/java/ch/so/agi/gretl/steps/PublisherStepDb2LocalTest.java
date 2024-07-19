@@ -8,10 +8,7 @@ import ch.ehi.ili2pg.PgMain;
 import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.interlis2.validator.Validator;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -38,7 +35,7 @@ public class PublisherStepDb2LocalTest {
     private static final Path localTestOut = Paths.get("build").resolve("out");
     
     @Container
-    public PostgreSQLContainer<?> postgres = System.getProperty("dbUrl") == null
+    public static PostgreSQLContainer<?> postgres = System.getProperty("dbUrl") == null
             ? (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                 .withDatabaseName(TestUtil.PG_DB_NAME)
                 .withUsername(TestUtil.PG_DDLUSR_USR)
@@ -47,19 +44,22 @@ public class PublisherStepDb2LocalTest {
                 .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2))
             : null;
 
-    private String dbUrl;
-    private String dbUser;
-    private String dbPassword;
-    private String dbSchema;
+    private static String dbUrl;
+    private static String dbUser;
+    private static String dbPassword;
+    private static String dbSchema;
     private Config config;
+
+    @BeforeAll
+    public static void beforeAll() {
+        dbUrl = System.getProperty("dbUrl", postgres != null ? postgres.getJdbcUrl() : null);
+        dbUser = System.getProperty("dbusr", TestUtil.PG_DDLUSR_USR);
+        dbPassword = System.getProperty("dbPassword", TestUtil.PG_DDLUSR_PWD);
+        dbSchema = "publisher";
+    }
 
     @BeforeEach
     public void before() {
-        this.dbUrl = System.getProperty("dbUrl", postgres != null ? postgres.getJdbcUrl() : null);
-        this.dbUser = System.getProperty("dbusr", TestUtil.PG_DDLUSR_USR);
-        this.dbPassword = System.getProperty("dbPassword", TestUtil.PG_DDLUSR_PWD);
-        this.dbSchema = "publisher";
-
         this.config = new Config();
         config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR + AbstractPublisherStepTest.ILI_DIRS);
         config.setDburl(dbUrl);
@@ -86,7 +86,7 @@ public class PublisherStepDb2LocalTest {
     }
 
     @Test
-    @Tag("dbTest")
+    @Tag(TestTags.DB_TEST)
     public void db_allNew() throws Exception {
         Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         String datasetName = "av";
