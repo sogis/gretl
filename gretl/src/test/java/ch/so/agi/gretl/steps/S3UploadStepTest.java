@@ -48,7 +48,7 @@ public class S3UploadStepTest {
     public static void setUp() throws Exception {
         s3AccessKey = localStackContainer.getAccessKey();
         s3SecretKey = localStackContainer.getSecretKey();
-        s3BucketName = "emptybucket"; // System.getProperty("s3BucketName");
+        s3BucketName = System.getProperty("s3BucketName");
         s3Endpoint = localStackContainer.getEndpointOverride(S3);
         s3Region = localStackContainer.getRegion();
         acl = "public-read";
