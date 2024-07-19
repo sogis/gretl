@@ -5,10 +5,12 @@ import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -23,32 +25,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
-class S3UploadTest {
+@Testcontainers
+public class S3UploadTest {
     @Container
-    public LocalStackContainer localStackContainer = new LocalStackContainer(S3TestHelper.getLocalstackImage())
+    public static LocalStackContainer localStackContainer = new LocalStackContainer(S3TestHelper.getLocalstackImage())
             .withServices(S3);
 
-    private final S3TestHelper s3TestHelper;
-    private final String s3AccessKey;
-    private final String s3SecretKey;
-    private final String s3BucketName;
+    private static String s3AccessKey;
+    private static String s3SecretKey;
+    private static String s3BucketName;
+    private static S3TestHelper s3TestHelper;
 
-    public S3UploadTest() {
-        this.s3AccessKey = localStackContainer.getAccessKey();
-        this.s3SecretKey = localStackContainer.getSecretKey();
-        this.s3BucketName = System.getProperty("s3BucketName");
-
+    @BeforeAll
+    public static void setUpClass() {
+        s3AccessKey = localStackContainer.getAccessKey();
+        s3SecretKey = localStackContainer.getSecretKey();
+        s3BucketName = System.getProperty("s3BucketName");
         final URI s3Endpoint = localStackContainer.getEndpointOverride(S3);
         final String s3Region = localStackContainer.getRegion();
-        this.s3TestHelper = new S3TestHelper(this.s3AccessKey, this.s3SecretKey, s3Region, s3Endpoint);
+        s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint);
     }
 
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadDirectory_Ok() throws Exception {
-        S3Client s3client = s3TestHelper.getS3Client();
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
+        S3Client s3Client = s3TestHelper.getS3Client();
+        s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
         // Upload all files from a directory.
         GradleVariable[] gvs = { 
@@ -64,10 +68,10 @@ class S3UploadTest {
                 .bucket(s3BucketName)
                 .build();
 
-        ListObjectsResponse res = s3client.listObjects(listObjects);
+        ListObjectsResponse res = s3Client.listObjects(listObjects);
         List<S3Object> objects = res.contents();
         
-        List<String> keyList = new ArrayList<String>();
+        List<String> keyList = new ArrayList<>();
         for (S3Object myValue : objects) {
             keyList.add(myValue.key());
         }
@@ -76,8 +80,8 @@ class S3UploadTest {
         assertTrue(keyList.contains("bar.txt"));
         
         // Remove uploaded files from bucket.
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
     }
     
     @Test
