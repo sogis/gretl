@@ -1,39 +1,38 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import ch.so.agi.gretl.testutil.TestUtil;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import ch.so.agi.gretl.util.IntegrationTestUtilSql;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.testcontainers.containers.PostgisContainerProvider;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
-import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-
+@Testcontainers
 public class JsonImportTest {
     
-    private static String dbusr = "ddluser";
-    private static String dbpwd = "ddluser";
-    private static String dbdatabase = "gretl";
+    private static final String dbusr = "ddluser";
+    private static final String dbpwd = "ddluser";
+    private static final String dbdatabase = "gretl";
 
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName(dbdatabase)
-        .withUsername(dbusr)
-        .withPassword(dbpwd)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+            .withDatabaseName(dbdatabase)
+            .withUsername(dbusr)
+            .withPassword(dbpwd)
+            .withInitScript("init_postgresql.sql")
+            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void importJsonObject_Ok() throws Exception {
@@ -135,5 +134,4 @@ public class JsonImportTest {
             IntegrationTestUtilSql.closeCon(con);
         }
     }
-
 }

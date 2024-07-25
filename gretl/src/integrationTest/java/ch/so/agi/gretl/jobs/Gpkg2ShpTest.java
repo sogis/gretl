@@ -1,20 +1,20 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.geotools.data.FileDataStore;
-import org.geotools.data.FileDataStoreFinder;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.junit.Test;
-
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Gpkg2ShpTest {
+
     @Test
     public void export_Ok() throws Exception {
         String TEST_OUT = "src/integrationTest/jobs/Gpkg2Shp/out/";

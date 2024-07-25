@@ -1,20 +1,18 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.nio.file.Paths;
-
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.parquet.avro.AvroParquetReader;
 import org.apache.parquet.hadoop.ParquetReader;
 import org.apache.parquet.hadoop.util.HadoopInputFile;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
+import java.nio.file.Paths;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Csv2ParquetTest {
     private static final Configuration testConf = new Configuration();
