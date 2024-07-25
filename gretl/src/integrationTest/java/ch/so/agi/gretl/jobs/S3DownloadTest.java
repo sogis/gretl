@@ -1,36 +1,43 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import ch.so.agi.gretl.testutil.S3Test;
+import ch.so.agi.gretl.testutil.S3TestHelper;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
-public class S3DownloadTest {
-    private String s3AccessKey = System.getProperty("s3AccessKey");
-    private String s3SecretKey = System.getProperty("s3SecretKey");
-    private String s3BucketName = System.getProperty("s3BucketName");
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class S3DownloadTest {
+    private final S3TestHelper s3TestHelper;
+    private final String s3AccessKey;
+    private final String s3SecretKey;
+    private final String s3BucketName;
+
+    public S3DownloadTest() {
+        this.s3AccessKey = System.getProperty("s3AccessKey");
+        this.s3SecretKey = System.getProperty("s3SecretKey");
+        this.s3BucketName = System.getProperty("s3BucketName");
+
+        String s3Endpoint = "https://s3.eu-central-1.amazonaws.com";
+        String s3Region = "eu-central-1";
+        this.s3TestHelper = new S3TestHelper(this.s3AccessKey, this.s3SecretKey, s3Region, s3Endpoint);
+    }
+
 
     @Test
-    @Category(S3Test.class)    
-    public void downloadFile_Ok() throws Exception {
+    @Tag(TestTags.S3_TEST)
+    void downloadFile_Ok() throws Exception {
         // Download single file from a directory.
         GradleVariable[] gvs = { 
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
@@ -39,14 +46,8 @@ public class S3DownloadTest {
             };
         IntegrationTestUtil.runJob("src/integrationTest/jobs/S3DownloadFile", gvs);
 
-        // Check result. 
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of("eu-central-1");
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
-                .build(); 
+        // Check result.
+        S3Client s3client = s3TestHelper.getS3Client();
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(s3BucketName)

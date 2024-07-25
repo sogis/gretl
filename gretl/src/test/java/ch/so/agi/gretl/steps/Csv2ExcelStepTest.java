@@ -8,22 +8,21 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.interlis2.validator.Validator;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Csv2ExcelStepTest {
-   
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    
+
+    @TempDir
+    public Path folder;
+
     @Test
     public void encoding_iso_8859_1_Ok() throws Exception {
         // Prepare
@@ -35,14 +34,13 @@ public class Csv2ExcelStepTest {
         settings.setValue(Validator.SETTING_MODELNAMES, "SO_HBA_Gebaeude_20230111");
 
         File csvFile = TestUtil.getResourceFile(TestUtil.SAP_GEBAEUDE_CSV_PATH);
-        Path outputPath = folder.newFolder().toPath();
         
         // Run
         Csv2ExcelStep csv2excelStep = new Csv2ExcelStep();
-        csv2excelStep.execute(csvFile.toPath(), outputPath, settings);
+        csv2excelStep.execute(csvFile.toPath(), folder, settings);
 
         // Validate
-        FileInputStream fis = new FileInputStream(Paths.get(outputPath.toFile().getAbsolutePath(), "20230124_sap_Gebaeude.xlsx").toFile());        
+        FileInputStream fis = new FileInputStream(Paths.get(folder.toFile().getAbsolutePath(), "20230124_sap_Gebaeude.xlsx").toFile());
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         XSSFSheet sheet = workbook.getSheetAt(0);
 

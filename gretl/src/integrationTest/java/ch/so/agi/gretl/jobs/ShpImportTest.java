@@ -4,31 +4,31 @@ import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-
-import static org.junit.Assert.*;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.junit.Assert;
-import org.junit.ClassRule;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
+@Testcontainers
 public class ShpImportTest {
     
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+            .withDatabaseName("gretl")
+            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+            .withInitScript("init_postgresql.sql")
+            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
     
     @Test
     public void importOk() throws Exception {
@@ -68,8 +68,7 @@ public class ShpImportTest {
             }
             rs.close();
             s1.close();
-        }
-        finally {
+        } finally {
             IntegrationTestUtilSql.closeCon(con);
         }
     }

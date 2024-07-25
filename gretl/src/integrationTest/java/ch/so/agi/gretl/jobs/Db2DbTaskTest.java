@@ -4,27 +4,28 @@ import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Testcontainers
 public class Db2DbTaskTest {
     
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+            .withDatabaseName("gretl")
+            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+            .withInitScript("init_postgresql.sql")
+            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
     
 	/*
 	 * Tests if fetchSize parameter is working.
@@ -59,25 +60,24 @@ public class Db2DbTaskTest {
             String countDestSql = String.format("select count(*) from %s.target_data", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            Assert.assertEquals(
-                    "Rowcount in table source_data must be equal to rowcount in table target_data",
+            assertEquals(
                     2,
-                    countDest);
+                    countDest,
+                    "Rowcount in table source_data must be equal to rowcount in table target_data"
+            );
 		}
 		finally {
             IntegrationTestUtilSql.closeCon(con);
         }
 	}
-	
-	
-	
-	
-    /*
-Test's that a chain of statements executes properly and results in the correct
-number of inserts (corresponding to the last statement)
-    1. Statement transfers rows from a to b
-    2. Statement transfers rows from b to a
-*/
+
+    /**
+     * Test's that a chain of statements executes properly and results in the correct number of inserts
+     * (corresponding to the last statement)
+     * 1. Statement transfers rows from a to b
+     * 2. Statement transfers rows from b to a
+     * @throws Exception
+     */
     @Test
     public void taskChainTest() throws Exception {
         String schemaName = "db2dbTaskChain".toLowerCase();
@@ -97,10 +97,11 @@ number of inserts (corresponding to the last statement)
             String countDestSql = String.format("select count(*) from %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            Assert.assertEquals(
-                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest",
+            assertEquals(
                     countSrc,
-                    countDest);
+                    countDest,
+                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest"
+            );
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
@@ -109,7 +110,6 @@ number of inserts (corresponding to the last statement)
 
     /**
      * Test's if the sql-files can be configured using a relative path.
-     *
      * The relative path relates to the location of the build.gradle file
      * of the corresponding gretl job.
      */
@@ -133,10 +133,11 @@ number of inserts (corresponding to the last statement)
             String countDestSql = String.format("select count(*) from %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            Assert.assertEquals(
-                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest",
+            assertEquals(
                     countSrc,
-                    countDest);
+                    countDest,
+                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest"
+            );
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
@@ -168,15 +169,17 @@ number of inserts (corresponding to the last statement)
             String countDestSql = String.format("select count(*) from %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            Assert.assertEquals(
-                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest",
+            assertEquals(
                     countSrc,
-                    countDest);
+                    countDest,
+                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest"
+            );
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
         }
     }
+
     @Test
     public void parameter() throws Exception{
         String schemaName = "parameterList".toLowerCase();
@@ -203,7 +206,7 @@ number of inserts (corresponding to the last statement)
             String countDestSql = String.format("select count(*) from %s.dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            Assert.assertEquals(2,countDest);
+            assertEquals(2, countDest);
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
@@ -239,9 +242,8 @@ number of inserts (corresponding to the last statement)
             String countDestSql = String.format("select count(*) from %s.dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            Assert.assertEquals(5,countDest);
-        }
-        finally {
+            assertEquals(5,countDest);
+        } finally {
             IntegrationTestUtilSql.closeCon(con);
         }
     }

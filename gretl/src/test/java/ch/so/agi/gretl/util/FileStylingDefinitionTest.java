@@ -1,17 +1,20 @@
 package ch.so.agi.gretl.util;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import ch.so.agi.gretl.testutil.TestUtil;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.nio.file.Path;
 
-public class FileStylingDefinitionTest {  
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-    @Test 
+public class FileStylingDefinitionTest {
+    @TempDir
+    public Path folder;
+
+    @Test
     public void checkEncoding_Ok() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File inputfile = new File(classLoader.getResource("awjf_biotopbaeume_pub_biotopbaeume_biotopbaum_ok.sql").getFile());
@@ -20,9 +23,9 @@ public class FileStylingDefinitionTest {
     
     // Empty files are handled elsewhere. But empty files will
     // let the encoding validation stall.
-    @Test 
+    @Test
     public void checkEncoding_Ok_empty_File() throws Exception {
-        File inputfile = folder.newFile("query.sql");
+        File inputfile = TestUtil.createTempFile(folder, "", "query.sql");
         FileStylingDefinition.checkForUtf8(inputfile);
     }
     
@@ -42,8 +45,8 @@ public class FileStylingDefinitionTest {
         File inputfile = new File(classLoader.getResource("test.txt").getFile());
         try {
             FileStylingDefinition.checkForUtf8(inputfile);
-            Assert.fail();
-        } catch (Exception e) {}
+            fail();
+        } catch (Exception ignored) {}
     }
 
     @Test
@@ -53,7 +56,7 @@ public class FileStylingDefinitionTest {
         try {
             FileStylingDefinition.checkForBOMInFile(inputfile);
         } catch (GretlException e) {
-            Assert.assertEquals("file with unallowed BOM", e.getType());
+            assertEquals("file with unallowed BOM", e.getType());
         }
     }
 

@@ -6,12 +6,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.AbstractPublisherStepTest;
 import ch.so.agi.gretl.steps.PublisherStep;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PublicationLogTest {
     final public static String SRC_TEST_DATA = AbstractPublisherStepTest.SRC_TEST_DATA;
@@ -33,10 +36,10 @@ public class PublicationLogTest {
         final Path file = localTestOut.resolve("minimalPublication.json");
         PublisherStep.writePublication(file,expected);
         PublicationLog actual=PublisherStep.readPublication(file);
-        Assert.assertEquals(expected.getDataIdent(), actual.getDataIdent());
-        Assert.assertEquals(expected.getPublished(), actual.getPublished());
-        Assert.assertNull(actual.getPublishedBaskets());
-        Assert.assertNull(actual.getPublishedRegions());
+        assertEquals(expected.getDataIdent(), actual.getDataIdent());
+        assertEquals(expected.getPublished(), actual.getPublished());
+        assertNull(actual.getPublishedBaskets());
+        assertNull(actual.getPublishedRegions());
     }
     @Test
     public void readBasketsFile() throws Exception {
@@ -48,16 +51,16 @@ public class PublicationLogTest {
         final Path file = localTestOut.resolve("basketsPublication.json");
         PublisherStep.writePublication(file,expected);
         PublicationLog actual=PublisherStep.readPublication(file);
-        Assert.assertEquals(expected.getDataIdent(), actual.getDataIdent());
-        Assert.assertEquals(expected.getPublished(), actual.getPublished());
-        Assert.assertEquals(2,actual.getPublishedBaskets().size());
-        Assert.assertEquals("SO_AGI_MOpublic_20201009",actual.getPublishedBaskets().get(0).getModel());
-        Assert.assertEquals("Bodenbedeckung",actual.getPublishedBaskets().get(0).getTopic());
-        Assert.assertEquals("oltenBID",actual.getPublishedBaskets().get(0).getBasket());
-        Assert.assertEquals("DM01",actual.getPublishedBaskets().get(1).getModel());
-        Assert.assertEquals("Liegenschaften",actual.getPublishedBaskets().get(1).getTopic());
-        Assert.assertEquals("wangenBID",actual.getPublishedBaskets().get(1).getBasket());
-        Assert.assertNull(actual.getPublishedRegions());
+        assertEquals(expected.getDataIdent(), actual.getDataIdent());
+        assertEquals(expected.getPublished(), actual.getPublished());
+        assertEquals(2,actual.getPublishedBaskets().size());
+        assertEquals("SO_AGI_MOpublic_20201009",actual.getPublishedBaskets().get(0).getModel());
+        assertEquals("Bodenbedeckung",actual.getPublishedBaskets().get(0).getTopic());
+        assertEquals("oltenBID",actual.getPublishedBaskets().get(0).getBasket());
+        assertEquals("DM01",actual.getPublishedBaskets().get(1).getModel());
+        assertEquals("Liegenschaften",actual.getPublishedBaskets().get(1).getTopic());
+        assertEquals("wangenBID",actual.getPublishedBaskets().get(1).getBasket());
+        assertNull(actual.getPublishedRegions());
     }
     @Test
     public void readRegionsFile() throws Exception {
@@ -71,19 +74,19 @@ public class PublicationLogTest {
         final Path file = localTestOut.resolve("regionsPublication.json");
         PublisherStep.writePublication(file,expected);
         PublicationLog actual=PublisherStep.readPublication(file);
-        Assert.assertEquals(expected.getDataIdent(), actual.getDataIdent());
-        Assert.assertEquals(expected.getPublished(), actual.getPublished());
-        Assert.assertNull(actual.getPublishedBaskets());
-        Assert.assertEquals(2,actual.getPublishedRegions().size());
-        Assert.assertEquals("olten",actual.getPublishedRegions().get(0).getRegion());
-        Assert.assertEquals(1,actual.getPublishedRegions().get(0).getPublishedBaskets().size());
-        Assert.assertEquals("SO_AGI_MOpublic_20201009",actual.getPublishedRegions().get(0).getPublishedBaskets().get(0).getModel());
-        Assert.assertEquals("Bodenbedeckung",actual.getPublishedRegions().get(0).getPublishedBaskets().get(0).getTopic());
-        Assert.assertEquals("oltenBID",actual.getPublishedRegions().get(0).getPublishedBaskets().get(0).getBasket());
-        Assert.assertEquals("wangen",actual.getPublishedRegions().get(1).getRegion());
-        Assert.assertEquals(1,actual.getPublishedRegions().get(1).getPublishedBaskets().size());
-        Assert.assertEquals("SO_AGI_MOpublic_20201009",actual.getPublishedRegions().get(1).getPublishedBaskets().get(0).getModel());
-        Assert.assertEquals("Bodenbedeckung",actual.getPublishedRegions().get(1).getPublishedBaskets().get(0).getTopic());
-        Assert.assertEquals("wangenBID",actual.getPublishedRegions().get(1).getPublishedBaskets().get(0).getBasket());
+        assertEquals(expected.getDataIdent(), actual.getDataIdent());
+        assertEquals(expected.getPublished(), actual.getPublished());
+        assertNull(actual.getPublishedBaskets());
+        assertEquals(2,actual.getPublishedRegions().size());
+        assertEquals("olten",actual.getPublishedRegions().get(0).getRegion());
+        assertEquals(1,actual.getPublishedRegions().get(0).getPublishedBaskets().size());
+        assertEquals("SO_AGI_MOpublic_20201009",actual.getPublishedRegions().get(0).getPublishedBaskets().get(0).getModel());
+        assertEquals("Bodenbedeckung",actual.getPublishedRegions().get(0).getPublishedBaskets().get(0).getTopic());
+        assertEquals("oltenBID",actual.getPublishedRegions().get(0).getPublishedBaskets().get(0).getBasket());
+        assertEquals("wangen",actual.getPublishedRegions().get(1).getRegion());
+        assertEquals(1,actual.getPublishedRegions().get(1).getPublishedBaskets().size());
+        assertEquals("SO_AGI_MOpublic_20201009",actual.getPublishedRegions().get(1).getPublishedBaskets().get(0).getModel());
+        assertEquals("Bodenbedeckung",actual.getPublishedRegions().get(1).getPublishedBaskets().get(0).getTopic());
+        assertEquals("wangenBID",actual.getPublishedRegions().get(1).getPublishedBaskets().get(0).getBasket());
     }
 }

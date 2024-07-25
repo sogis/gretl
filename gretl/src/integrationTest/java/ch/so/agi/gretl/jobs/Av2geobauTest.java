@@ -2,11 +2,11 @@ package ch.so.agi.gretl.jobs;
 
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Av2geobauTest {
     @Test

@@ -2,21 +2,27 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Testcontainers
 public class PostgisRasterExportStepTest {
     
-    @ClassRule
-    public static PostgreSQLContainer<?> postgres =
+    @Container
+    public PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
             .withDatabaseName(TestUtil.PG_DB_NAME)
             .withUsername(TestUtil.PG_DDLUSR_USR)
@@ -25,15 +31,15 @@ public class PostgisRasterExportStepTest {
 
     private Connector connector;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
-    @Before
+    @BeforeEach
     public void before() {
         this.connector = new Connector(postgres.getJdbcUrl(), TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         if (!this.connector.isClosed()) {
             this.connector.close();
@@ -46,8 +52,8 @@ public class PostgisRasterExportStepTest {
         File sqlFile = TestUtil.getResourceFile(TestUtil.RASTER_GEOTIFF_SQL_PATH);
         String outFileName = "outfile.tif";
         File targetFile = TestUtil.getResourceFile(TestUtil.TARGET_TIF_PATH);
-        File outDirectory = folder.newFolder("build");
-        File outFile = Paths.get(outDirectory.getAbsolutePath(), outFileName).toFile();
+        Path outDirectory = TestUtil.createTempDir(folder, "build");
+        File outFile = Paths.get(outDirectory.toAbsolutePath().toString(), outFileName).toFile();
 
         // Run: Calculate and export raster file from PostGIS
         PostgisRasterExportStep postgisRasterExportStep = new PostgisRasterExportStep();
@@ -68,9 +74,8 @@ public class PostgisRasterExportStepTest {
         // TODO this file is missing in the resources, what should be actually tested here?
         File targetFile = new File("src/test/resources/data/postgisrasterprocessor/target.asc");
 
-        File outDirectory = folder.newFolder("build");
-        //File outDirectory = Paths.get("/Users/stefan/tmp/").toFile();
-        File outFile = Paths.get(outDirectory.getAbsolutePath(), outFileName).toFile();
+        Path outDirectory = TestUtil.createTempDir(folder, "build");
+        File outFile = Paths.get(outDirectory.toAbsolutePath().toString(), outFileName).toFile();
 
         // Run: Calculate and export raster file from PostGIS
         PostgisRasterExportStep postgisRasterExportStep = new PostgisRasterExportStep();

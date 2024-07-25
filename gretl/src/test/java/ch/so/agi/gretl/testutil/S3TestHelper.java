@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class S3TestHelper {
-
     private final String s3AccessKey;
     private final String s3SecretKey;
     private final String s3Region;

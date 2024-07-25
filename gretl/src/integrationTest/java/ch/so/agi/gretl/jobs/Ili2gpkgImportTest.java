@@ -1,26 +1,19 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import ch.ehi.ili2db.base.DbNames;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.junit.Test;
-
-import ch.ehi.ili2db.base.DbNames;
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Ili2gpkgImportTest {
 
@@ -64,6 +57,7 @@ public class Ili2gpkgImportTest {
             }
         }
     }
+
     @Test
     public void importFileSet() throws Exception {
         Files.deleteIfExists(Paths.get("src/integrationTest/jobs/Ili2gpkgImportFileSet/Beispiel2.gpkg")); 

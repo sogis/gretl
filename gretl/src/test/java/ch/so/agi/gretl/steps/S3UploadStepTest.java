@@ -1,12 +1,11 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.testutil.S3Test;
 import ch.so.agi.gretl.testutil.S3TestHelper;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -14,15 +13,15 @@ import software.amazon.awssdk.services.s3.model.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class S3UploadStepTest {
-
     private final String s3AccessKey;
     private final String s3SecretKey;
     private final String s3BucketName;
@@ -31,8 +30,8 @@ public class S3UploadStepTest {
     private final String acl;
     private final S3TestHelper s3TestHelper;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
     public S3UploadStepTest() {
         this.s3AccessKey = System.getProperty("s3AccessKey");
@@ -45,7 +44,7 @@ public class S3UploadStepTest {
     }
     
     @Test
-    @Category(S3Test.class)
+    @Tag(TestTags.S3_TEST)
     public void uploadDirectory_Ok() throws Exception {
         File sourceObject = TestUtil.getResourceFile("data/s3upload/");
         Map<String,String> metaData = new HashMap<String, String>() {{
@@ -83,7 +82,7 @@ public class S3UploadStepTest {
     }
     
     @Test
-    @Category(S3Test.class)
+    @Tag(TestTags.S3_TEST)
     public void uploadFile_Ok() throws Exception {
         File sourceObject = TestUtil.getResourceFile("data/s3upload/foo.txt");
         Map<String,String> metaData = new HashMap<>();
@@ -109,7 +108,7 @@ public class S3UploadStepTest {
     }
     
     @Test
-    @Category(S3Test.class)
+    @Tag(TestTags.S3_TEST)
     public void uploadFile_Fail() throws Exception {
         File sourceObject = TestUtil.getResourceFile("data/s3upload/foo.txt");
         Map<String,String> metaData = new HashMap<>();

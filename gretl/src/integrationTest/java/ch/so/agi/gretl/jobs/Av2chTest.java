@@ -1,18 +1,17 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-import org.junit.Test;
-
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Av2chTest {
     @Test
@@ -23,10 +22,9 @@ public class Av2chTest {
         File resultFile = new File("src/integrationTest/jobs/Av2ch/output/254900.itf");
         
         long resultSize = resultFile.length();
-        assertTrue("Size of result file is wrong.", resultSize > 580000);
+        assertTrue(resultSize > 580000, "Size of result file is wrong.");
 
         String resultString = new String(Files.readAllBytes(resultFile.toPath()), StandardCharsets.ISO_8859_1);
-
         assertThat(resultString, containsString("DM01 Interlis Converter"));
         assertThat(resultString, containsString("MODL DM01AVCH24LV95D"));
         assertThat(resultString, containsString("TABL LFP3Nachfuehrung"));

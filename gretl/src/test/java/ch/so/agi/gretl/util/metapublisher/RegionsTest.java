@@ -1,28 +1,24 @@
 package ch.so.agi.gretl.util.metapublisher;
 
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.steps.metapublisher.meta.RegionsUtil;
+import ch.so.agi.gretl.testutil.TestUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.metapublisher.meta.RegionsUtil;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RegionsTest {
     protected GretlLogger log;
@@ -30,9 +26,9 @@ public class RegionsTest {
     public RegionsTest() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-        
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+
+    @TempDir
+    public Path folder;
 
     @Test
     public void update_Ok() throws Exception {
@@ -41,8 +37,8 @@ public class RegionsTest {
         String origDate = "1999-01-01";
         String fileName = "ch.so.agi.av.dm01_so.json";
         File jsonFile = Paths.get("src/test/resources/data/metapublisher/util/", fileName).toFile();
-        File outDirectory = folder.newFolder("update_ok");
-        File targetJsonFile = Paths.get(outDirectory.getAbsolutePath(), fileName).toFile();
+        Path outDirectory = TestUtil.createTempDir(folder, "update_ok");
+        File targetJsonFile = Paths.get(outDirectory.toAbsolutePath().toString(), fileName).toFile();
 
         Files.copy(jsonFile.toPath(), targetJsonFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         

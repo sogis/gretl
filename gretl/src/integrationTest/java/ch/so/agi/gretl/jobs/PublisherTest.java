@@ -2,11 +2,8 @@ package ch.so.agi.gretl.jobs;
 
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +21,7 @@ public class PublisherTest {
         GradleVariable[] gvs = null;
         IntegrationTestUtil.runJob(jobDirectory, gvs);
     }
+
     @Test
     public void regions() throws Exception {
         String jobDirectory = "src/integrationTest/jobs/PublisherRegions";
@@ -44,5 +42,4 @@ public class PublisherTest {
         Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
         return to;
     }
-
 }

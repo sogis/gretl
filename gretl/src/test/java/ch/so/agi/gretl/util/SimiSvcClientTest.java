@@ -1,9 +1,7 @@
 package ch.so.agi.gretl.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,17 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import ch.so.agi.gretl.steps.PublisherStep;
 import ch.so.agi.gretl.util.publisher.PublicationLog;
 import ch.so.agi.gretl.util.publisher.PublishedRegion;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class SimiSvcClientTest {
     public final static String OAUTH_TOKEN_GRANT_USR="admin";
@@ -79,7 +79,7 @@ public class SimiSvcClientTest {
     }
     private static CustomServlet servlet=null;
     private static Tomcat tomcat = null;
-    @BeforeClass
+    @BeforeAll
     public static synchronized void setupServer() throws Exception {
         if(tomcat==null) {
             tomcat = new Tomcat();
@@ -95,7 +95,7 @@ public class SimiSvcClientTest {
             tomcat.start();
         }
     }
-    @AfterClass
+    @AfterAll
     public static synchronized void stopServer() throws Exception {
         if(tomcat!=null) {
             tomcat.stop();
@@ -112,11 +112,11 @@ public class SimiSvcClientTest {
         final String expected_dataIdent = "ch.so.agi.mopublic";
         final String expected_published = "2022-03-08T00:00:00.000";
         String leaflet=svc.getLeaflet(expected_dataIdent, new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(expected_published));
-        Assert.assertEquals(DOC_LEAFLET, leaflet);
-        Assert.assertEquals(expected_dataIdent, servlet.doc_dataident);
-        Assert.assertEquals(expected_published, servlet.doc_published);
-        Assert.assertEquals("text/html", servlet.doc_contentType);
-        Assert.assertEquals("Bearer " + OAUTH_TOKEN, servlet.doc_authHeaderValue);
+        assertEquals(DOC_LEAFLET, leaflet);
+        assertEquals(expected_dataIdent, servlet.doc_dataident);
+        assertEquals(expected_published, servlet.doc_published);
+        assertEquals("text/html", servlet.doc_contentType);
+        assertEquals("Bearer " + OAUTH_TOKEN, servlet.doc_authHeaderValue);
     }
     @Test
     public void getAccessToken() throws Exception {
@@ -125,15 +125,15 @@ public class SimiSvcClientTest {
         svc.setup("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_GRANT_USR,OAUTH_TOKEN_GRANT_PWD);
         svc.setupTokenService("http://localhost:8080/simi-svc/rest",OAUTH_TOKEN_USR,OAUTH_TOKEN_PWD);
         String token=svc.getAccessToken();
-        Assert.assertEquals(OAUTH_TOKEN,token);
+        assertEquals(OAUTH_TOKEN,token);
         {
             String auth = OAUTH_TOKEN_USR + ":" + OAUTH_TOKEN_PWD;
             byte[] encodedAuth = java.util.Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
             String authHeaderValue = "Basic " + new String(encodedAuth);
-            Assert.assertEquals(authHeaderValue, servlet.oauthToken_authHeaderValue);
+            assertEquals(authHeaderValue, servlet.oauthToken_authHeaderValue);
         }
-        Assert.assertEquals("application/x-www-form-urlencoded",servlet.oauthToken_contentType);
-        Assert.assertEquals("grant_type=password&username="+OAUTH_TOKEN_GRANT_USR+"&password="+OAUTH_TOKEN_GRANT_PWD,servlet.oauthToken_content);
+        assertEquals("application/x-www-form-urlencoded",servlet.oauthToken_contentType);
+        assertEquals("grant_type=password&username="+OAUTH_TOKEN_GRANT_USR+"&password="+OAUTH_TOKEN_GRANT_PWD,servlet.oauthToken_content);
     }
     @Test
     public void notifyPublication() throws Exception {
@@ -142,9 +142,9 @@ public class SimiSvcClientTest {
         svc.setup("http://localhost:8080/simi-svc/rest",null,null);
         final PublicationLog data = new PublicationLog("ch.so.agi.mopublic", new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2022-03-08"));
         svc.notifyPublication(data);
-        Assert.assertEquals("application/json", servlet.pubsignal_contentType);
-        Assert.assertNull(servlet.pubsignal_authHeaderValue);
-        Assert.assertEquals(PublisherStep.publicationToString(data),servlet.pubsignal_content);
+        assertEquals("application/json", servlet.pubsignal_contentType);
+        assertNull(servlet.pubsignal_authHeaderValue);
+        assertEquals(PublisherStep.publicationToString(data),servlet.pubsignal_content);
     }
     @Test
     public void notifyPublicationOAuth() throws Exception {
@@ -157,9 +157,9 @@ public class SimiSvcClientTest {
         final PublicationLog data = new PublicationLog(expected_dataIdent, new java.text.SimpleDateFormat("yyyy-MM-dd").parse(expected_published));
         //String leaflet=svc.getLeaflet(expected_dataIdent, new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(expected_published));
         svc.notifyPublication(data);
-        Assert.assertEquals("application/json", servlet.pubsignal_contentType);
-        Assert.assertEquals("Bearer " + OAUTH_TOKEN, servlet.pubsignal_authHeaderValue);
-        Assert.assertEquals(PublisherStep.publicationToString(data),servlet.pubsignal_content);
+        assertEquals("application/json", servlet.pubsignal_contentType);
+        assertEquals("Bearer " + OAUTH_TOKEN, servlet.pubsignal_authHeaderValue);
+        assertEquals(PublisherStep.publicationToString(data),servlet.pubsignal_content);
     }
     @Test
     public void notifyPublicationRegions() throws Exception {
@@ -174,8 +174,8 @@ public class SimiSvcClientTest {
         pub.addPublishedRegion(new PublishedRegion("22"));
         pub.addPublishedRegion(new PublishedRegion("33"));
         svc.notifyPublication(pub);
-        Assert.assertEquals("application/json", servlet.pubsignal_contentType);
-        Assert.assertEquals("Bearer " + OAUTH_TOKEN, servlet.pubsignal_authHeaderValue);
-        Assert.assertEquals(PublisherStep.publicationToString(pub),servlet.pubsignal_content);
+        assertEquals("application/json", servlet.pubsignal_contentType);
+        assertEquals("Bearer " + OAUTH_TOKEN, servlet.pubsignal_authHeaderValue);
+        assertEquals(PublisherStep.publicationToString(pub),servlet.pubsignal_content);
     }
 }
