@@ -1,34 +1,36 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.*;
+import ch.ehi.ili2db.base.DbNames;
+import ch.so.agi.gretl.testutil.TestUtil;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import ch.so.agi.gretl.util.IntegrationTestUtilSql;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashSet;
 
-import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.testcontainers.containers.PostgisContainerProvider;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ch.ehi.ili2db.base.DbNames;
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
-import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-
+@Testcontainers
 public class Ili2pgReplaceFileTest {
     
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-        .withPassword(IntegrationTestUtilSql.PG_CON_DDLPASS)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+            .withDatabaseName("gretl")
+            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+            .withPassword(IntegrationTestUtilSql.PG_CON_DDLPASS)
+            .withInitScript("init_postgresql.sql")
+            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void importLocalFile_Ok() throws Exception {
@@ -55,7 +57,6 @@ public class Ili2pgReplaceFileTest {
             assertTrue(datasets.contains("A_Dataset"));
             rs.close();
             s.close();
-            
         } finally {
             IntegrationTestUtilSql.closeCon(con);
         }
@@ -91,11 +92,8 @@ public class Ili2pgReplaceFileTest {
             assertTrue(datasets.contains("2549"));
             rs.close();
             s.close();
-            
         } finally {
             IntegrationTestUtilSql.closeCon(con);
         }
     }
-    
-
 }

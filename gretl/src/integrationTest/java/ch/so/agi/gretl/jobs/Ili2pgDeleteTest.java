@@ -1,39 +1,36 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import ch.ehi.ili2db.gui.Config;
+import ch.ehi.ili2pg.PgMain;
+import ch.so.agi.gretl.testutil.TestUtil;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import ch.so.agi.gretl.util.IntegrationTestUtilSql;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.File;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.testcontainers.containers.PostgisContainerProvider;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
-import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-
-import ch.ehi.ili2db.base.Ili2db;
-import ch.ehi.ili2db.gui.Config;
-import ch.ehi.ili2pg.PgMain;
-
+@Testcontainers
 public class Ili2pgDeleteTest {
     
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-        .withPassword(IntegrationTestUtilSql.PG_CON_DDLPASS)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+            .withDatabaseName("gretl")
+            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+            .withPassword(IntegrationTestUtilSql.PG_CON_DDLPASS)
+            .withInitScript("init_postgresql.sql")
+            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void deleteDataset_Ok() throws Exception {
@@ -48,13 +45,13 @@ public class Ili2pgDeleteTest {
             Statement s = con.createStatement();
             ResultSet rs = s.executeQuery("SELECT count(*) AS anzahl FROM dm01.lfp3");
 
-            if(!rs.next()) {
+            if (!rs.next()) {
                 fail();
             }
 
-            assertTrue(rs.getInt(1)==0);
+            assertEquals(0, rs.getInt(1));
             
-            if(rs.next()) {
+            if (rs.next()) {
                 fail();
             }            
         } finally {
