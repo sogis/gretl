@@ -4,36 +4,51 @@ import ch.so.agi.gretl.testutil.S3TestHelper;
 import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
-class S3Bucket2BucketTest {
-    private final S3TestHelper s3TestHelper;
-    private final String s3AccessKey;
-    private final String s3SecretKey;
-    private final String s3SourceBucket;
-    private final String s3TargetBucket;
+@Testcontainers
+public class S3Bucket2BucketTest {
+    @Container
+    public static LocalStackContainer localStackContainer = new LocalStackContainer(S3TestHelper.getLocalstackImage())
+            .withServices(S3);
 
-    public S3Bucket2BucketTest() {
-        this.s3AccessKey = System.getProperty("s3AccessKey");
-        this.s3SecretKey = System.getProperty("s3SecretKey");
-        this.s3SourceBucket = "ch.so.agi.gretl.test";
-        this.s3TargetBucket = "ch.so.agi.gretl.test-copy";
+    private static String s3AccessKey;
+    private static String s3SecretKey;
+    private static URI s3Endpoint;
+    private static String s3Region;
+    private static String acl;
+    private static String s3SourceBucketName;
+    private static String s3TargetBucketName;
+    private static S3TestHelper s3TestHelper;
 
-        String s3Endpoint = "https://s3.eu-central-1.amazonaws.com";
-        String s3Region = "eu-central-1";
-        this.s3TestHelper = new S3TestHelper(this.s3AccessKey, this.s3SecretKey, s3Region, s3Endpoint);
+    @BeforeAll
+    public static void setUp() throws Exception {
+        s3AccessKey = localStackContainer.getAccessKey();
+        s3SecretKey = localStackContainer.getSecretKey();
+        s3SourceBucketName = "ch.so.agi.gretl.test";
+        s3TargetBucketName = "ch.so.agi.gretl.test-copy";
+        s3Endpoint = localStackContainer.getEndpointOverride(S3);
+        s3Region = localStackContainer.getRegion();
+        acl = "public-read";
+        s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint.toString());
     }
 
     @Test
@@ -41,23 +56,24 @@ class S3Bucket2BucketTest {
     void uploadDirectory_Ok() throws Exception {
         S3Client s3client = s3TestHelper.getS3Client();
 
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("foo.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("bar.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("download.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
 
         // Upload files  and copy files from one bucket to another.
         GradleVariable[] gvs = {
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey),
                 GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
-                GradleVariable.newGradleProperty("s3SourceBucket", s3SourceBucket),
-                GradleVariable.newGradleProperty("s3TargetBucket", s3TargetBucket)
+                GradleVariable.newGradleProperty("s3SourceBucket", s3SourceBucketName),
+                GradleVariable.newGradleProperty("s3TargetBucket", s3TargetBucketName),
+                GradleVariable.newGradleProperty("s3Endpoint", s3Endpoint.toString())
         };
         IntegrationTestUtil.runJob("src/integrationTest/jobs/S3Bucket2Bucket", gvs);
 
         // Check result.
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
-                .bucket(s3TargetBucket)
+                .bucket(s3TargetBucketName)
                 .build();
 
         ListObjectsResponse res = s3client.listObjects(listObjects);
@@ -74,11 +90,11 @@ class S3Bucket2BucketTest {
         assertEquals(3, keyList.size());
 
         // Remove uploaded files from buckets.
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucket).key("foo.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucket).key("bar.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucketName).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucketName).key("bar.txt").build());
 
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("foo.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("bar.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucket).key("download.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
+        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
     }
 }

@@ -1,11 +1,12 @@
-import ch.so.agi.gretl.tasks.*
-
 apply plugin: 'ch.so.agi.gretl'
 
 def s3AccessKey = findProperty("s3AccessKey")
 def s3SecretKey = findProperty("s3SecretKey")
 def s3SourceBucket = findProperty("s3SourceBucket")
 def s3TargetBucket = findProperty("s3TargetBucket")
+def s3Endpoint = findProperty("s3Endpoint") ?: "https://s3.eu-central-1.amazonaws.com"
+def s3Region = findProperty("s3Region") ?: "eu-central-1"
+def s3Acl = findProperty("s3Acl") ?: "public-read"
 
 defaultTasks 'copyfiles'
 
@@ -13,10 +14,10 @@ task directoryupload(type: S3Upload) {
     accessKey = s3AccessKey
     secretKey = s3SecretKey
     sourceFile = file("./docs/")
-    endPoint = "https://s3.eu-central-1.amazonaws.com/"
-    region = "eu-central-1"
+    endPoint = s3Endpoint
+    region = s3Region
     bucketName = s3SourceBucket
-    acl = "public-read"
+    acl = s3Acl
 }
 
 task copyfiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
@@ -24,5 +25,5 @@ task copyfiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
     secretKey = s3SecretKey
     sourceBucket = s3SourceBucket
     targetBucket = s3TargetBucket
-    acl = "public-read"
+    acl = s3Acl
 }
