@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @Testcontainers
 public class JsonImportTest {
-    
     private static final String dbusr = "ddluser";
     private static final String dbpwd = "ddluser";
     private static final String dbdatabase = "gretl";
@@ -40,51 +39,48 @@ public class JsonImportTest {
         String tableName = "jsonobject";
         String columnName = "json_text_col";
 
-        Connection con = null;
-        try {
-            con = IntegrationTestUtilSql.connectPG(postgres);
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement()
+        ) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
-            Statement s1 = con.createStatement();            
-            s1.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            s1.close();
+            stmt.execute("CREATE TABLE " + schemaName + "." + tableName + " (id serial, " + columnName + " text);");
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
-            
             con.commit();
-            IntegrationTestUtilSql.closeCon(con);
+        }
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/JsonImportObject", gvs);
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/JsonImportObject", gvs);
 
-            //reconnect to check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-
-            Statement s2 = con.createStatement();
-            String sql = "SELECT CAST("+columnName+"::jsonb->'features'->>1 AS jsonb)->'id' AS id FROM "+schemaName+"."+tableName; 
-            ResultSet rs = s2.executeQuery(sql); 
-            if(!rs.next()) {
-                fail();
+        // Reconnect to check results
+        try (
+                Connection con = IntegrationTestUtilSql.connectPG(postgres);
+                Statement stmt = con.createStatement()
+        ) {
+            {
+                String sql = "SELECT CAST(" + columnName + "::jsonb->'features'->>1 AS jsonb)->'id' AS id FROM " + schemaName + "." + tableName;
+                try (ResultSet rs = stmt.executeQuery(sql)) {
+                    if (!rs.next()) {
+                        fail();
+                    }
+                    assertEquals(821114211, rs.getInt(1));
+                    if (rs.next()) {
+                        fail();
+                    }
+                }
             }
-            assertEquals(821114211, rs.getInt(1));
-            if(rs.next()) {
-                fail();
+            {
+                String sql = sql = "SELECT ROUND(ST_XMin(ST_SetSRID(ST_GeomFromGeoJSON(CAST(" + columnName + "::jsonb->'features'->>1 AS jsonb)->'geometry'), 2056))) AS foo FROM " + schemaName + "." + tableName;
+                try (ResultSet rs = stmt.executeQuery(sql)) {
+                    if (!rs.next()) {
+                        fail();
+                    }
+                    assertEquals(2626724, rs.getInt(1));
+                    if (rs.next()) {
+                        fail();
+                    }
+                }
             }
-            rs.close();
-            s2.close();
-            
-            Statement s3 = con.createStatement();
-            sql = "SELECT ROUND(ST_XMin(ST_SetSRID(ST_GeomFromGeoJSON(CAST("+columnName+"::jsonb->'features'->>1 AS jsonb)->'geometry'), 2056))) AS foo FROM "+schemaName+"."+tableName; 
-            ResultSet rs3 = s3.executeQuery(sql); 
-            if(!rs3.next()) {
-                fail();
-            }
-            assertEquals(2626724, rs3.getInt(1));
-            if(rs3.next()) {
-                fail();
-            }
-            rs3.close();
-            s3.close();
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
         }
     }
     
@@ -94,44 +90,40 @@ public class JsonImportTest {
         String tableName = "jsonarray";
         String columnName = "json_text_col";
 
-        Connection con = null;
-        try {
-            con = IntegrationTestUtilSql.connectPG(postgres);
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement()
+        ) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
-            Statement s1 = con.createStatement();            
-            s1.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
-            s1.close();
+
+            stmt.execute("CREATE TABLE " + schemaName + "." + tableName + " (id serial, " + columnName + " text);");
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
-            
             con.commit();
-            IntegrationTestUtilSql.closeCon(con);
+        }
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/JsonImportArray", gvs);
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/JsonImportArray", gvs);
 
-//            Thread.sleep(1000*60*20);
+        // Reconnect to check results
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement()
+        ) {
+            String sql = "SELECT " + columnName + "::jsonb -> 'surname' AS surname FROM " + schemaName + "." + tableName;
 
-            //reconnect to check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-
-            Statement s2 = con.createStatement();
-            String sql = "SELECT "+columnName+"::jsonb -> 'surname' AS surname FROM "+schemaName+"."+tableName; 
-            ResultSet rs = s2.executeQuery(sql); 
-            if(!rs.next()) {
-                fail();
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                if (!rs.next()) {
+                    fail();
+                }
+                assertEquals("\"Doe\"", rs.getString(1));
+                if (!rs.next()) {
+                    fail();
+                }
+                assertEquals("\"Doe\"", rs.getString(1));
+                if (rs.next()) {
+                    fail();
+                }
             }
-            assertEquals("\"Doe\"", rs.getString(1));
-            if(!rs.next()) {
-                fail();
-            }
-            assertEquals("\"Doe\"", rs.getString(1));
-            if(rs.next()) {
-                fail();
-            }
-            rs.close();
-            s2.close();            
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
         }
     }
 }

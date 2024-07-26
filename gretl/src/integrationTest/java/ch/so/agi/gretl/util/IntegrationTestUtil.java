@@ -3,8 +3,8 @@ package ch.so.agi.gretl.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -15,11 +15,9 @@ import static org.hamcrest.core.Is.is;
  */
 public class IntegrationTestUtil {
     private static final String newline = System.lineSeparator();
-
     private static final String TESTTYPE = System.getProperty("GRETL_TESTTYPE");
     private static final String TESTTYPE_JAR = "jar";
     private static final String TESTTYPE_IMAGE = "image";
-
     private static final String GRETL_PROJECT_ABS_PATH = System.getProperty("GRETL_PROJECT_ABS_PATH");
     private static final String ROOT_PROJECT_ABS_PATH = System.getProperty("ROOT_PROJECT_ABS_PATH");
 

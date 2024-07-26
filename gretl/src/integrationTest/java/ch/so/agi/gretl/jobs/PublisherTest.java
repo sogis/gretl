@@ -35,11 +35,10 @@ public class PublisherTest {
         IntegrationTestUtil.runJob(jobDirectory, gvs);
     }
     
-    private Path copyFileFromResourcesToJob(String jobDirectory, String resourceSubDirectory, String filename) throws IOException {
+    private void copyFileFromResourcesToJob(String jobDirectory, String resourceSubDirectory, String filename) throws IOException {
         String resourceDirectory = "src/test/resources/data/publisher/";
         Path from = Paths.get(resourceDirectory, resourceSubDirectory, filename);
         Path to = Paths.get(jobDirectory, filename);
         Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
-        return to;
     }
 }

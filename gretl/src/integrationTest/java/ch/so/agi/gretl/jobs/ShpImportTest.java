@@ -33,26 +33,26 @@ public class ShpImportTest {
     @Test
     public void importOk() throws Exception {
         String schemaName = "shpimport".toLowerCase();
-        Connection con = null;
-        try{
-            con = IntegrationTestUtilSql.connectPG(postgres);
+
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement()
+        ) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
-            Statement s1 = con.createStatement();
-            s1.execute("CREATE TABLE "+schemaName+".importdata_batchsize(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, geometrie geometry(POINT,2056), aextra varchar(40))");
-            s1.close();
+            stmt.execute("CREATE TABLE "+schemaName+".importdata_batchsize(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, geometrie geometry(POINT,2056), aextra varchar(40))");
+
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
+        }
 
-            con.commit();
-            IntegrationTestUtilSql.closeCon(con);
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/ShpImportBatchSize", gvs);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/ShpImportBatchSize", gvs);
-
-            //reconnect to check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-
-            Statement s2 = con.createStatement();
-            ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1"); 
+        // Reconnect to check results
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1")
+        ) {
             if(!rs.next()) {
                 fail();
             }
@@ -63,13 +63,9 @@ public class ShpImportTest {
             assertEquals(new java.sql.Date(2013-1900,10-1,21),rs.getDate(5));
             assertEquals(2638000.0,rs.getFloat(6),0.000001);
             assertEquals(1175250.0,rs.getFloat(7),0.000001);
-            if(rs.next()) {
+            if (rs.next()) {
                 fail();
             }
-            rs.close();
-            s1.close();
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
         }
     }
 }
