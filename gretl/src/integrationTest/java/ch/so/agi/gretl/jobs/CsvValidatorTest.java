@@ -12,6 +12,7 @@ public class CsvValidatorTest {
         GradleVariable[] gvs = null; // {GradleVariable.newGradleProperty(TestUtilSql.VARNAME_PG_CON_URI, TestUtilSql.PG_CON_URI)};
         IntegrationTestUtil.runJob("src/integrationTest/jobs/CsvValidator", gvs);
     }
+
     @Test
     public void validationFail() throws Exception {
         GradleVariable[] gvs = null; // {GradleVariable.newGradleProperty(TestUtilSql.VARNAME_PG_CON_URI, TestUtilSql.PG_CON_URI)};
