@@ -30,9 +30,8 @@ public class CsvExportTest {
     @Test
     public void exportOk() throws Exception {
         String schemaName = "csvexport".toLowerCase();
-        Connection con = null;
-        try {
-            con = IntegrationTestUtilSql.connectPG(postgres);
+
+        try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
             s1.execute("CREATE TABLE " + schemaName + ".exportdata(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, atimestamp timestamp, aboolean boolean, aextra varchar(40))");
@@ -57,8 +56,6 @@ public class CsvExportTest {
             line = reader.readLine();
             assertEquals("\"2\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"", line);
             reader.close();
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
         }
     }
 }

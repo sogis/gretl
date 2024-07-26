@@ -17,6 +17,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 public class GpkgImportTest {
@@ -32,41 +33,43 @@ public class GpkgImportTest {
     @Test
     public void importOk() throws Exception {
         String schemaName = "gpkgimport".toLowerCase();
-        Connection con = null;
-        try{
-            con = IntegrationTestUtilSql.connectPG(postgres);
+
+        // Setup db schema
+        try (
+                Connection con = IntegrationTestUtilSql.connectPG(postgres);
+                Statement stmt = con.createStatement()
+        ) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
-            Statement s1 = con.createStatement();
-            s1.execute("CREATE TABLE "+schemaName+".importdata(fid integer, idname character varying, geom geometry(POINT,2056))");
-            s1.close();
+            stmt.execute("CREATE TABLE "+schemaName+".importdata(fid integer, idname character varying, geom geometry(POINT,2056))");
+
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
-
             con.commit();
-            IntegrationTestUtilSql.closeCon(con);
+        }
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgImport", gvs);
+        // Run Gradle job and import data
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgImport", gvs);
 
-            //reconnect to check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-            
-            Statement s2 = con.createStatement();
-            ResultSet rowCount = s2.executeQuery("SELECT COUNT(*) AS rowcount FROM "+schemaName+".importdata;");
-            while(rowCount.next()) {
-                assertEquals(1, rowCount.getInt(1));
+        // Reconnect to check results
+        try (Connection con = IntegrationTestUtilSql.connectPG(postgres);
+             Statement stmt = con.createStatement()) {
+
+            // Query row count
+            try (ResultSet rowCount = stmt.executeQuery("SELECT COUNT(*) AS rowcount FROM " + schemaName + ".importdata;")) {
+                assertTrue(rowCount.next(), "No row count result returned");
+                assertEquals(1, rowCount.getInt("rowcount"), "Row count mismatch");
             }
-            ResultSet rs = s2.executeQuery("SELECT fid,idname,st_asewkt(geom) FROM "+schemaName+".importdata;");
-            ResultSetMetaData rsmd=rs.getMetaData();
-            assertEquals(3, rsmd.getColumnCount());
-            while(rs.next()){
-                assertEquals(1, rs.getObject(1));
-                assertEquals("12", rs.getObject(2));
-                assertEquals("SRID=2056;POINT(-0.228571428571429 0.568831168831169)", rs.getObject(3));
+
+            // Query actual data
+            try (ResultSet rs = stmt.executeQuery("SELECT fid, idname, ST_AsEWKT(geom) FROM " + schemaName + ".importdata;")) {
+                ResultSetMetaData rsmd = rs.getMetaData();
+                assertEquals(3, rsmd.getColumnCount(), "Column count mismatch");
+
+                assertTrue(rs.next(), "No result rows returned");
+                assertEquals(1, rs.getInt("fid"), "FID mismatch");
+                assertEquals("12", rs.getString("idname"), "ID name mismatch");
+                assertEquals("SRID=2056;POINT(-0.228571428571429 0.568831168831169)", rs.getString("st_asewkt"), "Geometry mismatch");
             }
-            rs.close();
-            s1.close();
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
         }
     }
 }

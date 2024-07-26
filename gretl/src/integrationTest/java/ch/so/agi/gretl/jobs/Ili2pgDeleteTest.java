@@ -1,7 +1,5 @@
 package ch.so.agi.gretl.jobs;
 
-import ch.ehi.ili2db.gui.Config;
-import ch.ehi.ili2pg.PgMain;
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
@@ -34,34 +32,23 @@ public class Ili2pgDeleteTest {
 
     @Test
     public void deleteDataset_Ok() throws Exception {
-        Connection con = null;
-        try {                        
-            // create schema, import dataset and delete dataset
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgDeleteDataset", gvs);
-            
-            // check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-            Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT count(*) AS anzahl FROM dm01.lfp3");
+        // create schema, import dataset and delete dataset
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgDeleteDataset", gvs);
 
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT count(*) AS anzahl FROM dm01.lfp3")
+        ) {
             if (!rs.next()) {
                 fail();
             }
-
             assertEquals(0, rs.getInt(1));
-            
+
             if (rs.next()) {
                 fail();
-            }            
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
+            }
         }
-    }
-
-    private Config createConfig() {
-        Config settings = new Config();
-        new PgMain().initConfig(settings);
-        return settings;
     }
 }

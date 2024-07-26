@@ -11,7 +11,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 
@@ -31,16 +30,9 @@ public class DatabaseDocumentExportTest {
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
-        
-        File targetDir = new File("src/integrationTest/jobs/DatabaseDocumentExport/");
 
-        Connection con = null;
-        try {
-            con = IntegrationTestUtilSql.connectPG(postgres);
+        try (Connection con = IntegrationTestUtilSql.connectPG(postgres); Statement stmt = con.createStatement()) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
-
-            Statement stmt = con.createStatement();
-            
             stmt.execute("DROP SCHEMA IF EXISTS "+schemaName+" CASCADE;");
             stmt.execute("CREATE SCHEMA "+schemaName+";");
             stmt.execute("CREATE TABLE "+schemaName+"."+tableName+" (id serial, "+columnName+" text);");
@@ -54,8 +46,6 @@ public class DatabaseDocumentExportTest {
 
             GradleVariable[] gvs = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
             IntegrationTestUtil.runJob("src/integrationTest/jobs/DatabaseDocumentExport", gvs);
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
         }
     }
 }

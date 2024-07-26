@@ -13,6 +13,8 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 @Testcontainers
@@ -34,10 +36,10 @@ public class Ili2pgExportDatasetsTest {
         
         // check results
         {
-            assertXtfFile(new java.io.File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetA-out.xtf"));
+            assertXtfFile(new File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetA-out.xtf"));
         }
         {
-            assertXtfFile(new java.io.File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetB-out.xtf"));
+            assertXtfFile(new File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetB-out.xtf"));
         }
     }
 
@@ -46,12 +48,11 @@ public class Ili2pgExportDatasetsTest {
         assertInstanceOf(StartTransferEvent.class, reader.read());
         assertInstanceOf(StartBasketEvent.class, reader.read());
         
-        IoxEvent event=reader.read();
+        IoxEvent event = reader.read();
         while(event instanceof ObjectEvent) {
-            event=reader.read();
+            event = reader.read();
         }
         assertInstanceOf(EndBasketEvent.class, event);
         assertInstanceOf(EndTransferEvent.class, reader.read());
     }
-
 }

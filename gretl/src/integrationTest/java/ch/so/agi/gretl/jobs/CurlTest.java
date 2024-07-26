@@ -6,9 +6,9 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,17 +17,17 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 class CurlTest {
-    private MockWebServer mockWebServer;
+    private static MockWebServer mockWebServer;
     
-    @BeforeEach
-    public void setup() throws IOException {
-      this.mockWebServer = new MockWebServer();
-      this.mockWebServer.start();
+    @BeforeAll
+    public static void setup() throws IOException {
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
     }
-    
-    @AfterEach
-    public void tearDown() throws IOException {
-        this.mockWebServer.shutdown();
+
+    @AfterAll
+    public static void teardown() throws IOException {
+        mockWebServer.shutdown();
     }
 
     @Test
@@ -99,7 +99,5 @@ class CurlTest {
         String content = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/CurlDownload/README.md")));
         Assertions.assertTrue(content.contains("_GRETL_"));
         Assertions.assertTrue(content.contains("Licencse"));
-
-        
     }
 }
