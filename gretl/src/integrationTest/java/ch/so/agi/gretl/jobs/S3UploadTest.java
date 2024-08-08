@@ -37,21 +37,22 @@ public class S3UploadTest {
     private static URI s3Endpoint;
     private static String s3Region;
     private static S3TestHelper s3TestHelper;
+    private static S3Client s3Client;
 
     @BeforeAll
     public static void setUp() {
         s3AccessKey = localStackContainer.getAccessKey();
         s3SecretKey = localStackContainer.getSecretKey();
-        s3BucketName = "s3bucketname"; // System.getProperty("s3BucketName");
+        s3BucketName = System.getProperty("s3BucketName");
         s3Endpoint = localStackContainer.getEndpointOverride(S3);
         s3Region = localStackContainer.getRegion();
         s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint.toString());
+        s3Client = s3TestHelper.getS3Client();
     }
 
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadDirectory_Ok() throws Exception {
-        S3Client s3Client = s3TestHelper.getS3Client();
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
@@ -91,7 +92,6 @@ public class S3UploadTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadFileTree_Ok() throws Exception {
-        S3Client s3Client = s3TestHelper.getS3Client();
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
 
         // Remove uploaded files from bucket.
@@ -133,7 +133,6 @@ public class S3UploadTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadFile_Ok() throws Exception {
-        S3Client s3Client = s3TestHelper.getS3Client();
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
