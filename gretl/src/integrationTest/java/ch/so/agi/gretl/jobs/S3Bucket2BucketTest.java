@@ -2,6 +2,7 @@ package ch.so.agi.gretl.jobs;
 
 import ch.so.agi.gretl.testutil.S3TestHelper;
 import ch.so.agi.gretl.testutil.TestTags;
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,11 +12,9 @@ import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
-import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.model.*;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +53,28 @@ public class S3Bucket2BucketTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadDirectory_Ok() throws Exception {
-        S3Client s3client = s3TestHelper.getS3Client();
+        S3Client s3Client = s3TestHelper.getS3Client();
+        s3TestHelper.createBucketIfNotExists(s3Client, s3SourceBucketName);
+        s3TestHelper.createBucketIfNotExists(s3Client, s3TargetBucketName);
 
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
+        List<File> files = new ArrayList<File>() {{
+            add(TestUtil.getResourceFile(TestUtil.S3_BUCKET_DIR_PATH + "/foo.txt"));
+            add(TestUtil.getResourceFile(TestUtil.S3_BUCKET_DIR_PATH + "/bar.txt"));
+        }};
+
+        for (File file : files) {
+            PutObjectRequest request = PutObjectRequest.builder()
+                    .bucket(s3SourceBucketName)
+                    .key(file.getName())
+                    .contentLength(file.length())
+                    .build();
+
+            s3Client.putObject(request, file.toPath());
+        }
+
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
 
         // Upload files  and copy files from one bucket to another.
         GradleVariable[] gvs = {
@@ -66,7 +82,9 @@ public class S3Bucket2BucketTest {
                 GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
                 GradleVariable.newGradleProperty("s3SourceBucket", s3SourceBucketName),
                 GradleVariable.newGradleProperty("s3TargetBucket", s3TargetBucketName),
-                GradleVariable.newGradleProperty("s3Endpoint", s3Endpoint.toString())
+                GradleVariable.newGradleProperty("s3Endpoint", s3Endpoint.toString()),
+                GradleVariable.newGradleProperty("s3Region", s3Region),
+                GradleVariable.newGradleProperty("s3Acl", acl)
         };
         IntegrationTestUtil.runJob("src/integrationTest/jobs/S3Bucket2Bucket", gvs);
 
@@ -76,25 +94,22 @@ public class S3Bucket2BucketTest {
                 .bucket(s3TargetBucketName)
                 .build();
 
-        ListObjectsResponse res = s3client.listObjects(listObjects);
+        ListObjectsResponse res = s3Client.listObjects(listObjects);
         List<S3Object> objects = res.contents();
 
-        List<String> keyList = new ArrayList<String>();
+        List<String> keyList = new ArrayList<>();
         for (S3Object myObject : objects) {
             keyList.add(myObject.key());
         }
 
         assertTrue(keyList.contains("foo.txt"));
         assertTrue(keyList.contains("bar.txt"));
-        assertTrue(keyList.contains("download.txt"));
-        assertEquals(3, keyList.size());
+        assertEquals(2, keyList.size());
 
         // Remove uploaded files from buckets.
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucketName).key("foo.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucketName).key("bar.txt").build());
-
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
-        s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucketName).key("foo.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3SourceBucketName).key("bar.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("foo.txt").build());
+        s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
     }
 }
