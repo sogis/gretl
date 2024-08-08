@@ -1,18 +1,16 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.Test;
-
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Csv2ExcelTest {
 

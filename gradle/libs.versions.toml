@@ -27,7 +27,8 @@ sqliteJdbcVersion = "3.8.11.2"
 derbyVersion = "10.13.1.1"
 oracleVersion = "19.3.0.0"
 duckdbVersion = "0.9.2"
-junitVersion = "4.12"
+junitVersion = "5.10.3"
+junitTestContainersVersion = "1.19.8"
 mockFtpServerVersion = "2.7.1"
 mockWebServerVersion = "4.11.0"
 testContainersVersion = "1.15.3"
@@ -39,6 +40,7 @@ gradleSshPluginVersion = "2.9.0"
 gradleAwsPluginVersion = "0.41"
 pluginPublishVersion = "0.21.0"
 cyclonedxBomVersion = "1.7.4"
+awssdk = "1.12.761"
 
 [libraries]
 iox-ili = { group = "ch.interlis", name = "iox-ili", version.ref = "ioxIliVersion" }
@@ -55,6 +57,7 @@ iox-formats = { group = "io.github.sogis", name = "iox-formats", version.ref = "
 av2-ch = { group = "io.github.sogis", name = "av2ch", version.ref = "av2chVersion" }
 av2-geobau = { group = "ch.interlis", name = "av2geobau", version.ref = "av2geobauVersion" }
 aws-sdk-s3 = { group = "software.amazon.awssdk", name = "s3", version.ref = "awsSdkVersion" }
+aws-java-sdk = { group = "com.amazonaws", name = "aws-java-sdk", version.ref = "awssdk" }
 apache-commons-io = { group = "commons-io", name = "commons-io", version.ref = "apacheCommonsIoVersion" }
 apache-commons-net = { group = "commons-net", name = "commons-net", version.ref = "apacheCommonsNetVersion" }
 apache-commons-code = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodeVersion" }
@@ -71,12 +74,16 @@ sqlite-jdbc = {group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite
 derby = {group = "org.apache.derby", name = "derby", version.ref = "derbyVersion"}
 oracle = { group = "com.oracle.ojdbc", name = "ojdbc8", version.ref = "oracleVersion"}
 duckdb = { group = "org.duckdb", name = "duckdb_jdbc", version.ref = "duckdbVersion"}
-junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
+junit = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitVersion" }
+junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitVersion" }
+junitTestContainers = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "junitTestContainersVersion" }
+junitTestContainersPostgres = { group = "org.testcontainers", name = "postgresql", version.ref = "junitTestContainersVersion" }
 mock-ftp-server = { group = "org.mockftpserver", name = "MockFtpServer", version.ref = "mockFtpServerVersion" }
 mock-web-server = { group = "com.squareup.okhttp3", name ="mockwebserver", version.ref = "mockWebServerVersion"}
 test-containers-base = { group = "org.testcontainers", name = "testcontainers", version.ref = "testContainersVersion"}
 test-containers-postgresql = { group = "org.testcontainers", name = "postgresql", version.ref = "testContainersVersion"}
 test-containers-oracle = { group = "org.testcontainers", name = "oracle-xe", version.ref = "testContainersVersion"}
+test-containers-localstack = { group = "org.testcontainers", name = "localstack", version.ref = "testContainersVersion" }
 sftp-fs = { group = "com.github.robtimus", name = "sftp-fs", version.ref = "sftpFsVersion"}
 tomcat-embed-core = { group = "org.apache.tomcat.embed", name = "tomcat-embed-core", version.ref = "tomcatEmbedVersion" }
 hadoop-client = { group = "org.apache.hadoop", name = "hadoop-client", version.ref = "hadoopClientVersion" }

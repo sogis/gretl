@@ -1,8 +1,8 @@
 package ch.so.agi.gretl.util;
 
-import java.sql.*;
-
 import org.testcontainers.containers.PostgreSQLContainer;
+
+import java.sql.*;
 
 /**
  * Contains helper methods for the test's of the Db2DbTask and SqlExecutorTask
@@ -53,7 +53,7 @@ public class IntegrationTestUtilSql {
         return con;
     }
     
-    public static Connection connectPG(PostgreSQLContainer postgres) {
+    public static Connection connectPG(PostgreSQLContainer<?> postgres) {
         Connection con = null;
         try {
             String url = postgres.getJdbcUrl();

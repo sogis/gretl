@@ -1,9 +1,9 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.testutil.SftpTest;
+import ch.so.agi.gretl.testutil.TestTags;
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
-import org.junit.BeforeClass;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
-@Category(SftpTest.class)
+@Tag(TestTags.SFTP_TEST)
 public class PublisherStepFile2RemoteTest extends AbstractPublisherStepTest {
     private static final String FTP_URL = System.getProperty("ftpurl");
     private static final String FTP_USER = System.getProperty("ftpusr");
@@ -23,7 +23,7 @@ public class PublisherStepFile2RemoteTest extends AbstractPublisherStepTest {
     private static FileSystem fileSystem = null;
     private static String path;
 
-    @BeforeClass
+    @BeforeAll
     public static void initFileSystem() {
         if (fileSystem != null) {
             return;
@@ -45,6 +45,11 @@ public class PublisherStepFile2RemoteTest extends AbstractPublisherStepTest {
         }
     }
 
+    @Override
+    protected Path getTargetPath() {
+        return fileSystem.getPath(path);
+    }
+
     private static URI createHostURI(URI rawUri) throws URISyntaxException {
         String scheme = rawUri.getScheme();
         String host = rawUri.getHost();
@@ -55,10 +60,5 @@ public class PublisherStepFile2RemoteTest extends AbstractPublisherStepTest {
         } else {
             return new URI(String.format("%s://%s:%d", scheme, host, port));
         }
-    }
-
-    @Override
-    protected Path getTargetPath() {
-        return fileSystem.getPath(path);
     }
 }
