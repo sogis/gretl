@@ -25,5 +25,7 @@ task copyfiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
     secretKey = s3SecretKey
     sourceBucket = s3SourceBucket
     targetBucket = s3TargetBucket
+    endPoint = s3Endpoint
+    region = s3Region
     acl = s3Acl
 }
