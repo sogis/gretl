@@ -32,17 +32,15 @@ public class IntegrationTestUtil {
 
     public static void executeTestRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
         if(TestType.IMAGE.equals(TEST_TYPE)){
-            int result = executeDockerRunCommand(projectDirectory.getAbsolutePath(), variables);
-            assertEquals(0, result);
+            executeDockerRunCommand(projectDirectory.getAbsolutePath(), variables);
         } else if(TestType.JAR.equals(TEST_TYPE)){
-            int result = executeGradleRunner(projectDirectory, taskName, variables);
-            assertTrue(result == TaskOutcome.SUCCESS.ordinal() || result == TaskOutcome.UP_TO_DATE.ordinal());
+            executeGradleRunner(projectDirectory, taskName, variables);
         } else {
             throw new GretlException("Unknown test type: " + TEST_TYPE);
         }
     }
 
-    private static int executeGradleRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
+    private static void executeGradleRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
         List<String> arguments = getRunnerArguments(taskName, variables);
         BuildResult result = GradleRunner.create()
                 .withProjectDir(projectDirectory)
@@ -50,19 +48,31 @@ public class IntegrationTestUtil {
                 .withArguments(arguments)
                 .forwardOutput().build();
         TaskOutcome outcome = Objects.requireNonNull(result.task(":" + taskName)).getOutcome();
-        return TaskOutcomeConverter.convertTaskOutcomeToInteger(outcome);
+        assertTrue(outcome == TaskOutcome.SUCCESS || outcome == TaskOutcome.UP_TO_DATE);
     }
 
-    private static int executeDockerRunCommand(String jobPath, GradleVariable[] variables){
+    private static void executeDockerRunCommand(String jobPath, GradleVariable[] variables){
         String dockerRunCommand = getDockerRunCommand(jobPath, variables);
+        StringBuffer stdError = new StringBuffer();
+        StringBuffer stdOut = new StringBuffer();
+
         try {
             Process process = Runtime.getRuntime().exec(dockerRunCommand);
-            appendProcessOutputToStdStreams(process, new StringBuffer(), new StringBuffer());
+            appendProcessOutputToStdStreams(process, stdError, stdOut);
             process.waitFor();
-            return process.exitValue();
+            logDockerRunOutput(dockerRunCommand, stdError, stdOut);
+            int result = process.exitValue();
+            assertEquals(0, result);
         } catch (IOException | InterruptedException e) {
             throw new GretlException("Error while executing docker run command: " + dockerRunCommand, e);
         }
+    }
+
+    private static void logDockerRunOutput(String dockerRunCommand, StringBuffer stdError, StringBuffer stdOut){
+        System.out.printf("Here is the standard output of the command [%s]:\n%n", dockerRunCommand);
+        System.out.print(stdOut);
+        System.out.printf("Here is the standard error of the command [%s] (if any):\n%n", dockerRunCommand);
+        System.out.print(stdError);
     }
 
     private static String getDockerRunCommand(String jobPath, GradleVariable[] variables){
