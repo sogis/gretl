@@ -22,7 +22,7 @@ public class PublisherTest {
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "av_test.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
         
-        BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "publishFile").build();
+        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "publishFile").build();
 
         assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":publishFile")).getOutcome());
     }
@@ -35,7 +35,7 @@ public class PublisherTest {
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "2502.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
 
-        BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "printPublishedRegions").build();
+        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "printPublishedRegions").build();
 
         assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":printPublishedRegions")).getOutcome());
     }

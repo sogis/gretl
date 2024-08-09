@@ -48,7 +48,7 @@ public class Ili2pgReplaceFileTest {
     @Test
     public void importLocalFile_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgReplaceFile");
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgimport", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgimport", gradleVariables).build();
 
         // check results
         Statement s = connection.createStatement();
@@ -77,7 +77,7 @@ public class Ili2pgReplaceFileTest {
     @Test
     public void importIlidataFile_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgReplaceIlidataFile");
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgimport", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgimport", gradleVariables).build();
 
         // check results
         Statement s = connection.createStatement();

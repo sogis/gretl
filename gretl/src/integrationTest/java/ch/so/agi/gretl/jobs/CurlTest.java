@@ -45,7 +45,7 @@ public class CurlTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "uploadData", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables).build();
         
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         
@@ -73,7 +73,7 @@ public class CurlTest {
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
         Exception exception = assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.getGradleRunner(projectDirectory, "uploadData", variables).build();
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables).build();
         });
 
         assertTrue(exception.getMessage().contains("Response body does not contain expected string:"));
@@ -88,7 +88,7 @@ public class CurlTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlPlanregister");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "uploadData", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables).build();
         
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         
@@ -103,7 +103,7 @@ public class CurlTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlDownload");
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "downloadData").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "downloadData").build();
 
         String content = new String(Files.readAllBytes(Paths.get(projectDirectory + "/README.md")));
         assertTrue(content.contains("_GRETL_"));

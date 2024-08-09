@@ -25,7 +25,7 @@ public class Gpkg2DxfTest {
         });
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gpkg2Dxf");
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "gpkg2dxf").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkg2dxf").build();
 
         //Check results
         String contentNF = new String (Files.readAllBytes(Paths.get(TEST_OUT, "nachfuehrngskrise_gemeinde.dxf")));

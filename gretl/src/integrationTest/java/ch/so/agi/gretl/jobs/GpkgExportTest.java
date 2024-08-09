@@ -66,7 +66,7 @@ public class GpkgExportTest {
         connection.commit();
         IntegrationTestUtilSql.closeCon(connection);
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "gpkgexport", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkgexport", gradleVariables).build();
 
         //check results
         {
@@ -118,7 +118,7 @@ public class GpkgExportTest {
         connection.commit();
         IntegrationTestUtilSql.closeCon(connection);
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "gpkgexport", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkgexport", gradleVariables).build();
 
         //check results
         for (int i=1; i<=2; i++) {

@@ -15,7 +15,7 @@ public class GpkgValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidator");
 
-        BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
+        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
 
         TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
         assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
@@ -25,7 +25,7 @@ public class GpkgValidatorTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidatorFail");
 
         Exception exception = assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
         });
 
         assertTrue(exception.getMessage().contains("validation failed"));

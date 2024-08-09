@@ -10,10 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 
-import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 import org.junit.Test;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
 
@@ -23,7 +21,7 @@ public class GzipTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gzip");
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "compressFile").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "compressFile").build();
                 
         // Validate result
         File gzipFile = new File(projectDirectory + "/planregister.xml.gz");

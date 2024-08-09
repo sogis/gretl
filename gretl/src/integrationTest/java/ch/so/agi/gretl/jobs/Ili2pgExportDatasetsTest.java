@@ -40,7 +40,7 @@ public class Ili2pgExportDatasetsTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgexport", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgexport", variables).build();
         // check results
         {
             assertXtfFile(new java.io.File( projectDirectory + "/DatasetA-out.xtf"));

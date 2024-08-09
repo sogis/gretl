@@ -49,7 +49,7 @@ public class Ili2pgImportSchemaTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgschemaimport", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgschemaimport", variables).build();
 
         // check results
         Statement s = connection.createStatement();
@@ -86,7 +86,7 @@ public class Ili2pgImportSchemaTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "ili2pgschemaimport", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgschemaimport", variables).build();
 
         Statement s = connection.createStatement();
         ResultSet rs  = s.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'gemeinde_bfs'");

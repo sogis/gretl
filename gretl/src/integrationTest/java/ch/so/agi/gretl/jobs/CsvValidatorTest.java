@@ -15,7 +15,7 @@ public class CsvValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidator");
 
-        BuildResult result = IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
+        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
 
         TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
         assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
@@ -25,7 +25,7 @@ public class CsvValidatorTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidatorFail");
 
         assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.getGradleRunner(projectDirectory, "validate").build();
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
         });
     }
 

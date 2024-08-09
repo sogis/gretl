@@ -53,7 +53,7 @@ public class SqlExecutorTaskTest {
         IntegrationTestUtilSql.closeCon(connection);
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskChain");
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "insertInto", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables).build();
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
@@ -86,7 +86,7 @@ public class SqlExecutorTaskTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskRelPath");
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "relativePathConfiguration", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "relativePathConfiguration", gradleVariables).build();
     }
 
     @Test
@@ -104,7 +104,7 @@ public class SqlExecutorTaskTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskParameter");
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "insertInto", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables).build();
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
@@ -134,7 +134,7 @@ public class SqlExecutorTaskTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskParameterList");
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "insertInto", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables).build();
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
         String countDestSql = String.format("select title from %s.src", schemaName);

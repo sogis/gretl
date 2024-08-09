@@ -21,7 +21,7 @@ public class Gpkg2ShpTest {
 
         deleteExistingFiles(projectDirectory, TEST_OUT);
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "gpkg2shp").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkg2shp").build();
         
         //Check results
         {

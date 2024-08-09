@@ -26,7 +26,7 @@ public class MetaPublisherTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/MetaPublisher/afu_abbaustellen_pub");
         String dataIdent = "ch.so.afu.abbaustellen";
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "publishMetaFile").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "publishMetaFile").build();
         
         // Check result
         Path target = projectDirectory.toPath();
@@ -58,7 +58,7 @@ public class MetaPublisherTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/MetaPublisher/agi_dm01so_pub");
         String dataIdent = "ch.so.agi.av.dm01_so";
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "publishMetaFiles").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "publishMetaFiles").build();
 
         // Check result
         Path target = projectDirectory.toPath();
@@ -95,7 +95,7 @@ public class MetaPublisherTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/MetaPublisher/agi_orthofoto_1993_meta_pub");
         String dataIdent = "ch.so.agi.orthofoto_1993.grau";
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "publishMetaFiles").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "publishMetaFiles").build();
 
         // Check result
         Path target = projectDirectory.toPath();

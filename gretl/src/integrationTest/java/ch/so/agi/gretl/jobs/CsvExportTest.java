@@ -49,7 +49,7 @@ public class CsvExportTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvExport");
         GradleVariable[] variables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "csvexport", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "csvexport", variables).build();
 
         // check results
         System.out.println("cwd " + new File(".").getAbsolutePath());

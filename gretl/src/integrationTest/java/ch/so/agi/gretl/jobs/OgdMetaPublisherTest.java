@@ -18,7 +18,7 @@ public class OgdMetaPublisherTest {
     @Test
     public void single_resource_no_identifier_Ok() throws Exception {        
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/OgdMetaPublisher");
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "publishMeta").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "publishMeta").build();
                 
         // Validate result
         Settings settings = new Settings();

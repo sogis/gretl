@@ -3,14 +3,10 @@ package ch.so.agi.gretl.jobs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -70,7 +66,7 @@ public class S3Bucket2BucketTest {
                 GradleVariable.newGradleProperty("s3TargetBucket", s3TargetBucket)
             };
 
-        IntegrationTestUtil.getGradleRunner(projectDirectory, "copyfiles", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "copyfiles", variables).build();
 
         // Check result. 
         ListObjectsRequest listObjects = ListObjectsRequest
