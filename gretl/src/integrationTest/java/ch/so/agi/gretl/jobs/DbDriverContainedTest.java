@@ -27,9 +27,7 @@ public class DbDriverContainedTest {
     public void SqliteDriverContainedTest() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DbTasks_SqliteLibsPresent");
 
-        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "querySqliteMaster");
-
-        assertEquals(TaskOutcome.SUCCESS.ordinal(), result);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "querySqliteMaster");
     }
 
     @Category(DbDriversReachableTest.class)
@@ -38,8 +36,6 @@ public class DbDriverContainedTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DbTasks_OracleLibsPresent");
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_ORA_CON_URI, oracle.getJdbcUrl())};
 
-        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "queryOracleVersion", variables);
-
-        assertEquals(TaskOutcome.SUCCESS.ordinal(), result);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "queryOracleVersion", variables);
     }
 }

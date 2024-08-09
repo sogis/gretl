@@ -15,9 +15,7 @@ public class CsvValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidator");
 
-        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
-
-        assertTrue(result == TaskOutcome.SUCCESS.ordinal() || result == TaskOutcome.UP_TO_DATE.ordinal());
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
     }
     @Test
     public void validationFail() {

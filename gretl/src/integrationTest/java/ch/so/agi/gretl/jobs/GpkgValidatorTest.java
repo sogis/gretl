@@ -15,9 +15,7 @@ public class GpkgValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidator");
 
-        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
-
-        assertTrue(result == TaskOutcome.SUCCESS.ordinal() || result == TaskOutcome.UP_TO_DATE.ordinal());
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
     }
     @Test
     public void validationFail() {

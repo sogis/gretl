@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 public class IntegrationTestUtil {
 
@@ -23,15 +26,17 @@ public class IntegrationTestUtil {
     private static final String GRETL_PROJECT_ABSOLUTE_PATH = System.getProperty("GRETL_PROJECT_ABS_PATH");
     private static final String ROOT_PROJECT_ABSOLUTE_PATH = System.getProperty("ROOT_PROJECT_ABS_PATH");
 
-    public static int executeTestRunner(File projectDirectory, String taskName) throws IOException{
-        return executeTestRunner(projectDirectory, taskName, null);
+    public static void executeTestRunner(File projectDirectory, String taskName) throws IOException{
+        executeTestRunner(projectDirectory, taskName, null);
     }
 
-    public static int executeTestRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
+    public static void executeTestRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
         if(TestType.IMAGE.equals(TEST_TYPE)){
-            return executeDockerRunCommand(projectDirectory.getAbsolutePath(), variables);
+            int result = executeDockerRunCommand(projectDirectory.getAbsolutePath(), variables);
+            assertEquals(0, result);
         } else if(TestType.JAR.equals(TEST_TYPE)){
-            return executeGradleRunner(projectDirectory, taskName, variables);
+            int result = executeGradleRunner(projectDirectory, taskName, variables);
+            assertTrue(result == TaskOutcome.SUCCESS.ordinal() || result == TaskOutcome.UP_TO_DATE.ordinal());
         } else {
             throw new GretlException("Unknown test type: " + TEST_TYPE);
         }
