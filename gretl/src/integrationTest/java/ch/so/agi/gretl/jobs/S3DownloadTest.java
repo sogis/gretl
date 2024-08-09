@@ -40,7 +40,7 @@ public class S3DownloadTest {
                 GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
                 GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
             };
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "filedownload", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "filedownload", variables);
 
         // Check result. 
         AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));

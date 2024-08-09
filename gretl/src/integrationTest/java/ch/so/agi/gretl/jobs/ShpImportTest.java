@@ -56,7 +56,7 @@ public class ShpImportTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "shpimport", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "shpimport", variables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);

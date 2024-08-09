@@ -14,7 +14,7 @@ public class Av2chTest {
     @Test
     public void transformation_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2ch");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "transform").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "transform");
 
         File resultFile = new File(projectDirectory + "/output/254900.itf");
 
@@ -33,7 +33,7 @@ public class Av2chTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFileSet");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "transform").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "transform");
 
         File resultFile1 = new File("src/integrationTest/jobs/Av2chFileSet/output/252400.itf");
         File resultFile2 = new File("src/integrationTest/jobs/Av2chFileSet/output/254900.itf");
@@ -47,7 +47,7 @@ public class Av2chTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFail");
 
         assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "transform").build();
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "transform");
         });
     }
 }

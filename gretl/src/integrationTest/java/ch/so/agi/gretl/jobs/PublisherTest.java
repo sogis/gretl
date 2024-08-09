@@ -22,9 +22,9 @@ public class PublisherTest {
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "av_test.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
         
-        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "publishFile").build();
+        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "publishFile");
 
-        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":publishFile")).getOutcome());
+        assertEquals(TaskOutcome.SUCCESS.ordinal(), result);
     }
 
     @Test
@@ -35,9 +35,9 @@ public class PublisherTest {
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "2502.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
 
-        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "printPublishedRegions").build();
+        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "printPublishedRegions");
 
-        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":printPublishedRegions")).getOutcome());
+        assertEquals(TaskOutcome.SUCCESS.ordinal(), result);
     }
     
     private void copyFileFromResourcesToJob(String jobDirectory, String resourceSubDirectory, String filename) throws IOException {

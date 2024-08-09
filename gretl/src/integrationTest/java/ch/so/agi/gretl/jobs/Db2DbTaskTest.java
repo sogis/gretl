@@ -61,7 +61,7 @@ public class Db2DbTaskTest {
         connection.commit();
         IntegrationTestUtilSql.closeCon(connection);
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "fetchSizeTask", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "fetchSizeTask", gradleVariables);
 
         connection = IntegrationTestUtilSql.connectPG(postgres);
         String countDestSql = String.format("select count(*) from %s.target_data", schemaName);
@@ -89,7 +89,7 @@ number of inserts (corresponding to the last statement)
         connection.commit();
         IntegrationTestUtilSql.closeCon(connection);
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "bToA", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "bToA", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
@@ -119,7 +119,7 @@ number of inserts (corresponding to the last statement)
         connection.commit();
         IntegrationTestUtilSql.closeCon(connection);
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "relativePath", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "relativePath", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
@@ -148,7 +148,7 @@ number of inserts (corresponding to the last statement)
         connection.commit();
         IntegrationTestUtilSql.closeCon(connection);
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "sourceToDestWithDelete", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "sourceToDestWithDelete", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
@@ -178,7 +178,7 @@ number of inserts (corresponding to the last statement)
         connection.commit();
         IntegrationTestUtilSql.closeCon(connection);
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "src2dest", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "src2dest", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
@@ -208,7 +208,7 @@ number of inserts (corresponding to the last statement)
         connection.commit();
         IntegrationTestUtilSql.closeCon(connection);
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "src2dest", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "src2dest", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);

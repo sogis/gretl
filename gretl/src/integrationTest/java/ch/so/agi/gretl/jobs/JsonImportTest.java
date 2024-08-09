@@ -61,7 +61,7 @@ public class JsonImportTest {
         IntegrationTestUtilSql.closeCon(connection);
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportObject");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "jsonimport", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "jsonimport", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
@@ -109,7 +109,7 @@ public class JsonImportTest {
         IntegrationTestUtilSql.closeCon(connection);
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportArray");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "jsonimport", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "jsonimport", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);

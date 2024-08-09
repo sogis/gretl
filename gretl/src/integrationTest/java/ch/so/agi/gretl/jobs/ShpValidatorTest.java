@@ -15,10 +15,9 @@ public class ShpValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpValidator");
 
-        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
+        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
 
-        TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
-        assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
+        assertTrue(result == TaskOutcome.SUCCESS.ordinal() || result == TaskOutcome.UP_TO_DATE.ordinal());
     }
 
     @Test
@@ -26,7 +25,7 @@ public class ShpValidatorTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpValidatorFail");
 
         assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
         });
     }
 

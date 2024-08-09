@@ -12,7 +12,7 @@ public class Av2geobauTest {
     public void simple() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2geobau");
         CleanUpFiles(projectDirectory);
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "av2geobau").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "av2geobau");
 
         File resultFile = new File(projectDirectory + "/empty.dxf");
         assertTrue(resultFile.exists());
@@ -22,7 +22,7 @@ public class Av2geobauTest {
         File projectDir = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2geobauFileSet");
         CleanUpFiles(projectDir);
 
-        IntegrationTestUtil.executeTestRunner(projectDir, "av2geobau").build();
+        IntegrationTestUtil.executeTestRunner(projectDir, "av2geobau");
 
         File resultFile1 = new File(projectDir + "/empty1.dxf");
         File resultFile2 = new File(projectDir + "/empty2.dxf");

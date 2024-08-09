@@ -15,17 +15,16 @@ public class GpkgValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidator");
 
-        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
+        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
 
-        TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
-        assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
+        assertTrue(result == TaskOutcome.SUCCESS.ordinal() || result == TaskOutcome.UP_TO_DATE.ordinal());
     }
     @Test
     public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidatorFail");
 
         Exception exception = assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
         });
 
         assertTrue(exception.getMessage().contains("validation failed"));

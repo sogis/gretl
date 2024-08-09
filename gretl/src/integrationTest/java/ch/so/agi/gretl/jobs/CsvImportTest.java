@@ -55,7 +55,7 @@ public class CsvImportTest {
         IntegrationTestUtilSql.closeCon(connection);
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvImport");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "csvimport", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "csvimport", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);
@@ -92,7 +92,7 @@ public class CsvImportTest {
         IntegrationTestUtilSql.closeCon(connection);
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvImportBatchSize");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "csvimport", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "csvimport", gradleVariables);
 
         //reconnect to check results
         connection = IntegrationTestUtilSql.connectPG(postgres);

@@ -21,7 +21,7 @@ public class Csv2ParquetTest {
     public void convertCsv_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Csv2Parquet");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "convertData").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "convertData");
 
         // Validate result
         org.apache.hadoop.fs.Path resultFile = new org.apache.hadoop.fs.Path(Paths

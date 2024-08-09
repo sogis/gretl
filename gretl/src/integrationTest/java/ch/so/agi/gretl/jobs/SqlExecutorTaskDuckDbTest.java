@@ -28,7 +28,7 @@ public class SqlExecutorTaskDuckDbTest {
             Files.delete(pathToDatabase);
         }
         
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "importParquet").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "importParquet");
 
         // Check result
         // vor allem die Parquet- und GPKG-Imports werden bereits im SQL geprüft:

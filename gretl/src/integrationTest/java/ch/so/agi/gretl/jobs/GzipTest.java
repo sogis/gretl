@@ -21,7 +21,7 @@ public class GzipTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gzip");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "compressFile").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "compressFile");
                 
         // Validate result
         File gzipFile = new File(projectDirectory + "/planregister.xml.gz");

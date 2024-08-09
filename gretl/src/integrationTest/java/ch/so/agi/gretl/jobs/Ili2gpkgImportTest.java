@@ -29,7 +29,7 @@ public class Ili2gpkgImportTest {
 
         Files.deleteIfExists(Paths.get(projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg"));
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2gpkgimport").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2gpkgimport");
 
         // check results
         {
@@ -70,7 +70,7 @@ public class Ili2gpkgImportTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2gpkgImportFileSet");
         Files.deleteIfExists(Paths.get(projectDirectory + "/Beispiel2.gpkg"));
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2gpkgimport").build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2gpkgimport");
 
         // check results
         {

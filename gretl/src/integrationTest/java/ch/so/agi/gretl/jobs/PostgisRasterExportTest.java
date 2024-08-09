@@ -37,7 +37,7 @@ public class PostgisRasterExportTest {
         File file = new File(projectDirectory, exportFileName);
         Files.deleteIfExists(file.toPath());
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "exportTiff", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "exportTiff", gradleVariables);
         
         long targetFileSize = new File(projectDirectory, targetFileName).length();
         long exportFileSize = new File(projectDirectory, exportFileName).length();
@@ -57,7 +57,7 @@ public class PostgisRasterExportTest {
         File file = new File(projectDirectory, exportFileName);
         Files.deleteIfExists(file.toPath());
         
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "exportGeotiff", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "exportGeotiff", gradleVariables);
 
         long targetFileSize = new File(projectDirectory, targetFileName).length();
         long exportFileSize = new File(projectDirectory, exportFileName).length();

@@ -50,7 +50,7 @@ public class Ili2pgDeleteDatasetsTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgdelete", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgdelete", variables);
 
         // check results
         Statement s = connection.createStatement();

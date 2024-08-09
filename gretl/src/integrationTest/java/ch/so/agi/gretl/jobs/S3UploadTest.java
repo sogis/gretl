@@ -49,7 +49,7 @@ public class S3UploadTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadDirectory");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "directoryupload", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "directoryupload", gradleVariables);
 
         List<String> keyList = getKeys(s3client);
         
@@ -72,7 +72,7 @@ public class S3UploadTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFileTree");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "filetreeupload", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "filetreeupload", gradleVariables);
 
         List<String> keyList = getKeys(s3client);
 
@@ -94,7 +94,7 @@ public class S3UploadTest {
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFile");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", gradleVariables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", gradleVariables);
 
         // Check result. 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -122,7 +122,7 @@ public class S3UploadTest {
             };
 
         assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", variables).build();
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", variables);
         });
     }
 

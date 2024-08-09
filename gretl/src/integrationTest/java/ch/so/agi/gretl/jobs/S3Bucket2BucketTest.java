@@ -66,7 +66,7 @@ public class S3Bucket2BucketTest {
                 GradleVariable.newGradleProperty("s3TargetBucket", s3TargetBucket)
             };
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "copyfiles", variables).build();
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "copyfiles", variables);
 
         // Check result. 
         ListObjectsRequest listObjects = ListObjectsRequest

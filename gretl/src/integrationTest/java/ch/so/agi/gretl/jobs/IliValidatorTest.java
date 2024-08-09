@@ -15,18 +15,16 @@ public class IliValidatorTest {
     @Test
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidator");
-        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
+        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
 
-        TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
-        assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
+        assertTrue(result == TaskOutcome.SUCCESS.ordinal() || result == TaskOutcome.UP_TO_DATE.ordinal());
     }
     @Test
     public void validationFileSetOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorFileSet");
-        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
+        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
 
-        TaskOutcome taskOutcome = Objects.requireNonNull(result.task(":validate")).getOutcome();
-        assertTrue(taskOutcome == TaskOutcome.SUCCESS || taskOutcome == TaskOutcome.UP_TO_DATE);
+        assertTrue(result == TaskOutcome.SUCCESS.ordinal() || result == TaskOutcome.UP_TO_DATE.ordinal());
     }
 
     @Test
@@ -34,7 +32,7 @@ public class IliValidatorTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorFail");
 
         Exception exception = assertThrows(Exception.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate").build();
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
         });
 
         assertTrue(exception.getMessage().contains("validation failed"));

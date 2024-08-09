@@ -65,8 +65,8 @@ public class DatabaseDocumentExportTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DatabaseDocumentExport");
         GradleVariable[] variables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
 
-        BuildResult result = IntegrationTestUtil.executeTestRunner(projectDirectory, "databasedocumentexport", variables).build();
+        int result = IntegrationTestUtil.executeTestRunner(projectDirectory, "databasedocumentexport", variables);
 
-        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":databasedocumentexport")).getOutcome());
+        assertEquals(TaskOutcome.SUCCESS.ordinal(), result);
     }
 }
