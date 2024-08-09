@@ -63,6 +63,8 @@ configurations {
 }
 
 dependencies {
+    testRuntime files(writePluginClassPath)
+
     api gradleApi()
   
     api libs.ili.validator
@@ -129,7 +131,6 @@ dependencies {
     
     testImplementation libs.hadoop.client
     integrationTestImplementation libs.hadoop.client
-    
 }
 
 gradlePlugin {

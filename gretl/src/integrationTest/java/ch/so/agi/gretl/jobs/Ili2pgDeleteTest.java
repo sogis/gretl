@@ -4,11 +4,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import org.junit.After;
+import org.junit.Before;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -20,12 +21,9 @@ import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
-import ch.ehi.ili2db.base.Ili2db;
-import ch.ehi.ili2db.gui.Config;
-import ch.ehi.ili2pg.PgMain;
-
 public class Ili2pgDeleteTest {
-    
+    private Connection connection = null;
+
     @ClassRule
     public static PostgreSQLContainer postgres = 
         (PostgreSQLContainer) new PostgisContainerProvider()
@@ -35,36 +33,36 @@ public class Ili2pgDeleteTest {
         .withInitScript("init_postgresql.sql")
         .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
-    @Test
-    public void deleteDataset_Ok() throws Exception {
-        Connection con = null;
-        try {                        
-            // create schema, import dataset and delete dataset
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgDeleteDataset", gvs);
-            
-            // check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-            Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT count(*) AS anzahl FROM dm01.lfp3");
-
-            if(!rs.next()) {
-                fail();
-            }
-
-            assertTrue(rs.getInt(1)==0);
-            
-            if(rs.next()) {
-                fail();
-            }            
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
-        }
+    @Before
+    public void setup() {
+        connection = IntegrationTestUtilSql.connectPG(postgres);
     }
 
-    private Config createConfig() {
-        Config settings = new Config();
-        new PgMain().initConfig(settings);
-        return settings;
+    @After
+    public void tearDown() {
+        IntegrationTestUtilSql.closeCon(connection);
+    }
+
+    @Test
+    public void deleteDataset_Ok() throws Exception {
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgDeleteDataset");
+
+        GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgdelete", variables);
+
+        // check results
+        Statement s = connection.createStatement();
+        ResultSet rs = s.executeQuery("SELECT count(*) AS anzahl FROM dm01.lfp3");
+
+        if(!rs.next()) {
+            fail();
+        }
+
+        assertTrue(rs.getInt(1)==0);
+
+        if(rs.next()) {
+            fail();
+        }
     }
 }

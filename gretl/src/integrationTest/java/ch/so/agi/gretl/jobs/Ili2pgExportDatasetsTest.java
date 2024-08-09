@@ -2,10 +2,7 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.HashSet;
+import java.io.File;
 
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.ClassRule;
@@ -14,8 +11,6 @@ import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
-import ch.ehi.ili2db.base.DbNames;
-import ch.interlis.iom.IomObject;
 import ch.interlis.iom_j.xtf.XtfReader;
 import ch.interlis.iox.EndBasketEvent;
 import ch.interlis.iox.EndTransferEvent;
@@ -41,15 +36,17 @@ public class Ili2pgExportDatasetsTest {
 
     @Test
     public void exportOk() throws Exception {
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgExportDatasets", gvs);
-        
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgExportDatasets");
+
+        GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgexport", variables);
         // check results
         {
-            assertXtfFile(new java.io.File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetA-out.xtf"));
+            assertXtfFile(new java.io.File( projectDirectory + "/DatasetA-out.xtf"));
         }
         {
-            assertXtfFile(new java.io.File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetB-out.xtf"));
+            assertXtfFile(new java.io.File(projectDirectory + "/DatasetB-out.xtf"));
         }
     }
 

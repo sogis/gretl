@@ -12,19 +12,19 @@ import java.util.zip.GZIPInputStream;
 
 import org.junit.Test;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
 
 public class GzipTest {
     @Test
     public void compress_file_Ok() throws Exception {        
-        // Run GRETL task
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Gzip", gvs);
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gzip");
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "compressFile");
                 
         // Validate result
-        File gzipFile = new File("src/integrationTest/jobs/Gzip/planregister.xml.gz");
+        File gzipFile = new File(projectDirectory + "/planregister.xml.gz");
         String fileContent = contentGzipFile(gzipFile);
         
         assertTrue(fileContent.contains("ili2pg-4.9.0-eb3a0d51869bd2adeeb51fe7aba4b526fe002c1a"));

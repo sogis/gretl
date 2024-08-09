@@ -2,12 +2,12 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 
 public class Gpkg2DxfTest {
@@ -23,10 +23,10 @@ public class Gpkg2DxfTest {
                 e.printStackTrace();
             }
         });
-        
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Gpkg2Dxf", gvs);
-        
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gpkg2Dxf");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkg2dxf");
+
         //Check results
         String contentNF = new String (Files.readAllBytes(Paths.get(TEST_OUT, "nachfuehrngskrise_gemeinde.dxf")));
         assertTrue(contentNF.contains("LerchWeberAG"));

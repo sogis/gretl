@@ -1,8 +1,6 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
@@ -21,6 +19,8 @@ import okio.Buffer;
 
 import java.io.IOException;
 
+import static org.junit.Assert.*;
+
 public class CurlTest {    
     private MockWebServer mockWebServer;
     
@@ -37,17 +37,16 @@ public class CurlTest {
 
     @Test
     public void geodienste_Ok() throws Exception {
-        // Prepare mock web server
         MockResponse mockResponse = new MockResponse()
                 .setResponseCode(200)
                 .setBody("\"success\":true");
         mockWebServer.enqueue(mockResponse);
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
+        GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
         
-        // Run GRETL task
-        GradleVariable[] gvs = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlGeodienste", gvs);
-        
-        // Validate result
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         
         assertEquals("/data_agg/interlis/import", recordedRequest.getPath());
@@ -64,30 +63,33 @@ public class CurlTest {
     }
     
     @Test
-    public void geodienste_Fail() throws Exception {
-        // Prepare mock web server
+    public void geodienste_Fail() {
         MockResponse mockResponse = new MockResponse()
                 .setResponseCode(200)
                 .setBody("\"success\":false");
         mockWebServer.enqueue(mockResponse);
-        
-        // Run GRETL task
-        GradleVariable[] gvs = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
-        assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlGeodienste", gvs, new StringBuffer(), new StringBuffer()));
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
+        GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
+        });
+
+        assertTrue(exception.getMessage().contains("Response body does not contain expected string:"));
     }
     
     @Test
     public void planregister_Ok() throws Exception {
-        // Prepare mock web server
         MockResponse mockResponse = new MockResponse()
                 .setResponseCode(202);
         mockWebServer.enqueue(mockResponse);
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlPlanregister");
+        GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
         
-        // Run GRETL task
-        GradleVariable[] gvs = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlPlanregister", gvs);
-        
-        // Validate result
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         
         assertEquals("/typo3/api/digiplan", recordedRequest.getPath());
@@ -98,15 +100,13 @@ public class CurlTest {
     
     @Test
     public void downloadFile_Ok() throws Exception {
-        // Run GRETL task
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlDownload", gvs);
 
-        // Validate result
-        String content = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/CurlDownload/README.md")));
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlDownload");
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "downloadData");
+
+        String content = new String(Files.readAllBytes(Paths.get(projectDirectory + "/README.md")));
         assertTrue(content.contains("_GRETL_"));
         assertTrue(content.contains("Licencse"));
-
-        
     }
 }
