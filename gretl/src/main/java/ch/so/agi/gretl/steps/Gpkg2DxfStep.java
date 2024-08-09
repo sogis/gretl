@@ -1,44 +1,23 @@
 package ch.so.agi.gretl.steps;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.interlis2.av2geobau.impl.DxfUtil;
-import org.interlis2.av2geobau.impl.DxfWriter;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateList;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
 import ch.interlis.iom.IomObject;
-import ch.interlis.iox.IoxEvent;
-import ch.interlis.iox.IoxException;
-import ch.interlis.iox_j.jts.Iox2jts;
-import ch.interlis.iox_j.jts.Iox2jtsException;
 import ch.interlis.iom_j.Iom_jObject;
+import ch.interlis.iox.IoxEvent;
 import ch.interlis.iox.ObjectEvent;
+import ch.interlis.iox_j.jts.Iox2jts;
 import ch.interlis.iox_j.jts.Jts2iox;
-
 import ch.interlis.ioxwkf.gpkg.GeoPackageReader;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import org.interlis2.av2geobau.impl.DxfUtil;
+import org.interlis2.av2geobau.impl.DxfWriter;
+import org.locationtech.jts.geom.*;
+
+import java.io.*;
+import java.nio.file.Paths;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Gpkg2DxfStep {
     private GretlLogger log;
