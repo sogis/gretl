@@ -11,34 +11,29 @@ import java.util.List;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 
-public class Ili2pgUpdate extends Ili2pgAbstractTask {
-    private Object dataFile = null;
+public abstract class Ili2pgUpdate extends Ili2pgAbstractTask {
     @InputFile
-    public Object getDataFile(){
-        return dataFile;
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
+    public abstract Property<Object> getDataFile();
 
     @TaskAction
     public void updateData() {
         Config settings = createConfig();
         int function = Config.FC_UPDATE;
-        if (dataFile == null) {
+        if (!getDataFile().isPresent()) {
             return;
         }
-        FileCollection dataFilesCollection=null;
+        FileCollection dataFilesCollection;
+        Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
             dataFilesCollection=(FileCollection)dataFile;
         }else {
             dataFilesCollection=getProject().files(dataFile);
         }
-        if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
+        if (dataFilesCollection.isEmpty()) {
             return;
         }
         List<String> files = new ArrayList<String>();
@@ -47,12 +42,13 @@ public class Ili2pgUpdate extends Ili2pgAbstractTask {
             files.add(fileName);
         }
         java.util.List<String> datasetNames=null;
-        if (dataset != null) {
+        if (getDataset().isPresent()) {
+            Object dataset = getDataset().get();
             if(dataset instanceof String) {
                 datasetNames=new ArrayList<String>();
                 datasetNames.add((String)dataset);
             }else {
-                datasetNames=(java.util.List)dataset;
+                datasetNames=(List)dataset;
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
@@ -60,20 +56,16 @@ public class Ili2pgUpdate extends Ili2pgAbstractTask {
         }
         
         ch.ehi.basics.logging.FileListener fileLogger=null;
-        if(logFile!=null){
+        if(getLogFile().isPresent()){
             // setup logger here, so that multiple file imports result in one logfile
-            java.io.File logFilepath=this.getProject().file(logFile);
+            java.io.File logFilepath=this.getProject().file(getLogFile().get());
             fileLogger=new FileLogger(logFilepath);
             EhiLogger.getInstance().addListener(fileLogger);
         }
         try {
             int i=0;
             for(String xtfFilename:files) {
-                if (Ili2db.isItfFilename(xtfFilename)) {
-                    settings.setItfTransferfile(true);
-                }else {
-                    settings.setItfTransferfile(false);
-                }
+                settings.setItfTransferfile(Ili2db.isItfFilename(xtfFilename));
                 if(datasetNames!=null) {
                     settings.setDatasetName(datasetNames.get(i));
                 }

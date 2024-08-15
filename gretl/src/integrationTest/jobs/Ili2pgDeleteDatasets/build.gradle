@@ -10,7 +10,7 @@ def db_pass = "ddluser"
 
 defaultTasks 'ili2pgdelete'
 
-task ili2pgschemaimport(type: Ili2pgImportSchema){
+tasks.register("ili2pgschemaimport", Ili2pgImportSchema) {
     database = [db_uri, db_user, db_pass]
     models = "Beispiel2"
     defaultSrsCode = "2056"
@@ -19,15 +19,18 @@ task ili2pgschemaimport(type: Ili2pgImportSchema){
     createBasketCol = true
 }
 
-task ili2pgimport(dependsOn:ili2pgschemaimport, type: Ili2pgImport){
+tasks.register('ili2pgimport', Ili2pgImport){
+    dependsOn 'ili2pgschemaimport'
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
     dataFile = fileTree(".").matching {
-    	include"*.xtf"
+        include"*.xtf"
     }
     dataset = [ 'DatasetA', 'DatasetB']
 }
-task ili2pgdelete(dependsOn:ili2pgimport, type: Ili2pgDelete){
+
+tasks.register('ili2pgdelete', Ili2pgDelete){
+    dependsOn 'ili2pgimport'
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
     dataset = [ 'DatasetA', 'DatasetB']

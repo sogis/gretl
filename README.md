@@ -43,6 +43,7 @@ There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC 
 ./gradlew stageJars
 cd runtimeImage/gretl
 docker build -t sogis/gretl .
+cd ../..
 ./gradlew gretl:jarTest 
 ./gradlew gretl:jarS3Test -Ds3AccessKey=XXXXXXX -Ds3SecretKey=YYYYYYY -Ds3BucketName=ch.so.agi.gretl.test
 ./gradlew gretl:imageTest 
@@ -70,14 +71,18 @@ If you want to do some further testing with standalone jobs or use the plugin on
 Debugging the Docker image tests can be harder than debugging unit and jar tests. The `docker run` / `start-gretl.sh` command is printed on the console when the test is running. Use this command to run the test in the console manually. Most probably you will get more information.
 
 ### Unit tests
-Unit tests with "heavy" dependencies like PostgreSQL are categorized (`ch.so.agi.gretl.testutil.DbTest`) and can be run with `./gradlew gretl:dbTest`. This will manage the PostgreSQL database with the [Testcontainers framework](https://www.testcontainers.org) . Testcontainers start a docker container before every test method or every test class.
+
+Unit tests with "heavy" dependencies like PostgreSQL are categorized (`ch.so.agi.gretl.testutil.TestTags.DB_TEST`) and
+can be run with `./gradlew gretl:dbTest`. This will manage the PostgreSQL database with
+the [Testcontainers framework](https://www.testcontainers.org) . Testcontainers start a docker container before every
+test method or every test class.
 
 ### Integration tests
 The integrations are used for testing the resulting Jar file (`jarTest`) and the Docker image (`imageTest`). 
 
 Since the integration tests are not done with the Gradle TestKit framework, the resulting Jar has to be deployed to the local maven repository (`./gradlew clean gretl:build gretl:publishPluginMavenPublicationToMavenLocal`). Then the Gradle build jobs (= integration tests) are run from a Java class as an external process. The jobs share all the same `init.gradle` that defines the maven repositories. Since _GRETL_ is not published in any other than the local maven repository  (except as _plugin_ (!= raw jar) in the Gradle plugin repo), it should really always use the local deployed one. With `classpath 'ch.so.agi:gretl:latest.integration'` it will use the latest anything - snapshot or release, whatever it finds newer.
 
-The Docker image tests are done very similar. First the Docker image will be build with a shell script (TODO: with Gradle?). This build process will copy everything _GRETL_ needs into the image. This includes all the dependencies of _GRETL_, the _GRETL_ jar itself and any 3rd party plugin you want. The Docker image should be as offline capable as possible. The `start-gretl.sh` that will be used to start the Docker container is slightly different to the `start-gretl.sh` from `sogis/gretljobs` repository. The `sogis/gretljobs` one is more sophisticated.
+The Docker image tests are done very similar. First the Docker image will be build with a shell script (TODO: with Gradle?). This build process will copy everything _GRETL_ needs into the image. This includes all the dependencies of _GRETL_, the _GRETL_ jar itself and any 3rd party plugin you want. The Docker image should be as offline capable as possible. The `start-gretl.sh` that will be used to start the Docker container is slightly different to the `start-gretl.sh` from `sogis/gretljobs` repository. The `sogis/gretljobs` one is more sophisticated. If you use branches, it will not create a "latest" image. Hence you will have to use a tagged version in `start-gretl.sh`, e.g. 2.2.
 
 If you use a Jenkins-Docker-Image for your CI/CD pipeline you will probably run into the "Docker-in-Docker" issue when doing the Docker image integration tests. It will not find the job directory you try to mount with the docker run command. Therefor you can simple create a symbolic link on the host machine, e.g. `ln -s /opt/jenkins_home /var/jenkins_home`.
 

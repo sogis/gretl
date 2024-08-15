@@ -25,7 +25,7 @@ public class CsvExport extends DefaultTask {
 
     private Boolean firstLineIsHeader = true;
 
-    private Character valueDelimiter = null;/**/
+    private Character valueDelimiter = null;
 
     private Character valueSeparator = null;
 
@@ -50,7 +50,7 @@ public class CsvExport extends DefaultTask {
     }
     @Input
     @Optional
-    public Boolean isFirstLineIsHeader() {
+    public Boolean getFirstLineIsHeader() {
         return firstLineIsHeader;
     }
     @Input

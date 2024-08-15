@@ -1,32 +1,30 @@
 package ch.so.agi.gretl.tasks;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
-import ch.ehi.ili2db.base.Ili2dbException;
 import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
-public class Ili2pgDelete extends Ili2pgAbstractTask {
+public abstract class Ili2pgDelete extends Ili2pgAbstractTask {
 
     @TaskAction
     public void replaceData() {
         Config settings = createConfig();
         int function = Config.FC_DELETE;
-        if (dataset == null) {
+        if (!getDataset().isPresent()) {
             return;
         }
-        java.util.List<String> datasetNames=null;
-        if (dataset != null) {
-            if(dataset instanceof String) {
-                datasetNames=new ArrayList<String>();
-                datasetNames.add((String)dataset);
-            }else {
-                datasetNames=(java.util.List)dataset;
-            }
+        List<String> datasetNames;
+        Object dataset = getDataset().get();
+        if(dataset instanceof String) {
+            datasetNames=new ArrayList<>();
+            datasetNames.add(dataset.toString());
+        }else {
+            datasetNames=(List)dataset;
         }
         settings.setBasketHandling(settings.BASKET_HANDLING_READWRITE);
         

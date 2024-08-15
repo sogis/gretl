@@ -23,13 +23,12 @@ sourceSets {
  * Task for executing the integration tests. It references the 
  * classes and runtime classpath of the integration test source set.
  */
-task jarTest(type: Test) {
+tasks.register('jarTest', Test) {
     description = 'Runs integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
-    useJUnit {
-        excludeCategories 'ch.so.agi.gretl.testutil.QgisReachableTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    useJUnitPlatform {
+        excludeTags 'qgisReachableTest', 's3Test'
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
@@ -41,12 +40,12 @@ task jarTest(type: Test) {
     jvmArgs '-Xmx1g'
 }
 
-task jarS3Test(type: Test) {
+tasks.register('jarS3Test', Test) {
     description = 'Runs the S3 integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    useJUnitPlatform {
+        includeTags 's3Test'
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
@@ -58,14 +57,14 @@ task jarS3Test(type: Test) {
     jvmArgs '-Xmx1g'
 }
 
-task imageTest(type: Test){
+tasks.register('imageTest', Test) {
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    
-    useJUnit {
-        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+
+    useJUnitPlatform {
+        excludeTags 's3Test'
     }
-    
+
     systemProperty('GRETL_TESTTYPE', 'image')
 
     testLogging.showStandardStreams = true
@@ -74,12 +73,12 @@ task imageTest(type: Test){
     classpath += sourceSets.integrationTest.runtimeClasspath
 }
 
-task imageS3Test(type: Test){
+tasks.register('imageS3Test', Test) {
     description = 'Runs S3 integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    useJUnitPlatform {
+        includeTags 's3Test'
     }
 
     systemProperty('GRETL_TESTTYPE', 'image')

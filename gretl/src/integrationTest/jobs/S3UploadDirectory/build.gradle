@@ -5,15 +5,18 @@ apply plugin: 'ch.so.agi.gretl'
 def s3AccessKey = findProperty("s3AccessKey")
 def s3SecretKey = findProperty("s3SecretKey")
 def s3BucketName = findProperty("s3BucketName")
+def s3Endpoint = findProperty("s3Endpoint") ?: "https://s3.eu-central-1.amazonaws.com"
+def s3Region = findProperty("s3Region") ?: "eu-central-1"
+def s3Acl = findProperty("s3Acl") ?: "public-read"
 
 defaultTasks 'directoryupload'
 
-task directoryupload(type: S3Upload) {
+tasks.register('directoryupload', S3Upload) {
     accessKey = s3AccessKey
     secretKey = s3SecretKey
     sourceFile = file("./docs/")
-    endPoint = "https://s3.eu-central-1.amazonaws.com"
-    region = "eu-central-1"
+    endPoint = s3Endpoint
+    region = s3Region
     bucketName = s3BucketName
-    acl = "public-read"
+    acl = s3Acl
 }

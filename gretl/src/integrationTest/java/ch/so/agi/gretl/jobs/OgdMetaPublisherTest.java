@@ -1,19 +1,16 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import ch.ehi.basics.settings.Settings;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.interlis2.validator.Validator;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.interlis2.validator.Validator;
-import org.junit.Test;
-
-import ch.ehi.basics.settings.Settings;
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OgdMetaPublisherTest {
     @Test

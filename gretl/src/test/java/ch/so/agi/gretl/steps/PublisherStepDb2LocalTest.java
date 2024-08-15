@@ -1,830 +1,553 @@
 package ch.so.agi.gretl.steps;
 
+import ch.ehi.basics.settings.Settings;
+import ch.ehi.ili2db.base.Ili2db;
+import ch.ehi.ili2db.base.Ili2dbException;
+import ch.ehi.ili2db.gui.Config;
+import ch.ehi.ili2pg.PgMain;
+import ch.so.agi.gretl.testutil.TestTags;
+import ch.so.agi.gretl.testutil.TestUtil;
+import org.interlis2.validator.Validator;
+import org.junit.jupiter.api.*;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import org.interlis2.validator.Validator;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.testcontainers.containers.PostgisContainerProvider;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import static ch.ehi.ili2db.gui.Config.BASKET_HANDLING_READWRITE;
+import static ch.so.agi.gretl.steps.AbstractPublisherStepTest.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import ch.ehi.basics.settings.Settings;
-import ch.ehi.ili2db.base.Ili2db;
-import ch.ehi.ili2db.gui.Config;
-import ch.so.agi.gretl.testutil.DbTest;
-import ch.so.agi.gretl.testutil.TestUtil;
-
+@Testcontainers
 public class PublisherStepDb2LocalTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    static final public String DM01AVCH24LV95D="DM01AVCH24LV95D";
+    private static final String DM01AVCH24LV95D = "DM01AVCH24LV95D";
+    private static final Path localTestOut = Paths.get("build").resolve("out");
     
-    @ClassRule
-    public static PostgreSQLContainer postgres = System.getProperty("dburl")==null?
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(TestUtil.PG_DDLUSR_USR)
-        .withPassword(TestUtil.PG_DDLUSR_PWD)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2)):null;
-    
-    final protected Path localTestOut = Paths.get("build").resolve("out");
-    public PublisherStepDb2LocalTest() {
-        super();
+    @Container
+    public static PostgreSQLContainer<?> postgres = System.getProperty("dbUrl") == null
+            ? (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                .withDatabaseName(TestUtil.PG_DB_NAME)
+                .withUsername(TestUtil.PG_DDLUSR_USR)
+                .withPassword(TestUtil.PG_DDLUSR_PWD)
+                .withInitScript(TestUtil.PG_INIT_SCRIPT_PATH)
+                .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2))
+            : null;
+
+    private static String dbUrl;
+    private static String dbUser;
+    private static String dbPassword;
+    private static String dbSchema;
+    private Config config;
+
+    @BeforeAll
+    public static void beforeAll() {
+        dbUrl = System.getProperty("dbUrl", postgres != null ? postgres.getJdbcUrl() : null);
+        dbUser = System.getProperty("dbusr", TestUtil.PG_DDLUSR_USR);
+        dbPassword = System.getProperty("dbPassword", TestUtil.PG_DDLUSR_PWD);
+        dbSchema = "publisher";
     }
-    protected Path getTargetPath() {
-        return localTestOut;
+
+    @BeforeEach
+    public void before() {
+        this.config = new Config();
+        config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR + AbstractPublisherStepTest.ILI_DIRS);
+        config.setDburl(dbUrl);
+        config.setDbusr(dbUser);
+        config.setDbpwd(dbPassword);
+        config.setDbschema(dbSchema);
+        config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
+
+        if (config.getXtffile() != null && Ili2db.isItfFilename(config.getXtffile())){
+            config.setItfTransferfile(true);
+        }
+
+        config.setFunction(Config.FC_IMPORT);
+        config.setDoImplicitSchemaImport(true);
+        config.setCreateFk(Config.CREATE_FK_YES);
+        config.setTidHandling(Config.TID_HANDLING_PROPERTY);
+        config.setImportTid(true);
+        config.setDefaultSrsCode("2056");
     }
-    String dburl=System.getProperty("dburl",postgres!=null?postgres.getJdbcUrl():null); 
-    String dbuser=System.getProperty("dbusr",TestUtil.PG_DDLUSR_USR);
-    String dbpwd=System.getProperty("dbpwd",TestUtil.PG_DDLUSR_PWD); 
-    final protected String DB_SCHEMA="publisher";
-    @Category(DbTest.class)
+
+    @AfterEach
+    public void after() {
+        this.config = null;
+    }
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_allNew() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        String datasetName="av";
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    Config config=new Config();
-                    new ch.ehi.ili2pg.PgMain().initConfig(config);
-                    config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
-                    config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
-                    if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                        config.setItfTransferfile(true);
-                    }
-                    config.setFunction(Config.FC_IMPORT);
-                    config.setDatasetName(datasetName);
-                    config.setDoImplicitSchemaImport(true);
-                    config.setCreateFk(Config.CREATE_FK_YES);
-                    config.setTidHandling(Config.TID_HANDLING_PROPERTY);
-                    config.setImportTid(true);
-                    config.setDefaultSrsCode("2056");
-                    config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                    Ili2db.readSettingsFromDb(config);
-                    Ili2db.run(config,null);
-                }
-            }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        String datasetName = "av";
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement()
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+            initConfig(datasetName, BASKET_HANDLING_READWRITE, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, false, null, null, null);
         }
+
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
+
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_allNew_modelsToPublish() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    Config config=new Config();
-                    new ch.ehi.ili2pg.PgMain().initConfig(config);
-                    config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
-                    config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
-                    if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                        config.setItfTransferfile(true);
-                    }
-                    config.setFunction(Config.FC_IMPORT);
-                    config.setDoImplicitSchemaImport(true);
-                    config.setCreateFk(Config.CREATE_FK_YES);
-                    config.setTidHandling(Config.TID_HANDLING_PROPERTY);
-                    config.setImportTid(true);
-                    config.setDefaultSrsCode("2056");
-                    config.setBasketHandling(null);
-                    Ili2db.readSettingsFromDb(config);
-                    Ili2db.run(config,null);
-                }
-            }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,DM01AVCH24LV95D,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt=jdbcConnection.createStatement()
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+            initConfig();
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, DM01AVCH24LV95D, false, null, null, null);
         }
+
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
+
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_allNew_modelsToPublish_NotSimple_Fail() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    Config config=new Config();
-                    new ch.ehi.ili2pg.PgMain().initConfig(config);
-                    config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
-                    config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
-                    if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                        config.setItfTransferfile(true);
-                    }
-                    config.setFunction(Config.FC_IMPORT);
-                    config.setDoImplicitSchemaImport(true);
-                    config.setCreateFk(Config.CREATE_FK_YES);
-                    config.setTidHandling(Config.TID_HANDLING_PROPERTY);
-                    config.setImportTid(true);
-                    config.setDefaultSrsCode("2056");
-                    config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                    Ili2db.readSettingsFromDb(config);
-                    Ili2db.run(config,null);
-                }
-            }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement()
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+            initConfig(null, BASKET_HANDLING_READWRITE, null);
+
             try {
-                step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,DM01AVCH24LV95D,null,false, targetPath,null,null,null,null,null,settings,localTestOut,null);
-                Assert.fail();
-            }catch(IllegalArgumentException ex) {
-                Assert.assertEquals("modelsToPublish <DM01AVCH24LV95D> can only be used with simple models", ex.getMessage());
+                publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, DM01AVCH24LV95D, false, null, null, null);
+                fail("Expected IllegalArgumentException to be thrown");
+            } catch (IllegalArgumentException ex) {
+                assertEquals("modelsToPublish <DM01AVCH24LV95D> can only be used with simple models", ex.getMessage());
             }
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
         }
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_UserFormats_allNew() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        final String datasetName="simple";
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    Config config=new Config();
-                    new ch.ehi.ili2pg.PgMain().initConfig(config);
-                    config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
-                    config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_SIMPLE_FILENAME).toString());
-                    if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                        config.setItfTransferfile(true);
-                    }
-                    config.setFunction(Config.FC_IMPORT);
-                    config.setDatasetName(datasetName);
-                    config.setDoImplicitSchemaImport(true);
-                    config.setCreateFk(Config.CREATE_FK_YES);
-                    config.setTidHandling(Config.TID_HANDLING_PROPERTY);
-                    config.setImportTid(true);
-                    config.setDefaultSrsCode("2056");
-                    config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                    Ili2db.readSettingsFromDb(config);
-                    Ili2db.run(config,null);
-                }
-            }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
-        }
-        // verify
-        {
-            Assert.assertTrue(Files.exists(targetFolder));
-            final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
-            final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+        final String datasetName = "simple";
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement()
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+            initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", SRC_DATA_SIMPLE_FILENAME));
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, false, null, null, null);
         }
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_UserFormats_firstHistory() throws Exception {
         {
             db_UserFormats_allNew();
         }
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_1;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
+
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+
         final String datasetName="simple";
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-            }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+
+        try (Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            publishDataset(jdbcConnection, SRC_DATA_DATE_1, datasetName, null, true, null, null, null);
         }
+
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertTrue(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_1), PublisherStep.readPublishDate(targetFolderAktuell));
         }
+
         // verify history
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
+
             final Path targetFolderHistoryRoot = targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY);
-            final Path targetFolderHistory = targetFolderHistoryRoot.resolve(PublisherStep.getDateTag(AbstractPublisherStepTest.SRC_DATA_DATE_0));
-            Assert.assertTrue(Files.exists(targetFolderHistory));
-            Assert.assertTrue(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
-            Assert.assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-            Assert.assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
-            Assert.assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+            final Path targetFolderHistory = targetFolderHistoryRoot.resolve(PublisherStep.getDateTag(SRC_DATA_DATE_0));
+            assertTrue(Files.exists(targetFolderHistory));
+            assertTrue(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
+            assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
+            assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
+            assertFalse(Files.exists(targetFolderHistory.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+
             final Path targetFolderAktuellMeta = targetFolderHistory.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(AbstractPublisherStepTest.SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderHistory));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderHistory));
         }
-        
+
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_UserFormats_ModelDir_AV() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
         String datasetName="av";
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    Config config=new Config();
-                    new ch.ehi.ili2pg.PgMain().initConfig(config);
-                    config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
-                    config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
-                    if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                        config.setItfTransferfile(true);
-                    }
-                    config.setFunction(Config.FC_IMPORT);
-                    config.setDatasetName(datasetName);
-                    config.setDoImplicitSchemaImport(true);
-                    config.setCreateFk(Config.CREATE_FK_YES);
-                    config.setTidHandling(Config.TID_HANDLING_PROPERTY);
-                    config.setImportTid(true);
-                    config.setDefaultSrsCode("2056");
-                    config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                    Ili2db.readSettingsFromDb(config);
-                    Ili2db.run(config,null);
-                }
-            }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement();
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+            initConfig(datasetName, BASKET_HANDLING_READWRITE, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, true, null, null, null);
         }
+
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
+
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_UserFormats_NoModelDir_AV() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        String datasetName="av";
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    Config config=new Config();
-                    new ch.ehi.ili2pg.PgMain().initConfig(config);
-                    config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                    config.setDburl(dburl);
-                    config.setDbusr(dbuser);
-                    config.setDbpwd(dbpwd);
-                    config.setDbschema(DB_SCHEMA);
-                    config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(AbstractPublisherStepTest.SRC_DATA_AV_FILENAME).toString());
-                    if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                        config.setItfTransferfile(true);
-                    }
-                    config.setFunction(Config.FC_IMPORT);
-                    config.setDatasetName(datasetName);
-                    config.setDoImplicitSchemaImport(true);
-                    config.setCreateFk(Config.CREATE_FK_YES);
-                    config.setTidHandling(Config.TID_HANDLING_PROPERTY);
-                    config.setImportTid(true);
-                    config.setDefaultSrsCode("2056");
-                    config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                    Ili2db.readSettingsFromDb(config);
-                    Ili2db.run(config,null);
-                }
-            }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            //settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,datasetName,null,null,true, targetPath,null,null,null,null,null,settings,localTestOut, null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        String datasetName = "av";
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement();
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+            initConfig(datasetName, BASKET_HANDLING_READWRITE, null);
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, datasetName, null, true, null, null, null);
         }
+
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
+
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_regionsRegEx() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        List<String> publishedRegions=new ArrayList<String>();
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    for(String datasetName:new String[] {"2501","2502"}) {
-                        Config config=new Config();
-                        new ch.ehi.ili2pg.PgMain().initConfig(config);
-                        config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                        config.setDburl(dburl);
-                        config.setDbusr(dbuser);
-                        config.setDbpwd(dbpwd);
-                        config.setDbschema(DB_SCHEMA);
-                        config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".itf").toString());
-                        if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                            config.setItfTransferfile(true);
-                        }
-                        config.setFunction(Config.FC_IMPORT);
-                        config.setDatasetName(datasetName);
-                        config.setDoImplicitSchemaImport(true);
-                        config.setCreateFk(Config.CREATE_FK_YES);
-                        config.setDefaultSrsCode("2056");
-                        config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                        Ili2db.readSettingsFromDb(config);
-                        Ili2db.run(config,null);
-                    }
-                }
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        List<String> publishedRegions = new ArrayList<>();
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement();
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+
+            for (String datasetName : new String[] {"2501","2502"}) {
+                initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".itf"));
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,null,false, targetPath,"[0-9][0-9][0-9][0-9]",null,publishedRegions,null,null,settings,localTestOut, null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, false, "[0-9][0-9][0-9][0-9]", null, publishedRegions);
         }
+
         // verify
-        {
-            Assert.assertTrue(Files.exists(targetFolder));
-            final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertEquals(2,publishedRegions.size());
-            for(String controlRegion:new String[] {"2501","2502"}) {
-                Assert.assertTrue(publishedRegions.contains(controlRegion));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
-            }
-            final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+        assertTrue(Files.exists(targetFolder));
+
+        final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
+        assertTrue(Files.exists(targetFolderAktuell));
+        assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+        assertEquals(2,publishedRegions.size());
+        for (String controlRegion:new String[] {"2501","2502"}) {
+            assertTrue(publishedRegions.contains(controlRegion));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
         }
+
+        final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
+        assertTrue(Files.exists(targetFolderAktuellMeta));
+        assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+        assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+        assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_regionsList() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        List<String> publishedRegions=new ArrayList<String>();
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    for(String datasetName:new String[] {"2501","2502"}) {
-                        Config config=new Config();
-                        new ch.ehi.ili2pg.PgMain().initConfig(config);
-                        config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                        config.setDburl(dburl);
-                        config.setDbusr(dbuser);
-                        config.setDbpwd(dbpwd);
-                        config.setDbschema(DB_SCHEMA);
-                        config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".itf").toString());
-                        if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                            config.setItfTransferfile(true);
-                        }
-                        config.setFunction(Config.FC_IMPORT);
-                        config.setDatasetName(datasetName);
-                        config.setDoImplicitSchemaImport(true);
-                        config.setCreateFk(Config.CREATE_FK_YES);
-                        config.setDefaultSrsCode("2056");
-                        config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                        Ili2db.readSettingsFromDb(config);
-                        Ili2db.run(config,null);
-                    }
-                }
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        List<String> publishedRegions = new ArrayList<>();
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement();
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+
+            for (String datasetName : new String[] {"2501","2502"}) {
+                initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".itf"));
             }
-            List<String> regions=new ArrayList<String>();
-            regions.add("2501");
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,null,false, targetPath,null,regions,publishedRegions,null,null,settings,localTestOut, null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+
+            List<String> regions = Collections.singletonList("2501");
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, false, null, regions, publishedRegions);
         }
-        // verify
-        {
-            Assert.assertTrue(Files.exists(targetFolder));
-            final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertEquals(1,publishedRegions.size());
-            for(String controlRegion:new String[] {"2501"}) {
-                Assert.assertTrue(publishedRegions.contains(controlRegion));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
-            }
-            final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+
+        assertTrue(Files.exists(targetFolder));
+
+        final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
+        assertTrue(Files.exists(targetFolderAktuell));
+        assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+        assertEquals(1,publishedRegions.size());
+        for (String controlRegion : new String[] {"2501"}) {
+            assertTrue(publishedRegions.contains(controlRegion));
+            assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
         }
+
+        final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
+        assertTrue(Files.exists(targetFolderAktuellMeta));
+        assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+        assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+        assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
     }
-    @Category(DbTest.class)
+
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_regionsRegEx_UserFormats() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        List<String> publishedRegions=new ArrayList<String>();
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    for(String datasetName:new String[] {"SimpleCoord23a","SimpleCoord23b"}) {
-                        Config config=new Config();
-                        new ch.ehi.ili2pg.PgMain().initConfig(config);
-                        config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                        config.setDburl(dburl);
-                        config.setDbusr(dbuser);
-                        config.setDbpwd(dbpwd);
-                        config.setDbschema(DB_SCHEMA);
-                        config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".xtf").toString());
-                        if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                            config.setItfTransferfile(true);
-                        }
-                        config.setFunction(Config.FC_IMPORT);
-                        config.setDatasetName(datasetName);
-                        config.setDoImplicitSchemaImport(true);
-                        config.setCreateFk(Config.CREATE_FK_YES);
-                        config.setDefaultSrsCode("2056");
-                        config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                        Ili2db.readSettingsFromDb(config);
-                        Ili2db.run(config,null);
-                    }
-                }
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        List<String> publishedRegions=new ArrayList<>();
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement();
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+
+            for (String datasetName : new String[] {"SimpleCoord23a","SimpleCoord23b"}) {
+                initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".xtf"));
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,null,true, targetPath,"SimpleCoord23[a-z]",null,publishedRegions,null,null,settings,localTestOut, null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, true, "SimpleCoord23[a-z]", null, publishedRegions);
         }
+
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertEquals(2,publishedRegions.size());
-            for(String controlRegion:new String[] {"SimpleCoord23a","SimpleCoord23b"}) {
-                Assert.assertTrue(publishedRegions.contains(controlRegion));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertEquals(2,publishedRegions.size());
+
+            for (String controlRegion : new String[] {"SimpleCoord23a","SimpleCoord23b"}) {
+                assertTrue(publishedRegions.contains(controlRegion));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".xtf.zip")));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
             }
+
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_SIMPLE_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
     }
-    @Category(DbTest.class)
+
     @Test
+    @Tag(TestTags.DB_TEST)
     public void db_regionsRegEx_UserFormats_AV() throws Exception {
-        final Date SRC_DATA_DATE=AbstractPublisherStepTest.SRC_DATA_DATE_0;
-        Path targetFolder=getTargetPath().resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
-        Connection jdbcConnection=null;
-        List<String> publishedRegions=new ArrayList<String>();
-        try{
-            // prepare
-            Class driverClass = Class.forName("org.postgresql.Driver");
-            jdbcConnection = DriverManager.getConnection(dburl, dbuser, dbpwd);
-            {
-                // delete output folder
-                if(Files.exists(targetFolder)) {
-                    PublisherStep.deleteFileTree(targetFolder);
-                }
-                // import data into db
-                {
-                    Statement stmt=jdbcConnection.createStatement();
-                    stmt.execute("DROP SCHEMA IF EXISTS "+DB_SCHEMA+" CASCADE");
-                    for(String datasetName:new String[] {"2501","2502"}) {
-                        Config config=new Config();
-                        new ch.ehi.ili2pg.PgMain().initConfig(config);
-                        config.setModeldir(Ili2db.ILI_FROM_DB+ch.interlis.ili2c.Main.ILIDIR_SEPARATOR+AbstractPublisherStepTest.ILI_DIRS);
-                        config.setDburl(dburl);
-                        config.setDbusr(dbuser);
-                        config.setDbpwd(dbpwd);
-                        config.setDbschema(DB_SCHEMA);
-                        config.setXtffile(Paths.get(AbstractPublisherStepTest.SRC_TEST_DATA).resolve("files").resolve(datasetName+".itf").toString());
-                        if(config.getXtffile()!=null && Ili2db.isItfFilename(config.getXtffile())){
-                            config.setItfTransferfile(true);
-                        }
-                        config.setFunction(Config.FC_IMPORT);
-                        config.setDatasetName(datasetName);
-                        config.setDoImplicitSchemaImport(true);
-                        config.setCreateFk(Config.CREATE_FK_YES);
-                        config.setDefaultSrsCode("2056");
-                        config.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
-                        Ili2db.readSettingsFromDb(config);
-                        Ili2db.run(config,null);
-                    }
-                }
+        Path targetFolder = localTestOut.resolve(AbstractPublisherStepTest.SRC_DATA_IDENT);
+        List<String> publishedRegions = new ArrayList<>();
+
+        try (
+            Connection jdbcConnection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            Statement stmt = jdbcConnection.createStatement();
+        ) {
+            deleteOutputFolder(targetFolder);
+            dropDbSchema(stmt);
+
+            PgMain pgMain = new PgMain();
+            pgMain.initConfig(config);
+
+            for (String datasetName : new String[] {"2501","2502"}) {
+                initConfig(datasetName, BASKET_HANDLING_READWRITE, Arrays.asList("files", datasetName + ".itf"));
             }
-            Path targetPath = getTargetPath().toAbsolutePath();
-            PublisherStep step=new PublisherStep();
-            Settings settings=new Settings();
-            settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
-            settings.setValue(Validator.SETTING_CONFIGFILE, null);
-            step.publishDatasetFromDb(SRC_DATA_DATE,AbstractPublisherStepTest.SRC_DATA_IDENT,jdbcConnection,DB_SCHEMA,null,null,null,true, targetPath,"[0-9][0-9][0-9][0-9]",null,publishedRegions,null,null,settings,localTestOut, null);
-        }finally{
-            if(jdbcConnection!=null) {
-                jdbcConnection.close();
-                jdbcConnection=null;
-            }
-            
+
+            publishDataset(jdbcConnection, SRC_DATA_DATE_0, null, null, true, "[0-9][0-9][0-9][0-9]", null, publishedRegions);
         }
+
         // verify
         {
-            Assert.assertTrue(Files.exists(targetFolder));
+            assertTrue(Files.exists(targetFolder));
             final Path targetFolderAktuell = targetFolder.resolve(PublisherStep.PATH_ELE_AKTUELL);
-            Assert.assertTrue(Files.exists(targetFolderAktuell));
-            Assert.assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
-            Assert.assertEquals(2,publishedRegions.size());
+            assertTrue(Files.exists(targetFolderAktuell));
+            assertFalse(Files.exists(targetFolder.resolve(PublisherStep.PATH_ELE_HISTORY)));
+            assertEquals(2,publishedRegions.size());
             for(String controlRegion:new String[] {"2501","2502"}) {
-                Assert.assertTrue(publishedRegions.contains(controlRegion));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
-                Assert.assertFalse(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
-                Assert.assertFalse(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
-                Assert.assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
+                assertTrue(publishedRegions.contains(controlRegion));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".itf.zip")));
+                assertFalse(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".gpkg.zip")));
+                assertFalse(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".shp.zip")));
+                assertTrue(Files.exists(targetFolderAktuell.resolve(controlRegion+"."+AbstractPublisherStepTest.SRC_DATA_IDENT+".dxf.zip")));
             }
             final Path targetFolderAktuellMeta = targetFolderAktuell.resolve(PublisherStep.PATH_ELE_META);
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
-            Assert.assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
-            Assert.assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE), PublisherStep.readPublishDate(targetFolderAktuell));
+            assertTrue(Files.exists(targetFolderAktuellMeta));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(AbstractPublisherStepTest.SRC_ILI_AV_FILENAME)));
+            assertTrue(Files.exists(targetFolderAktuellMeta.resolve(PublisherStep.PATH_ELE_PUBLISHDATE_JSON)));
+            assertEquals(PublisherStep.getDateTag(SRC_DATA_DATE_0), PublisherStep.readPublishDate(targetFolderAktuell));
         }
+    }
+
+    private void deleteOutputFolder(Path targetFolder) throws IOException {
+        Objects.requireNonNull(targetFolder);
+        if (Files.exists(targetFolder)) {
+            PublisherStep.deleteFileTree(targetFolder);
+        }
+    }
+
+    private void initConfig() throws Ili2dbException {
+        initConfig(null, null, null);
+    }
+
+    private void initConfig(String datasetName, String basketHandlingType, List<String> filePaths) throws Ili2dbException {
+        PgMain pgMain = new PgMain();
+        pgMain.initConfig(config);
+
+        if (filePaths != null && !filePaths.isEmpty()) {
+            Path resultPath = resolvePath(SRC_TEST_DATA, filePaths);
+            config.setXtffile(resultPath.toString());
+
+            if (config.getXtffile() != null && Ili2db.isItfFilename(config.getXtffile())){
+                config.setItfTransferfile(true);
+            }
+        }
+
+        if (datasetName != null) {
+            config.setDatasetName(datasetName);
+        }
+
+        config.setBasketHandling(basketHandlingType);
+
+        Ili2db.readSettingsFromDb(config);
+        Ili2db.run(config, null);
+    }
+
+    public static Path resolvePath(String basePath, List<String> elements) {
+        Path path = Paths.get(basePath);
+        for (String element : elements) {
+            path = path.resolve(element);
+        }
+        return path;
+    }
+
+    private void publishDataset(Connection jdbcConnection, Date dataIdent, String datasetName, String modelsToPublish, boolean userFormats, String regionRegex, List<String> regionsToPublish, List<String> publishedRegions) throws Exception {
+        Path targetPath = localTestOut.toAbsolutePath();
+        Settings settings = new Settings();
+        settings.setValue(Validator.SETTING_ILIDIRS, AbstractPublisherStepTest.ILI_DIRS);
+        settings.setValue(Validator.SETTING_CONFIGFILE, null);
+
+        PublisherStep step = new PublisherStep();
+        step.publishDatasetFromDb(
+                dataIdent,
+                AbstractPublisherStepTest.SRC_DATA_IDENT,
+                jdbcConnection,
+                dbSchema,
+                datasetName,
+                modelsToPublish,
+                null,
+                userFormats,
+                targetPath,
+                regionRegex,
+                regionsToPublish,
+                publishedRegions,
+                null,
+                null,
+                settings,
+                localTestOut,
+                null
+        );
+    }
+
+    private void dropDbSchema(Statement statement) throws SQLException {
+        statement.execute("DROP SCHEMA IF EXISTS "+dbSchema+" CASCADE");
     }
 }

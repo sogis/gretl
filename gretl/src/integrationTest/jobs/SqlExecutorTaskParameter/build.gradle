@@ -10,7 +10,7 @@ def db_pass = "dmluser"
 
 defaultTasks 'insertInto'
 
-task insertInto(type: SqlExecutor){
+tasks.register('insertInto', SqlExecutor){
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['insert.sql']
     sqlParameters = [title:'\'ele1\'']

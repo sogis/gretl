@@ -1,18 +1,17 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.junit.jupiter.api.Test;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Test;
-
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MetaPublisherTest {
     public static final String PATH_ELE_ROOT = "build";

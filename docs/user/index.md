@@ -47,9 +47,14 @@ apply plugin: 'ch.so.agi.gretl'
 buildscript {
     repositories {
         maven { url "https://jars.interlis.ch" }
-        maven { url "http://jars.umleditor.org" }
+        maven { 
+                url "http://jars.umleditor.org" 
+                allowInsecureProtocol = true
+        }
         maven { url "https://repo.osgeo.org/repository/release/" }
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://s01.oss.sonatype.org/service/local/repositories/releases/content/" }
+        maven { url "https://s01.oss.sonatype.org/service/local/repositories/snapshots/content/" }
         mavenCentral()
     }
     dependencies {
@@ -1028,7 +1033,7 @@ task importData(type: Ili2pgImport){
     database = [db_uri, db_user, db_pass]
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
     dataset = dataFile
-    datasetSubstring = 0..4
+    datasetSubstring = (0..4).toList()
     logFile = "ili2pg.log"
 }
 ```
@@ -1228,6 +1233,8 @@ Die Parameter sind analog wie bei Ili2pgImport.
 ### Ili2pgValidate
 
 Prüft die Daten ohne diese in eine Datei zu exportieren. Der Task ist erfolgreich, wenn keine Fehler gefunden werden und ist nicht erfolgreich, wenn Fehler gefunden werden. Mit der Option `failOnException=false` ist der Task erfolgreich, auch wenn Fehler gefunden werden.
+
+Mit dem Parameter `--models`, `--topics`, `--baskets` oder `--dataset` wird definiert, welche Daten geprüft werden. Parameter `--dataset` akzeptiert auch eine Liste von Datasets.
 
 Beispiel:
 ```

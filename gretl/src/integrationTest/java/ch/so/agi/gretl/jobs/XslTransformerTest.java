@@ -1,15 +1,15 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertTrue;
+
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.Test;
-
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class XslTransformerTest {
 

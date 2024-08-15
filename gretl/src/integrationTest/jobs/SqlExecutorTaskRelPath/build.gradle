@@ -9,7 +9,7 @@ def db_pass = "dmluser"
 
 defaultTasks 'relativePathConfiguration'
 
-task relativePathConfiguration(type: SqlExecutor){
+tasks.register('relativePathConfiguration', SqlExecutor){
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['sql/relativePathConfiguration.sql']
 }

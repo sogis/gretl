@@ -1,34 +1,31 @@
 package ch.so.agi.gretl.jobs;
 
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.testcontainers.containers.PostgisContainerProvider;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.sql.Connection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Testcontainers
 public class PostgisRasterExportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
+
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+            .withDatabaseName("gretl")
+            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+            .withInitScript("init_postgresql.sql")
+            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void exportTiff() throws Exception {
