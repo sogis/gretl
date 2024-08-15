@@ -89,6 +89,7 @@ dependencies {
 
     api (libs.iox.formats) {
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
+        exclude group: 'hsqldb', module: 'hsqldb'
     }
 
     api libs.av2.ch
