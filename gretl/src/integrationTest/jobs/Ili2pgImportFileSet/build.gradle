@@ -10,22 +10,22 @@ def db_pass = "ddluser"
 
 defaultTasks 'ili2pgimport'
 
-tasks.register('ili2pgschemaimport', Ili2pgImportSchema) {
+tasks.register("ili2pgschemaimport", Ili2pgImportSchema) {
     database = [db_uri, db_user, db_pass]
     models = "Beispiel2"
     defaultSrsCode = "2056"
-    modeldir = "%ILI_FROM_DB;" + rootProject.projectDir.toString() + ";http://models.interlis.ch"
+    modeldir = "%ILI_FROM_DB;"+rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = "Beispiel2"
     createBasketCol = true
 }
 
-tasks.register('ili2pgimport', Ili2pgImport) {
-    dependsOn ili2pgschemaimport
+tasks.register("ili2pgimport", Ili2pgImport) {
+    dependsOn 'ili2pgschemaimport'
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
     dataFile = fileTree(".").matching {
         include "*.xtf"
     }
-    dataset = ['A_Dataset', 'B_Dataset']
-    datasetSubstring = 0..4
+    dataset = [ 'A_Dataset', 'B_Dataset']
+    datasetSubstring = (0..4).toList()
 }

@@ -10,9 +10,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import ch.ehi.basics.settings.Settings;
+import ch.interlis.iom.IomObject;
+import ch.interlis.iom_j.Iom_jObject;
 import ch.interlis.iox.IoxEvent;
 import ch.interlis.iox.IoxException;
 import ch.interlis.iox.ObjectEvent;
@@ -41,39 +46,41 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
 public class Gpkg2ShpStep {
+    private GretlLogger log;
+    private String taskName;
+
     private static final String PRJ_CONTENT = "PROJCS[\"CH1903+_LV95\",GEOGCS[\"GCS_CH1903+\",DATUM[\"D_CH1903+\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Hotine_Oblique_Mercator_Azimuth_Center\"],PARAMETER[\"False_Easting\",2600000.0],PARAMETER[\"False_Northing\",1200000.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Azimuth\",90.0],PARAMETER[\"Longitude_Of_Center\",7.43958333333333],PARAMETER[\"Latitude_Of_Center\",46.9524055555556],UNIT[\"Meter\",1.0]]";
-    private final GretlLogger log;
-    private final String taskName;
 
     public Gpkg2ShpStep() {
         this(null);
     }
 
     public Gpkg2ShpStep(String taskName) {
+        if (taskName == null) {
+            taskName = Gpkg2ShpStep.class.getSimpleName();
+        } else {
+            this.taskName = taskName;
+        }
         this.log = LogEnvironment.getLogger(this.getClass());
-        this.taskName = Objects.requireNonNullElseGet(taskName, Gpkg2ShpStep.class::getSimpleName);
     }
 
     public void execute(String gpkgFile, String outputDir) throws IoxException, FileNotFoundException {
-        log.lifecycle(
-                String.format("Start Gpgk2ShpStep(Name: %s GpkgFileName: %s OutputDir: %s)", taskName, gpkgFile, outputDir)
-        );
+        log.lifecycle(String.format("Start Gpgk2ShpStep(Name: %s GpkgFileName: %s OutputDir: %s)", taskName, gpkgFile,
+                outputDir));
 
         // Get all geopackage tables that will be converted to shape file.
-        List<String> tableNames = new ArrayList<>();
+        List<String> tableNames = new ArrayList<String>();
         String url = "jdbc:sqlite:" + gpkgFile;
-        Map<String, AttributeDescriptor[]> shpAttrsDescMap = new HashMap<>();
-
+        Map<String, AttributeDescriptor[]> shpAttrsDescMap = new HashMap<String,AttributeDescriptor[]>();
         try (Connection conn = DriverManager.getConnection(url)) {
-            try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery("SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'")
-            ) {
+            try (Statement stmt = conn.createStatement()) {
+                ResultSet rs = stmt.executeQuery("SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'");
                 while (rs.next()) {
                     tableNames.add(rs.getString("tablename"));
                     log.lifecycle("tablename: " + rs.getString("tablename"));
                 }
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
+            }  catch (SQLException e) {
+                e.printStackTrace();
                 throw new IllegalArgumentException(e.getMessage());
             }
 
@@ -102,7 +109,7 @@ public class Gpkg2ShpStep {
                     gpkgAttrsDesc.add(attr);
                 }
 
-                AttributeDescriptor[] shpAttrsDesc = new AttributeDescriptor[gpkgAttrsDesc.size()];
+                AttributeDescriptor shpAttrsDesc[] = new AttributeDescriptor[gpkgAttrsDesc.size()];
                 for (int i=0; i<gpkgAttrsDesc.size(); i++) {
                     GpkgAttributeDescriptor gpkgAttrDesc = gpkgAttrsDesc.get(i);
                     AttributeTypeBuilder attributeBuilder = new AttributeTypeBuilder();
@@ -110,37 +117,26 @@ public class Gpkg2ShpStep {
                     attributeBuilder.setName(attrName);
                     int dbColType = gpkgAttrDesc.getDbColumnType();
 
-                    if (gpkgAttrDesc.isGeometry()) {
+                    if(gpkgAttrDesc.isGeometry()) {
                         String geoColumnTypeName = gpkgAttrDesc.getDbColumnGeomTypeName();
 
-                        switch (geoColumnTypeName) {
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_POINT:
-                                attributeBuilder.setBinding(Point.class);
-                                break;
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_MULTIPOINT:
-                                attributeBuilder.setBinding(MultiPoint.class);
-                                break;
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_LINESTRING:
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_COMPOUNDCURVE:
-                                attributeBuilder.setBinding(LineString.class);
-                                break;
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_MULTILINESTRING:
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_MULTICURVE:
-                                attributeBuilder.setBinding(MultiLineString.class);
-                                break;
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_POLYGON:
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_CURVEPOLYGON:
-                                attributeBuilder.setBinding(Polygon.class);
-                                break;
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_MULTIPOLYGON:
-                            case GpkgAttributeDescriptor.GEOMETRYTYPE_MULTISURFACE:
-                                attributeBuilder.setBinding(MultiPolygon.class);
-                                break;
-                            default:
-                                throw new IllegalStateException("unexpected geometry type " + geoColumnTypeName);
+                        if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_POINT)) {
+                            attributeBuilder.setBinding(Point.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTIPOINT)) {
+                            attributeBuilder.setBinding(MultiPoint.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_LINESTRING) || geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_COMPOUNDCURVE)) {
+                            attributeBuilder.setBinding(LineString.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTILINESTRING) || geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTICURVE)) {
+                            attributeBuilder.setBinding(MultiLineString.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_POLYGON) || geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_CURVEPOLYGON)) {
+                            attributeBuilder.setBinding(Polygon.class);
+                        } else if(geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTIPOLYGON) || geoColumnTypeName.equals(GpkgAttributeDescriptor.GEOMETRYTYPE_MULTISURFACE)) {
+                            attributeBuilder.setBinding(MultiPolygon.class);
+                        } else {
+                            throw new IllegalStateException("unexpected geometry type "+geoColumnTypeName);
                         }
 
-                        CoordinateReferenceSystem crs;
+                        CoordinateReferenceSystem crs = null;
 
                         int srsId = gpkgAttrDesc.getSrId();
                         CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
@@ -213,8 +209,15 @@ public class Gpkg2ShpStep {
 
             writer.write(new EndBasketEvent());
             writer.write(new EndTransferEvent());
-            writer.close();
-            reader.close();
+
+            if (writer != null) {
+                writer.close();
+                writer = null;
+            }
+            if (reader != null) {
+                reader.close();
+                reader = null;
+            }
 
             /* QGIS kann die Shapefiles nicht anzeigen. Sie koennen zwar geladen werden aber man sieht
              * die Geometrien nie (die Attribute schon). Es liegt an einer prj-File-Inkompatibilitaet.
