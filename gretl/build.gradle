@@ -177,6 +177,7 @@ tasks.register('setupPluginUpload') {
 tasks.publishPlugins.dependsOn tasks.setupPluginUpload
 
 test {
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     useJUnitPlatform {
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
         excludeTags 'dbTest', 'sftpTest', 's3Test'
