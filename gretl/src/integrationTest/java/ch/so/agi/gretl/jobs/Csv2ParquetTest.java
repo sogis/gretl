@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class Csv2ParquetTest {
     private static final Configuration testConf = new Configuration();
 
-//    @Test
+    @Test
     public void convertCsv_Ok() throws Exception {        
         // Run GRETL task
         GradleVariable[] gvs = null;
