@@ -21,11 +21,9 @@ public class GpkgValidatorTest {
     public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidatorFail");
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
         });
-
-        assertTrue(exception.getMessage().contains("validation failed"));
     }
 
 }

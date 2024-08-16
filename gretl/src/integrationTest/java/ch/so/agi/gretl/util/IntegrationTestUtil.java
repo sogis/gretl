@@ -32,7 +32,7 @@ public class IntegrationTestUtil {
 
     public static void executeTestRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
         if(TestType.IMAGE.equals(TEST_TYPE)){
-            executeDockerRunCommand(projectDirectory.getAbsolutePath(), variables);
+            executeDockerRunCommand(projectDirectory, variables);
         } else if(TestType.JAR.equals(TEST_TYPE)){
             executeGradleRunner(projectDirectory, taskName, variables);
         } else {
@@ -51,11 +51,17 @@ public class IntegrationTestUtil {
         assertTrue(outcome == TaskOutcome.SUCCESS || outcome == TaskOutcome.UP_TO_DATE);
     }
 
-    private static void executeDockerRunCommand(String jobPath, GradleVariable[] variables){
+    private static void executeDockerRunCommand(File projectDirectory, GradleVariable[] variables){
+
+        String absolutePath = projectDirectory.getAbsolutePath();
+        String jobPath = projectDirectory.getPath();
+
         String dockerRunCommand = getDockerRunCommand(jobPath, variables);
         StringBuffer stdError = new StringBuffer();
         StringBuffer stdOut = new StringBuffer();
 
+        System.out.printf("Absolute Path: %s%n", absolutePath);
+        System.out.print(stdOut);
         try {
             Process process = Runtime.getRuntime().exec(dockerRunCommand);
             appendProcessOutputToStdStreams(process, stdError, stdOut);

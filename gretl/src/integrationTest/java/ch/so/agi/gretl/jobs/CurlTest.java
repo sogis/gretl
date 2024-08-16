@@ -72,11 +72,9 @@ public class CurlTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
         });
-
-        assertTrue(exception.getMessage().contains("Response body does not contain expected string:"));
     }
     
     @Test

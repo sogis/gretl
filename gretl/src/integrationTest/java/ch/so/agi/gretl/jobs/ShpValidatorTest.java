@@ -22,7 +22,7 @@ public class ShpValidatorTest {
     public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpValidatorFail");
 
-        assertThrows(Exception.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
         });
     }

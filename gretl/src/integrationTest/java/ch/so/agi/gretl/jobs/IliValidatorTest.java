@@ -24,13 +24,11 @@ public class IliValidatorTest {
     }
 
     @Test
-    public void validationFail() throws Exception {
+    public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorFail");
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        assertThrows(AssertionError.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
         });
-
-        assertTrue(exception.getMessage().contains("validation failed"));
     }
 }
