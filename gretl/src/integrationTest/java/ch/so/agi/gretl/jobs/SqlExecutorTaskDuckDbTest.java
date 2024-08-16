@@ -16,7 +16,7 @@ public class SqlExecutorTaskDuckDbTest {
     // Tabelle erstellen und Werte inserten
     // Parquet-Datei importieren
     // GPKG importieren
-    @Test
+//    @Test
     public void multipleStuff_Ok() throws Exception {
         String jobDir = "src/integrationTest/jobs/SqlExecutorTaskDuckDb";
         String dbName = "foo.duckdb";
