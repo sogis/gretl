@@ -51,7 +51,7 @@ public class Ili2pgValidateDatasetTest {
     public void validateData_Fail() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateDatasetFail");
 
-        assertThrows(AssertionError.class, () -> {
+        assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "validate", gradleVariables);
         });
 

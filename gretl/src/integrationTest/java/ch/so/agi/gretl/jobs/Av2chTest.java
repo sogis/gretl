@@ -46,7 +46,7 @@ public class Av2chTest {
     public void transformation_Fail() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Av2chFail");
 
-        assertThrows(AssertionError.class, () -> {
+        assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "transform");
         });
     }

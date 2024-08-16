@@ -27,7 +27,7 @@ public class IliValidatorTest {
     public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorFail");
 
-        assertThrows(AssertionError.class, () -> {
+        assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
         });
     }

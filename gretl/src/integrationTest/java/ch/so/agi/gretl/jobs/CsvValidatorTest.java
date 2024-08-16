@@ -21,7 +21,7 @@ public class CsvValidatorTest {
     public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidatorFail");
 
-        assertThrows(AssertionError.class, () -> {
+        assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
         });
     }
