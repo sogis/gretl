@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jdk-jammy
+FROM bellsoft/liberica-openjdk-alpine:11.0.24
 
 CMD ["gretl"]
 
