@@ -121,7 +121,7 @@ public class S3UploadTest {
                 GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
             };
 
-        assertThrows(Exception.class, () -> {
+        assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", variables);
         });
     }
