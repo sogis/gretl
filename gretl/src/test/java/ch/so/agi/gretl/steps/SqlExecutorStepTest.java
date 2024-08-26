@@ -2,42 +2,49 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.testutil.DbTest;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.FileStylingDefinition;
 import ch.so.agi.gretl.util.GretlException;
-import org.junit.*;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Tests for the SqlExecutorStep
  */
+@Testcontainers
 public class SqlExecutorStepTest {
 
-    @ClassRule
-    public static PostgreSQLContainer<?> postgres =
+    @Container
+    public PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
                 .withDatabaseName(TestUtil.PG_DB_NAME)
                 .withUsername(TestUtil.PG_DDLUSR_USR)
                 .withInitScript(TestUtil.PG_INIT_SCRIPT_PATH)
                 .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
     private final Connector connector;
     private final Connector duckDbConnector;
 
@@ -47,12 +54,12 @@ public class SqlExecutorStepTest {
         duckDbConnector = new Connector("jdbc:duckdb::memory:", null, null);
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         TestUtil.createTestDb(this.connector, TestUtil.CREATE_TEST_DB_SQL_PATH);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         TestUtil.clearTestDb(connector);
         if (!connector.isClosed()) {
@@ -123,9 +130,9 @@ public class SqlExecutorStepTest {
             step.execute(connector, sqlList);
         } catch (GretlException e) {
             assertEquals(
-                    String.format("GretlException must be of type: %s", GretlException.TYPE_FILE_NOT_READABLE),
+                    GretlException.TYPE_FILE_NOT_READABLE,
                     e.getType(),
-                    GretlException.TYPE_FILE_NOT_READABLE
+                    String.format("GretlException must be of type: %s", GretlException.TYPE_FILE_NOT_READABLE)
             );
         }
     }
@@ -185,8 +192,8 @@ public class SqlExecutorStepTest {
         }
     }
 
-    @Category(DbTest.class)
     @Test
+    @Tag(TestTags.DB_TEST)
     public void executePostgisVersionTest() throws Exception {
         File inputFile = TestUtil.getResourceFile(TestUtil.POSTGIS_VERSION_SQL_PATH);
         FileStylingDefinition.checkForUtf8(inputFile);

@@ -23,16 +23,16 @@ configurations.all {
 }
 
 Properties properties = new Properties()
-File propFile=project.file('user.properties')
-if(propFile.exists()){
+File propFile = project.file('user.properties')
+if (propFile.exists()){
 	properties.load(propFile.newDataInputStream())
 }
-def dburl = System.getProperty('dburl',properties.get('dburl'))
-def dbusr = System.getProperty('dbusr',properties.get('dbusr'))
-def dbpwd = System.getProperty('dbpwd',properties.get('dbpwd'))
-def ftpurl = System.getProperty('ftpurl',properties.get('ftpurl'))
-def ftpusr = System.getProperty('ftpusr',properties.get('ftpusr'))
-def ftppwd = System.getProperty('ftppwd',properties.get('ftppwd'))
+def dburl = System.getProperty('dburl', properties.get('dburl'))
+def dbusr = System.getProperty('dbusr', properties.get('dbusr'))
+def dbpwd = System.getProperty('dbpwd', properties.get('dbpwd'))
+def ftpurl = System.getProperty('ftpurl', properties.get('ftpurl'))
+def ftpusr = System.getProperty('ftpusr', properties.get('ftpusr'))
+def ftppwd = System.getProperty('ftppwd', properties.get('ftppwd'))
 
 configurations.all {
     resolutionStrategy { 
@@ -110,14 +110,18 @@ dependencies {
     api libs.freemarker
     
 	api libs.sftp.fs
-    
+
     runtimeOnly libs.postgresql
     runtimeOnly libs.sqlite.jdbc
     runtimeOnly libs.derby
     runtimeOnly libs.duckdb
     runtimeOnly libs.oracle
-    
+
     testImplementation libs.junit
+    testImplementation libs.junitTestContainers
+    testImplementation libs.junitTestContainersPostgres
+    testRuntimeOnly libs.junitEngine
+
     testImplementation libs.test.containers.base
     testImplementation libs.test.containers.postgresql
     
@@ -154,7 +158,7 @@ pluginBundle {
     }
 }
 
-tasks.register('setupPluginUpload'){
+tasks.register('setupPluginUpload') {
     description = "Converts Gradle plugin publish key and secret from environment variable to system property. (Workaround)"
     doLast {
         def key=System.env.gradlePublishKey
@@ -174,29 +178,27 @@ tasks.publishPlugins.dependsOn tasks.setupPluginUpload
 
 test {
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    useJUnit{
+    useJUnitPlatform {
         // Exclude all Tests with dependency to a db server (pg, oracle, ..)
-        excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.SftpTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+        excludeTags 'dbTest', 'sftpTest', 's3Test'
     }
 }
 
-tasks.register('dbTest', Test){
+tasks.register('dbTest', Test) {
     dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to a db server (pg, oracle, ...).'
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    useJUnitPlatform {
+        includeTags 'dbTest'
     }
 }
 
-tasks.register('sftpTest', Test){
+tasks.register('sftpTest', Test) {
     dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to a SFTP server'
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.SftpTest'
+    useJUnitPlatform {
+        includeTags 'sftpTest'
     }
 }
 
@@ -204,13 +206,13 @@ def s3AccessKey = System.getProperty('s3AccessKey',properties.get('s3AccessKey')
 def s3SecretKey = System.getProperty('s3SecretKey',properties.get('s3SecretKey'))
 def s3BucketName = System.getProperty('s3BucketName',properties.get('s3BucketName'))
 
-tasks.register('s3Test', Test){
+tasks.register('s3Test', Test) {
     dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to AWS S3.'
 
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    useJUnitPlatform {
+        includeTags 's3Test'
     }
 }
 

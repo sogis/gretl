@@ -3,26 +3,27 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.zip.GZIPInputStream;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GzipStepTest {
 
     private final GretlLogger log;
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+
+    @TempDir
+    public Path folder;
 
     public GzipStepTest() {
         this.log = LogEnvironment.getLogger(this.getClass());
@@ -30,9 +31,9 @@ public class GzipStepTest {
 
     @Test
     public void compress_file_Ok() throws Exception {
-        File outDirectory = folder.newFolder("transformFile_Ok");
+        Path outDirectory = TestUtil.createTempDir(folder, "transformFile_Ok");
         File dataFile = TestUtil.getResourceFile(TestUtil.PLANREGISTER_XML_PATH);
-        File gzipFile = Paths.get(outDirectory.getAbsolutePath(), "planregister.xml.gz").toFile();
+        File gzipFile = Paths.get(outDirectory.toAbsolutePath().toString(), "planregister.xml.gz").toFile();
         
         // Transform File
         GzipStep gzipStep = new GzipStep();

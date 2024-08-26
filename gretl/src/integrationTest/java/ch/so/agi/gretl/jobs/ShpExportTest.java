@@ -5,41 +5,36 @@ import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-
-import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.testcontainers.containers.PostgisContainerProvider;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
-
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.junit.Assert;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Test;
+import org.opengis.feature.simple.SimpleFeature;
+import org.testcontainers.containers.PostgisContainerProvider;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
+import java.sql.Connection;
+import java.sql.Statement;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Testcontainers
 public class ShpExportTest {
 
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+            .withDatabaseName("gretl")
+            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+            .withInitScript("init_postgresql.sql")
+            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void exportOk() throws Exception {
@@ -91,8 +86,7 @@ public class ShpExportTest {
                 featureCollectionIter.close();
                 dataStore.dispose();
             }
-        }
-        finally {
+        } finally {
             IntegrationTestUtilSql.closeCon(con);
         }
     }

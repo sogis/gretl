@@ -1,51 +1,45 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import ch.so.agi.gretl.testutil.S3Test;
+import ch.so.agi.gretl.testutil.S3TestHelper;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
-import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.model.*;
 
-public class S3UploadTest {
-    private String s3AccessKey = System.getProperty("s3AccessKey");
-    private String s3SecretKey = System.getProperty("s3SecretKey");
-    private String s3BucketName = System.getProperty("s3BucketName");
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class S3UploadTest {
+    private final S3TestHelper s3TestHelper;
+    private final String s3AccessKey;
+    private final String s3SecretKey;
+    private final String s3BucketName;
+
+
+    public S3UploadTest() {
+        this.s3AccessKey = System.getProperty("s3AccessKey");
+        this.s3SecretKey = System.getProperty("s3SecretKey");
+        this.s3BucketName = System.getProperty("s3BucketName");
+
+        String s3Region = "eu-central-1";
+        String s3Endpoint = "https://s3.eu-central-1.amazonaws.com";
+        this.s3TestHelper = new S3TestHelper(this.s3AccessKey, this.s3SecretKey, s3Region, s3Endpoint);
+    }
 
     @Test
-    @Category(S3Test.class)    
-    public void uploadDirectory_Ok() throws Exception {
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of("eu-central-1");
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
-                .build(); 
-
+    @Tag(TestTags.S3_TEST)
+    void uploadDirectory_Ok() throws Exception {
+        S3Client s3client = s3TestHelper.getS3Client();
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
@@ -67,10 +61,9 @@ public class S3UploadTest {
         List<S3Object> objects = res.contents();
         
         List<String> keyList = new ArrayList<String>();
-        for (ListIterator<S3Object> iterVals = objects.listIterator(); iterVals.hasNext(); ) {
-            S3Object myValue = iterVals.next();            
+        for (S3Object myValue : objects) {
             keyList.add(myValue.key());
-         }
+        }
         
         assertTrue(keyList.contains("foo.txt"));
         assertTrue(keyList.contains("bar.txt"));
@@ -81,16 +74,10 @@ public class S3UploadTest {
     }
     
     @Test
-    @Category(S3Test.class)        
-    public void uploadFileTree_Ok() throws Exception {
+    @Tag(TestTags.S3_TEST)
+    void uploadFileTree_Ok() throws Exception {
         // Check result. 
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of("eu-central-1");
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
-                .build(); 
+        S3Client s3client = s3TestHelper.getS3Client();
 
         // Remove uploaded files from bucket.
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.csv").build());
@@ -112,16 +99,15 @@ public class S3UploadTest {
 
         ListObjectsResponse res = s3client.listObjects(listObjects);
         List<S3Object> objects = res.contents();
-        
-        List<String> keyList = new ArrayList<String>();
-        for (ListIterator<S3Object> iterVals = objects.listIterator(); iterVals.hasNext(); ) {
-            S3Object myValue = iterVals.next();            
+
+        List<String> keyList = new ArrayList<>();
+        for (S3Object myValue : objects) {
             keyList.add(myValue.key());
-         }
+        }
         
         assertTrue(keyList.contains("foo.csv"));
         assertTrue(keyList.contains("bar.csv"));
-        assertTrue(keyList.size() == 3); // TODO 3 wegen download.txt
+        assertEquals(3, keyList.size()); // TODO 3 wegen download.txt
         
         // Remove uploaded files from bucket.
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.csv").build());
@@ -129,16 +115,9 @@ public class S3UploadTest {
     }
     
     @Test
-    @Category(S3Test.class)    
-    public void uploadFile_Ok() throws Exception {
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of("eu-central-1");
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
-                .build(); 
-
+    @Tag(TestTags.S3_TEST)
+    void uploadFile_Ok() throws Exception {
+        S3Client s3client = s3TestHelper.getS3Client();
         s3client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
         
         // Upload single file from a directory.
@@ -164,14 +143,14 @@ public class S3UploadTest {
     }
     
     @Test
-    @Category(S3Test.class)        
-    public void uploadFile_Fail() throws Exception {
+    @Tag(TestTags.S3_TEST)
+    void uploadFile_Fail() throws Exception {
         // Upload single file from a directory.
         GradleVariable[] gvs = { 
                 GradleVariable.newGradleProperty("s3AccessKey", "login"), 
                 GradleVariable.newGradleProperty("s3SecretKey", "password"),
                 GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
             };
-        assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadFileFail", gvs, new StringBuffer(), new StringBuffer()));
+        Assertions.assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/S3UploadFileFail", gvs, new StringBuffer(), new StringBuffer()));
     }
 }
