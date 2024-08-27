@@ -36,7 +36,6 @@ public class S3DownloadStepTest {
     private static URI s3Endpoint;
     private static String s3Region;
     private static S3TestHelper s3TestHelper;
-
     private final GretlLogger log;
 
     @TempDir

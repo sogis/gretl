@@ -80,7 +80,6 @@ public class S3UploadTest {
         for (S3Object myValue : objects) {
             keyList.add(myValue.key());
         }
-
         assertTrue(keyList.contains("foo.txt"));
         assertTrue(keyList.contains("bar.txt"));
 
@@ -120,7 +119,6 @@ public class S3UploadTest {
         for (S3Object myValue : objects) {
             keyList.add(myValue.key());
         }
-
         assertTrue(keyList.contains("foo.csv"));
         assertTrue(keyList.contains("bar.csv"));
         assertEquals(2, keyList.size());

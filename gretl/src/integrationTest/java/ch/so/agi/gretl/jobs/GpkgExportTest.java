@@ -31,7 +31,7 @@ public class GpkgExportTest {
     public GpkgExportTest() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-    
+
     @Container
     public static PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
@@ -77,7 +77,7 @@ public class GpkgExportTest {
     @Test
     public void exportTablesOk() throws Exception {
         String schemaName = "gpkgexport".toLowerCase();
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/GpkgExportTables/data.gpkg")); 
+        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/GpkgExportTables/data.gpkg"));
 
         try (
                 Connection con = IntegrationTestUtilSql.connectPG(postgres);
@@ -118,6 +118,5 @@ public class GpkgExportTest {
                 fail();
             }
         }
-
     }
 }

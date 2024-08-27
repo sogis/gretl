@@ -97,7 +97,9 @@ public class Db2DbTaskTest {
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
-            assertEquals(countSrc, countDest, "Rowcount in table albums_src must be equal to rowcount in table albums_dest");
+            assertEquals(countSrc, countDest,
+                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest"
+            );
         }
     }
 
@@ -125,7 +127,9 @@ public class Db2DbTaskTest {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            assertEquals(countSrc, countDest, "Rowcount in table albums_src must be equal to rowcount in table albums_dest");
+            assertEquals(countSrc, countDest,
+                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest"
+            );
         }
     }
 
@@ -152,7 +156,9 @@ public class Db2DbTaskTest {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            assertEquals(countSrc, countDest, "Rowcount in table albums_src must be equal to rowcount in table albums_dest");
+            assertEquals(countSrc, countDest,
+                    "Rowcount in table albums_src must be equal to rowcount in table albums_dest"
+            );
         }
     }
 
