@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.jobs;
 
+
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.apache.avro.generic.GenericRecord;

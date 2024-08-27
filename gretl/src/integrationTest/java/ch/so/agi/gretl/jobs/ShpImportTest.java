@@ -29,7 +29,6 @@ public class ShpImportTest {
                     .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
                     .withInitScript("init_postgresql.sql")
                     .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
-
     @Test
     public void importOk() throws Exception {
         String schemaName = "shpimport".toLowerCase();

@@ -5,11 +5,9 @@ import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
@@ -30,7 +28,7 @@ public class S3DownloadTest {
 
     @Test
     @Tag(TestTags.S3_TEST)
-    public void downloadFile_Ok() throws Exception {
+    void downloadFile_Ok() throws Exception {
         // Download single file from a directory.
         GradleVariable[] gvs = {
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey),
@@ -40,13 +38,7 @@ public class S3DownloadTest {
         IntegrationTestUtil.runJob("src/integrationTest/jobs/S3DownloadFile", gvs);
 
         // Check result.
-        AwsCredentialsProvider creds = StaticCredentialsProvider.create(AwsBasicCredentials.create(s3AccessKey, s3SecretKey));
-        Region region = Region.of("eu-central-1");
-        S3Client s3client = S3Client.builder()
-                .credentialsProvider(creds)
-                .region(region)
-                .endpointOverride(URI.create("https://s3.eu-central-1.amazonaws.com"))
-                .build();
+        S3Client s3client = s3TestHelper.getS3Client();
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(s3BucketName)
