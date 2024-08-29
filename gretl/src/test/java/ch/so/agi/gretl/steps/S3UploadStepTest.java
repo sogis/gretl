@@ -3,9 +3,13 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.testutil.S3TestHelper;
 import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -13,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,29 +25,36 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
+@Testcontainers
 public class S3UploadStepTest {
-    private final String s3AccessKey;
-    private final String s3SecretKey;
-    private final String s3BucketName;
-    private final String s3Endpoint;
-    private final String s3Region;
-    private final String acl;
-    private final S3TestHelper s3TestHelper;
+    @Container
+    public static LocalStackContainer localStackContainer = new LocalStackContainer(S3TestHelper.getLocalstackImage())
+            .withServices(S3);
+
+    private static String s3AccessKey;
+    private static String s3SecretKey;
+    private static String s3BucketName;
+    private static URI s3Endpoint;
+    private static String s3Region;
+    private static String acl;
+    private static S3TestHelper s3TestHelper;
 
     @TempDir
     public Path folder;
 
-    public S3UploadStepTest() {
-        this.s3AccessKey = System.getProperty("s3AccessKey");
-        this.s3SecretKey = System.getProperty("s3SecretKey");
-        this.s3BucketName = System.getProperty("s3BucketName");
-        this.s3Endpoint = "https://s3.eu-central-1.amazonaws.com";
-        this.s3Region = "eu-central-1";
-        this.acl = "public-read";
-        this.s3TestHelper = new S3TestHelper(this.s3AccessKey, this.s3SecretKey, this.s3Region, this.s3Endpoint);
+    @BeforeAll
+    public static void setUp() throws Exception {
+        s3AccessKey = localStackContainer.getAccessKey();
+        s3SecretKey = localStackContainer.getSecretKey();
+        s3BucketName = System.getProperty("s3BucketName");
+        s3Endpoint = localStackContainer.getEndpointOverride(S3);
+        s3Region = localStackContainer.getRegion();
+        acl = "public-read";
+        s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint.toString());
     }
-    
+
     @Test
     @Tag(TestTags.S3_TEST)
     public void uploadDirectory_Ok() throws Exception {
@@ -52,12 +64,14 @@ public class S3UploadStepTest {
         }};
 
         S3Client s3Client = s3TestHelper.getS3Client();
+        s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
+
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
         // Upload files from a directory.
         S3UploadStep s3UploadStep = new S3UploadStep();
-        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3Endpoint, s3Region, acl, null, metaData);
+        s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3Endpoint.toString(), s3Region, acl, null, metaData);
         
         // Check result. 
         ListObjectsRequest listObjects = ListObjectsRequest
@@ -87,6 +101,7 @@ public class S3UploadStepTest {
         File sourceObject = TestUtil.getResourceFile("data/s3upload/foo.txt");
         Map<String,String> metaData = new HashMap<>();
         S3Client s3Client = s3TestHelper.getS3Client();
+        s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
 
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
         
@@ -112,11 +127,13 @@ public class S3UploadStepTest {
     public void uploadFile_Fail() throws Exception {
         File sourceObject = TestUtil.getResourceFile("data/s3upload/foo.txt");
         Map<String,String> metaData = new HashMap<>();
+        S3Client s3Client = s3TestHelper.getS3Client();
+        s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
 
         try {
             // Upload a single file
             S3UploadStep s3UploadStep = new S3UploadStep();
-            s3UploadStep.execute("login", "secret", sourceObject, s3BucketName, s3Endpoint, s3Region, acl, null, metaData);
+            s3UploadStep.execute("login", "secret", sourceObject, s3BucketName, s3Endpoint.toString(), s3Region, acl, null, metaData);
         } catch (S3Exception e) {
             assertTrue(e.getMessage().contains("The AWS Access Key Id you provided does not exist in our records"));
         }

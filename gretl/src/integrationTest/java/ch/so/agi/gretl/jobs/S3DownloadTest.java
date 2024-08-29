@@ -39,11 +39,11 @@ class S3DownloadTest {
     @Tag(TestTags.S3_TEST)
     void downloadFile_Ok() throws Exception {
         // Download single file from a directory.
-        GradleVariable[] gvs = { 
-                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey), 
+        GradleVariable[] gvs = {
+                GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey),
                 GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
                 GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
-            };
+        };
         IntegrationTestUtil.runJob("src/integrationTest/jobs/S3DownloadFile", gvs);
 
         // Check result.
@@ -53,12 +53,12 @@ class S3DownloadTest {
                 .bucket(s3BucketName)
                 .key("download.txt")
                 .build();
-        
+
         ResponseInputStream<GetObjectResponse> is = s3client.getObject(getObjectRequest);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));        
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         assertTrue(reader.readLine().equalsIgnoreCase("fubar"));
-        
+
         // Remove downloaded file.
         Files.delete(Paths.get("src/integrationTest/jobs/S3DownloadFile/download.txt"));
-    }    
+    }
 }

@@ -32,83 +32,74 @@ public class Ili2pgImportSchemaTest {
 
     @Test
     public void schemaImportOk() throws Exception {
-        Connection con = null;
-        try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema", gvs);
-            
-            // check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-            Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT content FROM gb2av.t_ili2db_model");
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema", gvs);
 
-            if(!rs.next()) {
-                fail();
+        // Check results
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement()
+        ) {
+            try (ResultSet rs = stmt.executeQuery("SELECT content FROM gb2av.t_ili2db_model")) {
+                if (!rs.next()) {
+                    fail();
+                }
+
+                assertTrue(rs.getString(1).contains("INTERLIS 2.2;"));
+
+                if (rs.next()) {
+                    fail();
+                }
             }
 
-            assertTrue(rs.getString(1).contains("INTERLIS 2.2;"));
-            
-            if(rs.next()) {
-                fail();
-            }
+            try (ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns WHERE table_schema = 'gb2av' AND table_name  = 'vollzugsgegenstand' AND column_name = 'mutationsnummer'")) {
+                if (!rs.next()) {
+                    fail();
+                }
 
-            // check json mapping
-            s = con.createStatement();
-            rs = s.executeQuery("SELECT column_name FROM information_schema.columns WHERE table_schema = 'gb2av' AND table_name  = 'vollzugsgegenstand' AND column_name = 'mutationsnummer'");
-            
-            if(!rs.next()) {
-                fail();
-            }
-            
-            assertTrue(rs.getString(1).contains("mutationsnummer"));
+                assertTrue(rs.getString(1).contains("mutationsnummer"));
 
-            if(rs.next()) {
-                fail();
+                if (rs.next()) {
+                    fail();
+                }
             }
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
         }
     }
     
     @Test
     public void schemaImport_Options1_Ok() throws Exception {
-        Connection con = null;
-        try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema_Options", gvs);
-            
-            // check results
-            // check sqlColsAsText mapping
-            con = IntegrationTestUtilSql.connectPG(postgres);
-            Statement s = con.createStatement();
-            ResultSet rs  = s.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'gemeinde_bfs'");
-            
-            if(!rs.next()) {
-                fail();
-            }
-            
-            assertTrue(rs.getString(1).equalsIgnoreCase("text"));
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema_Options", gvs);
 
-            if(rs.next()) {
-                fail();
-            }
-            
-            // check sqlExtRefCols mapping
-            s = con.createStatement();
-            rs = s.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'geometrie'");
-            
-            if(!rs.next()) {
-                fail();
-            }
-            
-            assertTrue(rs.getString(1).equalsIgnoreCase("character varying"));
+        // Check results
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement()
+        ) {
+            try (ResultSet rs  = stmt.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'gemeinde_bfs'")) {
+                if (!rs.next()) {
+                    fail();
+                }
 
-            if(rs.next()) {
-                fail();
+                assertTrue(rs.getString(1).equalsIgnoreCase("text"));
+
+                if (rs.next()) {
+                    fail();
+                }
             }
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
+
+            // Check sqlExtRefCols mapping
+            try (ResultSet rs = stmt.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'geometrie'")) {
+                if (!rs.next()) {
+                    fail();
+                }
+
+                assertTrue(rs.getString(1).equalsIgnoreCase("character varying"));
+
+                if (rs.next()) {
+                    fail();
+                }
+            }
         }
     }
-
 }

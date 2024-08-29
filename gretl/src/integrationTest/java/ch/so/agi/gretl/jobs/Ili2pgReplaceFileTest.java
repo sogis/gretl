@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,31 +35,26 @@ public class Ili2pgReplaceFileTest {
 
     @Test
     public void importLocalFile_Ok() throws Exception {
-        Connection con = null;
-        try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgReplaceFile", gvs);
-            
-            // check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-            Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT count(*) FROM beispiel2.boflaechen");
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgReplaceFile", gvs);
 
-            assertTrue(rs.next());
-
-            assertEquals(2, rs.getInt(1));
-
-            rs = s.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+" FROM beispiel2."+DbNames.DATASETS_TAB);
-            HashSet<String> datasets=new HashSet<String>();
-            while(rs.next()) {
-                datasets.add(rs.getString(1));
+        try (
+            Connection con = IntegrationTestUtilSql.connectPG(postgres);
+            Statement stmt = con.createStatement();
+        ) {
+            try (ResultSet rs = stmt.executeQuery("SELECT count(*) FROM beispiel2.boflaechen")) {
+                assertTrue(rs.next());
+                assertEquals(2, rs.getInt(1));
             }
-            assertEquals(1, datasets.size());
-            assertTrue(datasets.contains("A_Dataset"));
-            rs.close();
-            s.close();
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
+
+            try (ResultSet rs = stmt.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+" FROM beispiel2."+DbNames.DATASETS_TAB)) {
+                Set<String> datasets = new HashSet<>();
+                while (rs.next()) {
+                    datasets.add(rs.getString(1));
+                }
+                assertEquals(1, datasets.size());
+                assertTrue(datasets.contains("A_Dataset"));
+            }
         }
     }
     
@@ -69,31 +65,26 @@ public class Ili2pgReplaceFileTest {
     // heruntergeladen. Dieser Schritt entfaellt beim lokalen ilidata.xml
     @Test
     public void importIlidataFile_Ok() throws Exception {
-        Connection con = null;
-        try {
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgReplaceIlidataFile", gvs);
-            
-            // check results
-            con = IntegrationTestUtilSql.connectPG(postgres);
-            Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT count(*) FROM agi_av_mopublic.strassenname_pos");
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgReplaceIlidataFile", gvs);
 
-            assertTrue(rs.next());
-
-            assertEquals(1, rs.getInt(1));
-
-            rs = s.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+" FROM agi_av_mopublic."+DbNames.DATASETS_TAB);
-            HashSet<String> datasets=new HashSet<String>();
-            while(rs.next()) {
-                datasets.add(rs.getString(1));
+        try (
+                Connection con = IntegrationTestUtilSql.connectPG(postgres);
+                Statement stmt = con.createStatement();
+        ) {
+            try (ResultSet rs = stmt.executeQuery("SELECT count(*) FROM agi_av_mopublic.strassenname_pos")) {
+                assertTrue(rs.next());
+                assertEquals(1, rs.getInt(1));
             }
-            assertEquals(1, datasets.size());
-            assertTrue(datasets.contains("2549"));
-            rs.close();
-            s.close();
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
+
+            try (ResultSet rs = stmt.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+" FROM agi_av_mopublic."+DbNames.DATASETS_TAB)) {
+                Set<String> datasets=new HashSet<>();
+                while (rs.next()) {
+                    datasets.add(rs.getString(1));
+                }
+                assertEquals(1, datasets.size());
+                assertTrue(datasets.contains("2549"));
+            }
         }
     }
 }

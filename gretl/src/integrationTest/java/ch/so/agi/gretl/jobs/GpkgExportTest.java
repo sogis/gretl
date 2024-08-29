@@ -2,6 +2,8 @@ package ch.so.agi.gretl.jobs;
 
 import ch.ehi.ili2gpkg.Gpkg2iox;
 import ch.interlis.iom.IomObject;
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
@@ -15,15 +17,21 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 public class GpkgExportTest {
-    
+
+    private final GretlLogger log;
+
+    public GpkgExportTest() {
+        this.log = LogEnvironment.getLogger(this.getClass());
+    }
+
     @Container
     public static PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
@@ -34,110 +42,81 @@ public class GpkgExportTest {
 
     @Test
     public void exportTableOk() throws Exception {
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/GpkgExport/data.gpkg")); 
-
+        Path gpkgFilePath = Paths.get("src/integrationTest/jobs/GpkgExport/data.gpkg");
         String schemaName = "gpkgexport".toLowerCase();
-        Connection con = null;
-        try {            
-            con = IntegrationTestUtilSql.connectPG(postgres);
+        Files.deleteIfExists(gpkgFilePath);
+
+        // Setup database
+        try (Connection con = IntegrationTestUtilSql.connectPG(postgres); Statement stmt = con.createStatement()) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
-            Statement s1 = con.createStatement();
-            s1.execute("CREATE TABLE "+schemaName+".exportdata(attr character varying,the_geom geometry(POINT,2056));");
-            s1.execute("INSERT INTO "+schemaName+".exportdata(attr,the_geom) VALUES ('coord2d','0101000020080800001CD4411DD441CDBF0E69626CDD33E23F')");
-            s1.close();
+            stmt.execute(String.format("CREATE TABLE %s.exportdata(attr VARCHAR, the_geom GEOMETRY(POINT,2056))", schemaName));
+            stmt.execute(String.format("INSERT INTO %s.exportdata(attr, the_geom) VALUES ('coord2d', '0101000020080800001CD4411DD441CDBF0E69626CDD33E23F')", schemaName));
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
-
             con.commit();
-            IntegrationTestUtilSql.closeCon(con);
-
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgExport", gvs);
-
-            //check results
-            {
-                System.out.println("cwd "+new File(".").getAbsolutePath());
-                Statement stmt = null;
-                ResultSet rs = null;
-                Connection gpkgConnection = null;
-                try {
-                    Gpkg2iox gpkg2iox = new Gpkg2iox(); 
-                    gpkgConnection = DriverManager.getConnection("jdbc:sqlite:" + new File("src/integrationTest/jobs/GpkgExport/data.gpkg").getAbsolutePath());
-                    stmt = gpkgConnection.createStatement();
-                    rs = stmt.executeQuery("SELECT attr, the_geom FROM exportdata");
-
-                    while (rs.next()) {
-                        assertEquals("coord2d", rs.getString(1));
-                        IomObject iomGeom = gpkg2iox.read(rs.getBytes(2));
-                        assertEquals("COORD {C1 -0.22857142857142854, C2 0.5688311688311687}", iomGeom.toString());
-                    }
-                    rs.close();
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    fail();
-                }
-            }
         }
-        finally {
-            IntegrationTestUtilSql.closeCon(con);
+
+        // Run the Gradle job
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+        IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgExport", gvs);
+
+        // Check results
+        try (
+                Connection gpkgConnection = DriverManager.getConnection("jdbc:sqlite:" + gpkgFilePath.toAbsolutePath());
+                Statement stmt = gpkgConnection.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT attr, the_geom FROM exportdata")
+        ) {
+            assertTrue(rs.next(), "No results returned from query");
+            assertEquals("coord2d", rs.getString("attr"), "Attribute value mismatch");
+            Gpkg2iox gpkg2iox = new Gpkg2iox();
+            IomObject iomGeom = gpkg2iox.read(rs.getBytes("the_geom"));
+            assertEquals("COORD {C1 -0.22857142857142854, C2 0.5688311688311687}", iomGeom.toString(), "Geometry mismatch");
+            assertFalse(rs.next(), "More than one row returned from query");
         }
     }
     
     @Test
     public void exportTablesOk() throws Exception {
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/GpkgExportTables/data.gpkg")); 
-
         String schemaName = "gpkgexport".toLowerCase();
-        Connection con = null;
-        try {            
-            con = IntegrationTestUtilSql.connectPG(postgres);
+        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/GpkgExportTables/data.gpkg"));
+
+        try (
+                Connection con = IntegrationTestUtilSql.connectPG(postgres);
+                Statement stmt1 = con.createStatement();
+                Statement stmt2 = con.createStatement();
+        ) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
-            Statement s1 = con.createStatement();
-            s1.execute("CREATE TABLE "+schemaName+".exportdata1(attr character varying,the_geom geometry(POINT,2056));");
-            s1.execute("INSERT INTO "+schemaName+".exportdata1(attr,the_geom) VALUES ('coord2d','0101000020080800001CD4411DD441CDBF0E69626CDD33E23F')");
-            s1.close();
-            
-            Statement s2 = con.createStatement();
-            s2.execute("CREATE TABLE "+schemaName+".exportdata2(attr character varying,the_geom geometry(POINT,2056));");
-            s2.execute("INSERT INTO "+schemaName+".exportdata2(attr,the_geom) VALUES ('coord2d','0101000020080800001CD4411DD441CDBF0E69626CDD33E23F')");
-            s2.close();
+            stmt1.execute("CREATE TABLE "+schemaName+".exportdata1(attr character varying,the_geom geometry(POINT,2056));");
+            stmt1.execute("INSERT INTO "+schemaName+".exportdata1(attr,the_geom) VALUES ('coord2d','0101000020080800001CD4411DD441CDBF0E69626CDD33E23F')");
+            stmt2.execute("CREATE TABLE "+schemaName+".exportdata2(attr character varying,the_geom geometry(POINT,2056));");
+            stmt2.execute("INSERT INTO "+schemaName+".exportdata2(attr,the_geom) VALUES ('coord2d','0101000020080800001CD4411DD441CDBF0E69626CDD33E23F')");
 
-            
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName, IntegrationTestUtilSql.PG_CON_DMLUSER);
-
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
             IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgExportTables", gvs);
+        }
 
-            //check results
-            for (int i=1; i<=2; i++) {
-                System.out.println("cwd "+new File(".").getAbsolutePath());
-                Statement stmt = null;
-                ResultSet rs = null;
-                Connection gpkgConnection = null;
-                try {
-                    Gpkg2iox gpkg2iox = new Gpkg2iox(); 
-                    gpkgConnection = DriverManager.getConnection("jdbc:sqlite:" + new File("src/integrationTest/jobs/GpkgExportTables/data.gpkg").getAbsolutePath());
-                    stmt = gpkgConnection.createStatement();
-                    rs = stmt.executeQuery("SELECT attr, the_geom FROM exportdata" + String.valueOf(i));
+        // Check results
+        for (int i = 1; i <= 2; i++) {
+            log.info("cwd " + new File(".").getAbsolutePath());
 
-                    while (rs.next()) {
-                        assertEquals("coord2d", rs.getString(1));
-                        IomObject iomGeom = gpkg2iox.read(rs.getBytes(2));
-                        assertEquals("COORD {C1 -0.22857142857142854, C2 0.5688311688311687}", iomGeom.toString());
-                    }
-                    rs.close();
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    fail();
+            try (
+                Connection gpkgConnection = DriverManager.getConnection("jdbc:sqlite:" + new File("src/integrationTest/jobs/GpkgExportTables/data.gpkg").getAbsolutePath());
+                Statement stmt = gpkgConnection.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT attr, the_geom FROM exportdata" + String.valueOf(i));
+            ) {
+                Gpkg2iox gpkg2iox = new Gpkg2iox();
+                while (rs.next()) {
+                    assertEquals("coord2d", rs.getString(1));
+                    IomObject iomGeom = gpkg2iox.read(rs.getBytes(2));
+                    assertEquals("COORD {C1 -0.22857142857142854, C2 0.5688311688311687}", iomGeom.toString());
                 }
- 
+            } catch (SQLException e) {
+                log.error(e.getMessage(), e);
+                fail();
             }
-        } finally {
-            IntegrationTestUtilSql.closeCon(con);
         }
     }
 }

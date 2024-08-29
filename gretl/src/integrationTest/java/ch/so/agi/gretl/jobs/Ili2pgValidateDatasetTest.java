@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.jobs;
 
-
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;

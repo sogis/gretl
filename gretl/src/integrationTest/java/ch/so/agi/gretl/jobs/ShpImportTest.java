@@ -21,15 +21,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @Testcontainers
 public class ShpImportTest {
-    
+
     @Container
     public static PostgreSQLContainer<?> postgres =
-        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
-            .withDatabaseName("gretl")
-            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-            .withInitScript("init_postgresql.sql")
-            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
-    
+            (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                    .withDatabaseName("gretl")
+                    .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+                    .withInitScript("init_postgresql.sql")
+                    .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
     @Test
     public void importOk() throws Exception {
         String schemaName = "shpimport".toLowerCase();
@@ -52,7 +51,7 @@ public class ShpImportTest {
             con = IntegrationTestUtilSql.connectPG(postgres);
 
             Statement s2 = con.createStatement();
-            ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1"); 
+            ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1");
             if(!rs.next()) {
                 fail();
             }

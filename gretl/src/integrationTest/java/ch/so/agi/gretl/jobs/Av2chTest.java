@@ -20,7 +20,6 @@ public class Av2chTest {
         IntegrationTestUtil.runJob("src/integrationTest/jobs/Av2ch", gvs);
         
         File resultFile = new File("src/integrationTest/jobs/Av2ch/output/254900.itf");
-        
         long resultSize = resultFile.length();
         assertTrue(resultSize > 580000, "Size of result file is wrong.");
 

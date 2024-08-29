@@ -30,11 +30,11 @@ public class ShpExportTest {
 
     @Container
     public static PostgreSQLContainer<?> postgres =
-        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
-            .withDatabaseName("gretl")
-            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-            .withInitScript("init_postgresql.sql")
-            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+            (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                    .withDatabaseName("gretl")
+                    .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+                    .withInitScript("init_postgresql.sql")
+                    .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void exportOk() throws Exception {

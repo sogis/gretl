@@ -124,6 +124,8 @@ dependencies {
 
     testImplementation libs.test.containers.base
     testImplementation libs.test.containers.postgresql
+    testImplementation libs.test.containers.localstack
+    testImplementation libs.aws.java.sdk
     
     testImplementation libs.mock.web.server
 

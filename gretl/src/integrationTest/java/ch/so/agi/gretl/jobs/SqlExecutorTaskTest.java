@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 public class SqlExecutorTaskTest {
-    
+
     @Container
     public static PostgreSQLContainer<?> postgres =
-        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
-            .withDatabaseName("gretl")
-            .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-            .withInitScript("init_postgresql.sql")
-            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+            (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                    .withDatabaseName("gretl")
+                    .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+                    .withInitScript("init_postgresql.sql")
+                    .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     /**
      * Tests that a chain of statements executes properly
@@ -103,7 +103,7 @@ public class SqlExecutorTaskTest {
             Statement stmt=con.createStatement();
             stmt.execute(String.format("CREATE TABLE %s.src(title text)", schemaName));
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName,IntegrationTestUtilSql.PG_CON_DMLUSER);
-            
+
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
@@ -138,7 +138,7 @@ public class SqlExecutorTaskTest {
             Statement stmt=con.createStatement();
             stmt.execute(String.format("CREATE TABLE %s.src(title text)", schemaName));
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName,IntegrationTestUtilSql.PG_CON_DMLUSER);
-            
+
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
