@@ -1,3 +1,7 @@
 **/build/**
 build
 **/build/
+
+XslTransformerFile/*.xtf
+DatabaseDocumentExport/*.pdf
+Csv2Excel/*.xlsx
