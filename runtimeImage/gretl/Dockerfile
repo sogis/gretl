@@ -1,5 +1,4 @@
-#FROM bellsoft/liberica-openjdk-alpine:11.0.19-7
-FROM bellsoft/liberica-openjdk-alpine:8u392-9
+FROM bellsoft/liberica-openjdk-alpine:11.0.24
 
 CMD ["gretl"]
 
@@ -11,10 +10,10 @@ WORKDIR $HOME
 RUN chgrp root . && chmod g+w .
 
 COPY ca-certificates/ /usr/local/share/ca-certificates/
-RUN apk add --no-cache bash ca-certificates java-cacerts curl \
-    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/jre/lib/security/cacerts
 #RUN apk add --no-cache bash ca-certificates java-cacerts curl \
-#    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/lib/security/cacerts
+#    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/jre/lib/security/cacerts
+RUN apk add --no-cache bash ca-certificates java-cacerts curl \
+    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/lib/security/cacerts
 
 ENV JAVA_TOOL_OPTIONS=-Duser.home=${HOME}
 ENV GRADLE_HOME /opt/gradle

@@ -35,12 +35,12 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
@@ -48,7 +48,7 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 public class Gpkg2ShpStep {
     private GretlLogger log;
     private String taskName;
-    
+
     private static final String PRJ_CONTENT = "PROJCS[\"CH1903+_LV95\",GEOGCS[\"GCS_CH1903+\",DATUM[\"D_CH1903+\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Hotine_Oblique_Mercator_Azimuth_Center\"],PARAMETER[\"False_Easting\",2600000.0],PARAMETER[\"False_Northing\",1200000.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Azimuth\",90.0],PARAMETER[\"Longitude_Of_Center\",7.43958333333333],PARAMETER[\"Latitude_Of_Center\",46.9524055555556],UNIT[\"Meter\",1.0]]";
 
     public Gpkg2ShpStep() {
@@ -67,48 +67,48 @@ public class Gpkg2ShpStep {
     public void execute(String gpkgFile, String outputDir) throws IoxException, FileNotFoundException {
         log.lifecycle(String.format("Start Gpgk2ShpStep(Name: %s GpkgFileName: %s OutputDir: %s)", taskName, gpkgFile,
                 outputDir));
-        
+
         // Get all geopackage tables that will be converted to shape file.
         List<String> tableNames = new ArrayList<String>();
         String url = "jdbc:sqlite:" + gpkgFile;
         Map<String, AttributeDescriptor[]> shpAttrsDescMap = new HashMap<String,AttributeDescriptor[]>();
         try (Connection conn = DriverManager.getConnection(url)) {
             try (Statement stmt = conn.createStatement()) {
-                ResultSet rs = stmt.executeQuery("SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'"); 
-                    while (rs.next()) {
-                        tableNames.add(rs.getString("tablename"));
-                        log.lifecycle("tablename: " + rs.getString("tablename"));
-                    }
+                ResultSet rs = stmt.executeQuery("SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'");
+                while (rs.next()) {
+                    tableNames.add(rs.getString("tablename"));
+                    log.lifecycle("tablename: " + rs.getString("tablename"));
+                }
             }  catch (SQLException e) {
                 e.printStackTrace();
                 throw new IllegalArgumentException(e.getMessage());
             }
-         
+
             // Mapping von GPKG-Attribut-Descriptor zu SHP-Attribut-Descriptor.
-            for (String tableName : tableNames) {                
-                List<GpkgAttributeDescriptor> gpkgAttrsDesc = GpkgAttributeDescriptor.getAttributeDescriptors(null, tableName, conn);  
-                
+            for (String tableName : tableNames) {
+                List<GpkgAttributeDescriptor> gpkgAttrsDesc = GpkgAttributeDescriptor.getAttributeDescriptors(null, tableName, conn);
+
                 // Ganz klar im Vergleich zur komplett schemalosen Variante (also Geometrie und String)
                 // ist es mir hier nicht. Jedenfalls scheint es nicht zu funktionieren, wenn es kein
-                // Geometrie-Attribut gibt. Aus diesem Grund faken wir eins. 
+                // Geometrie-Attribut gibt. Aus diesem Grund faken wir eins.
                 boolean geomColumnFound = false;
                 for (GpkgAttributeDescriptor attrDescr : gpkgAttrsDesc) {
                     if (attrDescr.isGeometry()) {
                         geomColumnFound = true;
-                    }                
+                    }
                 }
-                
+
                 if (!geomColumnFound) {
                     GpkgAttributeDescriptor attr=new GpkgAttributeDescriptor();
                     attr.setDbColumnName("the_geom");
                     attr.setDbColumnType(Types.BLOB); // Es braucht einen DbColumnType. Weil aber "isGeometry()=true", spielt das im Ablauf keine Rolle. Siehe Code unten.
-                    attr.setDbColumnTypeName("POINT"); 
+                    attr.setDbColumnTypeName("POINT");
                     attr.setCoordDimension(2);
                     attr.setSrId(2056);
                     attr.setDbColumnGeomTypeName("POINT"); // Braucht es, damit isGeometry()=true wird.
                     gpkgAttrsDesc.add(attr);
                 }
-                
+
                 AttributeDescriptor shpAttrsDesc[] = new AttributeDescriptor[gpkgAttrsDesc.size()];
                 for (int i=0; i<gpkgAttrsDesc.size(); i++) {
                     GpkgAttributeDescriptor gpkgAttrDesc = gpkgAttrsDesc.get(i);
@@ -137,7 +137,7 @@ public class Gpkg2ShpStep {
                         }
 
                         CoordinateReferenceSystem crs = null;
-                        
+
                         int srsId = gpkgAttrDesc.getSrId();
                         CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
                         try {
@@ -178,7 +178,7 @@ public class Gpkg2ShpStep {
                     attributeBuilder.setNillable(true);
                     shpAttrsDesc[i] = attributeBuilder.buildDescriptor(attrName.toLowerCase());
                 }
-                
+
                 shpAttrsDescMap.put(tableName, shpAttrsDesc);
             }
         } catch (SQLException e) {
@@ -187,16 +187,16 @@ public class Gpkg2ShpStep {
 
         // Convert (read -> write) tables
         for (String tableName : tableNames) {
-           
+
             Settings settings = new Settings();
             settings.setValue(ShapeReader.ENCODING, "UTF8");
-            
+
             ShapeWriter writer = new ShapeWriter(Paths.get(outputDir, tableName + ".shp").toFile(), settings);
             writer.setDefaultSridCode("2056");
-            
+
             AttributeDescriptor[] attrsDesc = shpAttrsDescMap.get(tableName);
             writer.setAttributeDescriptors(attrsDesc);
-                      
+
             GeoPackageReader reader = new GeoPackageReader(new File(gpkgFile), tableName);
 
             IoxEvent event = reader.read();
@@ -218,14 +218,14 @@ public class Gpkg2ShpStep {
                 reader.close();
                 reader = null;
             }
-            
-            /* QGIS kann die Shapefiles nicht anzeigen. Sie koennen zwar geladen werden aber man sieht 
-            * die Geometrien nie (die Attribute schon). Es liegt an einer prj-File-Inkompatibilitaet.
-            * Aus diesem Grund wird es ueberschrieben mit einem Inhalt, der von einem QGIS-Shapefile 
-            * stammt.
-            */
+
+            /* QGIS kann die Shapefiles nicht anzeigen. Sie koennen zwar geladen werden aber man sieht
+             * die Geometrien nie (die Attribute schon). Es liegt an einer prj-File-Inkompatibilitaet.
+             * Aus diesem Grund wird es ueberschrieben mit einem Inhalt, der von einem QGIS-Shapefile
+             * stammt.
+             */
             PrintWriter prw = new PrintWriter(Paths.get(outputDir, tableName + ".prj").toFile().getAbsolutePath());
-            prw.println(PRJ_CONTENT);          
+            prw.println(PRJ_CONTENT);
             prw.close();
         }
     }

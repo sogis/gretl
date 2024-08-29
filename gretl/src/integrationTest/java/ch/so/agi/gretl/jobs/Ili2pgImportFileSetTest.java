@@ -27,10 +27,10 @@ public class Ili2pgImportFileSetTest {
     @Container
     public static PostgreSQLContainer<?> postgres =
             (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
-                    .withDatabaseName("gretl")
+                    .withDatabaseName(IntegrationTestUtilSql.PG_CON_DDLDB)
                     .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
                     .withPassword(IntegrationTestUtilSql.PG_CON_DDLPASS)
-                    .withInitScript("init_postgresql.sql")
+                    .withInitScript(IntegrationTestUtilSql.PG_INIT_SCRIPT)
                     .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
@@ -47,7 +47,7 @@ public class Ili2pgImportFileSetTest {
                 assertTrue(rs.next());
                 assertEquals(4,rs.getInt(1));
             }
-            try (ResultSet rs = stmt.executeQuery("SELECT "+DbNames.DATASETS_TAB_DATASETNAME+"  FROM beispiel2."+DbNames.DATASETS_TAB)) {
+            try (ResultSet rs = stmt.executeQuery("SELECT " + DbNames.DATASETS_TAB_DATASETNAME + "  FROM beispiel2." + DbNames.DATASETS_TAB)) {
                 Set<String> datasets = new HashSet<>();
                 while (rs.next()) {
                     datasets.add(rs.getString(1));

@@ -10,12 +10,11 @@ def db_pass = ""
 
 defaultTasks 'importParquet'
 
-
 tasks.register('initDuckDb', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
     sqlFiles = ['init.sql']
 }
-    
+
 tasks.register('createTable', SqlExecutor) {
     dependsOn 'initDuckDb'
     database = [db_uri, db_user, db_pass]
