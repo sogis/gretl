@@ -9,14 +9,14 @@ public abstract class DatabaseTask extends DefaultTask {
     private String dbUri;
     private String dbUser;
     private String dbPassword;
-    private Connector database;
 
     @TaskAction
-    public void createConnector() {
+    public Connector createConnector() {
         if (dbUri == null || dbUser == null || dbPassword == null) {
             throw new IllegalArgumentException("dbUri, dbUser, and dbPassword must all be provided.");
         }
-        this.database = new Connector(dbUri, dbUser, dbPassword);
+
+        return new Connector(dbUri, dbUser, dbPassword);
     }
 
     @Input
@@ -45,16 +45,4 @@ public abstract class DatabaseTask extends DefaultTask {
     public void setDbPassword(String dbPassword) {
         this.dbPassword = dbPassword;
     }
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-//    public void setDatabase() {
-//        if (dbUri == null || dbUser == null || dbPassword == null) {
-//            throw new IllegalArgumentException("dbUri, dbUser, and dbPassword must all be provided.");
-//        }
-//        this.database = new Connector(dbUri, dbUser, dbPassword);
-//    }
 }

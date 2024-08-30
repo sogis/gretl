@@ -13,7 +13,7 @@ task gpkgimport(type: GpkgImport) {
     dbUri = db_uri
     dbUser = db_user
     dbPassword = db_pass
-	schemaName = "gpkgimport"
+    schemaName = "gpkgimport"
     srcTableName = "Point"
     dstTableName = "importdata"
     dataFile = "point.gpkg"
