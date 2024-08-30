@@ -65,6 +65,8 @@ configurations {
 }
 
 dependencies {
+    testRuntime files(writePluginClassPath)
+
     api gradleApi()
   
     api libs.ili.validator
