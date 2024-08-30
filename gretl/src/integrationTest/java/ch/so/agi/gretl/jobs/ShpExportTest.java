@@ -53,8 +53,11 @@ public class ShpExportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/ShpExport", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpExport");
+
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "shpexport", variables);
 
             //check results
             {

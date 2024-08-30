@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,8 +45,11 @@ public class ShpImportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/ShpImportBatchSize", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpImportBatchSize");
+
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "shpimport", variables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
