@@ -12,6 +12,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -23,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 public class Ili2pgReplaceFileTest {
-    
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
     @Container
     public static PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
@@ -35,8 +36,8 @@ public class Ili2pgReplaceFileTest {
 
     @Test
     public void importLocalFile_Ok() throws Exception {
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgReplaceFile", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgReplaceFile");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgimport", gradleVariables);
 
         try (
             Connection con = IntegrationTestUtilSql.connectPG(postgres);
@@ -65,8 +66,8 @@ public class Ili2pgReplaceFileTest {
     // heruntergeladen. Dieser Schritt entfaellt beim lokalen ilidata.xml
     @Test
     public void importIlidataFile_Ok() throws Exception {
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgReplaceIlidataFile", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgReplaceIlidataFile");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgimport", gradleVariables);
 
         try (
                 Connection con = IntegrationTestUtilSql.connectPG(postgres);

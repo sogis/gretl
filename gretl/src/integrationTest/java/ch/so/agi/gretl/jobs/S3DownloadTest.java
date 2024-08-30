@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,13 +39,14 @@ class S3DownloadTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void downloadFile_Ok() throws Exception {
-        // Download single file from a directory.
-        GradleVariable[] gvs = {
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadFile");
+        GradleVariable[] gradleVariables = {
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey),
                 GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
                 GradleVariable.newGradleProperty("s3BucketName", s3BucketName)
         };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3DownloadFile", gvs);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "filedownload", gradleVariables);
 
         // Check result.
         S3Client s3client = s3TestHelper.getS3Client();

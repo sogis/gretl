@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @Testcontainers
 public class JsonImportTest {
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
     private static final String dbusr = "ddluser";
     private static final String dbpwd = "ddluser";
     private static final String dbdatabase = "gretl";
@@ -49,8 +51,8 @@ public class JsonImportTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/JsonImportObject", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportObject");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "jsonimport", gradleVariables);
 
         // Reconnect to check results
         try (
@@ -70,7 +72,7 @@ public class JsonImportTest {
                 }
             }
             {
-                String sql = sql = "SELECT ROUND(ST_XMin(ST_SetSRID(ST_GeomFromGeoJSON(CAST(" + columnName + "::jsonb->'features'->>1 AS jsonb)->'geometry'), 2056))) AS foo FROM " + schemaName + "." + tableName;
+                String sql = "SELECT ROUND(ST_XMin(ST_SetSRID(ST_GeomFromGeoJSON(CAST(" + columnName + "::jsonb->'features'->>1 AS jsonb)->'geometry'), 2056))) AS foo FROM " + schemaName + "." + tableName;
                 try (ResultSet rs = stmt.executeQuery(sql)) {
                     if (!rs.next()) {
                         fail();
@@ -101,8 +103,8 @@ public class JsonImportTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/JsonImportArray", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportArray");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "jsonimport", gradleVariables);
 
         // Reconnect to check results
         try (

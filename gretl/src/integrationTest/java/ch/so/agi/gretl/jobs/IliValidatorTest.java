@@ -1,28 +1,30 @@
 package ch.so.agi.gretl.jobs;
 
-import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class IliValidatorTest {
-
     @Test
     public void validationOk() throws Exception {
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidator", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidator");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
     }
-
     @Test
     public void validationFileSetOk() throws Exception {
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidatorFileSet", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorFileSet");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
     }
 
     @Test
-    public void validationFail() throws Exception {
-        GradleVariable[] gvs = null;
-        assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/IliValidatorFail", gvs, new StringBuffer(), new StringBuffer()));
+    public void validationFail() {
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorFail");
+
+        assertThrows(Throwable.class, () -> {
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+        });
     }
 }
