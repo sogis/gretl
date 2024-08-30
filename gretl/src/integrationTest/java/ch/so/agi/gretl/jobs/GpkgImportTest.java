@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -46,9 +47,10 @@ public class GpkgImportTest {
             con.commit();
         }
 
-        // Run Gradle job and import data
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/GpkgImport", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgImport");
+        GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkgimport", variables);
 
         // Reconnect to check results
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres);

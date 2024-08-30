@@ -27,10 +27,16 @@ public class Ili2gpkgImportTest {
 
     @Test
     public void importOk() throws Exception {
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/Ili2gpkgImport/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg"));
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2gpkgImport", null);
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2gpkgImport");
+
+        Files.deleteIfExists(Paths.get(projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg"));
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2gpkgimport");
+
+
         String url = "jdbc:sqlite:" +
-                new File("src/integrationTest/jobs/Ili2gpkgImport/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg").getAbsolutePath();
+                new File(projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg").getAbsolutePath();
 
         // Check results
         try (
@@ -62,10 +68,13 @@ public class Ili2gpkgImportTest {
 
     @Test
     public void importFileSet() throws Exception {
-        Files.deleteIfExists(Paths.get("src/integrationTest/jobs/Ili2gpkgImportFileSet/Beispiel2.gpkg"));
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2gpkgImportFileSet", null);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2gpkgImportFileSet");
+        Files.deleteIfExists(Paths.get(projectDirectory + "/Beispiel2.gpkg"));
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2gpkgimport");
+
         String url = "jdbc:sqlite:" +
-                new File("src/integrationTest/jobs/Ili2gpkgImportFileSet/Beispiel2.gpkg").getAbsolutePath();
+                new File(projectDirectory + "/Beispiel2.gpkg").getAbsolutePath();
 
         // Check results
         try (

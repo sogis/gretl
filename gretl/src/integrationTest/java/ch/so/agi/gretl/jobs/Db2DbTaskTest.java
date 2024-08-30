@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 
@@ -18,7 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 public class Db2DbTaskTest {
-    
+
+    private GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
     @Container
     public static PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
@@ -61,8 +64,8 @@ public class Db2DbTaskTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskFetchSize", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskFetchSize");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "fetchSizeTask", gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.target_data", schemaName);
@@ -91,8 +94,8 @@ public class Db2DbTaskTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskChain", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskChain");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "bToA", gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
@@ -120,8 +123,8 @@ public class Db2DbTaskTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskRelPath", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskRelPath");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "relativePath", gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
@@ -149,8 +152,8 @@ public class Db2DbTaskTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbTaskDelTable", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskDelTable");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "sourceToDestWithDelete", gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
@@ -177,8 +180,8 @@ public class Db2DbTaskTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbParameter", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbParameter");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "src2dest", gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.dest", schemaName);
@@ -207,8 +210,8 @@ public class Db2DbTaskTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Db2DbParameterList", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbParameterList");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "src2dest", gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.dest", schemaName);

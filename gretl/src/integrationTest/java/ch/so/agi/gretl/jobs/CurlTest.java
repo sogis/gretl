@@ -11,10 +11,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CurlTest {
     private static MockWebServer mockWebServer;
@@ -37,10 +41,11 @@ class CurlTest {
                 .setResponseCode(200)
                 .setBody("\"success\":true");
         mockWebServer.enqueue(mockResponse);
-        
-        // Run GRETL task
-        GradleVariable[] gvs = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlGeodienste", gvs);
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
+        GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
         
         // Validate result
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
@@ -51,12 +56,12 @@ class CurlTest {
         Buffer bodyBuffer = recordedRequest.getBody();
         long bodyBufferSize = bodyBuffer.size();
         String bodyContent = bodyBuffer.readUtf8();
-        Assertions.assertTrue(bodyBufferSize>500L);
-        Assertions.assertTrue(bodyContent.contains("name=\"topic\""));
-        Assertions.assertTrue(bodyContent.contains("npl_waldgrenzen"));
-        Assertions.assertTrue(bodyContent.contains("name=\"lv95_file\"; filename=\"test.xtf.zip\""));
+        assertTrue(bodyBufferSize>500L);
+        assertTrue(bodyContent.contains("name=\"topic\""));
+        assertTrue(bodyContent.contains("npl_waldgrenzen"));
+        assertTrue(bodyContent.contains("name=\"lv95_file\"; filename=\"test.xtf.zip\""));
     }
-    
+
     @Test
     public void geodienste_Fail() throws Exception {
         // Prepare mock web server
@@ -64,10 +69,13 @@ class CurlTest {
                 .setResponseCode(200)
                 .setBody("\"success\":false");
         mockWebServer.enqueue(mockResponse);
-        
-        // Run GRETL task
-        GradleVariable[] gvs = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
-        Assertions.assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlGeodienste", gvs, new StringBuffer(), new StringBuffer()));
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
+        GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
+
+        assertThrows(Throwable.class, () -> {
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
+        });
     }
     
     @Test
@@ -76,10 +84,11 @@ class CurlTest {
         MockResponse mockResponse = new MockResponse()
                 .setResponseCode(202);
         mockWebServer.enqueue(mockResponse);
-        
-        // Run GRETL task
-        GradleVariable[] gvs = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlPlanregister", gvs);
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlPlanregister");
+        GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
         
         // Validate result
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
@@ -91,13 +100,12 @@ class CurlTest {
     
     @Test
     public void downloadFile_Ok() throws Exception {
-        // Run GRETL task
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/CurlDownload", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlDownload");
 
-        // Validate result
-        String content = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/CurlDownload/README.md")));
-        Assertions.assertTrue(content.contains("_GRETL_"));
-        Assertions.assertTrue(content.contains("Licencse"));
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "downloadData");
+
+        String content = new String(Files.readAllBytes(Paths.get(projectDirectory + "/README.md")));
+        assertTrue(content.contains("_GRETL_"));
+        assertTrue(content.contains("Licencse"));
     }
 }
