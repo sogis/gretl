@@ -8,7 +8,6 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
-import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
@@ -16,7 +15,6 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public class CsvExport extends DatabaseTask {
     protected GretlLogger log;
