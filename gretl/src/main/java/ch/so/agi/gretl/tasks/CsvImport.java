@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,22 +21,44 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
-public class CsvImport extends DefaultTask {
+public class CsvImport extends DatabaseTask {
     protected GretlLogger log;
-    private Connector database;
-    private Object dataFile = null;
-    private String tableName = null;
-    private Boolean firstLineIsHeader = true;
-    private Character valueDelimiter = null;
-    private Character valueSeparator = null;
-    private String schemaName = null;
-    private String encoding = null;
-    private Integer batchSize = null;
+    private Object dataFile;
+    private String tableName;
+    private boolean firstLineIsHeader = true;
+    private Character valueDelimiter;
+    private Character valueSeparator;
+    private String schemaName;
+    private String encoding;
+    private Integer batchSize;
 
-    @Input
-    public Connector getDatabase() {
-        return database;
+    @TaskAction
+    public void importData() {
+        log = LogEnvironment.getLogger(CsvImport.class);
+        Connector connector = createConnector();
+
+        if (connector == null) {
+            throw new IllegalArgumentException("connector must not be null");
+        }
+        if (tableName == null) {
+            throw new IllegalArgumentException("tableName must not be null");
+        }
+        if (dataFile == null) {
+            return;
+        }
+
+        Settings settings = getSettings();
+        File data = this.getProject().file(dataFile);
+
+        try (Connection conn = connector.connect()) {
+            Csv2db csv2db = new Csv2db();
+            csv2db.importData(data, conn, settings);
+        } catch (Exception e) {
+            log.error("failed to run CvsImport", e);
+            throw TaskUtil.toGradleException(e);
+        }
     }
+
     @InputFile
     public Object getDataFile() {
         return dataFile;
@@ -82,18 +105,6 @@ public class CsvImport extends DefaultTask {
         return batchSize;
     }
 
-    public void setDatabase(List<String> databaseDetails){
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-
-        this.database = new Connector(databaseUri, databaseUser, databasePassword);
-    }
-
     public void setDataFile(Object dataFile) {
         this.dataFile = dataFile;
     }
@@ -126,23 +137,15 @@ public class CsvImport extends DefaultTask {
         this.batchSize = batchSize;
     }
 
-    @TaskAction
-    public void importData() {
-        log = LogEnvironment.getLogger(CsvImport.class);
-        if (database == null) {
-            throw new IllegalArgumentException("database must not be null");
-        }
-        if (tableName == null) {
-            throw new IllegalArgumentException("tableName must not be null");
-        }
-        if (dataFile == null) {
-            return;
-        }
+    private Settings getSettings() {
         Settings settings = new Settings();
         settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
+
         // set optional parameters
-        settings.setValue(IoxWkfConfig.SETTING_FIRSTLINE,
-                firstLineIsHeader ? IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER : IoxWkfConfig.SETTING_FIRSTLINE_AS_VALUE);
+        settings.setValue(
+                IoxWkfConfig.SETTING_FIRSTLINE,
+                firstLineIsHeader ? IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER : IoxWkfConfig.SETTING_FIRSTLINE_AS_VALUE
+        );
         if (valueDelimiter != null) {
             settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER, valueDelimiter.toString());
         }
@@ -159,32 +162,6 @@ public class CsvImport extends DefaultTask {
             settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
         }
 
-        File data = this.getProject().file(dataFile);
-        java.sql.Connection conn = null;
-        try {
-            conn = database.connect();
-            if (conn == null) {
-                throw new IllegalArgumentException("connection must not be null");
-            }
-            Csv2db csv2db = new Csv2db();
-            csv2db.importData(data, conn, settings);
-            conn.commit();
-            conn.close();
-            conn = null;
-        } catch (Exception e) {
-            log.error("failed to run CvsImport", e);
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException e) {
-                    log.error("failed to rollback/close", e);
-                }
-                conn = null;
-            }
-        }
+        return settings;
     }
 }

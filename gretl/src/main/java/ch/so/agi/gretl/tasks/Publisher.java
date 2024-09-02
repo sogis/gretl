@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.*;
 import org.interlis2.validator.Validator;
@@ -22,7 +20,6 @@ import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
 import com.github.robtimus.filesystems.sftp.SFTPFileSystemProvider;
 
 import ch.ehi.basics.settings.Settings;
-import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.api.Endpoint;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
@@ -31,48 +28,112 @@ import ch.so.agi.gretl.util.SimiSvcApi;
 import ch.so.agi.gretl.util.SimiSvcClient;
 import ch.so.agi.gretl.util.TaskUtil;
 
-public class Publisher extends DefaultTask {
+public class Publisher extends DatabaseTask {
     protected GretlLogger log;
 
-    private String dataIdent=null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+    // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
+    private final ListProperty<String> regions = getProject().getObjects().listProperty(String.class);
 
-    private Endpoint target=null; // Zielverzeichnis
+    // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
+    private final ListProperty<String> publishedRegions = getProject().getObjects().listProperty(String.class);
 
-    private Object sourcePath=null; // Quelldatei z.B. "/path/file.xtf"
+    // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+    private String dataIdent;
 
-    private Connector database=null; //  Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
+    // Zielverzeichnis
+    private Endpoint target;
 
-    private String dbSchema=null; // Schema in der Datenbank z.B. "av"
+    // Quelldatei z.B. "/path/file.xtf"
+    private Object sourcePath;
 
-    private String dataset=null; //  ili2db-Datasetname der Quelldaten "dataset"
+    // Schema in der Datenbank z.B. "av"
+    private String dbSchema;
 
-    private String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
+    //  ili2db-Datasetname der Quelldaten "dataset"
+    private String dataset;
 
-    private String region; // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
+    // ili2db-Modellname(n) zur Auswahl der Quelldaten
+    private String modelsToPublish;
 
-    private ListProperty<String> regions = getProject().getObjects().listProperty(String.class); // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
+    // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
+    private String region;
 
-    private ListProperty<String> _publishedRegions = getProject().getObjects().listProperty(String.class); // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
+    // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
+    private Object validationConfig;
 
-    private Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
+    // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
+    private boolean userFormats;
 
-    private Boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
+    // Endpunkt des SIMI-Services
+    private Endpoint kgdiService;
 
-    private Endpoint kgdiService=null; // Endpunkt des SIMI-Services
+    // Endpunkt des Authentifizierung-Services
+    private Endpoint kgdiTokenService;
 
-    private Endpoint kgdiTokenService=null; // Endpunkt des Authentifizierung-Services
+    // Konfiguration fuer die Ausduennung z.B. "grooming.json"
+    private Object grooming;
 
-    private Object grooming=null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
+    // Das Export-Modell, indem die Daten exportiert werden
+    private String exportModels;
 
-    private String exportModels=null; // Das Export-Modell, indem die Daten exportiert werden
+    // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
+    private String modeldir;
 
-    private String modeldir=null;     // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
+    // Proxy Server fuer den Zugriff auf Modell Repositories
+    private String proxy;
 
-    private String proxy=null;        // Proxy Server fuer den Zugriff auf Modell Repositories
+    // Proxy Port fuer den Zugriff auf Modell Repositories
+    private Integer proxyPort;
 
-    private Integer proxyPort=null;    // Proxy Port fuer den Zugriff auf Modell Repositories
+    private Date version;
 
-    private Date version=null;
+    @TaskAction
+    public void publishAll() {
+        log = LogEnvironment.getLogger(Publisher.class);
+        PublisherStep step = new PublisherStep();
+        Path sourceFile = getSourceFile();
+
+        validateOrThrow();
+
+        log.info("target " + target);
+
+        Path targetFile = target.getUrl().startsWith("sftp:")
+                ? processSftp()
+                : getProject().file(target.getUrl()).toPath();
+
+        Path validationFile = getValidationFile();
+        Path groomingFile = getGroomingFile();
+        Settings settings = getSettings();
+        SimiSvcApi simiSvc = getSimiSvc();
+
+        if (version == null) {
+            version = new Date();
+        }
+
+        try {
+            Files.createDirectories(getProject().getBuildDir().toPath());
+            List<String> pubRegions = null;
+            if (region!=null || !regions.get().isEmpty()) {
+                pubRegions = new ArrayList<>();
+            }
+
+            List<String> regionsToPublish = regions.get().isEmpty() ? null : regions.get();
+
+            if (getDbUri() != null) {
+                step.publishDatasetFromDb(version, dataIdent, createConnector().connect(), dbSchema,dataset,modelsToPublish,exportModels,userFormats,targetFile, region,regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(), simiSvc);
+            } else {
+                step.publishDatasetFromFile(version, dataIdent, sourceFile, userFormats,targetFile, region, regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+            }
+
+            if (pubRegions != null) {
+                this.publishedRegions.set(pubRegions);
+            }
+        } catch (Exception e) {
+            log.error("failed to run Publisher", e);
+            throw TaskUtil.toGradleException(e);
+        }
+    }
+
     @Input
     public String getDataIdent() {
         return dataIdent;
@@ -91,16 +152,13 @@ public class Publisher extends DefaultTask {
     public Object getSourcePath() {
         return sourcePath;
     }
-    @Input
-    @Optional
-    public Connector getDatabase() {
-        return database;
-    }
+
     @Input
     @Optional
     public String getDbSchema() {
         return dbSchema;
     }
+
     @Input
     @Optional
     public String getDataset() {
@@ -125,12 +183,11 @@ public class Publisher extends DefaultTask {
         return regions;
     }
 
-
+    // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
     @Internal
-    public ListProperty<String> getPublishedRegions()
-    {
-        return _publishedRegions;
-    } // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
+    public ListProperty<String> getPublishedRegions() {
+        return publishedRegions;
+    }
 
     @InputFile
     @Optional
@@ -204,18 +261,6 @@ public class Publisher extends DefaultTask {
         this.sourcePath = sourcePath;
     }
 
-    public void setDatabase(List<String> databaseDetails){
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-
-        this.database = new Connector(databaseUri, databaseUser, databasePassword);
-    }
-
     public void setDbSchema(String dbSchema) {
         this.dbSchema = dbSchema;
     }
@@ -276,74 +321,16 @@ public class Publisher extends DefaultTask {
         this.version = version;
     }
 
-    @TaskAction
-    public void publishAll() {
-        log = LogEnvironment.getLogger(Publisher.class);
-        PublisherStep step=new PublisherStep();
-        Path sourceFile=null;
-        if(sourcePath!=null && database!=null) {
-            throw new IllegalArgumentException("only sourcePath OR database can be set");
-        }else if(sourcePath!=null) {
-            sourceFile=getProject().file(sourcePath).toPath();
-        }else if(database!=null) {
-            if(dbSchema==null) {
-                throw new IllegalArgumentException("dbSchema must be set");
-            }
-            if(modelsToPublish==null && dataset==null && region==null && regions.get().isEmpty()) {
-                throw new IllegalArgumentException("modelsToPublish OR dataset OR region OR regions must be set");
-            }else if((modelsToPublish!=null?1:0) + (dataset!=null?1:0) + (region!=null?1:0) + (!regions.get().isEmpty()?1:0) > 1) {
-                throw new IllegalArgumentException("only one of modelsToPublish OR dataset OR region OR regions can be set");
-            }
-        }else {
-            throw new IllegalArgumentException("one of sourcePath OR database must be set");
-        }
-        Path targetFile=null;
-        if(target!=null) {
-            log.info("target "+target.toString());
-            {
-                if(target.getUrl().startsWith("sftp:")) {
-                    URI host=null;
-                    URI rawuri=null;
-                    String path=null;
-                    try {
-                        rawuri = new URI( target.getUrl());
-                        path=rawuri.getRawPath();
-                        if(rawuri.getPort()==-1) {
-                            host= new URI(rawuri.getScheme()+"://"+rawuri.getHost());
-                        }else {
-                            host= new URI(rawuri.getScheme()+"://"+rawuri.getHost()+":"+rawuri.getPort());
-                        }
-                    } catch (URISyntaxException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                    SFTPEnvironment environment = new SFTPEnvironment()
-                            .withUsername(target.getUser())
-                            .withPassword(target.getPassword().toCharArray())
-                            .withKnownHosts(new File(System.getProperty("user.home"),".ssh/known_hosts"));
-                    FileSystem fileSystem=null;
-                    try {
-                        fileSystem = FileSystems.newFileSystem( host, environment, SFTPFileSystemProvider.class.getClassLoader() );
-                    } catch (IOException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                    targetFile = fileSystem.getPath(path);
-                }else {
-                    targetFile=getProject().file(target.getUrl()).toPath();
-                }
-            }
-        }else {
-            throw new IllegalArgumentException("target must be set");
-        }
-        Path validationFile=null;
-        if(validationConfig!=null) {
-            validationFile=getProject().file(validationConfig).toPath();
-        }
-        Path groomingFile=null;
-        if(grooming!=null) {
-            groomingFile=getProject().file(grooming).toPath();
-        }
-        Settings settings=new Settings();
-        if(modeldir!=null) {
+    private Path getSourceFile() {
+        return sourcePath != null
+                ? getProject().file(sourcePath).toPath()
+                : null;
+    }
+
+    private Settings getSettings() {
+        Settings settings = new Settings();
+
+        if (modeldir != null) {
             settings.setValue(Validator.SETTING_ILIDIRS, modeldir);
         }
         if (proxy != null) {
@@ -352,40 +339,92 @@ public class Publisher extends DefaultTask {
         if (proxyPort != null) {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
         }
-        SimiSvcApi simiSvc=null;
-        if(kgdiService!=null) {
-            if (!kgdiService.getUrl().isEmpty() && !kgdiService.getUser().isEmpty() && !kgdiService.getPassword().isEmpty()) {
-                simiSvc=new SimiSvcClient();
-                simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
-                if(kgdiTokenService!=null) {
-                    simiSvc.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
-                }
+
+        return settings;
+    }
+
+    private void validateOrThrow() throws IllegalArgumentException {
+        if (sourcePath != null && getDbUri() != null) {
+            throw new IllegalArgumentException("only sourcePath OR database can be set");
+        }
+
+        if (sourcePath == null && getDbUri() == null) {
+            throw new IllegalArgumentException("one of sourcePath OR database must be set");
+        }
+
+        if (getDbUri() != null) {
+            if (dbSchema == null) {
+                throw new IllegalArgumentException("dbSchema must be set");
+            }
+            if (modelsToPublish == null && dataset == null && region == null && regions.get().isEmpty()) {
+                throw new IllegalArgumentException("modelsToPublish OR dataset OR region OR regions must be set");
+            } else if((modelsToPublish != null ? 1 : 0) + (dataset != null ? 1:0) + (region != null ? 1:0) + (!regions.get().isEmpty() ? 1:0) > 1) {
+                throw new IllegalArgumentException("only one of modelsToPublish OR dataset OR region OR regions can be set");
             }
         }
-        if(version==null) {
-            version=new Date();
+
+        if (target == null) {
+            throw new IllegalArgumentException("target must be set");
         }
+    }
+
+    private Path processSftp() {
+        URI host;
+        URI rawuri;
+        String path;
+
         try {
-            Files.createDirectories(getProject().getBuildDir().toPath());
-            List<String> pubRegions=null;
-            if(region!=null || !regions.get().isEmpty()) {
-                pubRegions=new ArrayList<String>();
+            rawuri = new URI( target.getUrl());
+            path = rawuri.getRawPath();
+
+            if (rawuri.getPort() == -1) {
+                host = new URI(rawuri.getScheme()+"://"+rawuri.getHost());
+            } else {
+                host = new URI(rawuri.getScheme()+"://"+rawuri.getHost()+":"+rawuri.getPort());
             }
 
-            List<String> regionsToPublish = regions.get().isEmpty() ? null : regions.get();
-            if(database!=null) {
-                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,modelsToPublish,exportModels,userFormats,targetFile, region,regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
-            }else {
-                step.publishDatasetFromFile(version, dataIdent, sourceFile, userFormats,targetFile, region, regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
-            }
-            if(pubRegions!=null) {
-                this._publishedRegions.set(pubRegions);
-            }
-        } catch (Exception e) {
-            log.error("failed to run Publisher", e);
-
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
         }
+
+        SFTPEnvironment environment = new SFTPEnvironment()
+                .withUsername(target.getUser())
+                .withPassword(target.getPassword().toCharArray())
+                .withKnownHosts(new File(System.getProperty("user.home"),".ssh/known_hosts"));
+
+        try (FileSystem fs = FileSystems.newFileSystem(host, environment, SFTPFileSystemProvider.class.getClassLoader())) {
+            return fs.getPath(path);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private Path getValidationFile() {
+        return validationConfig != null
+                ? getProject().file(validationConfig).toPath()
+                : null;
+    }
+
+    private Path getGroomingFile() {
+        return getProject().file(grooming).toPath();
+    }
+
+    private SimiSvcApi getSimiSvc() {
+        SimiSvcApi result = null;
+
+        if (kgdiService != null &&
+                !kgdiService.getUrl().isEmpty() &&
+                !kgdiService.getUser().isEmpty() &&
+                !kgdiService.getPassword().isEmpty()
+        ) {
+            result = new SimiSvcClient();
+            result.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
+
+            if (kgdiTokenService != null) {
+                result.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
+            }
+        }
+
+        return result;
     }
 }

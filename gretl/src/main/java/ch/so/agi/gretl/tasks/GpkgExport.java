@@ -1,14 +1,5 @@
 package ch.so.agi.gretl.tasks;
 
-import java.io.File;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
-import org.gradle.api.tasks.*;
-
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.Db2Gpkg;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
@@ -16,10 +7,18 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.GradleException;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.TaskAction;
 
-public class GpkgExport extends DefaultTask {
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GpkgExport extends DatabaseTask {
     protected GretlLogger log;
-    private Connector database;
     private Object dataFile;
     private Object dstTableName;
     private Object srcTableName;
@@ -28,9 +27,69 @@ public class GpkgExport extends DefaultTask {
     private Integer batchSize;
     private Integer fetchSize;
 
-    @Input
-    public Connector getDatabase() {
-        return database;
+    @TaskAction
+    public void exportData() {
+        log = LogEnvironment.getLogger(GpkgExport.class);
+        final Connector connector = createConnector();
+
+        if (connector == null) {
+            throw new IllegalArgumentException("connector must not be null");
+        }
+        if (srcTableName == null) {
+            throw new IllegalArgumentException("srcTableName must not be null");
+        }
+        if (dstTableName == null) {
+            throw new IllegalArgumentException("dstTableName must not be null");
+        }
+        if (dataFile == null) {
+            return;
+        }
+
+        List<String> srcTableNames = getSrcTableNames();
+        List<String> dstTableNames = getDstTableNames();
+
+        if (srcTableNames.size() != dstTableNames.size()) {
+            throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
+        }
+
+        try (Connection conn = connector.connect()) {
+            int i = 0;
+            for (final String srcTblName: srcTableNames) {
+                final String dstTblName = dstTableNames.get(i);
+                final Db2Gpkg db2gpkg = new Db2Gpkg();
+                db2gpkg.exportData(this.getProject().file(dataFile), conn, getSettings(srcTblName, dstTblName));
+                i++;
+            }
+        } catch (Exception e) {
+            log.error("failed to run GpkgExport", e);
+            throw TaskUtil.toGradleException(e);
+        }
+    }
+
+    private List<String> getSrcTableNames() {
+        List<String> result;
+
+        if (srcTableName instanceof String) {
+            result = new ArrayList<>();
+            result.add((String)srcTableName);
+        } else {
+            result = (List<String>) srcTableName;
+        }
+
+        return result;
+    }
+
+    private List<String> getDstTableNames() {
+        List<String> result;
+
+        if (dstTableName instanceof String) {
+            result =  new ArrayList<>();
+            result.add((String) dstTableName);
+        } else {
+            result = (List) dstTableName;
+        }
+
+        return result;
     }
 
     @OutputFile
@@ -72,18 +131,6 @@ public class GpkgExport extends DefaultTask {
         return fetchSize;
     }
 
-    public void setDatabase(List<String> databaseDetails){
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-
-        this.database = new Connector(databaseUri, databaseUser, databasePassword);
-    }
-
     public void setDataFile(Object dataFile) {
         this.dataFile = dataFile;
     }
@@ -112,88 +159,22 @@ public class GpkgExport extends DefaultTask {
         this.fetchSize = fetchSize;
     }
 
-    @TaskAction
-    public void exportData() {
-        log = LogEnvironment.getLogger(GpkgExport.class);
-        if (database == null) {
-            throw new IllegalArgumentException("database must not be null");
+    private Settings getSettings(String sourceTableName, String destinationTableName) {
+        final Settings settings = new Settings();
+        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, sourceTableName);
+        settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, destinationTableName);
+
+        // Set optional parameters
+        if (schemaName != null) {
+            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
         }
-        if (srcTableName == null) {
-            throw new IllegalArgumentException("srcTableName must not be null");
-        }        
-        if (dstTableName == null) {
-            throw new IllegalArgumentException("dstTableName must not be null");
+        if (batchSize != null) {
+            settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
         }
-        if (dataFile == null) {
-            return;
-        }
-        
-        List<String> srcTableNames = null;
-        if (srcTableName instanceof String) {
-            srcTableNames =  new ArrayList<String>();
-            srcTableNames.add((String)srcTableName);
-        } else {
-            srcTableNames = (List)srcTableName;
-        }
-        
-        List<String> dstTableNames = null;
-        if (dstTableName instanceof String) {
-            dstTableNames =  new ArrayList<String>();
-            dstTableNames.add((String)dstTableName);
-        } else {
-            dstTableNames = (List)dstTableName;
-        }
-        
-        if (srcTableNames.size() != dstTableNames.size()) {
-            throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
+        if (fetchSize != null) {
+            settings.setValue(IoxWkfConfig.SETTING_FETCHSIZE, fetchSize.toString());
         }
 
-        java.sql.Connection conn = null;
-        try {
-            conn = database.connect();
-            if (conn == null) {
-                throw new IllegalArgumentException("connection must not be null");
-            }
-            
-            int i=0;
-            for (String srcTableName : srcTableNames) {
-                String dstTableName = dstTableNames.get(i);
-                
-                Settings settings = new Settings();
-                settings.setValue(IoxWkfConfig.SETTING_DBTABLE, srcTableName);
-                settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);
-                // set optional parameters
-                if (schemaName != null) {
-                    settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
-                }
-                if (batchSize != null) {
-                    settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
-                }
-                if (fetchSize != null) {
-                    settings.setValue(IoxWkfConfig.SETTING_FETCHSIZE, fetchSize.toString());
-                }
-
-                File data = this.getProject().file(dataFile);
-                
-                Db2Gpkg db2gpkg = new Db2Gpkg();
-                db2gpkg.exportData(data, conn, settings);
-                conn.commit();
-                i++;
-            }
-       } catch (Exception e) {
-            log.error("failed to run GpkgExport", e);
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException e) {
-                    log.error("failed to rollback/close", e);
-                }
-                conn = null;
-            }
-        }
+        return settings;
     }
 }

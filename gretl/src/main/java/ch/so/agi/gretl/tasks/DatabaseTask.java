@@ -3,6 +3,7 @@ package ch.so.agi.gretl.tasks;
 import ch.so.agi.gretl.api.Connector;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 public abstract class DatabaseTask extends DefaultTask {
@@ -20,6 +21,7 @@ public abstract class DatabaseTask extends DefaultTask {
     }
 
     @Input
+    @Optional
     public String getDbUri() {
         return dbUri;
     }
@@ -29,6 +31,7 @@ public abstract class DatabaseTask extends DefaultTask {
     }
 
     @Input
+    @Optional
     public String getDbUser() {
         return dbUser;
     }
@@ -38,6 +41,7 @@ public abstract class DatabaseTask extends DefaultTask {
     }
 
     @Input
+    @Optional
     public String getDbPassword() {
         return dbPassword;
     }

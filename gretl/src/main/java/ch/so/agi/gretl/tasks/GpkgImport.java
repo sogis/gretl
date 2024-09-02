@@ -30,7 +30,7 @@ public class GpkgImport extends DatabaseTask {
         final Connector connector = this.createConnector();
 
         if (connector == null) {
-            throw new IllegalArgumentException("database must not be null");
+            throw new IllegalArgumentException("connector must not be null");
         }
         if (srcTableName == null) {
             throw new IllegalArgumentException("srcTableName must not be null");
@@ -45,7 +45,7 @@ public class GpkgImport extends DatabaseTask {
         File data = this.getProject().file(dataFile);
 
         try (Connection conn = connector.connect()) {
-            Gpkg2db gpkg2db=new Gpkg2db();
+            Gpkg2db gpkg2db = new Gpkg2db();
             gpkg2db.importData(data, conn, getSettings());
             conn.commit();
         } catch (Exception e) {

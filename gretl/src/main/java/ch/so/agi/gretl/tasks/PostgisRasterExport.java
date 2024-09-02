@@ -16,19 +16,39 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class PostgisRasterExport extends DefaultTask {
+public class PostgisRasterExport extends DatabaseTask {
     private GretlLogger log;
-
-    private Connector database;
     private String sqlFile;
+    private Map<String, String> sqlParameters;
+    private Object dataFile;
 
-    private Map<String, String> sqlParameters = null;
+    @TaskAction
+    public void exportRaster() {
+        log = LogEnvironment.getLogger(PostgisRasterExport.class);
+        Connector connector = createConnector();
 
-    private Object dataFile = null;
+        if (connector == null) {
+            throw new IllegalArgumentException("connector must not be null");
+        }
 
-    @Input
-    public Connector getDatabase() {
-        return database;
+        if (sqlFile == null) {
+            throw new IllegalArgumentException("sqlFile must not be null");
+        }
+
+        if (dataFile == null) {
+            throw new IllegalArgumentException("dataFile must not be null");
+        }
+
+        File sql = this.getProject().file(sqlFile);
+        File data = this.getProject().file(dataFile);
+
+        try {
+            PostgisRasterExportStep step = new PostgisRasterExportStep();
+            step.execute(connector, sql, data, sqlParameters);
+        } catch (Exception e) {
+            log.error("Exception in creating / invoking PostgisRasterExportStep.", e);
+            throw TaskUtil.toGradleException(e);
+        }
     }
 
     @Input
@@ -47,18 +67,6 @@ public class PostgisRasterExport extends DefaultTask {
         return dataFile;
     }
 
-    public void setDatabase(List<String> databaseDetails){
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-
-        this.database = new Connector(databaseUri, databaseUser, databasePassword);
-    }
-
     public void setSqlFile(String sqlFile) {
         this.sqlFile = sqlFile;
     }
@@ -69,35 +77,5 @@ public class PostgisRasterExport extends DefaultTask {
 
     public void setDataFile(Object dataFile) {
         this.dataFile = dataFile;
-    }
-
-    @TaskAction
-    public void exportRaster() {
-        log = LogEnvironment.getLogger(PostgisRasterExport.class);
-
-        if (database == null) {
-            throw new IllegalArgumentException("database must not be null");
-        }
-
-        if (sqlFile == null) {
-            throw new IllegalArgumentException("sqlFile must not be null");
-        }
-
-        if (dataFile == null) {
-            throw new IllegalArgumentException("dataFile must not be null");
-        }
-
-        File sql = this.getProject().file(sqlFile);
-        File data = this.getProject().file(dataFile);
-
-        try {
-            PostgisRasterExportStep step = new PostgisRasterExportStep();
-            step.execute(database, sql, data, sqlParameters);
-        } catch (Exception e) {
-            log.error("Exception in creating / invoking PostgisRasterExportStep.", e);
-
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
-        }
     }
 }
