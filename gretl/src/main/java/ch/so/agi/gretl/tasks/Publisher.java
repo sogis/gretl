@@ -1,16 +1,17 @@
 package ch.so.agi.gretl.tasks;
 
 import ch.ehi.basics.settings.Settings;
+import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.api.Endpoint;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.PublisherStep;
-import ch.so.agi.gretl.tasks.impl.DatabaseTask;
 import ch.so.agi.gretl.util.SimiSvcApi;
 import ch.so.agi.gretl.util.SimiSvcClient;
 import ch.so.agi.gretl.util.TaskUtil;
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
 import com.github.robtimus.filesystems.sftp.SFTPFileSystemProvider;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.*;
 import org.interlis2.validator.Validator;
@@ -27,64 +28,48 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Publisher extends DatabaseTask {
+public class Publisher extends DefaultTask {
     protected GretlLogger log;
 
-    // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
-    private String dataIdent = null;
+    private String dataIdent=null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
 
-    // Zielverzeichnis
-    private Endpoint target = null;
+    private Endpoint target=null; // Zielverzeichnis
 
-    // Quelldatei z.B. "/path/file.xtf"
-    private Object sourcePath = null;
+    private Object sourcePath=null; // Quelldatei z.B. "/path/file.xtf"
 
-    // Schema in der Datenbank z.B. "av"
-    private String dbSchema = null;
+    private Connector database=null; //  Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
 
-    // ili2db-Datasetname der Quelldaten "dataset"
-    private String dataset = null;
+    private String dbSchema=null; // Schema in der Datenbank z.B. "av"
 
-    // ili2db-Modellname(n) zur Auswahl der Quelldaten
-    private String modelsToPublish = null;
+    private String dataset=null; //  ili2db-Datasetname der Quelldaten "dataset"
 
-    // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
-    private String region;
+    private String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
 
-    // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
-    private ListProperty<String> regions = getProject().getObjects().listProperty(String.class);
+    private String region; // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
 
-    // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
-    private ListProperty<String> _publishedRegions = getProject().getObjects().listProperty(String.class);
+    private ListProperty<String> regions = getProject().getObjects().listProperty(String.class); // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
 
-    // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
-    private Object validationConfig = null;
+    private ListProperty<String> _publishedRegions = getProject().getObjects().listProperty(String.class); // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
 
-    // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
-    private Boolean userFormats = false;
+    private Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
 
-    // Endpunkt des SIMI-Services
-    private Endpoint kgdiService = null;
+    private Boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
 
-    // Endpunkt des Authentifizierung-Services
-    private Endpoint kgdiTokenService = null;
+    private Endpoint kgdiService=null; // Endpunkt des SIMI-Services
 
-    // Konfiguration fuer die Ausduennung z.B. "grooming.json"
-    private Object grooming = null;
+    private Endpoint kgdiTokenService=null; // Endpunkt des Authentifizierung-Services
 
-    // Das Export-Modell, indem die Daten exportiert werden
-    private String exportModels = null;
+    private Object grooming=null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
 
-    // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
-    private String modeldir = null;
+    private String exportModels=null; // Das Export-Modell, indem die Daten exportiert werden
 
-    // Proxy Server fuer den Zugriff auf Modell Repositories
-    private String proxy = null;
+    private String modeldir=null;     // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
 
-    // Proxy Port fuer den Zugriff auf Modell Repositories
-    private Integer proxyPort = null;
+    private String proxy=null;        // Proxy Server fuer den Zugriff auf Modell Repositories
 
-    private Date version = null;
+    private Integer proxyPort=null;    // Proxy Port fuer den Zugriff auf Modell Repositories
+
+    private Date version=null;
 
     @TaskAction
     public void publishAll() {
@@ -92,11 +77,11 @@ public class Publisher extends DatabaseTask {
         PublisherStep step = new PublisherStep();
         Path sourceFile = null;
 
-        if (sourcePath != null && getDbUri() != null) {
+        if (sourcePath != null && database != null) {
             throw new IllegalArgumentException("only sourcePath OR database can be set");
         } else if (sourcePath != null) {
             sourceFile = getProject().file(sourcePath).toPath();
-        } else if (getDbUri() != null) {
+        } else if (database != null) {
             if (dbSchema == null) {
                 throw new IllegalArgumentException("dbSchema must be set");
             }
@@ -127,14 +112,14 @@ public class Publisher extends DatabaseTask {
 
         try {
             Files.createDirectories(getProject().getBuildDir().toPath());
-            List<String> pubRegions = null;
-            if (region != null || !regions.get().isEmpty()) {
+            List<String> pubRegions=null;
+            if (region!=null || !regions.get().isEmpty()) {
                 pubRegions = new ArrayList<>();
             }
 
             List<String> regionsToPublish = regions.get().isEmpty() ? null : regions.get();
-            if (getDbUri() != null) {
-                step.publishDatasetFromDb(version, dataIdent, createConnector().connect(), dbSchema,dataset,modelsToPublish,exportModels,userFormats,targetFile, region,regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
+            if (database != null) {
+                step.publishDatasetFromDb(version, dataIdent, database.connect(), dbSchema,dataset,modelsToPublish,exportModels,userFormats,targetFile, region,regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             } else {
                 step.publishDatasetFromFile(version, dataIdent, sourceFile, userFormats,targetFile, region, regionsToPublish,pubRegions, validationFile, groomingFile, settings,getProject().getBuildDir().toPath(),simiSvc);
             }
@@ -165,6 +150,12 @@ public class Publisher extends DatabaseTask {
     @Optional
     public Object getSourcePath() {
         return sourcePath;
+    }
+
+    @Input
+    @Optional
+    public Connector getDatabase() {
+        return database;
     }
 
     @Input
@@ -273,6 +264,18 @@ public class Publisher extends DatabaseTask {
 
     public void setSourcePath(Object sourcePath) {
         this.sourcePath = sourcePath;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
     }
 
     public void setDbSchema(String dbSchema) {
@@ -389,37 +392,33 @@ public class Publisher extends DatabaseTask {
 
     @Internal
     Path getSftpPath() {
-        URI host;
-        String path;
-
+        URI host = null;
+        URI rawuri = null;
+        String path = null;
         try {
-            URI rawUri = getRawUri();
-            path = rawUri.getRawPath();
-
-            host = rawUri.getPort() == -1
-                    ? new URI(rawUri.getScheme() + "://" + rawUri.getHost())
-                    : new URI(rawUri.getScheme() + "://" + rawUri.getHost() + ":" + rawUri.getPort());
+            rawuri = new URI( target.getUrl());
+            path=rawuri.getRawPath();
+            if (rawuri.getPort() == -1) {
+                host = new URI(rawuri.getScheme() + "://"+rawuri.getHost());
+            } else {
+                host = new URI(rawuri.getScheme() + "://"+rawuri.getHost() + ":"+rawuri.getPort());
+            }
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }
 
-        try (FileSystem fs = FileSystems.newFileSystem(host, getSftpEnvironment(), SFTPFileSystemProvider.class.getClassLoader())) {
-            return fs.getPath(path);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    @Internal
-    SFTPEnvironment getSftpEnvironment() {
-        return new SFTPEnvironment()
+        SFTPEnvironment environment = new SFTPEnvironment()
                 .withUsername(target.getUser())
                 .withPassword(target.getPassword().toCharArray())
                 .withKnownHosts(new File(System.getProperty("user.home"),".ssh/known_hosts"));
-    }
 
-    @Internal
-    URI getRawUri() throws URISyntaxException {
-        return new URI(target.getUrl());
+        FileSystem fileSystem = null;
+        try {
+            fileSystem = FileSystems.newFileSystem( host, environment, SFTPFileSystemProvider.class.getClassLoader() );
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+        return fileSystem.getPath(path);
     }
 }
