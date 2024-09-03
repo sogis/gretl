@@ -338,24 +338,28 @@ public class Publisher extends DefaultTask {
         this.version = version;
     }
 
+    @Internal
     Path getTargetFile() {
         return target.getUrl().startsWith("sftp:")
                 ? getSftpPath()
                 : getProject().file(target.getUrl()).toPath();
     }
 
+    @Internal
     Path getValidationFile() {
         return validationConfig != null
                 ? getProject().file(validationConfig).toPath()
                 : null;
     }
 
+    @Internal
     Path getGroomingFile() {
         return grooming != null
                 ? getProject().file(grooming).toPath()
                 : null;
     }
 
+    @Internal
     Settings getSettings() {
         Settings settings = new Settings();
         if (modeldir != null) {
@@ -370,6 +374,7 @@ public class Publisher extends DefaultTask {
         return settings;
     }
 
+    @Internal
     SimiSvcApi getSimiSvcApi() {
         SimiSvcApi simiSvc = null;
         if (kgdiService != null) {
@@ -385,6 +390,7 @@ public class Publisher extends DefaultTask {
         return simiSvc;
     }
 
+    @Internal
     Path getSftpPath() {
         URI host = null;
         URI rawuri = null;
