@@ -4,11 +4,11 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'publishFile'
 
-tasks.register('publishFile', Publisher) {
+task publishFile(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [project.buildDir]
       sourcePath = file("av_test.itf")
-      modeldir = file(".")
+      modeldir= file(".")
       //kgdiService=["http://localhost:8080/simi-svc/rest","admin","admin"]
 }
 

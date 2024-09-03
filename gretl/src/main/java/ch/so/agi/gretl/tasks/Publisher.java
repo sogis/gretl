@@ -11,7 +11,6 @@ import ch.so.agi.gretl.util.SimiSvcClient;
 import ch.so.agi.gretl.util.TaskUtil;
 import com.github.robtimus.filesystems.sftp.SFTPEnvironment;
 import com.github.robtimus.filesystems.sftp.SFTPFileSystemProvider;
-import org.gradle.api.GradleException;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.*;
 import org.interlis2.validator.Validator;
@@ -31,45 +30,63 @@ import java.util.List;
 public class Publisher extends DatabaseTask {
     protected GretlLogger log;
 
-    private String dataIdent=null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+    // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+    private String dataIdent=null;
 
-    private Endpoint target=null; // Zielverzeichnis
+    // Zielverzeichnis
+    private Endpoint target=null;
 
-    private Object sourcePath=null; // Quelldatei z.B. "/path/file.xtf"
+    // Quelldatei z.B. "/path/file.xtf"
+    private Object sourcePath=null;
 
-    private String dbSchema=null; // Schema in der Datenbank z.B. "av"
+    // Schema in der Datenbank z.B. "av"
+    private String dbSchema=null;
 
-    private String dataset=null; //  ili2db-Datasetname der Quelldaten "dataset"
+    //  ili2db-Datasetname der Quelldaten "dataset"
+    private String dataset=null;
 
-    private String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
+    //  ili2db-Modellname(n) zur Auswahl der Quelldaten
+    private String modelsToPublish=null;
 
-    private String region; // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
+    // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
+    private String region;
 
-    private ListProperty<String> regions = getProject().getObjects().listProperty(String.class); // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
+    // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
+    private ListProperty<String> regions = getProject().getObjects().listProperty(String.class);
 
-    private ListProperty<String> _publishedRegions = getProject().getObjects().listProperty(String.class); // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
+    // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
+    private ListProperty<String> _publishedRegions = getProject().getObjects().listProperty(String.class);
 
-    private Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
+    // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
+    private Object validationConfig=null;
 
-    private Boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
+    // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
+    private Boolean userFormats=false;
 
-    private Endpoint kgdiService=null; // Endpunkt des SIMI-Services
+    // Endpunkt des SIMI-Services
+    private Endpoint kgdiService=null;
 
-    private Endpoint kgdiTokenService=null; // Endpunkt des Authentifizierung-Services
+    // Endpunkt des Authentifizierung-Services
+    private Endpoint kgdiTokenService=null;
 
-    private Object grooming=null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
+    // Konfiguration fuer die Ausduennung z.B. "grooming.json"
+    private Object grooming=null;
 
-    private String exportModels=null; // Das Export-Modell, indem die Daten exportiert werden
+    // Das Export-Modell, indem die Daten exportiert werden
+    private String exportModels=null;
 
-    private String modeldir=null;     // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
+    // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
+    private String modeldir=null;
 
-    private String proxy=null;        // Proxy Server fuer den Zugriff auf Modell Repositories
+    // Proxy Server fuer den Zugriff auf Modell Repositories
+    private String proxy=null;
 
-    private Integer proxyPort=null;    // Proxy Port fuer den Zugriff auf Modell Repositories
+    // Proxy Port fuer den Zugriff auf Modell Repositories
+    private Integer proxyPort=null;
 
     private Date version=null;
 
-        @TaskAction
+    @TaskAction
     public void publishAll() {
         log = LogEnvironment.getLogger(Publisher.class);
         PublisherStep step = new PublisherStep();
@@ -83,7 +100,6 @@ public class Publisher extends DatabaseTask {
             if (dbSchema == null) {
                 throw new IllegalArgumentException("dbSchema must be set");
             }
-
             if (modelsToPublish == null && dataset == null && region == null && regions.get().isEmpty()) {
                 throw new IllegalArgumentException("modelsToPublish OR dataset OR region OR regions must be set");
             } else if ((modelsToPublish!=null?1:0) + (dataset!=null?1:0) + (region!=null?1:0) + (!regions.get().isEmpty()?1:0) > 1) {
@@ -94,18 +110,17 @@ public class Publisher extends DatabaseTask {
         }
 
         Path targetFile = null;
-
         if (target != null) {
             log.info("target " + target);
             {
                 if (target.getUrl().startsWith("sftp:")) {
-                    URI host = null;
-                    URI rawuri = null;
-                    String path = null;
+                    URI host=null;
+                    URI rawuri=null;
+                    String path=null;
                     try {
                         rawuri = new URI( target.getUrl());
-                        path = rawuri.getRawPath();
-                        if (rawuri.getPort() == -1) {
+                        path=rawuri.getRawPath();
+                        if (rawuri.getPort()==-1) {
                             host = new URI(rawuri.getScheme()+"://"+rawuri.getHost());
                         } else {
                             host = new URI(rawuri.getScheme()+"://"+rawuri.getHost()+":"+rawuri.getPort());
@@ -117,7 +132,6 @@ public class Publisher extends DatabaseTask {
                             .withUsername(target.getUser())
                             .withPassword(target.getPassword().toCharArray())
                             .withKnownHosts(new File(System.getProperty("user.home"),".ssh/known_hosts"));
-
                     FileSystem fileSystem = null;
                     try {
                         fileSystem = FileSystems.newFileSystem( host, environment, SFTPFileSystemProvider.class.getClassLoader() );
@@ -132,50 +146,42 @@ public class Publisher extends DatabaseTask {
         } else {
             throw new IllegalArgumentException("target must be set");
         }
-
-        Path validationFile = null;
-
-        if (validationConfig != null) {
-            validationFile = getProject().file(validationConfig).toPath();
+        Path validationFile=null;
+        if (validationConfig!=null) {
+            validationFile=getProject().file(validationConfig).toPath();
         }
-
         Path groomingFile=null;
-        if (grooming != null) {
-            groomingFile = getProject().file(grooming).toPath();
+        if (grooming!=null) {
+            groomingFile=getProject().file(grooming).toPath();
         }
-
-        Settings settings = new Settings();
-        if (modeldir != null) {
+        Settings settings=new Settings();
+        if (modeldir!=null) {
             settings.setValue(Validator.SETTING_ILIDIRS, modeldir);
         }
-
         if (proxy != null) {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_HOST, proxy);
         }
-
         if (proxyPort != null) {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
         }
-
-        SimiSvcApi simiSvc = null;
-        if (kgdiService != null) {
+        SimiSvcApi simiSvc=null;
+        if(kgdiService!=null) {
             if (!kgdiService.getUrl().isEmpty() && !kgdiService.getUser().isEmpty() && !kgdiService.getPassword().isEmpty()) {
-                simiSvc = new SimiSvcClient();
+                simiSvc=new SimiSvcClient();
                 simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
-                if (kgdiTokenService!=null) {
+                if(kgdiTokenService!=null) {
                     simiSvc.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
                 }
             }
         }
-        if (version == null) {
-            version = new Date();
+        if(version==null) {
+            version=new Date();
         }
-
         try {
             Files.createDirectories(getProject().getBuildDir().toPath());
-            List<String> pubRegions=null;
-            if (region!=null || !regions.get().isEmpty()) {
-                pubRegions = new ArrayList<String>();
+            List<String> pubRegions = null;
+            if(region!=null || !regions.get().isEmpty()) {
+                pubRegions = new ArrayList<>();
             }
 
             List<String> regionsToPublish = regions.get().isEmpty() ? null : regions.get();
@@ -189,9 +195,7 @@ public class Publisher extends DatabaseTask {
             }
         } catch (Exception e) {
             log.error("failed to run Publisher", e);
-
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         }
     }
 
@@ -199,7 +203,6 @@ public class Publisher extends DatabaseTask {
     public String getDataIdent() {
         return dataIdent;
     }
-
     @Input
     public Endpoint getTarget() {
         return target;
@@ -245,10 +248,9 @@ public class Publisher extends DatabaseTask {
         return regions;
     }
 
-
+    // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
     @Internal
     public ListProperty<String> getPublishedRegions() {
-        // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
         return _publishedRegions;
     }
 
