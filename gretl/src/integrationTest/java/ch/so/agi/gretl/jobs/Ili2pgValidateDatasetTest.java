@@ -11,15 +11,15 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 public class Ili2pgValidateDatasetTest {
-    
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
     @Container
     public static PostgreSQLContainer<?> postgres =
         (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
@@ -31,9 +31,8 @@ public class Ili2pgValidateDatasetTest {
 
     @Test
     public void validateSingleDataset_Ok() throws Exception {
-        // Run task
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgValidateSingleDataset", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateSingleDataset");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate", gradleVariables);
 
         // Check result
         String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateSingleDataset/validation.log")));
@@ -42,9 +41,8 @@ public class Ili2pgValidateDatasetTest {
     
     @Test
     public void validateMultipleDataset_Ok() throws Exception {
-        // Run task
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgValidateMultipleDatasets", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateMultipleDatasets");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate", gradleVariables);
 
         // Check result
         String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateMultipleDatasets/validation.log")));
@@ -53,11 +51,12 @@ public class Ili2pgValidateDatasetTest {
     
     @Test
     public void validateData_Fail() throws Exception {
-        // Run task
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        assertEquals(1, IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgValidateDatasetFail", gvs, new StringBuffer(), new StringBuffer()));
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateDatasetFail");
 
-        // Check result
+        assertThrows(Throwable.class, () -> {
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate", gradleVariables);
+        });
+
         String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateDatasetFail/validation.log")));
         assertTrue(logFileContent.contains("Error: ...validate failed"));        
     }

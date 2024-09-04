@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 public class SqlExecutorTaskTest {
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
     @Container
     public static PostgreSQLContainer<?> postgres =
@@ -48,8 +50,8 @@ public class SqlExecutorTaskTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskChain", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskChain");
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -85,8 +87,8 @@ public class SqlExecutorTaskTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskRelPath", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskRelPath");
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "relativePathConfiguration", gradleVariables);
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
@@ -107,8 +109,8 @@ public class SqlExecutorTaskTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskParameter", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskParameter");
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -142,8 +144,9 @@ public class SqlExecutorTaskTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskParameterList", gvs);
+
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskParameterList");
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);

@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,10 +30,11 @@ public class CsvImportTest {
             .withInitScript("init_postgresql.sql")
             .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
+    private final GradleVariable[] gradleVariables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
+
     @Test
     public void importOk() throws Exception {
-        String schemaName = "csvimport".toLowerCase();
-
+        String schemaName = "csvimport";
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres); Statement s1 = con.createStatement()) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
             s1.execute("CREATE TABLE " + schemaName + ".importdata(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120), adate date, atimestamp timestamp, aboolean boolean, aextra varchar(40))");
@@ -41,10 +43,8 @@ public class CsvImportTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {
-                GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())
-        };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/CsvImport", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvImport");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "csvimport", gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres);
              Statement s2 = con.createStatement();
@@ -70,7 +70,7 @@ public class CsvImportTest {
 
     @Test
     public void importOk_batchSize() throws Exception {
-        String schemaName = "csvimport".toLowerCase();
+        String schemaName = "csvimport";
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres); Statement s1 = con.createStatement()) {
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
@@ -79,10 +79,8 @@ public class CsvImportTest {
             con.commit();
         }
 
-        GradleVariable[] gvs = {
-                GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())
-        };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/CsvImportBatchSize", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvImportBatchSize");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "csvimport", gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres);
              Statement s2 = con.createStatement();

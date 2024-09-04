@@ -1,211 +1,165 @@
 package ch.so.agi.gretl.util;
 
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.testkit.runner.TaskOutcome;
+
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Utility class for running integration tests.
- * Handles execution of test jobs either via Gradle or a runtime image.
- */
+
 public class IntegrationTestUtil {
-    private static final String newline = System.lineSeparator();
-    private static final String TESTTYPE = System.getProperty("GRETL_TESTTYPE");
-    private static final String TESTTYPE_JAR = "jar";
-    private static final String TESTTYPE_IMAGE = "image";
-    private static final String GRETL_PROJECT_ABS_PATH = System.getProperty("GRETL_PROJECT_ABS_PATH");
-    private static final String ROOT_PROJECT_ABS_PATH = System.getProperty("ROOT_PROJECT_ABS_PATH");
 
-    static {
-        if (TESTTYPE == null || TESTTYPE.isEmpty()) {
-            throw new RuntimeException("Environment variable GRETL_TESTTYPE not present or not set to valid value");
+    private static final String newline=System.getProperty("line.separator");
+    private static final String TEST_TYPE = System.getProperty("GRETL_TESTTYPE");
+    private static final String GRETL_PROJECT_ABSOLUTE_PATH = System.getProperty("GRETL_PROJECT_ABS_PATH");
+    private static final String ROOT_PROJECT_ABSOLUTE_PATH = System.getProperty("ROOT_PROJECT_ABS_PATH");
+
+    public static void executeTestRunner(File projectDirectory, String taskName) throws IOException{
+        executeTestRunner(projectDirectory, taskName, null);
+    }
+
+    public static void executeTestRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
+        if(TestType.IMAGE.equals(TEST_TYPE)){
+            executeDockerRunCommand(projectDirectory, variables);
+        } else if(TestType.JAR.equals(TEST_TYPE)){
+            executeGradleRunner(projectDirectory, taskName, variables);
+        } else {
+            throw new GretlException("Unknown test type: " + TEST_TYPE);
         }
+    }
 
-        if (GRETL_PROJECT_ABS_PATH == null || GRETL_PROJECT_ABS_PATH.isEmpty()) {
-            throw new RuntimeException("Environment variable GRETL_PROJECT_ABS_PATH not present or not set to valid value");
+    private static void executeGradleRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
+        List<String> arguments = getRunnerArguments(taskName, variables);
+        BuildResult result = GradleRunner.create()
+                .withProjectDir(projectDirectory)
+                .withPluginClasspath(getPluginClassPaths())
+                .withArguments(arguments)
+                .forwardOutput().build();
+        TaskOutcome outcome = Objects.requireNonNull(result.task(":" + taskName)).getOutcome();
+        assertTrue(outcome == TaskOutcome.SUCCESS || outcome == TaskOutcome.UP_TO_DATE);
+    }
+
+    private static void executeDockerRunCommand(File projectDirectory, GradleVariable[] variables){
+
+        String absolutePath = projectDirectory.getAbsolutePath();
+        String jobPath = projectDirectory.getPath();
+
+        String dockerRunCommand = getDockerRunCommand(jobPath, variables);
+        StringBuffer stdError = new StringBuffer();
+        StringBuffer stdOut = new StringBuffer();
+
+        System.out.printf("Absolute Path: %s%n", absolutePath);
+        System.out.print(stdOut);
+        try {
+            Process process = Runtime.getRuntime().exec(dockerRunCommand);
+            appendProcessOutputToStdStreams(process, stdError, stdOut);
+            process.waitFor();
+            logDockerRunOutput(dockerRunCommand, stdError, stdOut);
+            int result = process.exitValue();
+            assertEquals(0, result);
+        } catch (IOException | InterruptedException e) {
+            throw new GretlException("Error while executing docker run command: " + dockerRunCommand, e);
         }
     }
 
-    /**
-     * Runs a job located at the specified job path.
-     *
-     * @param jobPath the path to the job to run
-     * @throws Exception if an error occurs during job execution
-     */
-    public static void runJob(String jobPath) throws Exception {
-        runJob(jobPath, null);
+    private static void logDockerRunOutput(String dockerRunCommand, StringBuffer stdError, StringBuffer stdOut){
+        System.out.printf("Here is the standard output of the command [%s]:\n%n", dockerRunCommand);
+        System.out.print(stdOut);
+        System.out.printf("Here is the standard error of the command [%s] (if any):\n%n", dockerRunCommand);
+        System.out.print(stdError);
     }
 
-    /**
-     * Runs a job located at the specified job path with the given Gradle variables.
-     *
-     * @param jobPath the path to the job to run
-     * @param variables an array of Gradle variables to pass to the job
-     * @throws Exception if an error occurs during job execution
-     */
-    public static void runJob(String jobPath, GradleVariable[] variables) throws Exception {
-        int ret = runJob(jobPath, variables, new StringBuffer(), new StringBuffer());
-        assertThat(ret, is(0));
+    private static String getDockerRunCommand(String jobPath, GradleVariable[] variables){
+        String pathToRunCommandExecutionFile = Paths.get(ROOT_PROJECT_ABSOLUTE_PATH).resolve("runtimeImage/start-gretl.sh").toString();
+        String jobDirectoryOption = buildJobDirectoryOptionString(jobPath);
+        String gradleVariablesString = buildOptionString(variables);
+
+        return String.format("%s %s %s", pathToRunCommandExecutionFile, jobDirectoryOption, gradleVariablesString);
     }
 
-    /**
-     * Builds the option string for the given Gradle variables.
-     *
-     * @param variables an array of Gradle variables
-     * @return the option string for the variables
-     */
     private static String buildOptionString(GradleVariable[] variables) {
-        String varText = "";
-        if (variables != null && variables.length > 0) {
-            StringBuffer buf = new StringBuffer();
-            for (GradleVariable var: variables){
-                buf.append(" ");
-                buf.append(var.buildOptionString());
+        if (variables == null || variables.length == 0) {
+            return "";
+        }
+        StringBuilder optionString = new StringBuilder();
+        for (GradleVariable variable : variables) {
+            optionString.append(variable.buildOptionString()).append(" ");
+        }
+        return optionString.toString().trim();
+    }
+
+    public static String buildJobDirectoryOptionString(String relativeJobPath){
+        return "--job_directory " + Paths.get(GRETL_PROJECT_ABSOLUTE_PATH).resolve(relativeJobPath).toString();
+    }
+
+    private static List<String> getRunnerArguments(String taskName, GradleVariable[] variables){
+        List<String> arguments = new ArrayList<>();
+        arguments.add("--init-script");
+        arguments.add(IntegrationTestUtil.getPathToInitScript());
+        arguments.add(taskName);
+        if(variables != null){
+            for(GradleVariable variable: variables){
+                arguments.add(variable.buildOptionString());
             }
-            buf.append(" -s "); // TODO: expose
-            varText = buf.toString();
         }
-        return varText;
+        return arguments;
     }
 
-    /**
-     * Runs a job located at the specified job path with the given Gradle variables and collects the standard output and error.
-     *
-     * @param jobPath the path to the job to run
-     * @param variables an array of Gradle variables to pass to the job
-     * @param stderr a StringBuffer to collect the standard error
-     * @param stdout a StringBuffer to collect the standard output
-     * @return the exit value of the process running the job
-     * @throws Exception if an error occurs during job execution
-     */
-    public static int runJob(String jobPath, GradleVariable[] variables, StringBuffer stderr, StringBuffer stdout) throws Exception {
-        if (stderr == null) {
-            throw new IllegalArgumentException("stderr must not be null");
+    private static ArrayList<File> getPluginClassPaths() throws IOException {
+        ArrayList<File> classpath = new ArrayList<>();
+        File classpathFile = new File(System.getProperty("user.dir"),"build/integrationTest/resources/pluginClassPath.txt");
+        List<String> lines = Files.readAllLines(classpathFile.toPath(), StandardCharsets.UTF_8);
+        for (String line : lines) {
+            classpath.add(new File(line));
         }
-        if (stdout == null) {
-            throw new IllegalArgumentException("stdout must not be null");
-        }
-
-        String runtimeCommand = buildRuntimeCommand();
-        String jobDirOption = buildJobDirOption(jobPath);
-        String varsString = buildOptionString(variables);
-
-        String command = String.format("%s %s %s", runtimeCommand, jobDirOption, varsString);
-
-        System.out.println("command:" + command);
-        Process p = Runtime.getRuntime().exec(command);
-
-        appendProcessOutputToStdStreams(p, stderr, stdout);
-
-        p.waitFor();
-
-        System.out.printf("Here is the standard output of the command [%s]:\n%n", command);
-        System.out.print(stdout);
-        System.out.printf("Here is the standard error of the command [%s] (if any):\n%n", command);
-        System.out.print(stderr);
-
-        return p.exitValue();
+        return classpath;
     }
 
-    /**
-     * Appends the output of the process to the provided standard error and standard output buffers.
-     *
-     * @param p the process whose output is to be collected
-     * @param stderr a StringBuffer to collect the standard error
-     * @param stdout a StringBuffer to collect the standard output
-     */
+    public static String getPathToInitScript(){
+        return new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/init.gradle").getAbsolutePath();
+    }
+
     private static void appendProcessOutputToStdStreams(Process p, StringBuffer stderr, StringBuffer stdout){
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-        // read the output from the command
-        new Thread() {
-            public void run() {
-                try {
-                    String s;
-                    while ((s = stdInput.readLine()) != null) {
-                        System.out.println(s);
-                        if(stdout!=null) {
-                            stdout.append(s);
-                            stdout.append(newline);
-                        }
+        new Thread(() -> {
+            try {
+                String s;
+                while ((s = stdInput.readLine()) != null) {
+                    System.out.println(s);
+                    if(stdout!=null) {
+                        stdout.append(s);
+                        stdout.append(newline);
                     }
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }.start();
+        }).start();
 
-        // read any errors from the attempted command
-        new Thread() {
-            public void run() {
-                try {
-                    String s;
-                    while ((s = stdError.readLine()) != null) {
-                        stderr.append(s);
-                        stderr.append(newline);
-                    }
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+        new Thread(() -> {
+            try {
+                String s;
+                while ((s = stdError.readLine()) != null) {
+                    stderr.append(s);
+                    stderr.append(newline);
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }.start();
-    }
-
-    /**
-     * Builds the runtime command to execute the job based on the test type.
-     *
-     * @return the runtime command
-     */
-    public static String buildRuntimeCommand() {
-        String runtimeCommand = null;
-
-        Path projectAbsPath = Paths.get(ROOT_PROJECT_ABS_PATH);
-        Path subProjectAbsPath = Paths.get(GRETL_PROJECT_ABS_PATH);
-
-        if(TESTTYPE_JAR.equalsIgnoreCase(TESTTYPE)) { //needs call to gradle(w) with init.gradle
-            String tool="gradlew";
-            if(System.getProperty("os.name").contains("Windows")){
-                tool="gradlew.bat";
-            }
-
-            String initPath = subProjectAbsPath.resolve("src/integrationTest/jobs/init.gradle").toString();            
-            String toolWithPath = projectAbsPath.resolve(tool).toString();
-            runtimeCommand = String.format("%s --init-script %s", toolWithPath, initPath);
-        }
-        else if (TESTTYPE_IMAGE.equalsIgnoreCase(TESTTYPE)){
-            runtimeCommand = projectAbsPath.resolve("runtimeImage/start-gretl.sh").toString();
-        }
-
-        return runtimeCommand;
-    }
-
-    /**
-     * Builds the job directory option for the specified job path based on the test type.
-     *
-     * @param relativeJobPath the relative path to the job
-     * @return the job directory option
-     */
-    public static String buildJobDirOption(String relativeJobPath){
-        String buildJobDirOption = null;
-
-        String absoluteJobPath = Paths.get(GRETL_PROJECT_ABS_PATH).resolve(relativeJobPath).toString();
-        System.out.println(absoluteJobPath);
-
-        if(TESTTYPE_JAR.equalsIgnoreCase(TESTTYPE)) {
-            buildJobDirOption = "--project-dir " + absoluteJobPath;
-        }
-        else if (TESTTYPE_IMAGE.equalsIgnoreCase(TESTTYPE)){
-            buildJobDirOption = "--job_directory " + absoluteJobPath;
-        }
-
-        return buildJobDirOption;
+        }).start();
     }
 }

@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.jobs;
 
-import ch.so.agi.gretl.testutil.S3TestHelper;
 import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
@@ -13,6 +12,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import ch.so.agi.gretl.testutil.S3TestHelper;
 
 import java.io.File;
 import java.net.URI;
@@ -77,7 +77,7 @@ public class S3Bucket2BucketTest {
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
 
         // Upload files  and copy files from one bucket to another.
-        GradleVariable[] gvs = {
+        GradleVariable[] gradleVariables = {
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey),
                 GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
                 GradleVariable.newGradleProperty("s3SourceBucket", s3SourceBucketName),
@@ -86,7 +86,8 @@ public class S3Bucket2BucketTest {
                 GradleVariable.newGradleProperty("s3Region", s3Region),
                 GradleVariable.newGradleProperty("s3Acl", acl)
         };
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/S3Bucket2Bucket", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3Bucket2Bucket");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "copyfiles", gradleVariables);
 
         // Check result.
         ListObjectsRequest listObjects = ListObjectsRequest

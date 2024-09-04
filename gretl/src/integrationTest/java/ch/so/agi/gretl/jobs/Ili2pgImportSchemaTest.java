@@ -11,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -32,8 +33,11 @@ public class Ili2pgImportSchemaTest {
 
     @Test
     public void schemaImportOk() throws Exception {
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportSchema");
+
+        GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgschemaimport", variables);
 
         // Check results
         try (
@@ -68,8 +72,11 @@ public class Ili2pgImportSchemaTest {
     
     @Test
     public void schemaImport_Options1_Ok() throws Exception {
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Ili2pgImportSchema_Options", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportSchema_Options");
+
+        GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgschemaimport", variables);
 
         // Check results
         try (

@@ -27,8 +27,9 @@ public class Gpkg2ShpTest {
 
     @Test
     public void export_Ok() throws Exception {
-        String testOutDir = "src/integrationTest/jobs/Gpkg2Shp/out/";
-        String gpkgFilePath = "src/integrationTest/jobs/Gpkg2Shp/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg";
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gpkg2Shp");
+        String testOutDir = projectDirectory + "/out/";
+        String gpkgFilePath = projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg";
         String[] shpFiles = {
                 "nachfuehrngskrise_gemeinde.shp",
                 "grundbuchkreise_grundbuchkreis.shp"
@@ -47,8 +48,7 @@ public class Gpkg2ShpTest {
                     });
         }
 
-        // Run the Gradle job
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Gpkg2Shp", null);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkg2shp");
 
         // Check results
         {

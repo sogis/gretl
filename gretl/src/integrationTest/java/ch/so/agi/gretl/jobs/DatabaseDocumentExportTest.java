@@ -12,7 +12,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.io.File;
 
 @Testcontainers
 public class DatabaseDocumentExportTest {
@@ -27,6 +29,16 @@ public class DatabaseDocumentExportTest {
 
     @Test
     public void exportOk() throws Exception {
+        seedDatabase();
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DatabaseDocumentExport");
+        GradleVariable[] variables = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "databasedocumentexport", variables);
+
+    }
+
+    private void seedDatabase() throws SQLException {
         String schemaName = "ada_denkmalschutz";
         String tableName = "fachapplikation_rechtsvorschrift_link";
         String columnName = "multimedia_link";
@@ -43,9 +55,6 @@ public class DatabaseDocumentExportTest {
             con.commit();
 
             IntegrationTestUtilSql.closeCon(con);
-
-            GradleVariable[] gvs = { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl()) };
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/DatabaseDocumentExport", gvs);
         }
     }
 }

@@ -5,6 +5,7 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,8 +25,10 @@ public class Gpkg2DxfTest {
 
     @Test
     public void export_Ok() throws Exception {
-        String testOutDir = "src/integrationTest/jobs/Gpkg2Dxf/out/";
-        String testFilePath = "src/integrationTest/jobs/Gpkg2Dxf/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg";
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gpkg2Dxf");
+
+        String testOutDir = projectDirectory + "/out/";
+        String testFilePath = projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg";
         String[] dxfFiles = {
                 "nachfuehrngskrise_gemeinde.dxf",
                 "grundbuchkreise_grundbuchkreis.dxf"
@@ -44,8 +47,7 @@ public class Gpkg2DxfTest {
                     });
         }
 
-        // Run the Gradle job
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/Gpkg2Dxf", null);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkg2dxf");
 
         // Check results
         for (String dxfFile : dxfFiles) {
