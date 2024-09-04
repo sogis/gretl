@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.so.agi.gretl.tasks.impl.DatabaseTask;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.*;
 
@@ -31,9 +30,9 @@ public class GpkgExport extends DatabaseTask {
     @TaskAction
     public void exportData() {
         log = LogEnvironment.getLogger(GpkgExport.class);
-        final Connector connector = createConnector();
+        final Connector database = getDatabase();
 
-        if (connector == null) {
+        if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
         if (srcTableName == null) {
@@ -46,21 +45,8 @@ public class GpkgExport extends DatabaseTask {
             return;
         }
 
-        List<String> srcTableNames = null;
-        if (srcTableName instanceof String) {
-            srcTableNames =  new ArrayList<String>();
-            srcTableNames.add((String)srcTableName);
-        } else {
-            srcTableNames = (List)srcTableName;
-        }
-
-        List<String> dstTableNames = null;
-        if (dstTableName instanceof String) {
-            dstTableNames =  new ArrayList<String>();
-            dstTableNames.add((String)dstTableName);
-        } else {
-            dstTableNames = (List)dstTableName;
-        }
+        List<String> srcTableNames = getSrcTableNames();
+        List<String> dstTableNames = getDstTableNames();
 
         if (srcTableNames.size() != dstTableNames.size()) {
             throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
@@ -68,7 +54,7 @@ public class GpkgExport extends DatabaseTask {
 
         java.sql.Connection conn = null;
         try {
-            conn = connector.connect();
+            conn = database.connect();
             if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
@@ -180,5 +166,32 @@ public class GpkgExport extends DatabaseTask {
 
     public void setFetchSize(Integer fetchSize) {
         this.fetchSize = fetchSize;
+    }
+
+    @Internal
+    List<String> getSrcTableNames() {
+        List<String> srcTableNames;
+
+        if (srcTableName instanceof String) {
+            srcTableNames = new ArrayList<>();
+            srcTableNames.add((String)srcTableName);
+        } else {
+            srcTableNames = (List)srcTableName;
+        }
+
+        return srcTableNames;
+    }
+
+    @Internal
+    List<String> getDstTableNames() {
+        List<String> dstTableNames;
+        if (dstTableName instanceof String) {
+            dstTableNames =  new ArrayList<>();
+            dstTableNames.add((String)dstTableName);
+        } else {
+            dstTableNames = (List)dstTableName;
+        }
+
+        return dstTableNames;
     }
 }

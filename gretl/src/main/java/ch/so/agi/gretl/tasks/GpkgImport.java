@@ -28,9 +28,9 @@ public class GpkgImport extends DatabaseTask {
     @TaskAction
     public void importData() {
         log = LogEnvironment.getLogger(GpkgImport.class);
-        Connector connector = createConnector();
+        final Connector database = getDatabase();
 
-        if (connector == null) {
+        if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
         if (srcTableName == null) {
@@ -47,7 +47,7 @@ public class GpkgImport extends DatabaseTask {
 
         File data = this.getProject().file(dataFile);
 
-        try (Connection conn = connector.connect()) {
+        try (Connection conn = database.connect()) {
             Gpkg2db gpkg2db = new Gpkg2db();
             gpkg2db.importData(data, conn, settings);
             conn.commit();

@@ -9,10 +9,7 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.DatabaseTask;
 import ch.so.agi.gretl.util.TaskUtil;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -28,9 +25,9 @@ public class ShpImport extends DatabaseTask {
     @TaskAction
     public void importData() {
         log = LogEnvironment.getLogger(ShpImport.class);
-        final Connector connector = createConnector();
+        final Connector database = getDatabase();
 
-        if (connector == null) {
+        if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
         if (tableName == null) {
@@ -39,22 +36,12 @@ public class ShpImport extends DatabaseTask {
         if (dataFile == null) {
             return;
         }
-        Settings settings = new Settings();
-        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
-        // set optional parameters
-        if (schemaName != null) {
-            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
-        }
-        if (encoding != null) {
-            settings.setValue(ShapeReader.ENCODING, encoding);
-        }
-        if (batchSize != null) {
-            settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
-        }
+
+        Settings settings = getSettings();
         File data = this.getProject().file(dataFile);
         java.sql.Connection conn = null;
         try {
-            conn = connector.connect();
+            conn = database.connect();
             if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
@@ -125,5 +112,23 @@ public class ShpImport extends DatabaseTask {
 
     public void setBatchSize(Integer batchSize) {
         this.batchSize = batchSize;
+    }
+
+    @Internal
+    Settings getSettings() {
+        Settings settings = new Settings();
+        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
+        // set optional parameters
+        if (schemaName != null) {
+            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
+        }
+        if (encoding != null) {
+            settings.setValue(ShapeReader.ENCODING, encoding);
+        }
+        if (batchSize != null) {
+            settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
+        }
+
+        return settings;
     }
 }

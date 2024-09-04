@@ -22,10 +22,10 @@ public class JsonImport extends DatabaseTask {
     @TaskAction
     public void importJsonFile() {
         log = LogEnvironment.getLogger(JsonImport.class);
-        final Connector connector = createConnector();
+        final Connector database = getDatabase();
 
-        if (connector == null) {
-            throw new IllegalArgumentException("connector must not be null");
+        if (database == null) {
+            throw new IllegalArgumentException("database must not be null");
         }
         if (qualifiedTableName == null) {
             throw new IllegalArgumentException("qualifiedTableName must not be null");
@@ -41,7 +41,7 @@ public class JsonImport extends DatabaseTask {
 
         try {
             JsonImportStep jsonImportStep = new JsonImportStep();
-            jsonImportStep.execute(connector, data, qualifiedTableName, columnName, deleteAllRows);
+            jsonImportStep.execute(database, data, qualifiedTableName, columnName, deleteAllRows);
         } catch (Exception e) {
             log.error("Exception in JsonImport task.", e);
             throw TaskUtil.toGradleException(e);

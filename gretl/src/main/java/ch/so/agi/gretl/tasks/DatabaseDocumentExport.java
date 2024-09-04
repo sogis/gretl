@@ -24,10 +24,10 @@ public class DatabaseDocumentExport extends DatabaseTask {
     @TaskAction
     public void export() {
         log = LogEnvironment.getLogger(DatabaseDocumentExport.class);
-        final Connector connector = createConnector();
+        final Connector database = getDatabase();
 
-        if (connector == null) {
-            throw new IllegalArgumentException("connector must not be null");
+        if (database == null) {
+            throw new IllegalArgumentException("database must not be null");
         }
         if (qualifiedTableName == null) {
             throw new IllegalArgumentException("qualifiedTableName must not be null");
@@ -41,7 +41,7 @@ public class DatabaseDocumentExport extends DatabaseTask {
 
         try {
             DatabaseDocumentExportStep databaseDocumentExportStep = new DatabaseDocumentExportStep();
-            databaseDocumentExportStep.execute(connector, qualifiedTableName, documentColumn, targetDir.getAbsolutePath(), fileNamePrefix, fileNameExtension);
+            databaseDocumentExportStep.execute(database, qualifiedTableName, documentColumn, targetDir.getAbsolutePath(), fileNamePrefix, fileNameExtension);
         } catch (Exception e) {
             log.error("Exception in DatabaseDocumentExport task.", e);
             throw TaskUtil.toGradleException(e);

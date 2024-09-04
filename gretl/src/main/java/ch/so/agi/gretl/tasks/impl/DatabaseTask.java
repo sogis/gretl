@@ -3,50 +3,26 @@ package ch.so.agi.gretl.tasks.impl;
 import ch.so.agi.gretl.api.Connector;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+
+import java.util.List;
 
 public abstract class DatabaseTask extends DefaultTask {
-    private String dbUri;
-    private String dbUser;
-    private String dbPassword;
+    private Connector database;
 
-    @TaskAction
-    public Connector createConnector() {
-        if (dbUri == null || dbUser == null || dbPassword == null) {
-            throw new IllegalArgumentException("dbUri, dbUser, and dbPassword must all be provided.");
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
         }
 
-        return new Connector(dbUri, dbUser, dbPassword);
-    }
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
 
-    @Input
-    @Optional
-    public String getDbUri() {
-        return dbUri;
-    }
-
-    public void setDbUri(String dbUri) {
-        this.dbUri = dbUri;
-    }
-
-    @Input
-    @Optional
-    public String getDbUser() {
-        return dbUser;
-    }
-
-    public void setDbUser(String dbUser) {
-        this.dbUser = dbUser;
-    }
-
-    @Input
-    @Optional
-    public String getDbPassword() {
-        return dbPassword;
-    }
-
-    public void setDbPassword(String dbPassword) {
-        this.dbPassword = dbPassword;
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
     }
 }

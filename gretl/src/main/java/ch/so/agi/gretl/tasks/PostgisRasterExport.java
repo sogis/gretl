@@ -6,15 +6,12 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.PostgisRasterExportStep;
 import ch.so.agi.gretl.tasks.impl.DatabaseTask;
 import ch.so.agi.gretl.util.TaskUtil;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 public class PostgisRasterExport extends DatabaseTask {
@@ -27,10 +24,10 @@ public class PostgisRasterExport extends DatabaseTask {
     @TaskAction
     public void exportRaster() {
         log = LogEnvironment.getLogger(PostgisRasterExport.class);
-        final Connector connector = createConnector();
+        final Connector database = getDatabase();
 
-        if (connector == null) {
-            throw new IllegalArgumentException("connector must not be null");
+        if (database == null) {
+            throw new IllegalArgumentException("database must not be null");
         }
 
         if (sqlFile == null) {
@@ -46,7 +43,7 @@ public class PostgisRasterExport extends DatabaseTask {
 
         try {
             PostgisRasterExportStep step = new PostgisRasterExportStep();
-            step.execute(connector, sql, data, sqlParameters);
+            step.execute(database, sql, data, sqlParameters);
         } catch (Exception e) {
             log.error("Exception in creating / invoking PostgisRasterExportStep.", e);
             throw TaskUtil.toGradleException(e);

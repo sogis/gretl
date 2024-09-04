@@ -31,10 +31,10 @@ public class CsvExport extends DatabaseTask {
     @TaskAction
     public void exportData() {
         log = LogEnvironment.getLogger(CsvExport.class);
-        final Connector connector = createConnector();
+        final Connector database = getDatabase();
 
-        if (connector == null) {
-            throw new IllegalArgumentException("connector must not be null");
+        if (database == null) {
+            throw new IllegalArgumentException("database must not be null");
         }
         if (tableName == null) {
             throw new IllegalArgumentException("tableName must not be null");
@@ -47,7 +47,7 @@ public class CsvExport extends DatabaseTask {
         File data = this.getProject().file(dataFile);
         java.sql.Connection conn = null;
         try {
-            conn = connector.connect();
+            conn = getDatabase().connect();
             if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
