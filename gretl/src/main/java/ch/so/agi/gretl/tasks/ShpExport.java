@@ -12,12 +12,11 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.*;
 
 import java.io.File;
-import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ShpExport extends DefaultTask {
     protected GretlLogger log;
-
     private Connector database;
     private Object dataFile = null;
     private String tableName = null;
@@ -40,14 +39,30 @@ public class ShpExport extends DefaultTask {
 
         Settings settings = getSettings();
         File data = this.getProject().file(dataFile);
-
-        try (Connection conn = database.connect()) {
+        java.sql.Connection conn = null;
+        try {
+            conn = database.connect();
+            if (conn == null) {
+                throw new IllegalArgumentException("connection must not be null");
+            }
             Db2Shp db2shp = new Db2Shp();
             db2shp.exportData(data, conn, settings);
             conn.commit();
+            conn.close();
+            conn = null;
         } catch (Exception e) {
             log.error("failed to run ShpExport", e);
             throw TaskUtil.toGradleException(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    conn.close();
+                } catch (SQLException e) {
+                    log.error("failed to rollback/close", e);
+                }
+                conn = null;
+            }
         }
     }
 
