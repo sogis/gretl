@@ -153,6 +153,7 @@ public class Publisher extends DefaultTask {
                     FileSystem fileSystem=null;
                     try {
                         fileSystem = FileSystems.newFileSystem( host, environment, SFTPFileSystemProvider.class.getClassLoader() );
+                        keepAlive(fileSystem);
                     } catch (IOException e) {
                         throw new IllegalArgumentException(e);
                     }
@@ -215,5 +216,38 @@ public class Publisher extends DefaultTask {
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         }
+    }
+    
+    private void keepAlive(FileSystem fileSystem) {
+//        while (true) {
+//            Thread t = new Thread(new Runnable() {
+//                public void run() {
+//                    try {
+//                        SFTPFileSystemProvider.keepAlive(fileSystem);
+//                        
+//                        Thread.sleep(60000);
+//                    } catch (IOException | InterruptedException e) {
+//                        e.printStackTrace();
+//                        log.error(e.getMessage(), e);
+//                    }
+//                }});  
+//                t.start();
+//        }
+        
+        Thread keepAliveThread = new Thread(() -> {
+            while (true) {
+                try {
+                    log.info("sending keep-alive signal to sftp server");
+                    SFTPFileSystemProvider.keepAlive(fileSystem);
+
+                    Thread.sleep(60000);
+                } catch (InterruptedException | IOException e) {
+                    log.error(e.getMessage(), e);
+                    break;
+                }
+            }
+        });
+        keepAliveThread.setDaemon(true);
+        keepAliveThread.start();
     }
 }
