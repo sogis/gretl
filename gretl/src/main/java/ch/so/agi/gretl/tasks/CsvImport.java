@@ -7,18 +7,20 @@ import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.tasks.impl.DatabaseTask;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
-import java.sql.SQLException;
+import java.sql.Connection;
+import java.util.List;
 
-public class CsvImport extends DatabaseTask {
+public class CsvImport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
     private Object dataFile = null;
     private String tableName = null;
     private Boolean firstLineIsHeader = true;
@@ -31,7 +33,6 @@ public class CsvImport extends DatabaseTask {
     @TaskAction
     public void importData() {
         log = LogEnvironment.getLogger(CsvImport.class);
-        final Connector database = getDatabase();
 
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
@@ -45,30 +46,14 @@ public class CsvImport extends DatabaseTask {
 
         Settings settings = getSettings();
         File data = this.getProject().file(dataFile);
-        java.sql.Connection conn = null;
-        try {
-            conn = database.connect();
-            if (conn == null) {
-                throw new IllegalArgumentException("connection must not be null");
-            }
+
+        try (Connection conn = database.connect()) {
             Csv2db csv2db = new Csv2db();
             csv2db.importData(data, conn, settings);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (Exception e) {
             log.error("failed to run CvsImport", e);
             throw TaskUtil.toGradleException(e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException e) {
-                    log.error("failed to rollback/close", e);
-                }
-                conn = null;
-            }
         }
     }
 
@@ -116,6 +101,15 @@ public class CsvImport extends DatabaseTask {
     @Optional
     public Integer getBatchSize() {
         return batchSize;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
     public void setDataFile(Object dataFile) {

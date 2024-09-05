@@ -4,16 +4,18 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.JsonImportStep;
-import ch.so.agi.gretl.tasks.impl.DatabaseTask;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.util.List;
 
-public class JsonImport extends DatabaseTask {
+public class JsonImport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
     private String qualifiedTableName = null;
     private String jsonFile = null;
     private String columnName = null;
@@ -22,7 +24,6 @@ public class JsonImport extends DatabaseTask {
     @TaskAction
     public void importJsonFile() {
         log = LogEnvironment.getLogger(JsonImport.class);
-        final Connector database = getDatabase();
 
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
@@ -67,6 +68,15 @@ public class JsonImport extends DatabaseTask {
     @Optional
     public Boolean isDeleteAllRows() {
         return deleteAllRows;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
     public void setQualifiedTableName(String qualifiedTableName) {

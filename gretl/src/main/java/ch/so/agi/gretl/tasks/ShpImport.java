@@ -7,15 +7,17 @@ import ch.interlis.ioxwkf.shp.ShapeReader;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.tasks.impl.DatabaseTask;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.*;
 
 import java.io.File;
-import java.sql.SQLException;
+import java.sql.Connection;
+import java.util.List;
 
-public class ShpImport extends DatabaseTask {
+public class ShpImport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
     private Object dataFile = null;
     private String tableName = null;
     private String schemaName = null;
@@ -25,7 +27,6 @@ public class ShpImport extends DatabaseTask {
     @TaskAction
     public void importData() {
         log = LogEnvironment.getLogger(ShpImport.class);
-        final Connector database = getDatabase();
 
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
@@ -39,31 +40,23 @@ public class ShpImport extends DatabaseTask {
 
         Settings settings = getSettings();
         File data = this.getProject().file(dataFile);
-        java.sql.Connection conn = null;
-        try {
-            conn = database.connect();
-            if (conn == null) {
-                throw new IllegalArgumentException("connection must not be null");
-            }
+
+        try (Connection conn = database.connect()) {
             Shp2db shp2db = new Shp2db();
             shp2db.importData(data, conn, settings);
-            conn.commit();
-            conn.close();
-            conn = null;
         } catch (Exception e) {
             log.error("failed to run ShpImport", e);
             throw TaskUtil.toGradleException(e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException e) {
-                    log.error("failed to rollback/close", e);
-                }
-                conn = null;
-            }
         }
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
     @InputFile

@@ -7,18 +7,20 @@ import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.tasks.impl.DatabaseTask;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
-import java.sql.SQLException;
+import java.sql.Connection;
+import java.util.List;
 
-public class CsvExport extends DatabaseTask {
+public class CsvExport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
     private Object dataFile = null;
     private String tableName = null;
     private Boolean firstLineIsHeader = true;
@@ -31,7 +33,6 @@ public class CsvExport extends DatabaseTask {
     @TaskAction
     public void exportData() {
         log = LogEnvironment.getLogger(CsvExport.class);
-        final Connector database = getDatabase();
 
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
@@ -45,33 +46,17 @@ public class CsvExport extends DatabaseTask {
 
         Settings settings = getSettings();
         File data = this.getProject().file(dataFile);
-        java.sql.Connection conn = null;
-        try {
-            conn = getDatabase().connect();
-            if (conn == null) {
-                throw new IllegalArgumentException("connection must not be null");
-            }
+
+        try (Connection conn = database.connect()) {
             Db2Csv db2csv = new Db2Csv();
             if (attributes != null) {
                 db2csv.setAttributes(attributes);
             }
             db2csv.exportData(data, conn, settings);
             conn.commit();
-            conn.close();
-            conn = null;
         } catch (Exception e) {
             log.error("failed to run CsvExport", e);
             throw TaskUtil.toGradleException(e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException e) {
-                    log.error("failed to rollback/close", e);
-                }
-                conn = null;
-            }
         }
     }
 
@@ -119,6 +104,15 @@ public class CsvExport extends DatabaseTask {
     @Optional
     public String getEncoding(){
         return encoding;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
     public void setDataFile(Object dataFile) {

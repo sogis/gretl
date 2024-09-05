@@ -4,19 +4,21 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.PostgisRasterExportStep;
-import ch.so.agi.gretl.tasks.impl.DatabaseTask;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
-public class PostgisRasterExport extends DatabaseTask {
+public class PostgisRasterExport extends DefaultTask {
     private GretlLogger log;
 
+    private Connector database;
     private String sqlFile;
     private Map<String, String> sqlParameters = null;
     private Object dataFile = null;
@@ -24,7 +26,6 @@ public class PostgisRasterExport extends DatabaseTask {
     @TaskAction
     public void exportRaster() {
         log = LogEnvironment.getLogger(PostgisRasterExport.class);
-        final Connector database = getDatabase();
 
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
@@ -64,6 +65,15 @@ public class PostgisRasterExport extends DatabaseTask {
     @OutputFile
     public Object getDataFile() {
         return dataFile;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
     public void setSqlFile(String sqlFile) {
