@@ -153,6 +153,7 @@ public class Publisher extends DefaultTask {
                     FileSystem fileSystem=null;
                     try {
                         fileSystem = FileSystems.newFileSystem( host, environment, SFTPFileSystemProvider.class.getClassLoader() );
+                        keepAlive(fileSystem);
                     } catch (IOException e) {
                         throw new IllegalArgumentException(e);
                     }
@@ -216,4 +217,22 @@ public class Publisher extends DefaultTask {
             throw ge;
         }
     }
+
+    private void keepAlive(FileSystem fileSystem) {
+        Thread keepAliveThread = new Thread(() -> {
+            while (true) {
+                try {
+                    log.info("sending keep-alive signal to sftp server");
+                    SFTPFileSystemProvider.keepAlive(fileSystem);
+
+                    Thread.sleep(60000);
+                } catch (InterruptedException | IOException e) {
+                    log.error(e.getMessage(), e);
+                    break;
+                }
+            }
+        });
+        keepAliveThread.setDaemon(true);
+        keepAliveThread.start();
+    }        
 }
