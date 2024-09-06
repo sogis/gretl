@@ -218,26 +218,11 @@ public class Publisher extends DefaultTask {
         }
     }
     
-    private void keepAlive(FileSystem fileSystem) {
-//        while (true) {
-//            Thread t = new Thread(new Runnable() {
-//                public void run() {
-//                    try {
-//                        SFTPFileSystemProvider.keepAlive(fileSystem);
-//                        
-//                        Thread.sleep(60000);
-//                    } catch (IOException | InterruptedException e) {
-//                        e.printStackTrace();
-//                        log.error(e.getMessage(), e);
-//                    }
-//                }});  
-//                t.start();
-//        }
-        
+    private void keepAlive(FileSystem fileSystem) {        
         Thread keepAliveThread = new Thread(() -> {
             while (true) {
                 try {
-                    log.info("sending keep-alive signal to sftp server");
+                    log.debug("sending keep-alive signal to sftp server");
                     SFTPFileSystemProvider.keepAlive(fileSystem);
 
                     Thread.sleep(60000);
