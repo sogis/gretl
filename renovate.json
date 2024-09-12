@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
-  ]
+  ],
+  "schedule": [
+    "after 10pm and before 5:00am"
+  ],
+  "automerge": false,
+  "timezone": "Europe/Zurich",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10
 }
