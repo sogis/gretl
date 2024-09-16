@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tasks;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -21,30 +22,109 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class CsvImport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
+    private Object dataFile = null;
+    private String tableName = null;
+    private Boolean firstLineIsHeader = true;
+    private Character valueDelimiter = null;
+    private Character valueSeparator = null;
+    private String schemaName = null;
+    private String encoding = null;
+    private Integer batchSize = null;
+
     @Input
-    public Connector database;
+    public Connector getDatabase() {
+        return database;
+    }
     @InputFile
-    public Object dataFile = null;
+    public Object getDataFile() {
+        return dataFile;
+    }
+
     @Input
-    String tableName = null;
-    @Input
-    @Optional
-    public boolean firstLineIsHeader = true;
-    @Input
-    @Optional
-    public Character valueDelimiter = null;
-    @Input
-    @Optional
-    public Character valueSeparator = null;
+    public String getTableName() {
+        return tableName;
+    }
+
     @Input
     @Optional
-    public String schemaName = null;
+    public Boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
     @Input
     @Optional
-    public String encoding = null;
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
     @Input
     @Optional
-    public Integer batchSize = null;
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+
+    @Input
+    @Optional
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    @Input
+    @Optional
+    public String getEncoding() {
+        return encoding;
+    }
+
+    @Input
+    @Optional
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
+        this.firstLineIsHeader = firstLineIsHeader;
+    }
+
+    public void setValueDelimiter(Character valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
+
+    public void setValueSeparator(Character valueSeparator) {
+        this.valueSeparator = valueSeparator;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
 
     @TaskAction
     public void importData() {

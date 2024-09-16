@@ -1,6 +1,9 @@
 package ch.so.agi.gretl.jobs;
 
-import static org.junit.Assert.assertTrue;
+
+import ch.so.agi.gretl.util.GradleVariable;
+import ch.so.agi.gretl.util.IntegrationTestUtil;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -9,10 +12,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Test;
-
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MetaPublisherTest {
     public static final String PATH_ELE_ROOT = "build";
@@ -24,16 +24,14 @@ public class MetaPublisherTest {
 
     @Test
     public void simple_Ok() throws Exception {
-        // Prepare
-        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/afu_abbaustellen_pub";
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/MetaPublisher/afu_abbaustellen_pub");
         String dataIdent = "ch.so.afu.abbaustellen";
-                
-        // Run task
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob(jobDirectory, gvs);
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "publishMetaFile");
         
         // Check result
-        Path target = Paths.get(jobDirectory);
+        Path target = projectDirectory.toPath();
         Path htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+dataIdent+".html");
         assertTrue(Files.exists(htmlFile));
         {
@@ -58,16 +56,13 @@ public class MetaPublisherTest {
     
     @Test
     public void regions_Ok() throws Exception {
-        // Prepare
-        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/agi_dm01so_pub";
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/MetaPublisher/agi_dm01so_pub");
         String dataIdent = "ch.so.agi.av.dm01_so";
-        
-        // Run task
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob(jobDirectory, gvs);
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "publishMetaFiles");
         
         // Check result
-        Path target = Paths.get(jobDirectory);
+        Path target = projectDirectory.toPath();
         Path htmlFile = target.resolve(PATH_ELE_ROOT).resolve(dataIdent).resolve(PATH_ELE_AKTUELL).resolve(PATH_ELE_META).resolve("meta-"+dataIdent+".html");
         assertTrue(Files.exists(htmlFile));
         
@@ -97,16 +92,13 @@ public class MetaPublisherTest {
     
     @Test
     public void static_regions_Ok() throws Exception {
-        // Prepare
-        String jobDirectory = "src/integrationTest/jobs/MetaPublisher/agi_orthofoto_1993_meta_pub";
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/MetaPublisher/agi_orthofoto_1993_meta_pub");
         String dataIdent = "ch.so.agi.orthofoto_1993.grau";
-        
-        // Run task
-        GradleVariable[] gvs = null;
-        IntegrationTestUtil.runJob(jobDirectory, gvs);
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "publishMetaFiles");
 
         // Check result
-        Path target = Paths.get(jobDirectory);
+        Path target = projectDirectory.toPath();
         
         Path xtfFile = target.resolve(PATH_ELE_ROOT).resolve(PATH_ELE_CONFIG).resolve("meta-"+dataIdent+".xtf");
         assertTrue(Files.exists(xtfFile));

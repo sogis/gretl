@@ -5,6 +5,7 @@ import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -12,13 +13,13 @@ import java.util.Arrays;
 /**
  * Class which is used get a connection to the database
  */
-public class Connector {
+public class Connector implements Serializable {
 
     private String dbUri;
     private String dbUser;
     private String dbPassword;
-    private GretlLogger log;
-    private Connection dbConnection = null;
+    private transient GretlLogger log;
+    private transient Connection dbConnection = null;
 
     public Connector(String dbUri) {
         this(dbUri, null, null);

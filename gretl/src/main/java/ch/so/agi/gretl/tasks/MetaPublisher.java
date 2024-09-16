@@ -7,11 +7,13 @@ import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
@@ -34,20 +36,51 @@ public class MetaPublisher extends DefaultTask {
     
     private static final String GRETL_ENV_STRING = "gretlEnvironment";
     
+    private File metaConfigFile = null; // Meta-Konfigurationsdatei (heute Toml)
+
+    private Endpoint target = null; // Zielverzeichnis
+
+    private ListProperty<String> regions = getProject().getObjects().listProperty(String.class); // Publizierte Regionen (aus Publisher-Task)
+    private Endpoint geocatTarget = null; // Geocat-Zielverzeichnis
+
+    @InputFile
+    public File getMetaConfigFile(){
+        return metaConfigFile;
+    }
+
     @Input
-    public File metaConfigFile = null; // Meta-Konfigurationsdatei (heute Toml)
-    
-    @Input
-    public Endpoint target = null; // Zielverzeichnis
+    public Endpoint getTarget() {
+        return target;
+    }
 
     @Input
     @Optional
-    public ListProperty<String> regions = null; // Publizierte Regionen (aus Publisher-Task)
-    
+    public ListProperty<String> getRegions() {
+        return regions;
+    }
+
     @Input
     @Optional
-    public Endpoint geocatTarget = null; // Geocat-Zielverzeichnis
-    
+    public Endpoint getGeocatTarget() {
+        return geocatTarget;
+    }
+
+    public void setMetaConfigFile(File metaConfigFile) {
+        this.metaConfigFile = metaConfigFile;
+    }
+
+    public void setTarget(Endpoint target) {
+        this.target = target;
+    }
+
+    public void setRegions(List<String> regions) {
+        this.regions.set(regions);
+    }
+
+    public void setGeocatTarget(Endpoint geocatTarget) {
+        this.geocatTarget = geocatTarget;
+    }
+
     @TaskAction
     public void publishAll() {
         log = LogEnvironment.getLogger(MetaPublisher.class);
@@ -78,7 +111,7 @@ public class MetaPublisher extends DefaultTask {
         
         MetaPublisherStep step = new MetaPublisherStep();
         try {
-            step.execute(metaConfigFile, targetFile, regions!=null?regions.get():null, geocatTargetFile, gretlEnvironment);
+            step.execute(metaConfigFile, targetFile, regions.get().isEmpty() ? null: regions.get(), geocatTargetFile, gretlEnvironment);
         } catch (IOException | IoxException | Ili2cException | SaxonApiException | TemplateException  e) {
             log.error("failed to run MetaPublisher", e);
 

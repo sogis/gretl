@@ -12,7 +12,6 @@ on:
 
 jobs:
   build:
-    #runs-on: ubuntu-20.04
     runs-on: ubuntu-20.04
     env:
       BUILD_NUMBER: ${{ github.run_number }}
@@ -26,10 +25,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Set up JDK 8
+      - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
-          java-version: '8'
+          java-version: '11'
           distribution: 'temurin'
 
       - name: Build with Gradle
@@ -85,7 +84,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=gretl
             org.opencontainers.image.version=2.2.${{ github.run_number }}
-            org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-alpine:8u333-2
+            org.opencontainers.image.base.name=docker.io/eclipse-temurin:11-jdk-alpine
           tags: |
             type=raw,value=2.3.${{ github.run_number }},enable=true,priority=200
             type=raw,value=2.3,enable=true,priority=200

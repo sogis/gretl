@@ -17,8 +17,16 @@ import java.util.List;
 
 public class GpkgValidator extends AbstractValidatorTask {
     private GretlLogger log;
+    private String tableName;
+
     @Input
-    public String tableName = null;
+    public String getTableName(){
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
 
     @TaskAction
     public void validate() {
@@ -27,14 +35,14 @@ public class GpkgValidator extends AbstractValidatorTask {
         if (tableName == null) {
             throw new IllegalArgumentException("tableName must not be null");
         }        
-        if (dataFiles == null) {
+        if (getDataFiles() == null) {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(dataFiles instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)dataFiles;
+        if(getDataFiles() instanceof FileCollection) {
+            dataFilesCollection=(FileCollection)getDataFiles();
         }else {
-            dataFilesCollection=getProject().files(dataFiles);
+            dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
@@ -50,7 +58,7 @@ public class GpkgValidator extends AbstractValidatorTask {
         initSettings(settings);
 
         validationOk = new GpkgValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && failOnError) {
+        if (!validationOk && getFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

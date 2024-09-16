@@ -4,171 +4,208 @@ import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-public class Ili2pgImportSchema extends Ili2pgAbstractTask {
+public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @InputFile
     @Optional
-    public Object iliFile = null;
+    public abstract Property<Object> getIliFile();
+
     @InputFile
     @Optional
-    public Object iliMetaAttrs = null;
+    public abstract Property<Object> getIliMetaAttrs();
+
     @Input
     @Optional
-    public boolean oneGeomPerTable = false;
+    public abstract Property<Boolean> getOneGeomPerTable();
+
     @Input
     @Optional
-    public boolean setupPgExt = false;
+    public abstract Property<Boolean> getSetupPgExt();
+
     @OutputFile
     @Optional
-    public Object dropscript = null;
+    public abstract Property<Object> getDropscript();
+
     @OutputFile
     @Optional
-    public Object createscript = null;
+    public abstract Property<Object> getCreatescript();
+
     @Input
     @Optional
-    public Object metaConfig = null;    
+    public abstract Property<Object> getMetaConfig();
+
     @Input
     @Optional
-    public String defaultSrsAuth = null;
+    public abstract Property<String> getDefaultSrsAuth();
+
     @Input
     @Optional
-    public String defaultSrsCode = null;
+    public abstract Property<String> getDefaultSrsCode();
+
     @Input
     @Optional
-    public boolean createSingleEnumTab = false;
+    public abstract Property<Boolean> getCreateSingleEnumTab();
+
     @Input
     @Optional
-    public boolean createEnumTabs = false;
+    public abstract Property<Boolean> getCreateEnumTabs();
+
     @Input
     @Optional
-    public boolean createEnumTxtCol = false;
+    public abstract Property<Boolean> getCreateEnumTxtCol();
+
     @Input
     @Optional
-    public boolean createEnumColAsItfCode = false;
+    public abstract Property<Boolean> getCreateEnumColAsItfCode();
+
     @Input
     @Optional
-    public boolean createEnumTabsWithId = false;
+    public abstract Property<Boolean> getCreateEnumTabsWithId();
+
     @Input
     @Optional
-    public boolean createImportTabs = false;
+    public abstract Property<Boolean> getCreateImportTabs();
+
     @Input
     @Optional
-    public boolean beautifyEnumDispName = false;
+    public abstract Property<Boolean> getBeautifyEnumDispName();
+
     @Input
     @Optional
-    public boolean noSmartMapping = false;
+    public abstract Property<Boolean> getNoSmartMapping();
+
     @Input
     @Optional
-    public boolean smart1Inheritance = false;
+    public abstract Property<Boolean> getSmart1Inheritance();
+
     @Input
     @Optional
-    public boolean smart2Inheritance = false;
+    public abstract Property<Boolean> getSmart2Inheritance();
+
     @Input
     @Optional
-    public boolean coalesceCatalogueRef = false;
+    public abstract Property<Boolean> getCoalesceCatalogueRef();
+
     @Input
     @Optional
-    public boolean coalesceMultiSurface = false;
+    public abstract Property<Boolean> getCoalesceMultiSurface();
+
     @Input
     @Optional
-    public boolean coalesceMultiLine = false;
+    public abstract Property<Boolean> getCoalesceMultiLine();
+
     @Input
     @Optional
-    public boolean expandMultilingual = false;
+    public abstract Property<Boolean> getExpandMultilingual();
+
     @Input
     @Optional
-    public boolean coalesceJson = false;    
+    public abstract Property<Boolean> getCoalesceJson();
+
     @Input
     @Optional
-    public boolean coalesceArray = false; 
+    public abstract Property<Boolean> getCoalesceArray();
+
     @Input
     @Optional
-    public boolean createTypeConstraint = false;
+    public abstract Property<Boolean> getCreateTypeConstraint();
+
     @Input
     @Optional
-    public boolean createFk = false;
+    public abstract Property<Boolean> getCreateFk();
+
     @Input
     @Optional
-    public boolean createFkIdx = false;
+    public abstract Property<Boolean> getCreateFkIdx();
+
     @Input
     @Optional
-    public boolean createUnique = false;
+    public abstract Property<Boolean> getCreateUnique();
+
     @Input
     @Optional
-    public boolean createNumChecks = false;
+    public abstract Property<Boolean> getCreateNumChecks();
+
     @Input
     @Optional
-    public boolean createTextChecks = false;
+    public abstract Property<Boolean> getCreateTextChecks();
+
     @Input
     @Optional
-    public boolean createDateTimeChecks = false;
+    public abstract Property<Boolean> getCreateDateTimeChecks();
+
     @Input
     @Optional
-    public boolean createStdCols = false;
+    public abstract Property<Boolean> getCreateStdCols();
     @Input
     @Optional
-    public String t_id_Name = null;
+    public abstract Property<String> getT_id_Name();
     @Input
     @Optional
-    public Long idSeqMin = null;
+    public abstract Property<Long> getIdSeqMin();
     @Input
     @Optional
-    public Long idSeqMax = null;
+    public abstract Property<Long> getIdSeqMax();
     @Input
     @Optional
-    public boolean createTypeDiscriminator = false;
+    public abstract Property<Boolean> getCreateTypeDiscriminator();
     @Input
     @Optional
-    public boolean createGeomIdx = false;
+    public abstract Property<Boolean> getCreateGeomIdx();
     @Input
     @Optional
-    public boolean disableNameOptimization = false;
+    public abstract Property<Boolean> getDisableNameOptimization();
     @Input
     @Optional
-    public boolean nameByTopic = false;
+    public abstract Property<Boolean> getNameByTopic();
     @Input
     @Optional
-    public Integer maxNameLength = null;
+    public abstract Property<Integer> getMaxNameLength();
     @Input
     @Optional
-    public boolean sqlEnableNull = false;
+    public abstract Property<Boolean> getSqlEnableNull();
     @Input
     @Optional
-    public boolean sqlColsAsText = false;
+    public abstract Property<Boolean> getSqlColsAsText();
     @Input
     @Optional
-    public boolean sqlExtRefCols = false;
+    public abstract Property<Boolean> getSqlExtRefCols();
     @Input
     @Optional
-    public boolean keepAreaRef = false;
+    public abstract Property<Boolean> getKeepAreaRef();
     @Input
     @Optional
-    public boolean createTidCol = false;
+    public abstract Property<Boolean> getCreateTidCol();
+
     @Input
     @Optional
-    public boolean createBasketCol = false;
+    public abstract Property<Boolean> getCreateBasketCol();
+
     @Input
     @Optional
-    public boolean createDatasetCol = false;
+    public abstract Property<Boolean> getCreateDatasetCol();
+
     @Input
     @Optional
-    public String translation = null;
+    public abstract Property<String> getTranslation();
+
     @Input
     @Optional
-    public boolean createMetaInfo = false;
+    public abstract Property<Boolean> getCreateMetaInfo();
 
     @TaskAction
     public void importSchema() {
         Config settings = createConfig();
         int function = Config.FC_SCHEMAIMPORT;
         String iliFilename = null;
-        if (iliFile == null) {
-        } else {
+        if (getIliFile().isPresent()) {
+            Object iliFile = getIliFile().get();
             if (iliFile instanceof String
                     && ch.ehi.basics.view.GenericFileFilter.getFileExtension((String) iliFile) == null) {
                 iliFilename = (String) iliFile;
@@ -178,8 +215,8 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         settings.setXtffile(iliFilename);
         
-        if (iliMetaAttrs != null) {
-            String iliMetaAttrsFilename = this.getProject().file(iliMetaAttrs).getPath();
+        if (getIliMetaAttrs().isPresent()) {
+            String iliMetaAttrsFilename = this.getProject().file(getIliMetaAttrs().get()).getPath();
             settings.setIliMetaAttrsFile(iliMetaAttrsFilename);
         }
         
@@ -188,152 +225,152 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     }
 
     private void init(Config settings) {
-        if (oneGeomPerTable) {
+        if (getOneGeomPerTable().getOrElse(false)) {
             settings.setOneGeomPerTable(true);
         }
-        if (setupPgExt) {
+        if (getSetupPgExt().getOrElse(false)) {
             settings.setSetupPgExt(true);
         }
-        if (dropscript != null) {
-            settings.setDropscript(this.getProject().file(dropscript).getPath());
+        if (getDropscript().isPresent()) {
+            settings.setDropscript(this.getProject().file(getDropscript().get()).getPath());
         }
-        if (createscript != null) {
-            settings.setCreatescript(this.getProject().file(createscript).getPath());
+        if (getCreatescript().isPresent()) {
+            settings.setCreatescript(this.getProject().file(getCreatescript().get()).getPath());
         }
-        if (metaConfig != null) {
-            settings.setMetaConfigFile(this.getProject().file(metaConfig).getPath());
+        if (getMetaConfig().isPresent()) {
+            settings.setMetaConfigFile(this.getProject().file(getMetaConfig().get()).getPath());
         }
-        if (defaultSrsAuth != null) {
-            String auth = defaultSrsAuth;
+        if (getDefaultSrsAuth().isPresent()) {
+            String auth = getDefaultSrsAuth().get();
             if (auth.equalsIgnoreCase("NULL")) {
                 auth = null;
             }
             settings.setDefaultSrsAuthority(auth);
         }
-        if (defaultSrsCode != null) {
-            settings.setDefaultSrsCode(defaultSrsCode);
+        if (getDefaultSrsCode().isPresent()) {
+            settings.setDefaultSrsCode(getDefaultSrsCode().get());
         }
-        if (createSingleEnumTab) {
+        if (getCreateSingleEnumTab().getOrElse(false)) {
             settings.setCreateEnumDefs(settings.CREATE_ENUM_DEFS_SINGLE);
         }
-        if (createEnumTabs) {
+        if (getCreateEnumTabs().getOrElse(false)) {
             settings.setCreateEnumDefs(settings.CREATE_ENUM_DEFS_MULTI);
         }
-        if (createEnumTxtCol) {
+        if (getCreateEnumTxtCol().getOrElse(false)) {
             settings.setCreateEnumCols(settings.CREATE_ENUM_TXT_COL);
         }
-        if (createEnumColAsItfCode) {
+        if (getCreateEnumColAsItfCode().getOrElse(false)) {
             settings.setCreateEnumColAsItfCode(settings.CREATE_ENUMCOL_AS_ITFCODE_YES);
         }
-        if (createEnumTabsWithId) {
+        if (getCreateEnumTabsWithId().getOrElse(false)) {
             settings.setCreateEnumDefs(Config.CREATE_ENUM_DEFS_MULTI_WITH_ID);
         }
-        if (createImportTabs) {
+        if (getCreateImportTabs().getOrElse(false)) {
             settings.setCreateImportTabs(true);
         }
-        if (beautifyEnumDispName) {
+        if (getBeautifyEnumDispName().getOrElse(false)) {
             settings.setBeautifyEnumDispName(settings.BEAUTIFY_ENUM_DISPNAME_UNDERSCORE);
         }
-        if (noSmartMapping) {
+        if (getNoSmartMapping().getOrElse(false)) {
             Ili2db.setNoSmartMapping(settings);
         }
-        if (smart1Inheritance) {
+        if (getSmart1Inheritance().getOrElse(false)) {
             settings.setInheritanceTrafo(settings.INHERITANCE_TRAFO_SMART1);
         }
-        if (smart2Inheritance) {
+        if (getSmart2Inheritance().getOrElse(false)) {
             settings.setInheritanceTrafo(settings.INHERITANCE_TRAFO_SMART2);
         }
-        if (coalesceCatalogueRef) {
+        if (getCoalesceCatalogueRef().getOrElse(false)) {
             settings.setCatalogueRefTrafo(settings.CATALOGUE_REF_TRAFO_COALESCE);
         }
-        if (coalesceMultiSurface) {
+        if (getCoalesceMultiSurface().getOrElse(false)) {
             settings.setMultiSurfaceTrafo(settings.MULTISURFACE_TRAFO_COALESCE);
         }
-        if (coalesceMultiLine) {
+        if (getCoalesceMultiLine().getOrElse(false)) {
             settings.setMultiLineTrafo(settings.MULTILINE_TRAFO_COALESCE);
         }
-        if (expandMultilingual) {
+        if (getExpandMultilingual().getOrElse(false)) {
             settings.setMultilingualTrafo(settings.MULTILINGUAL_TRAFO_EXPAND);
         }
-        if (coalesceJson) {
+        if (getCoalesceJson().getOrElse(false)) {
             settings.setJsonTrafo(settings.JSON_TRAFO_COALESCE);
         }
-        if (coalesceArray) {
+        if (getCoalesceArray().getOrElse(false)) {
             settings.setArrayTrafo(settings.ARRAY_TRAFO_COALESCE);
         }
-        if (createTypeConstraint) {
+        if (getCreateTypeConstraint().getOrElse(false)) {
             settings.setCreateTypeConstraint(true);
         }
-        if (createFk) {
+        if (getCreateFk().getOrElse(false)) {
             settings.setCreateFk(settings.CREATE_FK_YES);
         }
-        if (createFkIdx) {
+        if (getCreateFkIdx().getOrElse(false)) {
             settings.setCreateFkIdx(settings.CREATE_FKIDX_YES);
         }
-        if (createUnique) {
+        if (getCreateUnique().getOrElse(false)) {
             settings.setCreateUniqueConstraints(true);
         }
-        if (createNumChecks) {
+        if (getCreateNumChecks().getOrElse(false)) {
             settings.setCreateNumChecks(true);
         }
-        if (createTextChecks) {
+        if (getCreateTextChecks().getOrElse(false)) {
             settings.setCreateTextChecks(true);
         }
-        if (createDateTimeChecks) {
+        if (getCreateDateTimeChecks().getOrElse(false)) {
             settings.setCreateDateTimeChecks(true);
         }
-        if (createStdCols) {
+        if (getCreateStdCols().getOrElse(false)) {
             settings.setCreateStdCols(settings.CREATE_STD_COLS_ALL);
         }
-        if (t_id_Name != null) {
-            settings.setColT_ID(t_id_Name);
+        if (getT_id_Name().isPresent()) {
+            settings.setColT_ID(getT_id_Name().get());
         }
-        if (idSeqMin != null) {
-            settings.setMinIdSeqValue(idSeqMin);
+        if (getIdSeqMin().isPresent()) {
+            settings.setMinIdSeqValue(getIdSeqMin().get());
         }
-        if (idSeqMax != null) {
-            settings.setMaxIdSeqValue(idSeqMax);
+        if (getIdSeqMax().isPresent()) {
+            settings.setMaxIdSeqValue(getIdSeqMax().get());
         }
-        if (createTypeDiscriminator) {
+        if (getCreateTypeDiscriminator().getOrElse(false)) {
             settings.setCreateTypeDiscriminator(settings.CREATE_TYPE_DISCRIMINATOR_ALWAYS);
         }
-        if (createGeomIdx) {
+        if (getCreateGeomIdx().getOrElse(false)) {
             settings.setValue(Config.CREATE_GEOM_INDEX, Config.TRUE);
         }
-        if (disableNameOptimization) {
+        if (getDisableNameOptimization().getOrElse(false)) {
             settings.setNameOptimization(settings.NAME_OPTIMIZATION_DISABLE);
         }
-        if (nameByTopic) {
+        if (getNameByTopic().getOrElse(false)) {
             settings.setNameOptimization(settings.NAME_OPTIMIZATION_TOPIC);
         }
-        if (maxNameLength != null) {
-            settings.setMaxSqlNameLength(maxNameLength.toString());
+        if (getMaxNameLength().isPresent()) {
+            settings.setMaxSqlNameLength(getMaxNameLength().get().toString());
         }
-        if (sqlEnableNull) {
+        if (getSqlEnableNull().getOrElse(false)) {
             settings.setSqlNull(settings.SQL_NULL_ENABLE);
         }
-        if (sqlColsAsText) {
+        if (getSqlColsAsText().getOrElse(false)) {
             settings.setSqlColsAsText(settings.SQL_COLS_AS_TEXT_ENABLE);
         }
-        if (sqlExtRefCols) {
+        if (getSqlExtRefCols().getOrElse(false)) {
             settings.setSqlExtRefCols(settings.SQL_EXTREF_ENABLE);
         }
-        if (keepAreaRef) {
+        if (getKeepAreaRef().getOrElse(false)) {
             settings.setAreaRef(settings.AREA_REF_KEEP);
         }
-        if (createTidCol) {
+        if (getCreateTidCol().getOrElse(false)) {
             settings.setTidHandling(settings.TID_HANDLING_PROPERTY);
         }
-        if (createBasketCol) {
+        if (getCreateBasketCol().getOrElse(false)) {
             settings.setBasketHandling(settings.BASKET_HANDLING_READWRITE);
         }
-        if (createDatasetCol) {
+        if (getCreateDatasetCol().getOrElse(false)) {
             settings.setCreateDatasetCols(settings.CREATE_DATASET_COL);
         }
-        if (translation != null) {
-            settings.setIli1Translation(translation);
+        if (getTranslation().isPresent()) {
+            settings.setIli1Translation(getTranslation().get());
         }
-        if (createMetaInfo) {
+        if (getCreateMetaInfo().getOrElse(false)) {
             settings.setCreateMetaInfo(true);
         }
     }

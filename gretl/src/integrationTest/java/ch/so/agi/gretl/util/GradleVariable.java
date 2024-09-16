@@ -10,12 +10,12 @@ public class GradleVariable {
     private static final String TYPE_GRADLE_PROPERTY = "P";
     private static final String TYPE_JVM_OPTION = "D";
 
-    private String type;
-    private String name;
-    private String value;
+    private final String type;
+    private final String name;
+    private final String value;
 
     private GradleVariable(String type, String name, String value) {
-        if(name.contains(" ")){
+        if (name.contains(" ")){
             throw new RuntimeException("No spaces allowed in gradle variable name");
         }
 
@@ -23,7 +23,7 @@ public class GradleVariable {
          * Wrapping the value in "" or '' both leads to unexpected behaviour of gradle.
          * For the sql tasks, gradle does no more find the jdbc driver to postgres
          */
-        if(value.contains(" ")){
+        if (value.contains(" ")){
             throw new RuntimeException("No spaces allowed in gradle variable value");
         }
 

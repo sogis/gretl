@@ -10,7 +10,7 @@ def db_pass = "ddluser"
 
 defaultTasks 'ili2pgimport'
 
-task ili2pgschemaimport(type: Ili2pgImportSchema) {
+tasks.register("ili2pgschemaimport", Ili2pgImportSchema) {
     database = [db_uri, db_user, db_pass]
     models = "SO_AGI_MOpublic_20190424"
     defaultSrsCode = "2056"
@@ -20,7 +20,8 @@ task ili2pgschemaimport(type: Ili2pgImportSchema) {
     createDatasetCol = true
 }
 
-task ili2pgimport(dependsOn:ili2pgschemaimport, type: Ili2pgReplace) {
+tasks.register("ili2pgimport", Ili2pgReplace) {
+    dependsOn 'ili2pgschemaimport'
     database = [db_uri, db_user, db_pass]
     modeldir = "%ILI_FROM_DB;"+rootProject.projectDir.toString() + ";https://geo.so.ch/models;http://models.interlis.ch"
     dbschema = "agi_av_mopublic"

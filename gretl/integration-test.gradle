@@ -5,8 +5,30 @@
  */
 sourceSets {
     integrationTest {
-        java.srcDir 'src/integrationTest/java'
-        resources.srcDir 'src/integrationTest/resources'
+        java {
+            srcDirs('src/integrationTest/java')
+            resources.srcDirs('src/integrationTest/resources')
+        }
+        /**
+         * Provides, at compile-time, the classes produced by the _main_ and _test_ SourceSets,
+         * allowing the integration tests to access the production code in _main_ and allowing
+         * them to reuse any unit test helper methods in _test_.
+         */
+        compileClasspath += sourceSets.main.output + sourceSets.test.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+    }
+}
+
+tasks.register("writePluginClassPath"){
+    def buildDirectory = project.layout.buildDirectory.get()
+    def outputDir = file("$buildDirectory/integrationTest/resources")
+
+    inputs.files configurations.compileClasspath + configurations.runtimeClasspath
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+        file("$outputDir/pluginClassPath.txt").text = configurations.compileClasspath.files.join("\n") + "\n" + configurations.runtimeClasspath.files.join("\n")
     }
 }
 
@@ -14,33 +36,29 @@ sourceSets {
  * Task for executing the integration tests. It references the 
  * classes and runtime classpath of the integration test source set.
  */
-task jarTest(type: Test) {
+tasks.register('jarTest', Test) {
     description = 'Runs integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
-    useJUnit {
-        excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.QgisReachableTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    useJUnitPlatform {
+        excludeTags 'qgisReachableTest', 's3Test'
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
 
-    // show standard out and standard error of the test JVM(s) on the console
-    //testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
     testLogging.showStandardStreams = true
 
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
+    classpath += sourceSets.integrationTest.runtimeClasspath
     jvmArgs '-Xmx1g'
 }
 
-task jarS3Test(type: Test) {
+tasks.register('jarS3Test', Test) {
     description = 'Runs the S3 integration tests against the installed gretl jar.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    useJUnitPlatform {
+        includeTags 's3Test'
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
@@ -48,50 +66,32 @@ task jarS3Test(type: Test) {
     testLogging.showStandardStreams = true
 
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
+    classpath += sourceSets.integrationTest.runtimeClasspath
     jvmArgs '-Xmx1g'
 }
 
-
-jarTest {
-    filter {
-        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvImportTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvValidatorTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.Db2DbTaskTest"   
-        //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"        
-        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpExportTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpImportTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.SqlExecutorTaskTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.IliRepositorizerTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.PostgisRasterExportTest"    
-    }
-}
-
-task imageTest(type: Test){
+tasks.register('imageTest', Test) {
     description = 'Runs integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    
-    useJUnit {
-        excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest' // FIXME / TODO    
-        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+
+    useJUnitPlatform {
+        excludeTags 's3Test'
     }
-    
+
     systemProperty('GRETL_TESTTYPE', 'image')
 
     testLogging.showStandardStreams = true
 
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
+    classpath += sourceSets.integrationTest.runtimeClasspath
 }
 
-task imageS3Test(type: Test){
+tasks.register('imageS3Test', Test) {
     description = 'Runs S3 integration tests against the installed gretl docker image.'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    useJUnitPlatform {
+        includeTags 's3Test'
     }
 
     systemProperty('GRETL_TESTTYPE', 'image')
@@ -99,22 +99,5 @@ task imageS3Test(type: Test){
     testLogging.showStandardStreams = true
 
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath += sourceSets.integrationTest.runtimeClasspath //+ sourceSets.main.runtimeClasspath
-}
-
-imageTest {
-    filter {
-        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvExportTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvImportTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.CsvValidatorTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.Db2DbTaskTest"   
-        //includeTestsMatching "ch.so.agi.gretl.jobs.IliValidatorTest"        
-        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpExportTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpImportTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.ShpValidatorTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.SqlExecutorTaskTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.DbDriverContainedTest"    
-        //includeTestsMatching "ch.so.agi.gretl.jobs.IliRepositorizerTest"
-        //includeTestsMatching "ch.so.agi.gretl.jobs.PostgisRasterExportTest"                        
-    }
+    classpath += sourceSets.integrationTest.runtimeClasspath
 }

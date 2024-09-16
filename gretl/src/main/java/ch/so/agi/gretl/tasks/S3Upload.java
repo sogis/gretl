@@ -19,42 +19,121 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class S3Upload extends DefaultTask {
     protected GretlLogger log;
 
-    @Input
-    public String accessKey;
-    
-    @Input
-    public String secretKey;
-        
-    @InputDirectory
-    public Object sourceDir;
-    
-    @Input
-    public Object sourceFile;
-    
-    @Input 
-    public Object sourceFiles;
+    private String accessKey;
+    private String secretKey;
+    private Object sourceDir;
+    private Object sourceFile;
+    private Object sourceFiles;
+    private String bucketName;
+    private String endPoint = "https://s3.eu-central-1.amazonaws.com";
+    private String region = "eu-central-1";
+    private String acl = null;
+    private String contentType = null;
+    private Map<String,String> metaData = null;
 
     @Input
-    public String bucketName;
-    
+    public String getAccessKey() {
+        return accessKey;
+    }
+
+    @Input
+    public String getSecretKey() {
+        return secretKey;
+    }
+    @InputDirectory
+    @Optional
+    public Object getSourceDir() {
+        return sourceDir;
+    }
     @Input
     @Optional
-    public String endPoint = "https://s3.eu-central-1.amazonaws.com";
-    
-    @Input
-    public String region = "eu-central-1";
-    
-    @Input
-    public String acl = null;
-    
+    public Object getSourceFile() {
+        return sourceFile;
+    }
+
     @Input
     @Optional
-    public String contentType = null;
-    
+    public Object getSourceFiles() {
+        return sourceFiles;
+    }
+
     @Input
-    @Optional        
-    public Map<String,String> metaData = null;
-    
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    @Input
+    @Optional
+    public String getEndPoint() {
+        return endPoint;
+    }
+
+    @Input
+    public String getRegion() {
+        return region;
+    }
+
+    @Input
+    public String getAcl() {
+        return acl;
+    }
+
+    @Input
+    @Optional
+    public String getContentType() {
+        return contentType;
+    }
+
+    @Input
+    @Optional
+    public Map<String, String> getMetaData() {
+        return metaData;
+    }
+
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setSourceDir(Object sourceDir) {
+        this.sourceDir = sourceDir;
+    }
+
+    public void setSourceFile(Object sourceFile) {
+        this.sourceFile = sourceFile;
+    }
+
+    public void setSourceFiles(Object sourceFiles) {
+        this.sourceFiles = sourceFiles;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public void setEndPoint(String endPoint) {
+        this.endPoint = endPoint;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setAcl(String acl) {
+        this.acl = acl;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setMetaData(Map<String, String> metaData) {
+        this.metaData = metaData;
+    }
+
     @TaskAction
     public void upload() {
         log = LogEnvironment.getLogger(S3Upload.class);

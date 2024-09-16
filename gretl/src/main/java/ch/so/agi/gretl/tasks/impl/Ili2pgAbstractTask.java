@@ -8,10 +8,10 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
-import groovy.lang.Range;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
@@ -19,182 +19,202 @@ import org.gradle.api.tasks.OutputFile;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class Ili2pgAbstractTask extends DefaultTask {
-    protected GretlLogger log;
+    protected GretlLogger log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
 
     @Input
-    public Connector database;
-    @Input
-    @Optional
-    public String dbschema = null;
-    @Input
-    @Optional
-    public String proxy = null;
-    @Input
-    @Optional
-    public Integer proxyPort = null;
+    public abstract ListProperty<String> getDatabase();
 
     @Input
     @Optional
-    public String modeldir = null;
+    public abstract Property<String> getDbschema();
+
     @Input
     @Optional
-    public String models = null;
+    public abstract Property<String> getProxy();
+
     @Input
     @Optional
-    public Object dataset = null;
+    public abstract Property<Integer> getProxyPort();
+
     @Input
     @Optional
-    public String baskets = null;
+    public abstract Property<String> getModeldir();
+
     @Input
     @Optional
-    public String topics = null;
+    public abstract Property<String> getModels();
+
     @Input
     @Optional
-    public boolean importTid = false;
+    public abstract Property<Object> getDataset();
+
     @Input
     @Optional
-    public boolean exportTid = false;
+    public abstract Property<String> getBaskets();
+
     @Input
     @Optional
-    public boolean importBid = false;
+    public abstract Property<String> getTopics();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getImportTid();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getExportTid();
+    @Input
+    @Optional
+    public abstract Property<Boolean> getImportBid();
     @InputFile
     @Optional
-    public File preScript = null;
+    public abstract Property<File> getPreScript();
+
     @InputFile
     @Optional
-    public File postScript = null;
+    public abstract Property<File> getPostScript();
+
     @Input
     @Optional
-    public boolean deleteData = false;
+    public abstract Property<Boolean> getDeleteData();
+
     @OutputFile
     @Optional
-    public Object logFile = null;
+    public abstract Property<Object> getLogFile();
+
     @Input
     @Optional
-    public boolean trace = false;
+    public abstract Property<Boolean> getTrace();
+
     @InputFile
     @Optional
-    public File validConfigFile = null;
+    public abstract Property<File> getValidConfigFile();
     @Input
     @Optional
-    public boolean disableValidation = false;
-    @Input
-    @Optional
-    public boolean disableAreaValidation = false;
-    @Input
-    @Optional
-    public boolean forceTypeValidation = false;
-    @Input
-    @Optional
-    public boolean strokeArcs = false;
-    @Input
-    @Optional
-    public boolean skipPolygonBuilding = false;
-    @Input
-    @Optional
-    public boolean skipGeometryErrors = false;
-    @Input
-    @Optional
-    public boolean iligml20 = false;
-    @Input
-    @Optional
-    public boolean disableRounding = false;  
-    @Input
-    @Optional
-    public boolean failOnException = true;
-    @Input
-    @Optional
-    public Range<Integer> datasetSubstring = null;
+    public abstract Property<Boolean> getDisableValidation();
 
+    @Input
+    @Optional
+    public abstract Property<Boolean> getDisableAreaValidation();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getForceTypeValidation();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getStrokeArcs();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getSkipPolygonBuilding();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getSkipGeometryErrors();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getIligml20();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getDisableRounding();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getFailOnException();
+
+    @Input
+    @Optional
+    public abstract ListProperty<Integer> getDatasetSubstring();
 
     protected void run(int function, Config settings) {
-        log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
-
-        if (database == null) {
+        if (!getDatabase().isPresent()) {
             throw new IllegalArgumentException("database must not be null");
         }
-        
+
         settings.setFunction(function);
 
-        if (proxy != null) {
-            settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_HOST, proxy);
+        if (getProxy().isPresent()) {
+            settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_HOST, getProxy().get());
         }
-        if (proxyPort != null) {
-            settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
+        if (getProxyPort().isPresent()) {
+            settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, getProxyPort().get().toString());
         }
 
-        if (dbschema != null) {
-            settings.setDbschema(dbschema);
+        if (getDbschema().isPresent()) {
+            settings.setDbschema(getDbschema().get());
         }
-        if (modeldir != null) {
-            settings.setModeldir(modeldir);
+        if (getModeldir().isPresent()) {
+            settings.setModeldir(getModeldir().get());
         }
-        if (models != null) {
-            settings.setModels(models);
+        if (getModels().isPresent()) {
+            settings.setModels(getModels().get());
         }
-        if (baskets != null) {
-            settings.setBaskets(baskets);
+        if (getBaskets().isPresent()) {
+            settings.setBaskets(getBaskets().get());
         }
-        if (topics != null) {
-            settings.setTopics(topics);
+        if (getTopics().isPresent()) {
+            settings.setTopics(getTopics().get());
         }
-        if (importTid) {
+        if (getImportTid().getOrElse(false)) {
             settings.setImportTid(true);
         }        
-        if (exportTid) {
+        if (getExportTid().getOrElse(false)) {
             settings.setExportTid(true);
         }
-        if (importBid) {
+        if (getImportBid().getOrElse(false)) {
             settings.setImportBid(true);
         }
-        if (preScript != null) {
-            settings.setPreScript(this.getProject().file(preScript).getPath());
+        if (getPreScript().isPresent()) {
+            settings.setPreScript(this.getProject().file(getPreScript().get()).getPath());
         }
-        if (postScript != null) {
-            settings.setPostScript(this.getProject().file(postScript).getPath());
+        if (getPostScript().isPresent()) {
+            settings.setPostScript(this.getProject().file(getPostScript().get()).getPath());
         }
-        if (deleteData) {
+        if (getDeleteData().getOrElse(false)) {
             settings.setDeleteMode(Config.DELETE_DATA);
         }
         if(function!=Config.FC_IMPORT && function!=Config.FC_UPDATE && function!=Config.FC_REPLACE) {
-            if (logFile != null) {
-                settings.setLogfile(this.getProject().file(logFile).getPath());
+            if (getLogFile().isPresent()) {
+                settings.setLogfile(this.getProject().file(getLogFile().get()).getPath());
             }
         }
-        if (trace) {
+        if (getTrace().getOrElse(false)) {
             EhiLogger.getInstance().setTraceFilter(false);
         }
-        if (validConfigFile != null) {
-            settings.setValidConfigFile(this.getProject().file(validConfigFile).getPath());
+        if (getValidConfigFile().isPresent()) {
+            settings.setValidConfigFile(this.getProject().file(getValidConfigFile().get()).getPath());
         }
-        if (disableValidation) {
+        if (getDisableValidation().getOrElse(false)) {
             settings.setValidation(false);
         }
-        if (disableAreaValidation) {
+        if (getDisableAreaValidation().getOrElse(false)) {
             settings.setDisableAreaValidation(true);
         }
-        if (forceTypeValidation) {
+        if (getForceTypeValidation().getOrElse(false)) {
             settings.setOnlyMultiplicityReduction(true);
         }
-        if (strokeArcs) {
+        if (getStrokeArcs().getOrElse(false)) {
             settings.setStrokeArcs(settings.STROKE_ARCS_ENABLE);
         }
-        if (skipPolygonBuilding) {
+        if (getSkipPolygonBuilding().getOrElse(false)) {
             Ili2db.setSkipPolygonBuilding(settings);
         }
-        if (skipGeometryErrors) {
+        if (getSkipGeometryErrors().getOrElse(false)) {
             settings.setSkipGeometryErrors(true);
         }
-        if (iligml20) {
+        if (getIligml20().getOrElse(false)) {
             settings.setTransferFileFormat(Config.ILIGML20);
         }
-        if (disableRounding) {
-            settings.setDisableRounding(true);;
-        }        
+        if (getDisableRounding().getOrElse(false)) {
+            settings.setDisableRounding(true);
+        }
+
+        Connector database = TaskUtil.getDatabaseConnectorObject(getDatabase().get());
 
         try {
             java.sql.Connection conn = database.connect();
@@ -207,15 +227,14 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
             conn.commit();
             database.close();
         } catch (Exception e) {
-            if (e instanceof Ili2dbException && !failOnException) {
+            if (e instanceof Ili2dbException && !getFailOnException().getOrElse(true)) {
                 log.lifecycle(e.getMessage());
                 return;
             }
 
             log.error("failed to run ili2pg", e);
 
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         } finally {
             
             if (!database.isClosed()) {

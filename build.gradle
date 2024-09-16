@@ -5,7 +5,7 @@ allprojects {
 	
     repositories {
         mavenLocal()
-        maven { url "http://jars.interlis.ch" }
+        maven { url "https://jars.interlis.ch" }
         maven { url "https://repo.osgeo.org/repository/release/" }
         mavenCentral()
         maven { url "https://s01.oss.sonatype.org/service/local/repositories/releases/content/" }

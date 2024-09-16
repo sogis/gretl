@@ -1,39 +1,43 @@
 package ch.so.agi.gretl.jobs;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Testcontainers
 public class SqlExecutorTaskTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
-    
-    /*
-    Tests that a chain of statements executes properly
-    1. statement: fill the source table with rows
-    2. statement: execute the "insert into select from" statement
-    */
+    private final GradleVariable[] gradleVariables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+            (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                    .withDatabaseName("gretl")
+                    .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+                    .withInitScript("init_postgresql.sql")
+                    .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+
+    /**
+     * Tests that a chain of statements executes properly
+     * 1. statement: fill the source table with rows
+     * 2. statement: execute the "insert into select from" statement
+     * @throws Exception
+     */
     @Test
     public void taskChainTest() throws Exception {
         String schemaName = "sqlExecuterTaskChain".toLowerCase();
@@ -46,8 +50,8 @@ public class SqlExecutorTaskTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskChain", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskChain");
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -58,8 +62,8 @@ public class SqlExecutorTaskTest {
             int countSrc = IntegrationTestUtilSql.execCountQuery(con, countSrcSql);
             int countDest = IntegrationTestUtilSql.execCountQuery(con, countDestSql);
 
-            Assert.assertEquals("Rowcount in destination table must be equal to rowcount in source table", countSrc, countDest);
-            Assert.assertTrue("Rowcount in destination table must be greater than zero", countDest > 0);
+            assertEquals(countSrc, countDest, "Rowcount in destination table must be equal to rowcount in source table");
+            assertTrue(countDest > 0, "Rowcount in destination table must be greater than zero");
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
@@ -68,7 +72,6 @@ public class SqlExecutorTaskTest {
 
     /**
      * Tests if the sql-files can be configured using a relative path.
-     *
      * The relative path relates to the location of the build.gradle file
      * of the corresponding gretl job.
      */
@@ -84,8 +87,8 @@ public class SqlExecutorTaskTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskRelPath", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskRelPath");
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "relativePathConfiguration", gradleVariables);
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
@@ -102,12 +105,12 @@ public class SqlExecutorTaskTest {
             Statement stmt=con.createStatement();
             stmt.execute(String.format("CREATE TABLE %s.src(title text)", schemaName));
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName,IntegrationTestUtilSql.PG_CON_DMLUSER);
-            
+
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskParameter", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskParameter");
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -119,8 +122,8 @@ public class SqlExecutorTaskTest {
                 String title=rs.getString(1);
                 titles.add(title);
             }
-            Assert.assertEquals(1,titles.size());
-            Assert.assertTrue(titles.contains("ele1"));
+            assertEquals(1, titles.size());
+            assertTrue(titles.contains("ele1"));
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
@@ -137,12 +140,13 @@ public class SqlExecutorTaskTest {
             Statement stmt=con.createStatement();
             stmt.execute(String.format("CREATE TABLE %s.src(title text)", schemaName));
             IntegrationTestUtilSql.grantDataModsInSchemaToUser(con, schemaName,IntegrationTestUtilSql.PG_CON_DMLUSER);
-            
+
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/SqlExecutorTaskParameterList", gvs);
+
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskParameterList");
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -154,11 +158,10 @@ public class SqlExecutorTaskTest {
                 String title=rs.getString(1);
                 titles.add(title);
             }
-            Assert.assertEquals(2,titles.size());
-            Assert.assertTrue(titles.contains("ele1"));
-            Assert.assertTrue(titles.contains("ele2"));
-        }
-        finally {
+            assertEquals(2, titles.size());
+            assertTrue(titles.contains("ele1"));
+            assertTrue(titles.contains("ele2"));
+        } finally {
             IntegrationTestUtilSql.closeCon(con);
         }
     }

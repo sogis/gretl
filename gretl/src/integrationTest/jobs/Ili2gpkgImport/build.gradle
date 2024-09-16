@@ -5,8 +5,8 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'ili2gpkgimport'
 
-task ili2gpkgimport(type: Ili2gpkgImport) { 
+tasks.register("ili2gpkgimport", Ili2gpkgImport) {
     models = "SO_AGI_AV_GB_Administrative_Einteilungen_20180613"
-    dataFile = file("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.xtf");
-    dbfile = file("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")    
+    dataFile = file("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.xtf")
+    dbfile = file("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")
 }

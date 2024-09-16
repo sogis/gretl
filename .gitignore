@@ -1,7 +1,5 @@
 # Add any directories, files, or patterns you don't want to be tracked by version control
 
-gretl/ada_ilimodels.xml.pdf
-
 # export files from test
 /**/export*.*
 

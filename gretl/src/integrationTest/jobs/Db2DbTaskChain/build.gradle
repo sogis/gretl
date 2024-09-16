@@ -10,19 +10,20 @@ def db_pass = "dmluser"
 
 defaultTasks 'bToA'
 
-task aToB(type: Db2Db) {
+tasks.register('aToB', Db2Db){
     sourceDb =  [db_uri,db_user,db_pass]
     targetDb = [db_uri,db_user,db_pass]
     sqlParameters = [srcTable:'albums_src']
     transferSets = [
             new TransferSet('statementChain_AToB.sql', 'db2dbtaskchain.albums_intermediate', true)
-    ];
+    ]
 }
 
-task bToA(type: Db2Db, dependsOn: 'aToB'){
+tasks.register('bToA', Db2Db){
+    dependsOn 'aToB'
     sourceDb =  [db_uri,db_user,db_pass]
     targetDb = [db_uri,db_user,db_pass]
     transferSets = [
             new TransferSet('statementChain_BToA.sql', 'db2dbtaskchain.albums_dest', true)
-    ];
+    ]
 }

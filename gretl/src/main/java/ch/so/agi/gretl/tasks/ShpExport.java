@@ -2,13 +2,11 @@ package ch.so.agi.gretl.tasks;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.Db2Shp;
@@ -21,18 +19,67 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class ShpExport extends DefaultTask {
     protected GretlLogger log;
+
+    private Connector database;
+    private Object dataFile = null;
+    private String tableName = null;
+    private String schemaName = null;
+    private String encoding = null;
+
     @Input
-    public Connector database;
-    @InputFile
-    public Object dataFile = null;
+    public Connector getDatabase() {
+        return database;
+    }
+
+    @OutputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
     @Input
-    String tableName = null;
+    public String getTableName() {
+        return tableName;
+    }
+
     @Input
     @Optional
-    public String schemaName = null;
+    public String getSchemaName() {
+        return schemaName;
+    }
+
     @Input
     @Optional
-    public String encoding = null;
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
 
     @TaskAction
     public void exportData() {

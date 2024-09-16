@@ -12,38 +12,85 @@ import java.util.List;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
-    @InputFile
-    public Object dataFile = null;
+    private Object dataFile;
+    private Boolean coalesceJson = false;
+    private Boolean nameByTopic = false;
+    private String defaultSrsCode;
+    private Boolean createEnumTabs = false;
+    private Boolean createMetaInfo = false;
+    private Boolean createGeomIdx = false;
+
+    @InputFiles
+    public Object getDataFile(){
+        return dataFile;
+    }
 
     @Input
     @Optional
-    public boolean coalesceJson = false;    
+    public Boolean isCoalesceJson() {
+        return coalesceJson;
+    }
 
     @Input
     @Optional
-    public boolean nameByTopic = false;
+    public Boolean isNameByTopic() {
+        return nameByTopic;
+    }
 
     @Input
     @Optional
-    public String defaultSrsCode = null;
+    public String getDefaultSrsCode() {
+        return defaultSrsCode;
+    }
 
     @Input
     @Optional
-    public boolean createEnumTabs = false;
-    
+    public Boolean isCreateEnumTabs() {
+        return createEnumTabs;
+    }
+
     @Input
     @Optional
-    public boolean createMetaInfo = false;
-    
+    public Boolean isCreateMetaInfo() {
+        return createMetaInfo;
+    }
+
     @Input
     @Optional
-    public boolean createGeomIdx = false;
+    public Boolean isCreateGeomIdx() {
+        return createGeomIdx;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setCoalesceJson(Boolean coalesceJson) {
+        this.coalesceJson = coalesceJson;
+    }
+
+    public void setNameByTopic(Boolean nameByTopic) {
+        this.nameByTopic = nameByTopic;
+    }
+
+    public void setDefaultSrsCode(String defaultSrsCode) {
+        this.defaultSrsCode = defaultSrsCode;
+    }
+
+    public void setCreateEnumTabs(Boolean createEnumTabs) {
+        this.createEnumTabs = createEnumTabs;
+    }
+
+    public void setCreateMetaInfo(Boolean createMetaInfo) {
+        this.createMetaInfo = createMetaInfo;
+    }
+
+    public void setCreateGeomIdx(Boolean createGeomIdx) {
+        this.createGeomIdx = createGeomIdx;
+    }
 
     @TaskAction
     public void importData() {
@@ -69,12 +116,12 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
             files.add(fileName);
         }
         java.util.List<String> datasetNames=null;
-        if (dataset != null) {
-            if(dataset instanceof String) {
+        if (getDataset() != null) {
+            if(getDataset() instanceof String) {
                 datasetNames=new ArrayList<String>();
-                datasetNames.add((String)dataset);
+                datasetNames.add((String)getDataset());
             }else {
-                datasetNames=(java.util.List)dataset;
+                datasetNames=(java.util.List)getDataset();
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
@@ -109,9 +156,9 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
 
         int function = Config.FC_IMPORT;
         ch.ehi.basics.logging.FileListener fileLogger=null;
-        if(logFile!=null){
+        if(getLogFile()!=null){
             // setup logger here, so that multiple file imports result in one logfile
-            java.io.File logFilepath=this.getProject().file(logFile);
+            java.io.File logFilepath=this.getProject().file(getLogFile());
             fileLogger=new FileLogger(logFilepath);
             EhiLogger.getInstance().addListener(fileLogger);
         }

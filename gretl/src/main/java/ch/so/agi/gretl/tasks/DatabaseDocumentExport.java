@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -17,26 +18,76 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class DatabaseDocumentExport extends DefaultTask {
     protected GretlLogger log;
-   
-    @Input
-    public Connector database;
+    private Connector database;
+    private String qualifiedTableName;
+    private String documentColumn;
+    private File targetDir;
+    private String fileNamePrefix = null;
+    private String fileNameExtension = null;
 
     @Input
-    public String qualifiedTableName;
+    public Connector getDatabase() {
+        return database;
+    }
 
     @Input
-    public String documentColumn;
-    
-    @OutputDirectory 
-    public File targetDir;
-    
+    public String getQualifiedTableName() {
+        return qualifiedTableName;
+    }
+
+    @Input
+    public String getDocumentColumn() {
+        return documentColumn;
+    }
+
+    @OutputDirectory
+    public File getTargetDir() {
+        return targetDir;
+    }
+
     @Input
     @Optional
-    public String fileNamePrefix = null;
-    
+    public String getFileNamePrefix() {
+        return fileNamePrefix;
+    }
+
     @Input
     @Optional
-    public String fileNameExtension = null;
+    public String getFileNameExtension() {
+        return fileNameExtension;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setQualifiedTableName(String qualifiedTableName) {
+        this.qualifiedTableName = qualifiedTableName;
+    }
+
+    public void setDocumentColumn(String documentColumn) {
+        this.documentColumn = documentColumn;
+    }
+
+    public void setTargetDir(File targetDir) {
+        this.targetDir = targetDir;
+    }
+
+    public void setFileNamePrefix(String fileNamePrefix) {
+        this.fileNamePrefix = fileNamePrefix;
+    }
+
+    public void setFileNameExtension(String fileNameExtension) {
+        this.fileNameExtension = fileNameExtension;
+    }
 
     @TaskAction
     public void export() {

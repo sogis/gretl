@@ -13,23 +13,63 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class PostgisRasterExport extends DefaultTask {
     private GretlLogger log;
 
-    @Input
-    public Connector database;
+    private Connector database;
+    private String sqlFile;
+
+    private Map<String, String> sqlParameters = null;
+
+    private Object dataFile = null;
 
     @Input
-    public String sqlFile;
+    public Connector getDatabase() {
+        return database;
+    }
+
+    @Input
+    public String getSqlFile() {
+        return sqlFile;
+    }
 
     @Input
     @Optional
-    public Map<String, String> sqlParameters = null;
+    public Map<String, String> getSqlParameters() {
+        return sqlParameters;
+    }
 
     @OutputFile
-    public Object dataFile = null;
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    public void setDatabase(List<String> databaseDetails){
+        if (databaseDetails.size() != 3) {
+            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        }
+
+        String databaseUri = databaseDetails.get(0);
+        String databaseUser = databaseDetails.get(1);
+        String databasePassword = databaseDetails.get(2);
+
+        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    }
+
+    public void setSqlFile(String sqlFile) {
+        this.sqlFile = sqlFile;
+    }
+
+    public void setSqlParameters(Map<String, String> sqlParameters) {
+        this.sqlParameters = sqlParameters;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
 
     @TaskAction
     public void exportRaster() {
