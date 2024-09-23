@@ -61,7 +61,7 @@ configurations {
     all*.exclude module: 'spring-boot-starter-logging'
     
     all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
-    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'    
+    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
 dependencies {
@@ -131,7 +131,7 @@ dependencies {
     testImplementation libs.test.containers.postgresql
     testImplementation libs.test.containers.localstack
     testImplementation libs.aws.java.sdk
-    
+
     testImplementation libs.mock.web.server
 
     testImplementation libs.test.containers.oracle
@@ -140,7 +140,7 @@ dependencies {
     
     testImplementation libs.hadoop.client
     integrationTestImplementation libs.hadoop.client
-    
+
 }
 
 gradlePlugin {
