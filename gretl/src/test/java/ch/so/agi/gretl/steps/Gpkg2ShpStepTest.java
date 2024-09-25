@@ -56,6 +56,21 @@ public class Gpkg2ShpStepTest {
     }
     
     @Test
+    public void trimStringValueOk() throws Exception {
+        String TEST_OUT = folder.newFolder().getAbsolutePath();
+        //String TEST_OUT = "/Users/stefan/tmp/";
+        File gpkgFile = new File("src/test/resources/data/gpkg2shp/wanderwege.gpkg");
+        
+        Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
+        gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), TEST_OUT);
+        
+        //Check results
+        FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(TEST_OUT, "wanderwege_route.shp"));
+        SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
+        assertEquals(2, featuresSource.getFeatures().size()); 
+    }
+    
+    @Test
     public void export_Ok() throws Exception {
         String TEST_OUT = folder.newFolder().getAbsolutePath();
         File gpkgFile = new File("src/test/resources/data/gpkg2shp/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg");

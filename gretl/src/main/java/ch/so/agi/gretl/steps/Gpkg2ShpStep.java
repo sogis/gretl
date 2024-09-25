@@ -85,6 +85,7 @@ public class Gpkg2ShpStep {
             }
          
             // Mapping von GPKG-Attribut-Descriptor zu SHP-Attribut-Descriptor.
+            Map<String,String> stringTableNames = new HashMap<>();
             for (String tableName : tableNames) {                
                 List<GpkgAttributeDescriptor> gpkgAttrsDesc = GpkgAttributeDescriptor.getAttributeDescriptors(null, tableName, conn);  
                 
@@ -172,6 +173,7 @@ public class Gpkg2ShpStep {
                         attributeBuilder.setBinding(java.util.Date.class);
                     } else {
                         attributeBuilder.setBinding(String.class);
+                        stringTableNames.put(tableName, tableName);
                     }
                     attributeBuilder.setMinOccurs(0);
                     attributeBuilder.setMaxOccurs(1);
@@ -196,13 +198,38 @@ public class Gpkg2ShpStep {
             
             AttributeDescriptor[] attrsDesc = shpAttrsDescMap.get(tableName);
             writer.setAttributeDescriptors(attrsDesc);
-                      
+
+            List<String> stringAttrs = new ArrayList<>();
+            for (AttributeDescriptor attrDesc : attrsDesc) {
+                if (attrDesc.getType().getBinding().equals(String.class)) {
+                    stringAttrs.add(attrDesc.getName().getLocalPart());
+                }
+            }
+                        
             GeoPackageReader reader = new GeoPackageReader(new File(gpkgFile), tableName);
 
             IoxEvent event = reader.read();
             while (event instanceof IoxEvent) {
                 if (event instanceof ObjectEvent) {
-                    writer.write(event);
+                    
+                    // Wenn der Wert eines Stringattributes nahe bei der maximalen Zeichenanzahl ist,
+                    // kann es irgendwie zu einem Edgecase kommen "StringIndexOutOfBoundsException".
+                    // Das Verkuerzen von zu langen Strings funktioniert eigentlich einwandfrei. 
+                    // Wir verkuerzen nun selber mehr als notwendig (229) und fuegen auch zugleich
+                    // den Hinweis hinzu, dass der Wert gekuerzt wurde. (Auch wenn er wohl nicht
+                    // gelesen wird.)
+
+                    IomObject iomObj = ((ObjectEvent) event).getIomObject();
+                    
+                    for (String stringAttr : stringAttrs) {
+                        String stringAttrValue = iomObj.getattrvalue(stringAttr);
+                        if (stringAttrValue != null && stringAttrValue.length() > 240) {
+                            String trimmedStringAttrValue = iomObj.getattrvalue(stringAttr).substring(0, 229) + " TRUNCATED!";
+                            iomObj.setattrvalue(stringAttr, trimmedStringAttrValue);
+                        }
+                    }
+                    writer.write(new ch.interlis.iox_j.ObjectEvent(iomObj));
+//                    writer.write(event);
                 }
                 event = reader.read();
             }
