@@ -4,13 +4,12 @@ apply plugin: 'ch.so.agi.gretl'
 
 def GRETLTEST_DBURI = 'gretltest_dburi_pg'
 def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl'
-
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
 defaultTasks 'exportGeotiff'
 
-task exportGeotiff(type: PostgisRasterExport) {
+tasks.register('exportGeotiff', PostgisRasterExport) {
     database = [db_uri, db_user, db_pass]
     sqlFile = "raster.sql"
     dataFile = "export.tif"

@@ -41,7 +41,7 @@ public class TaskUtil {
         return gradleProject.file(filePath);
     }
 
-    public static Connector getDatabaseConnectorObject(List<String> databaseDetails){
+    public static Connector getDatabaseConnectorObject(List<String> databaseDetails) {
         if (databaseDetails.size() != 3) {
             throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
         }
