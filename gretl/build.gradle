@@ -61,7 +61,9 @@ configurations {
     all*.exclude module: 'spring-boot-starter-logging'
     
     all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
-    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'    
+    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
+
+    javadocDoclet    
 }
 
 dependencies {
@@ -141,6 +143,7 @@ dependencies {
     testImplementation libs.hadoop.client
     integrationTestImplementation libs.hadoop.client
     
+    javadocDoclet 'io.github.sogis:gretl-doclet:0.0.9'
 }
 
 gradlePlugin {
@@ -258,4 +261,16 @@ processResources{
  */
 processIntegrationTestResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    title = null
+    destinationDir = file("./build/taskdocs/")
+    
+    include 'ch/so/agi/gretl/tasks/**'
+    options.doclet = "ch.so.agi.gretl.doclet.GretlDoclet"
+    // Kann das auch im Classpath sein? Falls ja, muesste man es noch nach maven central publizieren.
+    //options.docletpath = [file("../..gretl-doclet-0.0.LOCALBUILD.jar")]
+    options.docletpath = files(configurations.javadocDoclet)
 }
