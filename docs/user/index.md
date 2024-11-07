@@ -324,6 +324,8 @@ Geometriepalten können nicht importiert werden.
 
 Die Gross-/Kleinschreibung der CSV-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
 
+Die Werte im CSV MÜSSEN alle in ``"`` stehen. Sonst gibt es je nachdem komische Fehler! 
+
 ### CsvValidator
 
 Prüft eine CSV-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator). Das Datenmodell darf die OID nicht als UUID modellieren (`OID AS INTERLIS.UUIDOID`). 
