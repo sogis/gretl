@@ -10,7 +10,7 @@ configurations.all {
 }
 
 dependencies {
-    api 'ch.so.agi:gretl:2.3.+'
+    api 'ch.so.agi:gretl:3.0.+'
 
     // Add 3rd party libs which we want in the docker image.
     api libs.gradle.download.task
