@@ -12,6 +12,8 @@ java {
         languageVersion = JavaLanguageVersion.of(11)
         vendor = JvmVendorSpec.ADOPTIUM
     }
+    sourceCompatibility = "11"
+    targetCompatibility = "11"
 }
 
 compileJava.options.encoding = 'US-ASCII'
