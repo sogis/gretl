@@ -44,18 +44,17 @@ awssdk = "1.12.761"
 
 [libraries]
 iox-ili = { group = "ch.interlis", name = "iox-ili", version.ref = "ioxIliVersion" }
-ili-validator = { group = "ch.interlis", name = "ilivalidator", version.ref = "ilivalidatorVersion" }
-ili-custom-validator-functions = { group = "io.github.sogis", name = "ilivalidator-custom-functions", version.ref = "ilivalidatorCustomFunctionsVersion" }
-ili-custom-validator-geometries = { group = "io.github.sogis", name = "ilivalidator-custom-functions-geometries", version.ref = "ilivalidatorCustomFunctionsGeometriesVersion" }
-ili-validator-custom-geometries = { group = "io.github.sogis", name = "ilivalidator-custom-functions-geometries", version.ref = "ilivalidatorCustomFunctionsGeometriesVersion" }
+ilivalidator = { group = "ch.interlis", name = "ilivalidator", version.ref = "ilivalidatorVersion" }
+ilivalidator-custom-functions = { group = "io.github.sogis", name = "ilivalidator-custom-functions", version.ref = "ilivalidatorCustomFunctionsVersion" }
+ilivalidator-custom-functions-geometries = { group = "io.github.sogis", name = "ilivalidator-custom-functions-geometries", version.ref = "ilivalidatorCustomFunctionsGeometriesVersion" }
 geow-custom-functions = { group = "ch.geowerkstatt.ilivalidator.extensions.functions", name = "geow-interlis-functions", version.ref = "geowCustomFunctionsVersion" }
-ili2-pg = { group = "ch.interlis", name = "ili2pg", version.ref = "ili2pgVersion" }
-ili2-gpkg = { group = "ch.interlis", name = "ili2gpkg", version.ref = "ili2gpkgVersion" }
+ili2pg = { group = "ch.interlis", name = "ili2pg", version.ref = "ili2pgVersion" }
+ili2gpkg = { group = "ch.interlis", name = "ili2gpkg", version.ref = "ili2gpkgVersion" }
 iox-wkf = { group = "ch.interlis", name = "iox-wkf", version.ref = "ioxWkfVersion" }
-ehi-sql-gen = { group = "ch.ehi", name = "ehisqlgen", version.ref = "ehiSqlgenVersion" }
+ehisqlgen = { group = "ch.ehi", name = "ehisqlgen", version.ref = "ehiSqlgenVersion" }
 iox-formats = { group = "io.github.sogis", name = "iox-formats", version.ref = "ioxFormatsVersion" }
-av2-ch = { group = "io.github.sogis", name = "av2ch", version.ref = "av2chVersion" }
-av2-geobau = { group = "ch.interlis", name = "av2geobau", version.ref = "av2geobauVersion" }
+av2ch = { group = "io.github.sogis", name = "av2ch", version.ref = "av2chVersion" }
+av2geobau = { group = "ch.interlis", name = "av2geobau", version.ref = "av2geobauVersion" }
 aws-sdk-s3 = { group = "software.amazon.awssdk", name = "s3", version.ref = "awsSdkVersion" }
 aws-java-sdk = { group = "com.amazonaws", name = "aws-java-sdk", version.ref = "awssdk" }
 apache-commons-io = { group = "commons-io", name = "commons-io", version.ref = "apacheCommonsIoVersion" }

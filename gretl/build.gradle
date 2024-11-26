@@ -12,6 +12,8 @@ java {
         languageVersion = JavaLanguageVersion.of(11)
         vendor = JvmVendorSpec.ADOPTIUM
     }
+    sourceCompatibility = "11"
+    targetCompatibility = "11"
 }
 
 compileJava.options.encoding = 'US-ASCII'
@@ -61,7 +63,9 @@ configurations {
     all*.exclude module: 'spring-boot-starter-logging'
     
     all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
-    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
+    all*.exclude group: 'ch.qos.logback', module: 'logback-classic' 
+    
+    all*.exclude group: 'xml-apis'   
 }
 
 dependencies {
@@ -69,14 +73,14 @@ dependencies {
 
     api gradleApi()
   
-    api libs.ili.validator
-    api libs.ili.custom.validator.functions
-    api libs.ili.custom.validator.geometries
+    api libs.ilivalidator
+    api libs.ilivalidator.custom.functions
+    api libs.ilivalidator.custom.functions.geometries
     api libs.geow.custom.functions
-    api (libs.ili2.pg) {
+    api (libs.ili2pg) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
-    api (libs.ili2.gpkg) {
+    api (libs.ili2gpkg) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
     api (libs.iox.wkf) {
@@ -87,15 +91,15 @@ dependencies {
     }
 
     api libs.iox.ili
-    api libs.ehi.sql.gen
+    api libs.ehisqlgen
 
     api (libs.iox.formats) {
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
         exclude group: 'hsqldb', module: 'hsqldb'
     }
 
-    api libs.av2.ch
-    api libs.av2.geobau
+    api libs.av2ch
+    api libs.av2geobau
     
     api libs.aws.sdk.s3
     

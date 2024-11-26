@@ -30,6 +30,16 @@ The _GRETL_ repository is organized as Gradle multi-project:
 * `gretl`: _GRETL_ source code with unit tests _and_ integration tests.
 * `runtimeImage`: Subproject for building the _GRETL_ runtime (docker) image. The docker image is tested against the integration tests, too.
 
+## Developing
+
+### Eclipse
+
+Since `java.xml` is part of the JDK but is also a dependency of the Gradle API (which is automatically added by the `java-gradle-plugin`) you will get the famous `The package javax.xml.transform.stream is accessible from more than one module: ,java.xml` errors. Excluding `xml-apis` with `all*.exclude group: 'xml-apis'` should be done but will not work for the Gradle API. Workaround: 
+
+- Clone the repository
+- Run `./gradlew eclipse`
+- Add `org.eclipse.jdt.core.compiler.ignoreUnnamedModuleForSplitPackage=enabled` to _gretl/.settings/org.eclipse.jdt.core.prefs_.
+
 ## Oracle JDBC
 There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC library can be found on maven central. Oracle database support is now straight forward.
 
