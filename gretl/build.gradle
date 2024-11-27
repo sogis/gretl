@@ -135,7 +135,7 @@ dependencies {
     testImplementation libs.test.containers.postgresql
     testImplementation libs.test.containers.localstack
     testImplementation libs.aws.java.sdk
-    
+
     testImplementation libs.mock.web.server
 
     testImplementation libs.test.containers.oracle
@@ -144,7 +144,7 @@ dependencies {
     
     testImplementation libs.hadoop.client
     integrationTestImplementation libs.hadoop.client
-    
+
 }
 
 gradlePlugin {
