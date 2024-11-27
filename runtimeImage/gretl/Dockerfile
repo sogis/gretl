@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjdk-alpine:11.0.24
+FROM bellsoft/liberica-openjdk-alpine:11.0.18-10
 
 CMD ["gretl"]
 
