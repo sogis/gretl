@@ -28,8 +28,8 @@ configurations.all {
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.3.2' 
-        force 'ch.interlis:ili2c-core:5.3.2'
+        force libs.ili2c.core
+        force libs.ili2c.tool
         force libs.ili2gpkg
         force libs.iox.ili
     }

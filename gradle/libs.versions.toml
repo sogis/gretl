@@ -1,4 +1,6 @@
 [versions]
+ili2cCoreVersion = "5.3.2"
+ili2cToolVersion = "5.3.2"
 ioxIliVersion = "1.21.18"
 ilivalidatorVersion = "1.13.3"
 ilivalidatorCustomFunctionsVersion = "1.1.50"
@@ -42,6 +44,8 @@ cyclonedxBomVersion = "1.7.4"
 awsSdkV1Version = "1.12.761"
 
 [libraries]
+ili2c-core = { group = "ch.interlis", name = "ili2c-core", version.ref = "ili2cCoreVersion" }
+ili2c-tool = { group = "ch.interlis", name = "ili2c-tool", version.ref = "ili2cToolVersion" }
 iox-ili = { group = "ch.interlis", name = "iox-ili", version.ref = "ioxIliVersion" }
 ilivalidator = { group = "ch.interlis", name = "ilivalidator", version.ref = "ilivalidatorVersion" }
 ilivalidator-custom-functions = { group = "io.github.sogis", name = "ilivalidator-custom-functions", version.ref = "ilivalidatorCustomFunctionsVersion" }
