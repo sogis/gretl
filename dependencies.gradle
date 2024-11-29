@@ -1,14 +1,14 @@
 ext {
     // dependencies version
-    ioxIliVersion = '1.23.1'
+    ioxIliVersion = '1.23.2'
     ilivalidatorVersion = '1.14.3'
     ilivalidatorCustomFunctions = '1.1.50'
     ilivalidatorCustomFunctionsGeometriesVersion = '0.0.8'
     geowCustomFunctionsVersion = '0.2.0'
     geowNgkFunctionsVersion = '1.0.2'
     
-    ili2pgVersion = '5.1.1'
-    ili2gpkgVersion = '5.1.1'
+    ili2pgVersion = '5.2.0'
+    ili2gpkgVersion = '5.2.0'
     ioxWkfVersion = '1.1.1'
     ehiSqlgenVersion = '1.16.0'
     
