@@ -122,12 +122,17 @@ dependencies {
 
     testImplementation libs.test.containers.base
     testImplementation libs.test.containers.postgresql
+    testImplementation libs.test.containers.oracle
     testImplementation libs.test.containers.localstack
-    //testImplementation libs.aws.java.sdk
+    /*
+        Version 1 des SDK wird wegen Testcontainers benoetigt:
+        - https://stackoverflow.com/questions/29024520/classnotfoundexception-com-amazonaws-auth-awscredentials-java
+        - https://github.com/testcontainers/testcontainers-java/issues/1442
+    */
+    testImplementation libs.aws.java.sdk
     
     testImplementation libs.mock.web.server
 
-    testImplementation libs.test.containers.oracle
 
     testImplementation libs.tomcat.embed.core
     
