@@ -70,7 +70,7 @@ public class S3Bucket2BucketStepTest {
         deleteObjects(s3Client, Arrays.asList("foo.txt", "bar.txt"));
         s3TestHelper.upload(sourceObject, metadata, s3SourceBucketName, acl);
         
-        // Copy files
+        // Execute
         S3Bucket2BucketStep s3Bucket2Bucket = new S3Bucket2BucketStep();
         s3Bucket2Bucket.execute(s3AccessKey, s3SecretKey, s3SourceBucketName, s3TargetBucketName, s3Endpoint.toString(), s3Region, acl, metadata);
 

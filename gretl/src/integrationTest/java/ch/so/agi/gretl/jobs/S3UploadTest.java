@@ -51,7 +51,7 @@ public class S3UploadTest {
     public static void setUp() {
         s3AccessKey = localStackContainer.getAccessKey();
         s3SecretKey = localStackContainer.getSecretKey();
-        s3BucketName = System.getProperty("s3BucketName");
+        s3BucketName = "ch.so.agi.gretl.test";
         s3Endpoint = localStackContainer.getEndpointOverride(S3);
         s3Region = localStackContainer.getRegion();
         s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint.toString());
@@ -61,10 +61,12 @@ public class S3UploadTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadDirectory_Ok() throws Exception {
+        // Prepare
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
+        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadDirectory");
         IntegrationTestUtil.executeTestRunner(projectDirectory, "directoryupload", gradleVariables);
 
@@ -92,15 +94,16 @@ public class S3UploadTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadFileTree_Ok() throws Exception {
+        // Prepare
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
-
-        // Remove uploaded files from bucket.
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.csv").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.csv").build());
 
+        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFileTree");
         IntegrationTestUtil.executeTestRunner(projectDirectory, "filetreeupload", gradleVariables);
 
+        // Check result
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
                 .bucket(s3BucketName)
@@ -125,9 +128,11 @@ public class S3UploadTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadFile_Ok() throws Exception {
+        // Prepare
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
+        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFile");
         IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", gradleVariables);
 
@@ -148,6 +153,7 @@ public class S3UploadTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadFile_Fail() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFileFail");
 
         GradleVariable[] gvs = {
@@ -158,6 +164,7 @@ public class S3UploadTest {
                 GradleVariable.newGradleProperty("s3Endpoint", s3Endpoint.toString())
         };
 
+        // Execute
         assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", gradleVariables);
         });

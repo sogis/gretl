@@ -70,7 +70,7 @@ public class S3UploadStepTest {
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
-        // Upload files from a directory.
+        // Execute
         S3UploadStep s3UploadStep = new S3UploadStep();
         s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3Endpoint.toString(), s3Region, acl, null, metaData);
         

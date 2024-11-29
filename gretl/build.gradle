@@ -218,10 +218,6 @@ tasks.register('sftpTest', Test) {
     }
 }
 
-def s3AccessKey = System.getProperty('s3AccessKey',properties.get('s3AccessKey'))
-def s3SecretKey = System.getProperty('s3SecretKey',properties.get('s3SecretKey'))
-def s3BucketName = System.getProperty('s3BucketName',properties.get('s3BucketName'))
-
 tasks.register('s3Test', Test) {
     dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
@@ -242,10 +238,6 @@ tasks.withType(Test) {
     
     systemProperty('GRETL_PROJECT_ABS_PATH', project(':gretl').getProjectDir().getAbsolutePath())
     systemProperty('ROOT_PROJECT_ABS_PATH', project.getRootProject().getProjectDir().getAbsolutePath())
-    
-    systemProperty 's3AccessKey', s3AccessKey
-    systemProperty 's3SecretKey', s3SecretKey
-    systemProperty 's3BucketName', s3BucketName
 }
 
 cyclonedxBom {

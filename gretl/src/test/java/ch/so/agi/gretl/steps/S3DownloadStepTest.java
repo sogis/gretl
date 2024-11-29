@@ -68,7 +68,7 @@ public class S3DownloadStepTest {
         File sourceObject = TestUtil.getResourceFile("data/s3upload/foo.txt");
         s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");
 
-        // Download a single file.
+        // Execute
         S3DownloadStep s3DownloadStep = new S3DownloadStep();
         s3DownloadStep.execute(s3AccessKey, s3SecretKey, s3BucketName, key, s3Endpoint.toString(), s3Region, downloadDir.toFile());
 
