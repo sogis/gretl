@@ -26,21 +26,21 @@ public class IntegrationTestUtil {
     private static final String GRETL_PROJECT_ABSOLUTE_PATH = System.getProperty("GRETL_PROJECT_ABS_PATH");
     private static final String ROOT_PROJECT_ABSOLUTE_PATH = System.getProperty("ROOT_PROJECT_ABS_PATH");
 
-    public static void executeTestRunner(File projectDirectory, String taskName) throws IOException{
+    public static void executeTestRunner(File projectDirectory, String taskName) throws IOException {
         executeTestRunner(projectDirectory, taskName, null);
     }
 
-    public static void executeTestRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
-        if(TestType.IMAGE.equals(TEST_TYPE)){
+    public static void executeTestRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException {
+        if (TestType.IMAGE.equals(TEST_TYPE)) {
             executeDockerRunCommand(projectDirectory, variables);
-        } else if(TestType.JAR.equals(TEST_TYPE)){
+        } else if(TestType.JAR.equals(TEST_TYPE)) {
             executeGradleRunner(projectDirectory, taskName, variables);
         } else {
             throw new GretlException("Unknown test type: " + TEST_TYPE);
         }
     }
 
-    private static void executeGradleRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException{
+    private static void executeGradleRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException {
         List<String> arguments = getRunnerArguments(taskName, variables);
         BuildResult result = GradleRunner.create()
                 .withProjectDir(projectDirectory)
@@ -51,8 +51,7 @@ public class IntegrationTestUtil {
         assertTrue(outcome == TaskOutcome.SUCCESS || outcome == TaskOutcome.UP_TO_DATE);
     }
 
-    private static void executeDockerRunCommand(File projectDirectory, GradleVariable[] variables){
-
+    private static void executeDockerRunCommand(File projectDirectory, GradleVariable[] variables) {
         String absolutePath = projectDirectory.getAbsolutePath();
         String jobPath = projectDirectory.getPath();
 
@@ -74,7 +73,7 @@ public class IntegrationTestUtil {
         }
     }
 
-    private static void logDockerRunOutput(String dockerRunCommand, StringBuffer stdError, StringBuffer stdOut){
+    private static void logDockerRunOutput(String dockerRunCommand, StringBuffer stdError, StringBuffer stdOut) {
         System.out.printf("Here is the standard output of the command [%s]:\n%n", dockerRunCommand);
         System.out.print(stdOut);
         System.out.printf("Here is the standard error of the command [%s] (if any):\n%n", dockerRunCommand);
@@ -104,7 +103,7 @@ public class IntegrationTestUtil {
         return "--job_directory " + Paths.get(GRETL_PROJECT_ABSOLUTE_PATH).resolve(relativeJobPath).toString();
     }
 
-    private static List<String> getRunnerArguments(String taskName, GradleVariable[] variables){
+    private static List<String> getRunnerArguments(String taskName, GradleVariable[] variables) {
         List<String> arguments = new ArrayList<>();
         arguments.add("--init-script");
         arguments.add(IntegrationTestUtil.getPathToInitScript());
@@ -127,11 +126,11 @@ public class IntegrationTestUtil {
         return classpath;
     }
 
-    public static String getPathToInitScript(){
+    public static String getPathToInitScript() {
         return new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/init.gradle").getAbsolutePath();
     }
 
-    private static void appendProcessOutputToStdStreams(Process p, StringBuffer stderr, StringBuffer stdout){
+    private static void appendProcessOutputToStdStreams(Process p, StringBuffer stderr, StringBuffer stdout) {
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
