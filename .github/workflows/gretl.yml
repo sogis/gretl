@@ -57,6 +57,13 @@ jobs:
         run: |
           docker images
 
+      - name: Integration tests (Docker Image)
+        # run: |
+        #   TZ="Europe/Zurich" ./gradlew gretl:imageTest gretl:imageS3Test
+        run: |
+          TZ="Europe/Zurich" ./gradlew gretl:imageTest --tests ch.so.agi.gretl.jobs.XslTransformerTest
+
+
       # - name: Debug1
       #   run: |
       #     ls -la ~/.m2/repository/ch/so/agi/gretl
