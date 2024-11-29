@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class S3TestHelper {
-    private static final DockerImageName localstackImage = DockerImageName.parse("localstack/localstack:0.11.2");
+    private static final DockerImageName localstackImage = DockerImageName.parse("localstack/localstack:4.0.2");
     private final String s3AccessKey;
     private final String s3SecretKey;
     private final String s3Region;
