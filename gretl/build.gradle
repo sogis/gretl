@@ -26,18 +26,6 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
-Properties properties = new Properties()
-File propFile = project.file('user.properties')
-if (propFile.exists()){
-	properties.load(propFile.newDataInputStream())
-}
-def dburl = System.getProperty('dburl', properties.get('dburl'))
-def dbusr = System.getProperty('dbusr', properties.get('dbusr'))
-def dbpwd = System.getProperty('dbpwd', properties.get('dbpwd'))
-def ftpurl = System.getProperty('ftpurl', properties.get('ftpurl'))
-def ftpusr = System.getProperty('ftpusr', properties.get('ftpusr'))
-def ftppwd = System.getProperty('ftppwd', properties.get('ftppwd'))
-
 configurations.all {
     resolutionStrategy { 
         force 'ch.interlis:ili2c-tool:5.3.2' 
@@ -135,7 +123,7 @@ dependencies {
     testImplementation libs.test.containers.base
     testImplementation libs.test.containers.postgresql
     testImplementation libs.test.containers.localstack
-    testImplementation libs.aws.java.sdk
+    //testImplementation libs.aws.java.sdk
     
     testImplementation libs.mock.web.server
 
@@ -209,6 +197,19 @@ tasks.register('dbTest', Test) {
     defined in user.properties in the project root dir which is not part of the repo 
     and thus cannot be used in the pipeline.
 */
+
+Properties properties = new Properties()
+File propFile = project.file('user.properties')
+if (propFile.exists()){
+    properties.load(propFile.newDataInputStream())
+}
+def dburl = System.getProperty('dburl', properties.get('dburl'))
+def dbusr = System.getProperty('dbusr', properties.get('dbusr'))
+def dbpwd = System.getProperty('dbpwd', properties.get('dbpwd'))
+def ftpurl = System.getProperty('ftpurl', properties.get('ftpurl'))
+def ftpusr = System.getProperty('ftpusr', properties.get('ftpusr'))
+def ftppwd = System.getProperty('ftppwd', properties.get('ftppwd'))
+
 tasks.register('sftpTest', Test) {
     dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
