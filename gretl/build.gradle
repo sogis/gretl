@@ -50,6 +50,7 @@ configurations.all {
 configurations {
     integrationTestImplementation {
     }
+    
     testImplementation {
         exclude group: 'org.apache.hadoop', module: 'hadoop-core' // Konflikt zwischen "core" und "client". Siehe iox-parquet.
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
@@ -175,8 +176,7 @@ tasks.register('setupPluginUpload') {
         def key=System.env.gradlePublishKey
         def secret = System.env.gradlePublishSecret
 
-        if( !key || !secret)
-        {
+        if( !key || !secret) {
             throw new RuntimeException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
         }
 
@@ -190,7 +190,7 @@ tasks.publishPlugins.dependsOn tasks.setupPluginUpload
 test {
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     useJUnitPlatform {
-        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
+        // Exclude all Tests with dependency to a db server (pg, oracle, ..) and/or 'external' infrastructure
         excludeTags 'dbTest', 'sftpTest', 's3Test'
     }
 }
@@ -204,6 +204,10 @@ tasks.register('dbTest', Test) {
     }
 }
 
+/*
+    There is only one such test (SftpUriTest) that runs against ftp.umleditor.org 
+    and thus cannot be used in the pipeline.
+*/
 tasks.register('sftpTest', Test) {
     dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
@@ -227,8 +231,10 @@ tasks.register('s3Test', Test) {
     }
 }
 
-// Transfer the required configuration variables to the test code.
-// (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+/*
+    Transfer the required configuration variables to the test code.
+    (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+*/
 tasks.withType(Test) {
     def GRETLTEST_DBURI = 'gretltest_dburi_pg'
     systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
@@ -249,16 +255,16 @@ cyclonedxBom {
 }
 
 /*
-   Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
-   https://github.com/gradle/gradle/issues/17236
+    Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
+    https://github.com/gradle/gradle/issues/17236
  */
 processResources{
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 /*
-   init_postgresql.sql seems to be copied multiple times.
-   Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
+    init_postgresql.sql seems to be copied multiple times.
+    Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
  */
 processIntegrationTestResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
