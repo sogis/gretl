@@ -205,7 +205,8 @@ tasks.register('dbTest', Test) {
 }
 
 /*
-    There is only one such test (SftpUriTest) that runs against ftp.umleditor.org 
+    There is only one such test (PublisherStepFile2RemoteTest) that runs against a ftp
+    defined in user.properties in the project root dir which is not part of the repo 
     and thus cannot be used in the pipeline.
 */
 tasks.register('sftpTest', Test) {

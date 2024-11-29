@@ -45,7 +45,7 @@ public class S3TestHelper {
      * @param sourceObject directory for S3 bucket data on the local system
      * @param metadata metadata
      */
-    public void upload(
+    public void upload (
             File sourceObject,
             Map<String, String> metadata,
             String s3BucketName,
