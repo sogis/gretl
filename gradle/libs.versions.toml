@@ -78,10 +78,10 @@ junitTestContainers = { group = "org.testcontainers", name = "junit-jupiter", ve
 junitTestContainersPostgres = { group = "org.testcontainers", name = "postgresql", version.ref = "junitTestContainersVersion" }
 mock-ftp-server = { group = "org.mockftpserver", name = "MockFtpServer", version.ref = "mockFtpServerVersion" }
 mock-web-server = { group = "com.squareup.okhttp3", name ="mockwebserver", version.ref = "mockWebServerVersion"}
-test-containers-base = { group = "org.testcontainers", name = "testcontainers", version.ref = "testContainersVersion"}
-test-containers-postgresql = { group = "org.testcontainers", name = "postgresql", version.ref = "testContainersVersion"}
-test-containers-oracle = { group = "org.testcontainers", name = "oracle-xe", version.ref = "testContainersVersion"}
-test-containers-localstack = { group = "org.testcontainers", name = "localstack", version.ref = "testContainersVersion" }
+testcontainers-base = { group = "org.testcontainers", name = "testcontainers", version.ref = "testContainersVersion"}
+testcontainers-postgresql = { group = "org.testcontainers", name = "postgresql", version.ref = "testContainersVersion"}
+testcontainers-oracle = { group = "org.testcontainers", name = "oracle-xe", version.ref = "testContainersVersion"}
+testcontainers-localstack = { group = "org.testcontainers", name = "localstack", version.ref = "testContainersVersion" }
 sftp-fs = { group = "com.github.robtimus", name = "sftp-fs", version.ref = "sftpFsVersion"}
 tomcat-embed-core = { group = "org.apache.tomcat.embed", name = "tomcat-embed-core", version.ref = "tomcatEmbedVersion" }
 hadoop-client = { group = "org.apache.hadoop", name = "hadoop-client", version.ref = "hadoopClientVersion" }
