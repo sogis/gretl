@@ -80,7 +80,7 @@ public class IntegrationTestUtil {
         System.out.print(stdError);
     }
 
-    private static String getDockerRunCommand(String jobPath, GradleVariable[] variables){
+    private static String getDockerRunCommand(String jobPath, GradleVariable[] variables) {
         String pathToRunCommandExecutionFile = Paths.get(ROOT_PROJECT_ABSOLUTE_PATH).resolve("runtimeImage/start-gretl.sh").toString();
         String jobDirectoryOption = buildJobDirectoryOptionString(jobPath);
         String gradleVariablesString = buildOptionString(variables);
@@ -99,7 +99,7 @@ public class IntegrationTestUtil {
         return optionString.toString().trim();
     }
 
-    public static String buildJobDirectoryOptionString(String relativeJobPath){
+    public static String buildJobDirectoryOptionString(String relativeJobPath) {
         return "--job_directory " + Paths.get(GRETL_PROJECT_ABSOLUTE_PATH).resolve(relativeJobPath).toString();
     }
 
