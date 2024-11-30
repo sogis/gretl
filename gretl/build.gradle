@@ -28,10 +28,10 @@ configurations.all {
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.3.2' 
-        force 'ch.interlis:ili2c-core:5.3.2'
-        force 'ch.interlis:ili2gpkg:4.11.1'
-        force 'ch.interlis:iox-ili:1.21.18'
+        force libs.ili2c.core
+        force libs.ili2c.tool
+        force libs.ili2gpkg
+        force libs.iox.ili
     }
 }
 
@@ -120,10 +120,10 @@ dependencies {
     testImplementation libs.junitTestContainersPostgres
     testRuntimeOnly libs.junitEngine
 
-    testImplementation libs.test.containers.base
-    testImplementation libs.test.containers.postgresql
-    testImplementation libs.test.containers.oracle
-    testImplementation libs.test.containers.localstack
+    testImplementation libs.testcontainers.base
+    testImplementation libs.testcontainers.postgresql
+    testImplementation libs.testcontainers.oracle
+    testImplementation libs.testcontainers.localstack
     /*
         Version 1 des SDK wird wegen Testcontainers benoetigt:
         - https://stackoverflow.com/questions/29024520/classnotfoundexception-com-amazonaws-auth-awscredentials-java
