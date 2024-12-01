@@ -21,7 +21,6 @@ apacheHttpClientVersion = "4.5.13"
 apacheHttpClientMimeVersion = "4.5.13"
 jacksonVersion = "2.10.0"
 saxonVersion = "11.4"
-tomljVersion = "1.1.0"
 freemarkerVersion = "2.3.31"
 mockServerClientVersion = "5.15.0"
 postgresqlVersion = "42.2.5"
@@ -68,7 +67,6 @@ apache-http-mime = { group = "org.apache.httpcomponents", name = "httpmime", ver
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jacksonVersion" }
 jackson-data-bind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jacksonVersion" }
 saxon = { group = "net.sf.saxon", name = "Saxon-HE", version.ref = "saxonVersion"}
-tomlj = { group = "org.tomlj", name = "tomlj", version.ref = "tomljVersion"}
 freemarker = { group = "org.freemarker", name = "freemarker", version.ref = "freemarkerVersion"}
 mock-server-client = { group = "org.mock-server", name = "mockserver-client-java", version.ref = "mockServerClientVersion" }
 postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresqlVersion" }
