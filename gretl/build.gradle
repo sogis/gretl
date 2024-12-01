@@ -103,10 +103,6 @@ dependencies {
     
     api libs.saxon
     
-    api libs.tomlj
-    
-    api libs.freemarker
-    
 	api libs.sftp.fs
 
     runtimeOnly libs.postgresql

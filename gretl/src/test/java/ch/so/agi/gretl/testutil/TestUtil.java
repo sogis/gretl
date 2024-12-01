@@ -38,10 +38,6 @@ public class TestUtil {
     public static final String DATE_DATATYPES_CSV_PATH = "data/csv2parquet/data_datatypes/date_datatypes.csv";
     public static final String BEWILLIGTE_ERDWAERMEANLAGEN_SEMIKOLON_HOCHKOMMA_CSV_PATH = "data/csv2parquet/bewilligte_erdwaermeanlagen/bewilligte_erdwaermeanlagen_semikolon_hochkomma.csv";
     public static final String PLANREGISTER_XML_PATH = "data/gzip/planregister.xml";
-    public static final String AGI_ORTHOFOTO_META_TOML_PATH = "data/metapublisher/agi_orthofoto_1993_meta_pub/meta.toml";
-    public static final String AFU_ABBAUSTELLEN_META_TOML_PATH = "data/metapublisher/afu_abbaustellen_pub/meta.toml";
-    public static final String AGI_DM01SO_META_TOML_PATH = "data/metapublisher/agi_dm01so_pub/meta-dm01_so.toml";
-    public static final String KANTONALE_GEBAEUDE_TOML_PATH = "data/ogdmetapublisher/kantonale_gebaeude/ch.so.hba.kantonale_gebaeude.toml";
     public static final String RASTER_GEOTIFF_SQL_PATH = "data/postgisrasterprocessor/prepare_raster_geotiff.sql";
     public static final String RASTER_AAIGRID_SQL_PATH = "data/postgisrasterprocessor/prepare_raster_aaigrid.sql";
     public static final String TARGET_TIF_PATH = "data/postgisrasterprocessor/target.tif";
