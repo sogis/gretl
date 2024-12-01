@@ -21,28 +21,72 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class S3Download extends DefaultTask {
     protected GretlLogger log;
 
-    @Input
-    public String accessKey;
+    private String accessKey;
+    private String secretKey;
+    private String bucketName;
+    private String key;
+    private File downloadDir;
+    private String endPoint = "https://s3.eu-central-1.amazonaws.com";
+    private String region = "eu-central-1";
     
     @Input
-    public String secretKey;
-
+    public String getAccessKey() {
+        return accessKey;
+    }
     @Input
-    public String bucketName;
-    
-    @Input 
-    public String key;
-    
+    public String getSecretKey() {
+        return secretKey;
+    }
+    @Input
+    public String getBucketName() {
+        return bucketName;
+    }
+    @Input
+    public String getKey() {
+        return key;
+    }
     @OutputDirectory
-    public File downloadDir;
-    
+    public File getDownloadDir() {
+        return downloadDir;
+    }
     @Input
     @Optional
-    public String endPoint = "https://s3.eu-central-1.amazonaws.com";
-    
+    public String getEndPoint() {
+        return endPoint;
+    }
     @Input
-    public String region = "eu-central-1";
-        
+    public String getRegion() {
+        return region;
+    }
+
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setDownloadDir(File downloadDir) {
+        this.downloadDir = downloadDir;
+    }
+
+    public void setEndPoint(String endPoint) {
+        this.endPoint = endPoint;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     @TaskAction
     public void upload() {
         log = LogEnvironment.getLogger(S3Download.class);

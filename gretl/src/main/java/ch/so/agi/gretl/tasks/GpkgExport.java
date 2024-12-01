@@ -7,10 +7,7 @@ import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.Db2Gpkg;
@@ -22,59 +19,35 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class GpkgExport extends DefaultTask {
     protected GretlLogger log;
-    @Input
-    public Connector database;
-    @InputFile
-    public Object dataFile = null;
-    @Input
-    Object dstTableName = null;    
-    @Input
-    Object srcTableName = null;
-    @Input
-    @Optional
-    public String schemaName = null;
-    @Input
-    @Optional
-    public String encoding = null;
-    @Input
-    @Optional
-    public Integer batchSize = null;
-    @Input
-    @Optional
-    public Integer fetchSize = null;
+    private Connector database;
+    private Object dataFile;
+    private Object dstTableName;
+    private Object srcTableName;
+    private String schemaName;
+    private String encoding;
+    private Integer batchSize;
+    private Integer fetchSize;
 
     @TaskAction
     public void exportData() {
         log = LogEnvironment.getLogger(GpkgExport.class);
+
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
         if (srcTableName == null) {
             throw new IllegalArgumentException("srcTableName must not be null");
-        }        
+        }
         if (dstTableName == null) {
             throw new IllegalArgumentException("dstTableName must not be null");
         }
         if (dataFile == null) {
             return;
         }
-        
-        List<String> srcTableNames = null;
-        if (srcTableName instanceof String) {
-            srcTableNames =  new ArrayList<String>();
-            srcTableNames.add((String)srcTableName);
-        } else {
-            srcTableNames = (List)srcTableName;
-        }
-        
-        List<String> dstTableNames = null;
-        if (dstTableName instanceof String) {
-            dstTableNames =  new ArrayList<String>();
-            dstTableNames.add((String)dstTableName);
-        } else {
-            dstTableNames = (List)dstTableName;
-        }
-        
+
+        List<String> srcTableNames = getSrcTableNames();
+        List<String> dstTableNames = getDstTableNames();
+
         if (srcTableNames.size() != dstTableNames.size()) {
             throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
         }
@@ -85,11 +58,11 @@ public class GpkgExport extends DefaultTask {
             if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
-            
+
             int i=0;
             for (String srcTableName : srcTableNames) {
                 String dstTableName = dstTableNames.get(i);
-                
+
                 Settings settings = new Settings();
                 settings.setValue(IoxWkfConfig.SETTING_DBTABLE, srcTableName);
                 settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);
@@ -105,16 +78,13 @@ public class GpkgExport extends DefaultTask {
                 }
 
                 File data = this.getProject().file(dataFile);
-                
+
                 Db2Gpkg db2gpkg = new Db2Gpkg();
                 db2gpkg.exportData(data, conn, settings);
                 conn.commit();
-                //conn.close();
-                //conn = null; 
-                
                 i++;
             }
-       } catch (Exception e) {
+        } catch (Exception e) {
             log.error("failed to run GpkgExport", e);
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
@@ -129,5 +99,109 @@ public class GpkgExport extends DefaultTask {
                 conn = null;
             }
         }
+    }
+
+    @OutputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    @Input
+    public Object getDstTableName() {
+        return dstTableName;
+    }
+
+    @Input
+    public Object getSrcTableName() {
+        return srcTableName;
+    }
+
+    @Input
+    @Optional
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    @Input
+    @Optional
+    public String getEncoding() {
+        return encoding;
+    }
+
+    @Input
+    @Optional
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    @Input
+    @Optional
+    public Integer getFetchSize() {
+        return fetchSize;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setDstTableName(Object dstTableName) {
+        this.dstTableName = dstTableName;
+    }
+
+    public void setSrcTableName(Object srcTableName) {
+        this.srcTableName = srcTableName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public void setFetchSize(Integer fetchSize) {
+        this.fetchSize = fetchSize;
+    }
+
+    @Internal
+    List<String> getSrcTableNames() {
+        List<String> srcTableNames;
+
+        if (srcTableName instanceof String) {
+            srcTableNames = new ArrayList<>();
+            srcTableNames.add((String)srcTableName);
+        } else {
+            srcTableNames = (List)srcTableName;
+        }
+
+        return srcTableNames;
+    }
+
+    @Internal
+    List<String> getDstTableNames() {
+        List<String> dstTableNames;
+        if (dstTableName instanceof String) {
+            dstTableNames =  new ArrayList<>();
+            dstTableNames.add((String)dstTableName);
+        } else {
+            dstTableNames = (List)dstTableName;
+        }
+
+        return dstTableNames;
     }
 }

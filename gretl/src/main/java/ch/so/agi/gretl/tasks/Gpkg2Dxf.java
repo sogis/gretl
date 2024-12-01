@@ -18,12 +18,27 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class Gpkg2Dxf extends DefaultTask {
     protected GretlLogger log;
     
+    private Object dataFile;
+    private File outputDir = null;
+
     @Input
-    public Object dataFile = null;
-    
+    public Object getDataFile() {
+        return dataFile;
+    }
+
     @OutputDirectory
-    public File outputDir = null;
-    
+    public File getOutputDir() {
+        return outputDir;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(Gpkg2Dxf.class);

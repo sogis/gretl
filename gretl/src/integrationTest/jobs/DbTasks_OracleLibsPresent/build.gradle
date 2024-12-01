@@ -10,7 +10,7 @@ def db_pass = 'oracle'
 
 defaultTasks 'queryOracleVersion'
 
-task queryOracleVersion(type: SqlExecutor) {
+tasks.register('queryOracleVersion', SqlExecutor){
     doFirst {
         println db_uri
     }

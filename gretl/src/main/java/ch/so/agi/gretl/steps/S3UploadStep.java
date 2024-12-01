@@ -32,7 +32,7 @@ public class S3UploadStep {
     
     public S3UploadStep(String taskName) {
         if (taskName == null) {
-            taskName = S3UploadStep.class.getSimpleName();
+            this.taskName = S3UploadStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

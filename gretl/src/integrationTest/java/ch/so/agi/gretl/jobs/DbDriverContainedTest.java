@@ -1,31 +1,37 @@
 package ch.so.agi.gretl.jobs;
 
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import ch.so.agi.gretl.testutil.DbDriversReachableTest;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
+
+@Testcontainers
 public class DbDriverContainedTest {
-    @ClassRule
+
+    @Container
     public static OracleContainer oracle =  new OracleContainer("epiclabs/docker-oracle-xe-11g")
         .withUsername("system").withPassword("oracle");
 
-    @Category(DbDriversReachableTest.class)
     @Test
+    @Tag(TestTags.DB_DRIVERS_REACHABLE_TEST)
     public void SqliteDriverContainedTest() throws Exception {
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/DbTasks_SqliteLibsPresent");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DbTasks_SqliteLibsPresent");
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "querySqliteMaster");
     }
 
-    @Category(DbDriversReachableTest.class)
     @Test
+    @Tag(TestTags.DB_DRIVERS_REACHABLE_TEST)
     public void OracleDriverContainedTest() throws Exception {
-        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_ORA_CON_URI, oracle.getJdbcUrl())};
-        IntegrationTestUtil.runJob("src/integrationTest/jobs/DbTasks_OracleLibsPresent", gvs);
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/DbTasks_OracleLibsPresent");
+        GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_ORA_CON_URI, oracle.getJdbcUrl())};
+
+        IntegrationTestUtil.executeTestRunner(projectDirectory, "queryOracleVersion", variables);
     }
 }

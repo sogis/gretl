@@ -14,17 +14,48 @@ import ch.so.agi.gretl.tasks.impl.AbstractFtpTask;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class FtpDownload extends AbstractFtpTask {
-    
+    private String localDir;
+    private String remoteDir;
+    private Object remoteFile=null;
+    private String fileType="ASCII";
+
     @OutputDirectory
-    public String localDir;
+    public String getLocalDir() {
+        return localDir;
+    }
     @Input
-    public String remoteDir;
+    public String getRemoteDir() {
+        return remoteDir;
+    }
+
     @Input
     @Optional
-    public Object remoteFile=null;
+    public Object getRemoteFile() {
+        return remoteFile;
+    }
+
     @Input
     @Optional
-    public String fileType="ASCII";
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setLocalDir(String localDir) {
+        this.localDir = localDir;
+    }
+
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
+    public void setRemoteFile(Object remoteFile) {
+        this.remoteFile = remoteFile;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
     @TaskAction
     void download()
     {
@@ -93,7 +124,7 @@ public class FtpDownload extends AbstractFtpTask {
     }
     private void downloadFile(FTPClient ftp, String remoteFileName)
             throws FileNotFoundException, IOException, Exception {
-        String remotePath=remoteDir+fileSeparator+remoteFileName;
+        String remotePath=remoteDir+getFileSeparator()+remoteFileName;
         String localFileName=remoteFileName;
         java.io.File localFolder=this.getProject().file(localDir);
         java.io.File localFile = new java.io.File(localFolder, localFileName);

@@ -34,6 +34,8 @@ import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
+import javax.annotation.Nullable;
+
 
 // README.md eventuell
 // abstract class geht erst mit 5.6 oder so. Nicht mit 5.1.1
@@ -44,47 +46,107 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 public class Curl extends DefaultTask {
     protected GretlLogger log;
 
+    private String serverUrl;
+    private MethodType method;
+    private int expectedStatusCode;
+    private String expectedBody;
+    private Map<String,Object> formData; // curl [URL] -F key1=value1 -F file1=@my_file.xtf
+    private File outputFile; // curl [URL] -o
+    private File dataBinary; // curl [URL] --data-binary / ueberschreibt formData, siehe setEntity (glaub)
+    private Map<String,String> headers; // curl [URL] -H ... -H ...
+    private String user;
+    private String password;
+
     @Internal
-    public String serverUrl;
-    
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
     @Internal
-    public MethodType method;
-    
+    public MethodType getMethod() {
+        return method;
+    }
+
     @Internal
-    public int expectedStatusCode;
-    
+    public int getExpectedStatusCode() {
+        return expectedStatusCode;
+    }
+
     @Internal
-    @Optional
-    public String expectedBody;
-    
+    public String getExpectedBody() {
+        return expectedBody;
+    }
+
     @Internal
-    @Optional
-    public Map<String,Object> formData; // curl [URL] -F key1=value1 -F file1=@my_file.xtf 
-    
-//    @Internal
-//    @Optional
-//    public String data; // curl [URL] -d "key1=value1&key2=value2"
-    
+    public Map<String, Object> getFormData() {
+        return formData;
+    }
+
     @Internal
-    @Optional
-    public File outputFile; // curl [URL] -o
-    
+    public File getOutputFile() {
+        return outputFile;
+    }
+
     @Internal
-    @Optional
-    public File dataBinary; // curl [URL] --data-binary / ueberschreibt formData, siehe setEntity (glaub)
-    
+    public File getDataBinary() {
+        return dataBinary;
+    }
+
     @Internal
-    @Optional
-    public Map<String,String> headers; // curl [URL] -H ... -H ...
-    
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
     @Internal
-    @Optional
-    public String user;
-    
+    public String getUser() {
+        return user;
+    }
+
     @Internal
-    @Optional
-    public String password;
-       
+    public String getPassword() {
+        return password;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
+    public void setMethod(MethodType method) {
+        this.method = method;
+    }
+
+    public void setExpectedStatusCode(int expectedStatusCode) {
+        this.expectedStatusCode = expectedStatusCode;
+    }
+
+    public void setExpectedBody(String expectedBody) {
+        this.expectedBody = expectedBody;
+    }
+
+    public void setFormData(Map<String, Object> formData) {
+        this.formData = formData;
+    }
+
+    public void setOutputFile(File outputFile) {
+        this.outputFile = outputFile;
+    }
+
+    public void setDataBinary(File dataBinary) {
+        this.dataBinary = dataBinary;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @TaskAction
     public void request() throws ClientProtocolException, IOException {
         log = LogEnvironment.getLogger(Curl.class);

@@ -6,30 +6,22 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.PostgisRasterExportStep;
 import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class PostgisRasterExport extends DefaultTask {
     private GretlLogger log;
 
-    @Input
-    public Connector database;
-
-    @Input
-    public String sqlFile;
-
-    @Input
-    @Optional
-    public Map<String, String> sqlParameters = null;
-
-    @OutputFile
-    public Object dataFile = null;
+    private Connector database;
+    private String sqlFile;
+    private Map<String, String> sqlParameters = null;
+    private Object dataFile = null;
 
     @TaskAction
     public void exportRaster() {
@@ -55,9 +47,44 @@ public class PostgisRasterExport extends DefaultTask {
             step.execute(database, sql, data, sqlParameters);
         } catch (Exception e) {
             log.error("Exception in creating / invoking PostgisRasterExportStep.", e);
-
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         }
+    }
+
+    @Input
+    public String getSqlFile() {
+        return sqlFile;
+    }
+
+    @Input
+    @Optional
+    public Map<String, String> getSqlParameters() {
+        return sqlParameters;
+    }
+
+    @OutputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setSqlFile(String sqlFile) {
+        this.sqlFile = sqlFile;
+    }
+
+    public void setSqlParameters(Map<String, String> sqlParameters) {
+        this.sqlParameters = sqlParameters;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
     }
 }

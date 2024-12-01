@@ -1,8 +1,8 @@
 package ch.so.agi.gretl.util;
 
-import java.sql.*;
-
 import org.testcontainers.containers.PostgreSQLContainer;
+
+import java.sql.*;
 
 /**
  * Contains helper methods for the test's of the Db2DbTask and SqlExecutorTask
@@ -13,10 +13,12 @@ public class IntegrationTestUtilSql {
 
     public static final String VARNAME_ORA_CON_URI = "gretltest_dburi_ora";
     public static final String ORA_CON_URI = System.getProperty(VARNAME_ORA_CON_URI);
-    
+
     public static final String PG_CON_DDLUSER = "ddluser";
     public static final String PG_CON_DDLPASS = "ddluser";
     public static final String PG_CON_DMLUSER = "dmluser";
+    public static final String PG_CON_DDLDB = "gretl";
+    public static final String PG_INIT_SCRIPT = "init_postgresql.sql";
 
     private static void dropSchema(String schemaName, Connection con) throws SQLException {
         if (con == null) {
@@ -53,7 +55,7 @@ public class IntegrationTestUtilSql {
         return con;
     }
     
-    public static Connection connectPG(PostgreSQLContainer postgres) {
+    public static Connection connectPG(PostgreSQLContainer<?> postgres) {
         Connection con = null;
         try {
             String url = postgres.getJdbcUrl();

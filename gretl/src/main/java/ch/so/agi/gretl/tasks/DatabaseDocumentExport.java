@@ -1,42 +1,27 @@
 package ch.so.agi.gretl.tasks;
 
-import java.io.File;
-
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.TaskAction;
-
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.DatabaseDocumentExportStep;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.TaskAction;
+
+import java.io.File;
+import java.util.List;
 
 public class DatabaseDocumentExport extends DefaultTask {
     protected GretlLogger log;
-   
-    @Input
-    public Connector database;
-
-    @Input
-    public String qualifiedTableName;
-
-    @Input
-    public String documentColumn;
-    
-    @OutputDirectory 
-    public File targetDir;
-    
-    @Input
-    @Optional
-    public String fileNamePrefix = null;
-    
-    @Input
-    @Optional
-    public String fileNameExtension = null;
+    private Connector database;
+    private String qualifiedTableName;
+    private String documentColumn;
+    private File targetDir;
+    private String fileNamePrefix = null;
+    private String fileNameExtension = null;
 
     @TaskAction
     public void export() {
@@ -60,8 +45,63 @@ public class DatabaseDocumentExport extends DefaultTask {
             databaseDocumentExportStep.execute(database, qualifiedTableName, documentColumn, targetDir.getAbsolutePath(), fileNamePrefix, fileNameExtension);
         } catch (Exception e) {
             log.error("Exception in DatabaseDocumentExport task.", e);
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         }
+    }
+
+    @Input
+    public String getQualifiedTableName() {
+        return qualifiedTableName;
+    }
+
+    @Input
+    public String getDocumentColumn() {
+        return documentColumn;
+    }
+
+    @OutputDirectory
+    public File getTargetDir() {
+        return targetDir;
+    }
+
+    @Input
+    @Optional
+    public String getFileNamePrefix() {
+        return fileNamePrefix;
+    }
+
+    @Input
+    @Optional
+    public String getFileNameExtension() {
+        return fileNameExtension;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setQualifiedTableName(String qualifiedTableName) {
+        this.qualifiedTableName = qualifiedTableName;
+    }
+
+    public void setDocumentColumn(String documentColumn) {
+        this.documentColumn = documentColumn;
+    }
+
+    public void setTargetDir(File targetDir) {
+        this.targetDir = targetDir;
+    }
+
+    public void setFileNamePrefix(String fileNamePrefix) {
+        this.fileNamePrefix = fileNamePrefix;
+    }
+
+    public void setFileNameExtension(String fileNameExtension) {
+        this.fileNameExtension = fileNameExtension;
     }
 }

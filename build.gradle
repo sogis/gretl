@@ -5,7 +5,7 @@ allprojects {
 	
     repositories {
         mavenLocal()
-        maven { url "http://jars.interlis.ch" }
+        maven { url "https://jars.interlis.ch" }
         maven { url "https://repo.osgeo.org/repository/release/" }
         mavenCentral()
         maven { url "https://s01.oss.sonatype.org/service/local/repositories/releases/content/" }
@@ -13,10 +13,6 @@ allprojects {
         maven {
             url "https://plugins.gradle.org/m2/" 
             content {
-                // Damit wird sichergestellt, dass nicht die 2.9999-Releases
-                // vom Plugin-Portal verwendet werden.
-                // Schöner wäre, wenn man beim mavenLocal ein include...
-                // machen würde. Da verstehe ich aber die Syntax nicht.
                 excludeModule("ch.so.agi","gretl")            
             }
         } 

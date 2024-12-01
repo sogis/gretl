@@ -1,15 +1,5 @@
 package ch.so.agi.gretl.tasks;
 
-import java.io.File;
-import java.sql.SQLException;
-
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
-
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.Db2Shp;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
@@ -18,25 +8,25 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.*;
+
+import java.io.File;
+import java.sql.SQLException;
+import java.util.List;
 
 public class ShpExport extends DefaultTask {
     protected GretlLogger log;
-    @Input
-    public Connector database;
-    @InputFile
-    public Object dataFile = null;
-    @Input
-    String tableName = null;
-    @Input
-    @Optional
-    public String schemaName = null;
-    @Input
-    @Optional
-    public String encoding = null;
+    private Connector database;
+    private Object dataFile = null;
+    private String tableName = null;
+    private String schemaName = null;
+    private String encoding = null;
 
     @TaskAction
     public void exportData() {
         log = LogEnvironment.getLogger(ShpExport.class);
+
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
@@ -46,16 +36,8 @@ public class ShpExport extends DefaultTask {
         if (dataFile == null) {
             return;
         }
-        Settings settings = new Settings();
-        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
-        // set optional parameters
-        if (schemaName != null) {
-            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
-        }
-        if (encoding != null) {
-            settings.setValue(ShapeReader.ENCODING, encoding);
-        }
 
+        Settings settings = getSettings();
         File data = this.getProject().file(dataFile);
         java.sql.Connection conn = null;
         try {
@@ -70,8 +52,7 @@ public class ShpExport extends DefaultTask {
             conn = null;
         } catch (Exception e) {
             log.error("failed to run ShpExport", e);
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         } finally {
             if (conn != null) {
                 try {
@@ -83,5 +64,66 @@ public class ShpExport extends DefaultTask {
                 conn = null;
             }
         }
+    }
+
+    @OutputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    @Input
+    public String getTableName() {
+        return tableName;
+    }
+
+    @Input
+    @Optional
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    @Input
+    @Optional
+    public String getEncoding() {
+        return encoding;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    @Internal
+    Settings getSettings() {
+        Settings settings = new Settings();
+        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
+        // set optional parameters
+        if (schemaName != null) {
+            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
+        }
+        if (encoding != null) {
+            settings.setValue(ShapeReader.ENCODING, encoding);
+        }
+        return settings;
     }
 }

@@ -3,15 +3,21 @@ plugins {
     id 'eclipse'
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.21.0'
-    id 'org.cyclonedx.bom' version '1.7.4'
+    alias libs.plugins.plugin.publish
+    alias libs.plugins.cyclonedx.bom
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+        vendor = JvmVendorSpec.ADOPTIUM
+    }
+    sourceCompatibility = "11"
+    targetCompatibility = "11"
+}
+
 compileJava.options.encoding = 'US-ASCII'
 
-apply from: '../dependencies.gradle'
 apply from: 'integration-test.gradle'
 
 // to get the latest SNAPSHOT uncomment the following lines
@@ -20,168 +26,117 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
-Properties properties = new Properties()
-File propFile=project.file('user.properties')
-if(propFile.exists()){
-	properties.load(propFile.newDataInputStream())
-}
-def dburl = System.getProperty('dburl',properties.get('dburl'))
-def dbusr = System.getProperty('dbusr',properties.get('dbusr'))
-def dbpwd = System.getProperty('dbpwd',properties.get('dbpwd'))
-def ftpurl = System.getProperty('ftpurl',properties.get('ftpurl'))
-def ftpusr = System.getProperty('ftpusr',properties.get('ftpusr'))
-def ftppwd = System.getProperty('ftppwd',properties.get('ftppwd'))
-
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.3.2' 
-        force 'ch.interlis:ili2c-core:5.3.2'
-        force 'ch.interlis:ili2gpkg:4.11.1'
-        force 'ch.interlis:iox-ili:1.21.18'
+        force libs.ili2c.core
+        force libs.ili2c.tool
+        force libs.ili2gpkg
+        force libs.iox.ili
     }
 }
 
-/*
- * This is ridiculous.
- */
-// TODO: Ist das noch notwendig, da jetzt die Treiber
-// in maven central frei verfügbar sind? Solange
-// es nicht schadet, ist es ja ok, wenn wir möglichst
-// wenig 'Müll' mitschleppen.
 configurations {
     integrationTestImplementation {
-        exclude module: 'xmlparserv2'
-        exclude module: 'ucp'
-        exclude module: 'xdb6'
-        exclude module: 'oraclepki'
-        exclude module: 'osdt_core'
-        exclude module: 'osdt_cert'
-        exclude module: 'orai18n' 
-        exclude group: 'org.apache.hadoop', module: 'hadoop-core' 
-        exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
     
     testImplementation {
         exclude group: 'org.apache.hadoop', module: 'hadoop-core' // Konflikt zwischen "core" und "client". Siehe iox-parquet.
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
-    
+
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestImplementation.extendsFrom runtime
+    integrationTestImplementation.extendsFrom testRuntime
+
     all*.exclude module: 'spring-boot-starter-logging'
     
     all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
-    all*.exclude group: 'ch.qos.logback', module: 'logback-classic'    
-    //all*.exclude group: 'org.slf4j', module: 'slf4j-reload4j'
+    all*.exclude group: 'ch.qos.logback', module: 'logback-classic' 
+    
+    all*.exclude group: 'xml-apis'   
 }
 
 dependencies {
+    testRuntime files(writePluginClassPath)
+
     api gradleApi()
   
-    api ilivalidatorDependency
-    api ilivalidatorCustomFunctionsDependency
-    api ilivalidatorCustomFunctionsGeometriesDependency
-    api geowCustomFunctionsDependency
-    api (ili2pgDependency) {
+    api libs.ilivalidator
+    api libs.ilivalidator.custom.functions
+    api libs.ilivalidator.custom.functions.geometries
+    api libs.geow.custom.functions
+    api (libs.ili2pg) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
-    api (ili2gpkgDependency) {
+    api (libs.ili2gpkg) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
-    api (ioxWkfDependency) {
+    api (libs.iox.wkf) {
         // Exclude old dependencies. These get overriden anyways.
         // And they show on Snaphots...
-        exclude group: 'ch.interlis', module: 'ili2pg'        
+        exclude group: 'ch.interlis', module: 'ili2pg'
         exclude group: 'ch.interlis', module: 'ili2gpkg'
     }
-    api ioxIliDependency
-    api ehiSqlgenDependency
 
-    api (ioxFormatsDependency) {
+    api libs.iox.ili
+    api libs.ehisqlgen
+
+    api (libs.iox.formats) {
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
+        exclude group: 'hsqldb', module: 'hsqldb'
     }
 
-    api av2chDependency
-    api av2geobauDependency
+    api libs.av2ch
+    api libs.av2geobau
     
-    //api awsSdkDependency
-    api awsSdkS3Dependency
+    api libs.aws.sdk.s3
     
-    api apacheCommonsIoDependency
-    api apacheCommonsNetDependency
-    api apacheCommonsCodeDependency
-    api apacheHttpClientDependency
-    api apacheHttpClientMimeDependency
+    api libs.apache.commons.io
+    api libs.apache.commons.net
+    api libs.apache.commons.code
+    api libs.apache.http.client
+    api libs.apache.http.mime
     
-    api jacksonCoreDependency
-    api jacksonDatabindDependency
+    api libs.jackson.core
+    api libs.jackson.data.bind
     
-    api saxonDependency
+    api libs.saxon
     
-    api tomljDependency
+    api libs.tomlj
     
-    api freemarkerDependency
+    api libs.freemarker
     
-    //api 'com.jcraft:jsch:0.1.55'
-    //api 'com.pastdev:jsch-nio:1.0.14'
-	api 'com.github.robtimus:sftp-fs:2.0.4'
-    
-    runtimeOnly postgresqlDependency
-    runtimeOnly sqliteJdbcDependency
-    runtimeOnly derbyDependency
-    runtimeOnly duckdbDependency
-    
-    testImplementation junitDependency
-    testImplementation testContainersDependency
-    testImplementation testContainersPostgresDependency
-    
-    //testImplementation "org.testcontainers:mockserver:1.15.3"
-    //testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
-    
-    testImplementation mockWebServerDependency
+	api libs.sftp.fs
 
-    // Finde ich komisch. Bereits bei csv2parquet cli das gleiche Problem.
-    // War Problem wegen api vs implementation
-    //testImplementation ('org.apache.hadoop:hadoop-client:3.3.5') {
-    //    exclude group: 'org.slf4j', module: 'slf4j-reload4j'
-    //}
-    //testImplementation 'org.apache.parquet:parquet-avro:1.13.1'
-            
-    //testImplementation s3MockDependency
-    //testImplementation s3MockJunitDependency
+    runtimeOnly libs.postgresql
+    runtimeOnly libs.sqlite.jdbc
+    runtimeOnly libs.derby
+    runtimeOnly libs.duckdb
+    runtimeOnly libs.oracle
+
+    testImplementation libs.junit
+    testImplementation libs.junitTestContainers
+    testImplementation libs.junitTestContainersPostgres
+    testRuntimeOnly libs.junitEngine
+
+    testImplementation libs.testcontainers.base
+    testImplementation libs.testcontainers.postgresql
+    testImplementation libs.testcontainers.oracle
+    testImplementation libs.testcontainers.localstack
+    /*
+        Version 1 des SDK wird wegen Testcontainers benoetigt:
+        - https://stackoverflow.com/questions/29024520/classnotfoundexception-com-amazonaws-auth-awscredentials-java
+        - https://github.com/testcontainers/testcontainers-java/issues/1442
+    */
+    testImplementation libs.aws.java.sdk
     
-    // Oracle JDBC would be a runtime dependency but since it's kinda hard to obtain the jar 
-    // file, we just make it a integration test dependency. It will not appear in the pom.xml 
-    // of the gretl plugin (jar).
-    // We copy the jdbc jar into the docker image for our gretl-runtime. Login and password
-    // is needed.
-    // Those who want to run the integration tests need the jdbc jar too.
-    integrationTestImplementation oracleDependency
-    testImplementation testContainersOracleDependency    
+    testImplementation libs.mock.web.server
+
+    testImplementation libs.tomcat.embed.core
     
-    /**
-     * Provides, at compile-time, the classes produced by the _main_ and _test_ SourceSets, 
-     * allowing the integration tests to access the production code in _main_ and allowing 
-     * them to reuse any unit test helper methods in _test_.
-     */
-    integrationTestImplementation sourceSets.main.output
-    integrationTestImplementation sourceSets.test.output
-    
-    /**
-     * Provides, at compile-time, the dependencies that both _main_ and _test_ require in order
-     * to successfully compile.
-     */
-    integrationTestImplementation configurations.implementation
-    integrationTestImplementation configurations.testImplementation
-    
-    /**
-     * Provides, at run-time, the dependencies that both _main_ and _test_ require to run.
-     */
-    integrationTestImplementation configurations.runtime
-    integrationTestImplementation configurations.testRuntime
-    
-    testImplementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.69'
-    
-    testImplementation 'org.apache.hadoop:hadoop-client:3.3.5'
-    integrationTestImplementation 'org.apache.hadoop:hadoop-client:3.3.5'
+    testImplementation libs.hadoop.client
+    integrationTestImplementation libs.hadoop.client
     
 }
 
@@ -207,82 +162,108 @@ pluginBundle {
     }
 }
 
-task setupPluginUpload() {
+tasks.register('setupPluginUpload') {
     description = "Converts Gradle plugin publish key and secret from environment variable to system property. (Workaround)"
     doLast {
-	    def key=System.env.gradlePublishKey
-	    def secret = System.env.gradlePublishSecret
-	
-	    if( !key || !secret)
-	    {
-	        throw new RuntimeException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
-	    }
-	
-	    System.properties.setProperty("gradle.publish.key", key)
-	    System.properties.setProperty("gradle.publish.secret", secret)
+        def key=System.env.gradlePublishKey
+        def secret = System.env.gradlePublishSecret
+
+        if( !key || !secret) {
+            throw new RuntimeException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
+        }
+
+        System.properties.setProperty("gradle.publish.key", key)
+        System.properties.setProperty("gradle.publish.secret", secret)
     }
 }
+
 tasks.publishPlugins.dependsOn tasks.setupPluginUpload
 
 test {
-    useJUnit{
-        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
-        excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.SftpTest'
-        excludeCategories 'ch.so.agi.gretl.testutil.S3Test'
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    useJUnitPlatform {
+        // Exclude all Tests with dependency to a db server (pg, oracle, ..) and/or 'external' infrastructure
+        excludeTags 'dbTest', 'sftpTest', 's3Test'
     }
 }
 
-task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+tasks.register('dbTest', Test) {
+    dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to a db server (pg, oracle, ...).'
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    useJUnitPlatform {
+        includeTags 'dbTest'
     }
 }
-task sftpTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+
+/*
+    There is only one such test (PublisherStepFile2RemoteTest) that runs against a ftp
+    defined in user.properties in the project root dir which is not part of the repo 
+    and thus cannot be used in the pipeline.
+*/
+
+Properties properties = new Properties()
+File propFile = project.file('user.properties')
+if (propFile.exists()){
+    properties.load(propFile.newDataInputStream())
+}
+def dburl = System.getProperty('dburl', properties.get('dburl'))
+def dbusr = System.getProperty('dbusr', properties.get('dbusr'))
+def dbpwd = System.getProperty('dbpwd', properties.get('dbpwd'))
+def ftpurl = System.getProperty('ftpurl', properties.get('ftpurl'))
+def ftpusr = System.getProperty('ftpusr', properties.get('ftpusr'))
+def ftppwd = System.getProperty('ftppwd', properties.get('ftppwd'))
+
+tasks.register('sftpTest', Test) {
+    dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to a SFTP server'
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.SftpTest'
+    useJUnitPlatform {
+        includeTags 'sftpTest'
     }
 }
 
-def s3AccessKey = System.getProperty('s3AccessKey',properties.get('s3AccessKey'))
-def s3SecretKey = System.getProperty('s3SecretKey',properties.get('s3SecretKey'))
-def s3BucketName = System.getProperty('s3BucketName',properties.get('s3BucketName'))
-
-task s3Test(type: Test, dependsOn: [compileJava, compileTestJava]) {
+tasks.register('s3Test', Test) {
+    dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = 'Runs all unit tests with dependency to AWS S3.'
-    
-    useJUnit {
-        includeCategories 'ch.so.agi.gretl.testutil.S3Test'
+
+    useJUnitPlatform {
+        includeTags 's3Test'
     }
 }
 
-// Transfer the required configuration variables to the test code.
-// (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+/*
+    Transfer the required configuration variables to the test code.
+    (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+*/
 tasks.withType(Test) {
     def GRETLTEST_DBURI = 'gretltest_dburi_pg'
     systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
     
     systemProperty('GRETL_PROJECT_ABS_PATH', project(':gretl').getProjectDir().getAbsolutePath())
     systemProperty('ROOT_PROJECT_ABS_PATH', project.getRootProject().getProjectDir().getAbsolutePath())
-    
-    systemProperty 's3AccessKey', s3AccessKey
-    systemProperty 's3SecretKey', s3SecretKey
-    systemProperty 's3BucketName', s3BucketName
 }
 
 cyclonedxBom {
    includeConfigs = ["runtimeClasspath"]
-   //skipConfigs = ["compileClasspath", "testCompileClasspath"]
-   //projectType = "application"
-   //schemaVersion = "1.4"
    destination = file("build/reports")
    outputName = "Sbom"
    outputFormat = "all"
-   //includeBomSerialNumber = true
-   //componentVersion = "2.0.0"
+}
+
+/*
+    Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
+    https://github.com/gradle/gradle/issues/17236
+ */
+processResources{
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+/*
+    init_postgresql.sql seems to be copied multiple times.
+    Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
+ */
+processIntegrationTestResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

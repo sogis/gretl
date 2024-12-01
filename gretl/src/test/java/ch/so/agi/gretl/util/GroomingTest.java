@@ -7,28 +7,29 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.AbstractPublisherStepTest;
 import ch.so.agi.gretl.steps.PublisherStep;
-import ch.so.agi.gretl.util.Grooming;
+
+import static org.gradle.internal.impldep.org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GroomingTest {
-
     final public static String SRC_TEST_DATA = AbstractPublisherStepTest.SRC_TEST_DATA;
 
     protected GretlLogger log;
-    private java.text.DateFormat dateParser=Grooming.getDateFormat();
+    private java.text.DateFormat dateParser = Grooming.getDateFormat();
+
     public GroomingTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
     }
+
     @Test
     public void weeks() throws Exception {
         Date date0=dateParser.parse("2022-10-31");
@@ -37,11 +38,12 @@ public class GroomingTest {
         printDate(date1);
         Calendar cal0=Grooming.getCalendar();cal0.setTime(date0);
         Calendar cal1=Grooming.getCalendar();cal1.setTime(date1);
-        Assert.assertEquals(9, cal0.get(java.util.Calendar.MONTH));
-        Assert.assertEquals(10, cal1.get(java.util.Calendar.MONTH));
-        Assert.assertEquals(5, cal0.get(java.util.Calendar.WEEK_OF_MONTH));
-        Assert.assertEquals(1, cal1.get(java.util.Calendar.WEEK_OF_MONTH));
+        assertEquals(9, cal0.get(java.util.Calendar.MONTH));
+        assertEquals(10, cal1.get(java.util.Calendar.MONTH));
+        assertEquals(5, cal0.get(java.util.Calendar.WEEK_OF_MONTH));
+        assertEquals(1, cal1.get(java.util.Calendar.WEEK_OF_MONTH));
     }
+
     protected void printDate(Date date) {
         java.util.Calendar itemc=Grooming.getCalendar();
         itemc.setTimeInMillis(date.getTime());
@@ -51,38 +53,42 @@ public class GroomingTest {
         long weekOfYear=itemc.get(java.util.Calendar.WEEK_OF_YEAR);
         System.out.println("date "+date+", year "+year+", month "+month+", weekOfMonth "+weekOfMonth+", weekOfYear "+weekOfYear);
     }
+
     @Test
     public void readsimpleFile() throws Exception {
         Grooming grooming=PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("simpleGrooming.json"));
-        Assert.assertEquals((Integer)0, grooming.getDaily().getFrom());
-        Assert.assertEquals((Integer)1, grooming.getDaily().getTo());
-        Assert.assertEquals((Integer)1, grooming.getWeekly().getFrom());
-        Assert.assertEquals((Integer)4, grooming.getWeekly().getTo());
-        Assert.assertEquals((Integer)4, grooming.getMonthly().getFrom());
-        Assert.assertEquals((Integer)52, grooming.getMonthly().getTo());
-        Assert.assertEquals((Integer)52, grooming.getYearly().getFrom());
-        Assert.assertEquals(null, grooming.getYearly().getTo());
+        assertEquals((Integer)0, grooming.getDaily().getFrom());
+        assertEquals((Integer)1, grooming.getDaily().getTo());
+        assertEquals((Integer)1, grooming.getWeekly().getFrom());
+        assertEquals((Integer)4, grooming.getWeekly().getTo());
+        assertEquals((Integer)4, grooming.getMonthly().getFrom());
+        assertEquals((Integer)52, grooming.getMonthly().getTo());
+        assertEquals((Integer)52, grooming.getYearly().getFrom());
+        assertNull(grooming.getYearly().getTo());
     }
+
     @Test
     public void readMissingFile() throws Exception {
         try {
-            Grooming grooming=PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("missingGrooming.json"));
-            Assert.fail("exception expected");
+            Grooming grooming = PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("missingGrooming.json"));
+            fail("exception expected");
         }catch(IOException ex) {
             ; // ok
             log.error("readMissingFile", ex);
         }
     }
+
     @Test
     public void readWrongFile() throws Exception {
         try {
-            Grooming grooming=PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("wrongGrooming.json"));
-            Assert.fail("exception expected");
+            Grooming grooming = PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("wrongGrooming.json"));
+            fail("exception expected");
         }catch(IOException ex) {
             ; // ok
             log.error("readWrongFile", ex);
         }
     }
+
     @Test
     public void dailyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
@@ -95,8 +101,9 @@ public class GroomingTest {
         add(allHistory,"2021-04-01",null,today);
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
-        Assert.assertEquals(0, deleteDates.size());
+        assertEquals(0, deleteDates.size());
     }
+
     @Test
     public void dailyOnly() throws Exception {
         Grooming grooming=new Grooming();
@@ -112,8 +119,9 @@ public class GroomingTest {
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
-        Assert.assertEquals(expectedDeleteDates, deleteDates);
+        assertEquals(expectedDeleteDates, deleteDates);
     }
+
     @Test
     public void weeklyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
@@ -131,8 +139,9 @@ public class GroomingTest {
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
-        Assert.assertEquals(expectedDeleteDates, deleteDates);
+        assertEquals(expectedDeleteDates, deleteDates);
     }
+
     @Test
     public void weeklyOnly() throws Exception {
         Grooming grooming=new Grooming();
@@ -151,8 +160,9 @@ public class GroomingTest {
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
-        Assert.assertEquals(expectedDeleteDates, deleteDates);
+        assertEquals(expectedDeleteDates, deleteDates);
     }
+
     private Date add(List<Date> allHistory,
         String dateTxt,List<Date> expectedDeleteDates,Date today) throws ParseException{
         Date date=dateParser.parse(dateTxt);
@@ -166,6 +176,7 @@ public class GroomingTest {
         }
         return date;
     }
+
     @Test
     public void weeklyMonthlyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
@@ -184,8 +195,9 @@ public class GroomingTest {
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
-        Assert.assertEquals(expectedDeleteDates, deleteDates);
+        assertEquals(expectedDeleteDates, deleteDates);
     }
+
     @Test
     public void doWeeklyMonthlyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
@@ -204,8 +216,9 @@ public class GroomingTest {
             today = addOneDay(today);
         }
         Date[] expected=new Date[] {dateParser.parse("2022-05-01"),dateParser.parse("2022-06-01"),dateParser.parse("2022-06-06"),dateParser.parse("2022-06-13"),dateParser.parse("2022-06-20"),dateParser.parse("2022-06-27"),dateParser.parse("2022-06-29")};
-        Assert.assertArrayEquals(expected, allHistory.toArray(new Date[allHistory.size()]));
+        assertArrayEquals(expected, allHistory.toArray(new Date[0]));
     }
+
     @Test
     public void doWeeklyYearlyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
@@ -224,9 +237,10 @@ public class GroomingTest {
             today = addOneDay(today);
             //System.out.println(today);
         }
-        Date[] expected=new Date[] {dateParser.parse("2022-05-01"),dateParser.parse("2023-01-01"),dateParser.parse("2023-04-10"),dateParser.parse("2023-04-17"),dateParser.parse("2023-04-24"),dateParser.parse("2023-05-01"),dateParser.parse("2023-05-05")};
-        Assert.assertArrayEquals(expected, allHistory.toArray(new Date[allHistory.size()]));
+        Date[] expected = new Date[] {dateParser.parse("2022-05-01"),dateParser.parse("2023-01-01"),dateParser.parse("2023-04-10"),dateParser.parse("2023-04-17"),dateParser.parse("2023-04-24"),dateParser.parse("2023-05-01"),dateParser.parse("2023-05-05")};
+        assertArrayEquals(expected, allHistory.toArray(new Date[0]));
     }
+
     protected Date addOneDay(Date today) {
         java.util.Calendar c=Grooming.getCalendar();
         c.setTime(today);
@@ -234,6 +248,7 @@ public class GroomingTest {
         today=new Date(c.getTimeInMillis());
         return today;
     }
+
     private void print(String prefix,List<Date> allHistory,Date today) {
         StringBuffer all=new StringBuffer();
         String sep="";
@@ -249,6 +264,7 @@ public class GroomingTest {
         }
         System.out.println(prefix+all);
     }
+
     @Test
     public void weeklyMonthly() throws Exception {
         Grooming grooming=new Grooming();
@@ -256,6 +272,7 @@ public class GroomingTest {
         grooming.setMonthly(new GroomingRange(2,5));
         grooming.isValid();
     }
+
     @Test
     public void weeklyMonthlyMismatch() throws Exception {
         Grooming grooming=new Grooming();
@@ -263,11 +280,10 @@ public class GroomingTest {
         grooming.setMonthly(new GroomingRange(1,5));
         try {
             grooming.isValid();
-            Assert.fail();
-        }catch(IOException e) {
-            
-        }
+            fail();
+        } catch(IOException ignored) {}
     }
+
     @Test
     public void weeklyYearlyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
@@ -275,6 +291,7 @@ public class GroomingTest {
         grooming.setYearly(new GroomingRange(2,null));
         grooming.isValid();
     }
+
     @Test
     public void weeklyYearly() throws Exception {
         Grooming grooming=new Grooming();
@@ -282,6 +299,7 @@ public class GroomingTest {
         grooming.setYearly(new GroomingRange(2,5));
         grooming.isValid();
     }
+
     @Test
     public void weeklyYearlyMismatch() throws Exception {
         Grooming grooming=new Grooming();
@@ -289,11 +307,10 @@ public class GroomingTest {
         grooming.setYearly(new GroomingRange(3,5));
         try {
             grooming.isValid();
-            Assert.fail();
-        }catch(IOException e) {
-            
-        }
+            fail();
+        } catch(IOException ignored) {}
     }
+
     @Test
     public void weeklyYearlyOpenEndMismatch() throws Exception {
         Grooming grooming=new Grooming();
@@ -301,11 +318,10 @@ public class GroomingTest {
         grooming.setYearly(new GroomingRange(29,null));
         try {
             grooming.isValid();
-            Assert.fail();
-        }catch(IOException e) {
-            
-        }
+            fail();
+        } catch(IOException ignored) {}
     }
+
     @Test
     public void yearlyOpenEnd() throws Exception {
         Grooming grooming=new Grooming();
@@ -323,8 +339,9 @@ public class GroomingTest {
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
-        Assert.assertEquals(expectedDeleteDates, deleteDates);
+        assertEquals(expectedDeleteDates, deleteDates);
     }
+
     @Test
     public void yearlyOnly() throws Exception {
         Grooming grooming=new Grooming();
@@ -339,6 +356,6 @@ public class GroomingTest {
         List<Date> deleteDates=new ArrayList<Date>();
         grooming.getFilesToDelete(today, allHistory, deleteDates);
         expectedDeleteDates.sort(null);
-        Assert.assertEquals(expectedDeleteDates, deleteDates);
+        assertEquals(expectedDeleteDates, deleteDates);
     }
 }

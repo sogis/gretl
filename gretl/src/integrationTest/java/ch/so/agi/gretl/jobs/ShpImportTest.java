@@ -1,35 +1,35 @@
 package ch.so.agi.gretl.jobs;
 
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.Assert.*;
-
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.junit.Assert;
-import org.junit.ClassRule;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
+@Testcontainers
 public class ShpImportTest {
-    static String WAIT_PATTERN = ".*database system is ready to accept connections.*\\s";
-    
-    @ClassRule
-    public static PostgreSQLContainer postgres = 
-        (PostgreSQLContainer) new PostgisContainerProvider()
-        .newInstance().withDatabaseName("gretl")
-        .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-        .withInitScript("init_postgresql.sql")
-        .waitingFor(Wait.forLogMessage(WAIT_PATTERN, 2));
-    
+
+    @Container
+    public static PostgreSQLContainer<?> postgres =
+            (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+                    .withDatabaseName("gretl")
+                    .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
+                    .withInitScript("init_postgresql.sql")
+                    .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
     @Test
     public void importOk() throws Exception {
         String schemaName = "shpimport".toLowerCase();
@@ -45,14 +45,17 @@ public class ShpImportTest {
             con.commit();
             IntegrationTestUtilSql.closeCon(con);
 
-            GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-            IntegrationTestUtil.runJob("src/integrationTest/jobs/ShpImportBatchSize", gvs);
+            File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpImportBatchSize");
+
+            GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+            IntegrationTestUtil.executeTestRunner(projectDirectory, "shpimport", variables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
 
             Statement s2 = con.createStatement();
-            ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1"); 
+            ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1");
             if(!rs.next()) {
                 fail();
             }
@@ -68,8 +71,7 @@ public class ShpImportTest {
             }
             rs.close();
             s1.close();
-        }
-        finally {
+        } finally {
             IntegrationTestUtilSql.closeCon(con);
         }
     }

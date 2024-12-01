@@ -23,12 +23,27 @@ import ch.so.agi.gretl.steps.OgdMetaPublisherStep;
 public class OgdMetaPublisher extends DefaultTask {
     protected GretlLogger log;
 
+    private File configFile;
+    private File outputDir;
+
     @Internal
-    public File configFile;
-        
+    public File getConfigFile(){
+        return configFile;
+    }
+
     @Internal
-    public File outputDir;
-        
+    public File getOutputDir() {
+        return outputDir;
+    }
+
+    public void setConfigFile(File configFile) {
+        this.configFile = configFile;
+    }
+
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
+    }
+
     @TaskAction
     public void run() {
         log = LogEnvironment.getLogger(OgdMetaPublisher.class);

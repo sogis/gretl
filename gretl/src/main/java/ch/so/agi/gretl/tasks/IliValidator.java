@@ -10,7 +10,6 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.interlis2.validator.Validator;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,14 +26,14 @@ public class IliValidator extends AbstractValidatorTask {
     public void validate() {
         log = LogEnvironment.getLogger(IliValidator.class);
 
-        if (dataFiles == null) {
+        if (getDataFiles() == null) {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(dataFiles instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)dataFiles;
+        if(getDataFiles() instanceof FileCollection) {
+            dataFilesCollection=(FileCollection)getDataFiles();
         }else {
-            dataFilesCollection=getProject().files(dataFiles);
+            dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
@@ -55,14 +54,19 @@ public class IliValidator extends AbstractValidatorTask {
         userFunctionList.add("ch.so.agi.ilivalidator.ext.IsValidDocumentsCycleIoxPlugin");
         userFunctionList.add("ch.so.agi.ilivalidator.ext.RingSelfIntersectionIoxPlugin");
         userFunctionList.add("ch.so.agi.ilivalidator.ext.TooFewPointsPolylineIoxPlugin");
-
+        //userFunctionList.add("ch.so.agi.ilivalidator.ext.IsHttpResourceFromOerebMultilingualUriIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetAreaIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetLengthIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetInnerRingsCountIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetInGroupsIoxPlugin");
-        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideExternalDatasetIoxPlugin");
-        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideExternalDatasetResourceIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideExternalXtfIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideExternalXtfResourceIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.IsInsideIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.UnionIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.PolylinesOverlapIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.FindObjectsIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.FilterIoxPlugin");
+//        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.ngk.IsInsideAreaByCodeIoxPlugin");
 
         Map<String,Class> userFunctions = new HashMap<String,Class>();
         try {
@@ -85,7 +89,7 @@ public class IliValidator extends AbstractValidatorTask {
         settings.setTransientObject(ch.interlis.iox_j.validator.Validator.CONFIG_CUSTOM_FUNCTIONS, userFunctions);
 
         validationOk = new Validator().validate(files.toArray(new String[files.size()]), settings);
-        if (!validationOk && failOnError) {
+        if (!validationOk && getFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }

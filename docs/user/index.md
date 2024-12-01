@@ -46,10 +46,15 @@ apply plugin: 'ch.so.agi.gretl'
 
 buildscript {
     repositories {
-        maven { url "http://jars.interlis.ch" }
-        maven { url "http://jars.umleditor.org" }
+        maven { url "https://jars.interlis.ch" }
+        maven { 
+                url "http://jars.umleditor.org" 
+                allowInsecureProtocol = true
+        }
         maven { url "https://repo.osgeo.org/repository/release/" }
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://s01.oss.sonatype.org/service/local/repositories/releases/content/" }
+        maven { url "https://s01.oss.sonatype.org/service/local/repositories/snapshots/content/" }
         mavenCentral()
     }
     dependencies {
@@ -1028,7 +1033,7 @@ task importData(type: Ili2pgImport){
     database = [db_uri, db_user, db_pass]
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
     dataset = dataFile
-    datasetSubstring = 0..4
+    datasetSubstring = (0..4).toList()
     logFile = "ili2pg.log"
 }
 ```

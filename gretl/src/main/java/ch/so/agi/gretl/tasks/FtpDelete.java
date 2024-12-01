@@ -21,13 +21,27 @@ import ch.so.agi.gretl.tasks.impl.AbstractFtpTask;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class FtpDelete extends AbstractFtpTask {
-    
+    private String remoteDir;
+    private Object remoteFile;
+
     @Input
-    public String remoteDir;
-    
+    public String getRemoteDir() {
+        return remoteDir;
+    }
+
     @Optional
     @Input
-    public Object remoteFile = null;
+    public Object getRemoteFile() {
+        return remoteFile;
+    }
+
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
+    public void setRemoteFile(Object remoteFile) {
+        this.remoteFile = remoteFile;
+    }
 
     @TaskAction
     void download() {
@@ -42,7 +56,7 @@ public class FtpDelete extends AbstractFtpTask {
                 for (final FTPFile f : ftp.listFiles(remoteDir)) {
                     if (f.isFile()) {
                         String remoteFileName = f.getName();
-                        ftp.deleteFile(remoteDir + fileSeparator + remoteFileName);
+                        ftp.deleteFile(remoteDir + getFileSeparator() + remoteFileName);
                         //System.out.println("**** 1 DELETE REMOTE FILE: " + remoteDir + fileSeparator + remoteFileName);
                     }
                 }
@@ -86,13 +100,13 @@ public class FtpDelete extends AbstractFtpTask {
                 if (f.isFile()) {
                     fileName = f.getName();
                     if (match(remoteFilePattern, fileName)) {
-                        ftp.deleteFile(remoteDir + fileSeparator + fileName);
+                        ftp.deleteFile(remoteDir + getFileSeparator() + fileName);
                         //System.out.println("**** 2 DELETE REMOTE FILE: " + remoteDir + fileSeparator + fileName);
                     }
                 }
             }
         } else {
-            ftp.deleteFile(remoteDir + fileSeparator + fileName);            
+            ftp.deleteFile(remoteDir + getFileSeparator() + fileName);
             //System.out.println("**** 3 DELETE REMOTE FILE: " + remoteDir + fileSeparator + fileName);
         }
     }

@@ -1,0 +1,97 @@
+[versions]
+ili2cCoreVersion = "5.3.2"
+ili2cToolVersion = "5.3.2"
+ioxIliVersion = "1.21.18"
+ilivalidatorVersion = "1.13.3"
+ilivalidatorCustomFunctionsVersion = "1.1.50"
+ilivalidatorCustomFunctionsGeometriesVersion = "0.0.8"
+geowCustomFunctionsVersion = "0.1.10-SNAPSHOT"
+ili2pgVersion = "4.11.1"
+ili2gpkgVersion = "4.11.1"
+ioxWkfVersion = "2.0.0"
+ehiSqlgenVersion = "1.16.0"
+ioxFormatsVersion = "0.0.29"
+av2chVersion = "1.1.8"
+av2geobauVersion = "1.2.0"
+awsSdkVersion = "2.15.64"
+apacheCommonsIoVersion = "2.6"
+apacheCommonsNetVersion = "3.6"
+apacheCommonsCodeVersion = "1.11"
+apacheHttpClientVersion = "4.5.13"
+apacheHttpClientMimeVersion = "4.5.13"
+jacksonVersion = "2.10.0"
+saxonVersion = "11.4"
+tomljVersion = "1.1.0"
+freemarkerVersion = "2.3.31"
+mockServerClientVersion = "5.15.0"
+postgresqlVersion = "42.2.5"
+sqliteJdbcVersion = "3.8.11.2"
+derbyVersion = "10.13.1.1"
+oracleVersion = "19.3.0.0"
+duckdbVersion = "0.9.2"
+junitVersion = "5.10.3"
+junitTestContainersVersion = "1.19.8"
+mockFtpServerVersion = "2.7.1"
+mockWebServerVersion = "4.11.0"
+testContainersVersion = "1.15.3"
+sftpFsVersion = "2.0.4"
+tomcatEmbedVersion = "9.0.69"
+hadoopClientVersion = "3.3.5"
+gradleDownloadTaskPluginVersion = "4.1.2"
+gradleSshPluginVersion = "2.9.0"
+pluginPublishVersion = "0.21.0"
+cyclonedxBomVersion = "1.7.4"
+awsSdkV1Version = "1.12.761"
+
+[libraries]
+ili2c-core = { group = "ch.interlis", name = "ili2c-core", version.ref = "ili2cCoreVersion" }
+ili2c-tool = { group = "ch.interlis", name = "ili2c-tool", version.ref = "ili2cToolVersion" }
+iox-ili = { group = "ch.interlis", name = "iox-ili", version.ref = "ioxIliVersion" }
+ilivalidator = { group = "ch.interlis", name = "ilivalidator", version.ref = "ilivalidatorVersion" }
+ilivalidator-custom-functions = { group = "io.github.sogis", name = "ilivalidator-custom-functions", version.ref = "ilivalidatorCustomFunctionsVersion" }
+ilivalidator-custom-functions-geometries = { group = "io.github.sogis", name = "ilivalidator-custom-functions-geometries", version.ref = "ilivalidatorCustomFunctionsGeometriesVersion" }
+geow-custom-functions = { group = "ch.geowerkstatt.ilivalidator.extensions.functions", name = "geow-interlis-functions", version.ref = "geowCustomFunctionsVersion" }
+ili2pg = { group = "ch.interlis", name = "ili2pg", version.ref = "ili2pgVersion" }
+ili2gpkg = { group = "ch.interlis", name = "ili2gpkg", version.ref = "ili2gpkgVersion" }
+iox-wkf = { group = "ch.interlis", name = "iox-wkf", version.ref = "ioxWkfVersion" }
+ehisqlgen = { group = "ch.ehi", name = "ehisqlgen", version.ref = "ehiSqlgenVersion" }
+iox-formats = { group = "io.github.sogis", name = "iox-formats", version.ref = "ioxFormatsVersion" }
+av2ch = { group = "io.github.sogis", name = "av2ch", version.ref = "av2chVersion" }
+av2geobau = { group = "ch.interlis", name = "av2geobau", version.ref = "av2geobauVersion" }
+aws-sdk-s3 = { group = "software.amazon.awssdk", name = "s3", version.ref = "awsSdkVersion" }
+aws-java-sdk = { group = "com.amazonaws", name = "aws-java-sdk-s3", version.ref = "awsSdkV1Version" }
+apache-commons-io = { group = "commons-io", name = "commons-io", version.ref = "apacheCommonsIoVersion" }
+apache-commons-net = { group = "commons-net", name = "commons-net", version.ref = "apacheCommonsNetVersion" }
+apache-commons-code = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodeVersion" }
+apache-http-client = { group = "org.apache.httpcomponents", name = "httpclient", version.ref = "apacheHttpClientVersion" }
+apache-http-mime = { group = "org.apache.httpcomponents", name = "httpmime", version.ref = "apacheHttpClientMimeVersion" }
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jacksonVersion" }
+jackson-data-bind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jacksonVersion" }
+saxon = { group = "net.sf.saxon", name = "Saxon-HE", version.ref = "saxonVersion"}
+tomlj = { group = "org.tomlj", name = "tomlj", version.ref = "tomljVersion"}
+freemarker = { group = "org.freemarker", name = "freemarker", version.ref = "freemarkerVersion"}
+mock-server-client = { group = "org.mock-server", name = "mockserver-client-java", version.ref = "mockServerClientVersion" }
+postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresqlVersion" }
+sqlite-jdbc = {group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqliteJdbcVersion"}
+derby = {group = "org.apache.derby", name = "derby", version.ref = "derbyVersion"}
+oracle = { group = "com.oracle.ojdbc", name = "ojdbc8", version.ref = "oracleVersion"}
+duckdb = { group = "org.duckdb", name = "duckdb_jdbc", version.ref = "duckdbVersion"}
+junit = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitVersion" }
+junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitVersion" }
+junitTestContainers = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "junitTestContainersVersion" }
+junitTestContainersPostgres = { group = "org.testcontainers", name = "postgresql", version.ref = "junitTestContainersVersion" }
+mock-ftp-server = { group = "org.mockftpserver", name = "MockFtpServer", version.ref = "mockFtpServerVersion" }
+mock-web-server = { group = "com.squareup.okhttp3", name ="mockwebserver", version.ref = "mockWebServerVersion"}
+testcontainers-base = { group = "org.testcontainers", name = "testcontainers", version.ref = "testContainersVersion"}
+testcontainers-postgresql = { group = "org.testcontainers", name = "postgresql", version.ref = "testContainersVersion"}
+testcontainers-oracle = { group = "org.testcontainers", name = "oracle-xe", version.ref = "testContainersVersion"}
+testcontainers-localstack = { group = "org.testcontainers", name = "localstack", version.ref = "testContainersVersion" }
+sftp-fs = { group = "com.github.robtimus", name = "sftp-fs", version.ref = "sftpFsVersion"}
+tomcat-embed-core = { group = "org.apache.tomcat.embed", name = "tomcat-embed-core", version.ref = "tomcatEmbedVersion" }
+hadoop-client = { group = "org.apache.hadoop", name = "hadoop-client", version.ref = "hadoopClientVersion" }
+gradle-download-task-plugin = {group = "de.undercouch", name = "gradle-download-task", version.ref = "gradleDownloadTaskPluginVersion"}
+gradle-ssh-plugin = {group = "org.hidetake", name = "gradle-ssh-plugin", version.ref = "gradleSshPluginVersion"}
+
+[plugins]
+plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "pluginPublishVersion" }
+cyclonedx-bom = { id = "org.cyclonedx.bom", version.ref = "cyclonedxBomVersion" }

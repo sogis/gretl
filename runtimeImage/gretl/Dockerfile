@@ -1,5 +1,4 @@
-#FROM bellsoft/liberica-openjdk-alpine:11.0.19-7
-FROM bellsoft/liberica-openjdk-alpine:8u392-9
+FROM bellsoft/liberica-openjdk-alpine:11.0.18-10
 
 CMD ["gretl"]
 
@@ -11,15 +10,14 @@ WORKDIR $HOME
 RUN chgrp root . && chmod g+w .
 
 COPY ca-certificates/ /usr/local/share/ca-certificates/
+
 RUN apk add --no-cache bash ca-certificates java-cacerts curl \
-    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/jre/lib/security/cacerts
-#RUN apk add --no-cache bash ca-certificates java-cacerts curl \
-#    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/lib/security/cacerts
+    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/lib/security/cacerts
 
 ENV JAVA_TOOL_OPTIONS=-Duser.home=${HOME}
 ENV GRADLE_HOME /opt/gradle
-ENV GRADLE_VERSION 5.1.1
-ARG GRADLE_DOWNLOAD_SHA256=4953323605c5d7b89e97d0dc7779e275bccedefcdac090aec123375eae0cc798
+ENV GRADLE_VERSION 8.10.2
+ARG GRADLE_DOWNLOAD_SHA256=31c55713e40233a8303827ceb42ca48a47267a0ad4bab9177123121e71524c26
 RUN set -o errexit -o nounset \
     && echo "Downloading Gradle" \
     && wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" \

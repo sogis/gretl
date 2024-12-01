@@ -1,42 +1,30 @@
 package ch.so.agi.gretl.tasks;
 
-import java.io.File;
-
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.TaskAction;
-
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.JsonImportStep;
 import ch.so.agi.gretl.util.TaskUtil;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.TaskAction;
+
+import java.io.File;
+import java.util.List;
 
 public class JsonImport extends DefaultTask {
     protected GretlLogger log;
+    private Connector database;
+    private String qualifiedTableName = null;
+    private String jsonFile = null;
+    private String columnName = null;
+    private Boolean deleteAllRows = false;
 
-    @Input
-    public Connector database;
-
-    @Input
-    public String qualifiedTableName = null;
-
-    @Input
-    public String jsonFile = null;
-    
-    @Input 
-    public String columnName = null;
-    
-    @Input
-    @Optional
-    public boolean deleteAllRows = false;
-    
     @TaskAction
     public void importJsonFile() {
         log = LogEnvironment.getLogger(JsonImport.class);
-        
+
         if (database == null) {
             throw new IllegalArgumentException("database must not be null");
         }
@@ -51,14 +39,59 @@ public class JsonImport extends DefaultTask {
         }
 
         File data = this.getProject().file(jsonFile);
-        
+
         try {
             JsonImportStep jsonImportStep = new JsonImportStep();
             jsonImportStep.execute(database, data, qualifiedTableName, columnName, deleteAllRows);
         } catch (Exception e) {
             log.error("Exception in JsonImport task.", e);
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         }
+    }
+
+    @Input
+    public String getQualifiedTableName() {
+        return qualifiedTableName;
+    }
+
+    @Input
+    public String getJsonFile() {
+        return jsonFile;
+    }
+
+    @Input
+    public String getColumnName() {
+        return columnName;
+    }
+
+    @Input
+    @Optional
+    public Boolean isDeleteAllRows() {
+        return deleteAllRows;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setQualifiedTableName(String qualifiedTableName) {
+        this.qualifiedTableName = qualifiedTableName;
+    }
+
+    public void setJsonFile(String jsonFile) {
+        this.jsonFile = jsonFile;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
+
+    public void setDeleteAllRows(Boolean deleteAllRows) {
+        this.deleteAllRows = deleteAllRows;
     }
 }
