@@ -1,9 +1,11 @@
 package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.api.Connector;
+import ch.so.agi.gretl.testutil.TestTags;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.containers.PostgisContainerProvider;
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Testcontainers
+@Tag(TestTags.DB_TEST)
 public class JsonImportStepTest {
 
     @Container
