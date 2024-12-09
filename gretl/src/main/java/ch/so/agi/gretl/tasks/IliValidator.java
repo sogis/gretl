@@ -54,7 +54,6 @@ public class IliValidator extends AbstractValidatorTask {
         userFunctionList.add("ch.so.agi.ilivalidator.ext.IsValidDocumentsCycleIoxPlugin");
         userFunctionList.add("ch.so.agi.ilivalidator.ext.RingSelfIntersectionIoxPlugin");
         userFunctionList.add("ch.so.agi.ilivalidator.ext.TooFewPointsPolylineIoxPlugin");
-        //userFunctionList.add("ch.so.agi.ilivalidator.ext.IsHttpResourceFromOerebMultilingualUriIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetAreaIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetLengthIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.GetInnerRingsCountIoxPlugin");
@@ -66,7 +65,7 @@ public class IliValidator extends AbstractValidatorTask {
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.PolylinesOverlapIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.FindObjectsIoxPlugin");
         userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.FilterIoxPlugin");
-//        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.ngk.IsInsideAreaByCodeIoxPlugin");
+        userFunctionList.add("ch.geowerkstatt.ilivalidator.extensions.functions.ngk.IsInsideAreaByCodeIoxPlugin");
 
         Map<String,Class> userFunctions = new HashMap<String,Class>();
         try {
