@@ -39,8 +39,6 @@ configurations {
     }
     
     testImplementation {
-        exclude group: 'org.apache.hadoop', module: 'hadoop-core' // Konflikt zwischen "core" und "client". Siehe iox-parquet.
-        exclude group: 'org.slf4j', module: 'slf4j-reload4j'
     }
 
     integrationTestImplementation.extendsFrom implementation
@@ -128,11 +126,7 @@ dependencies {
     
     testImplementation libs.mock.web.server
 
-    testImplementation libs.tomcat.embed.core
-    
-    testImplementation libs.hadoop.client
-    integrationTestImplementation libs.hadoop.client
-    
+    testImplementation libs.tomcat.embed.core    
 }
 
 gradlePlugin {
