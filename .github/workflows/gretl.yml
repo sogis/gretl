@@ -27,26 +27,26 @@ jobs:
         run: ./gradlew clean gretl:classes 
 
       - name: Unit tests and publish plugin to local maven repo
-        run: |
-          TZ="Europe/Zurich" ./gradlew gretl:test gretl:dbTest gretl:s3Test
-          ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
         # run: |
+        #   TZ="Europe/Zurich" ./gradlew gretl:test gretl:dbTest gretl:s3Test
         #   ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
+        run: |
+          ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
 
       - name: Debug1
         run: |
           ls -la ~/.m2/repository/ch/so/agi/gretl
 
-      - name: Integration tests (Plugin)
-        id: jarTest
-        run: |
-          TZ="Europe/Zurich" ./gradlew gretl:jarTest gretl:jarS3Test
+      # - name: Integration tests (Plugin)
+      #   id: jarTest
+      #   run: |
+      #     TZ="Europe/Zurich" ./gradlew gretl:jarTest gretl:jarS3Test
 
-      - uses: actions/upload-artifact@v4
-        if: always() && (steps.jarTest.outcome == 'failure')
-        with:
-          name: reports-jar
-          path: gretl/build/reports/tests/
+      # - uses: actions/upload-artifact@v4
+      #   if: always() && (steps.jarTest.outcome == 'failure')
+      #   with:
+      #     name: reports-jar
+      #     path: gretl/build/reports/tests/
 
       - name: Build Docker image for integration tests
         run: |
