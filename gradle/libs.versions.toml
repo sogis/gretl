@@ -86,7 +86,7 @@ testcontainers-localstack = { group = "org.testcontainers", name = "localstack",
 sftp-fs = { group = "com.github.robtimus", name = "sftp-fs", version.ref = "sftpFsVersion"}
 tomcat-embed-core = { group = "org.apache.tomcat.embed", name = "tomcat-embed-core", version.ref = "tomcatEmbedVersion" }
 gradle-download-task-plugin = {group = "de.undercouch", name = "gradle-download-task", version.ref = "gradleDownloadTaskPluginVersion"}
-gradle-ssh-plugin = {group = "org.hidetake", name = "gradle-ssh-plugin", version.ref = "gradleSshPluginVersion"}
+gradle-ssh-plugin = {group = "org.hidetake", name = "core", version.ref = "gradleSshPluginVersion"}
 
 [plugins]
 plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "pluginPublishVersion" }
