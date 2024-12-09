@@ -63,6 +63,7 @@ dependencies {
     api libs.ilivalidator.custom.functions
     api libs.ilivalidator.custom.functions.geometries
     api libs.geow.custom.functions
+    api libs.geow.ngk.functions
     api (libs.ili2pg) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
