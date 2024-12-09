@@ -40,6 +40,7 @@ docker run -i --rm \
     --entrypoint="/bin/sh" \
     --network="host" \
     -v "$job_directory":/home/gradle/project \
+    -v /tmp/gradlecache:/home/gradle/.gradle/caches \
     --user $UID \
     sogis/gretl "-c" \
         "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project;$gretl_cmd"

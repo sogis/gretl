@@ -8,4 +8,5 @@ fi
 
 gradle $run_parameter \
        --init-script /home/gradle/init.gradle \
+       --project-cache-dir=/home/gradle/projectcache \
        --no-daemon
