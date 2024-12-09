@@ -59,8 +59,8 @@ jobs:
       - name: Integration tests (Docker image)
         id: imageTest
         run: |
-          mkdir -p /home/runner/work/gretl/gretl/gretl/gradlecache
-          chmod 777 -R /home/runner/work/gretl/gretl/gretl/gradlecache
+          mkdir -p "$HOME"/gradlecache
+          chmod 777 -R "$HOME"/gradlecache
           TZ="Europe/Zurich" ./gradlew gretl:imageTest gretl:imageS3Test
         # run: |
         #   TZ="Europe/Zurich" ./gradlew gretl:imageTest --tests ch.so.agi.gretl.jobs.XslTransformerTest
