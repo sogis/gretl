@@ -130,14 +130,14 @@ dependencies {
         - https://github.com/testcontainers/testcontainers-java/issues/1442
     */
     testImplementation libs.aws.java.sdk
-    
+
     testImplementation libs.mock.web.server
 
     testImplementation libs.tomcat.embed.core
     
     testImplementation libs.hadoop.client
     integrationTestImplementation libs.hadoop.client
-    
+
 }
 
 gradlePlugin {
