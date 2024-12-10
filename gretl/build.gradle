@@ -26,30 +26,19 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
-Properties properties = new Properties()
-File propFile = project.file('user.properties')
-if (propFile.exists()){
-	properties.load(propFile.newDataInputStream())
-}
-def dburl = System.getProperty('dburl', properties.get('dburl'))
-def dbusr = System.getProperty('dbusr', properties.get('dbusr'))
-def dbpwd = System.getProperty('dbpwd', properties.get('dbpwd'))
-def ftpurl = System.getProperty('ftpurl', properties.get('ftpurl'))
-def ftpusr = System.getProperty('ftpusr', properties.get('ftpusr'))
-def ftppwd = System.getProperty('ftppwd', properties.get('ftppwd'))
-
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.3.2' 
-        force 'ch.interlis:ili2c-core:5.3.2'
-        force 'ch.interlis:ili2gpkg:4.11.1'
-        force 'ch.interlis:iox-ili:1.21.18'
+        force libs.ili2c.core
+        force libs.ili2c.tool
+        force libs.ili2gpkg
+        force libs.iox.ili
     }
 }
 
 configurations {
     integrationTestImplementation {
     }
+    
     testImplementation {
         exclude group: 'org.apache.hadoop', module: 'hadoop-core' // Konflikt zwischen "core" und "client". Siehe iox-parquet.
         exclude group: 'org.slf4j', module: 'slf4j-reload4j'
@@ -131,14 +120,18 @@ dependencies {
     testImplementation libs.junitTestContainersPostgres
     testRuntimeOnly libs.junitEngine
 
-    testImplementation libs.test.containers.base
-    testImplementation libs.test.containers.postgresql
-    testImplementation libs.test.containers.localstack
+    testImplementation libs.testcontainers.base
+    testImplementation libs.testcontainers.postgresql
+    testImplementation libs.testcontainers.oracle
+    testImplementation libs.testcontainers.localstack
+    /*
+        Version 1 des SDK wird wegen Testcontainers benoetigt:
+        - https://stackoverflow.com/questions/29024520/classnotfoundexception-com-amazonaws-auth-awscredentials-java
+        - https://github.com/testcontainers/testcontainers-java/issues/1442
+    */
     testImplementation libs.aws.java.sdk
 
     testImplementation libs.mock.web.server
-
-    testImplementation libs.test.containers.oracle
 
     testImplementation libs.tomcat.embed.core
     
@@ -175,8 +168,7 @@ tasks.register('setupPluginUpload') {
         def key=System.env.gradlePublishKey
         def secret = System.env.gradlePublishSecret
 
-        if( !key || !secret)
-        {
+        if( !key || !secret) {
             throw new RuntimeException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
         }
 
@@ -190,7 +182,7 @@ tasks.publishPlugins.dependsOn tasks.setupPluginUpload
 test {
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     useJUnitPlatform {
-        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
+        // Exclude all Tests with dependency to a db server (pg, oracle, ..) and/or 'external' infrastructure
         excludeTags 'dbTest', 'sftpTest', 's3Test'
     }
 }
@@ -204,6 +196,24 @@ tasks.register('dbTest', Test) {
     }
 }
 
+/*
+    There is only one such test (PublisherStepFile2RemoteTest) that runs against a ftp
+    defined in user.properties in the project root dir which is not part of the repo 
+    and thus cannot be used in the pipeline.
+*/
+
+Properties properties = new Properties()
+File propFile = project.file('user.properties')
+if (propFile.exists()){
+    properties.load(propFile.newDataInputStream())
+}
+def dburl = System.getProperty('dburl', properties.get('dburl'))
+def dbusr = System.getProperty('dbusr', properties.get('dbusr'))
+def dbpwd = System.getProperty('dbpwd', properties.get('dbpwd'))
+def ftpurl = System.getProperty('ftpurl', properties.get('ftpurl'))
+def ftpusr = System.getProperty('ftpusr', properties.get('ftpusr'))
+def ftppwd = System.getProperty('ftppwd', properties.get('ftppwd'))
+
 tasks.register('sftpTest', Test) {
     dependsOn 'compileJava', 'compileTestJava'
     group = LifecycleBasePlugin.VERIFICATION_GROUP
@@ -212,10 +222,6 @@ tasks.register('sftpTest', Test) {
         includeTags 'sftpTest'
     }
 }
-
-def s3AccessKey = System.getProperty('s3AccessKey',properties.get('s3AccessKey'))
-def s3SecretKey = System.getProperty('s3SecretKey',properties.get('s3SecretKey'))
-def s3BucketName = System.getProperty('s3BucketName',properties.get('s3BucketName'))
 
 tasks.register('s3Test', Test) {
     dependsOn 'compileJava', 'compileTestJava'
@@ -227,18 +233,16 @@ tasks.register('s3Test', Test) {
     }
 }
 
-// Transfer the required configuration variables to the test code.
-// (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+/*
+    Transfer the required configuration variables to the test code.
+    (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+*/
 tasks.withType(Test) {
     def GRETLTEST_DBURI = 'gretltest_dburi_pg'
     systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
     
     systemProperty('GRETL_PROJECT_ABS_PATH', project(':gretl').getProjectDir().getAbsolutePath())
     systemProperty('ROOT_PROJECT_ABS_PATH', project.getRootProject().getProjectDir().getAbsolutePath())
-    
-    systemProperty 's3AccessKey', s3AccessKey
-    systemProperty 's3SecretKey', s3SecretKey
-    systemProperty 's3BucketName', s3BucketName
 }
 
 cyclonedxBom {
@@ -249,16 +253,16 @@ cyclonedxBom {
 }
 
 /*
-   Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
-   https://github.com/gradle/gradle/issues/17236
+    Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
+    https://github.com/gradle/gradle/issues/17236
  */
 processResources{
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 /*
-   init_postgresql.sql seems to be copied multiple times.
-   Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
+    init_postgresql.sql seems to be copied multiple times.
+    Starting with 7.0.0 there is no default strategy anymore. So it has to be explicitly set.
  */
 processIntegrationTestResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

@@ -53,6 +53,7 @@ public class S3Bucket2BucketTest {
     @Test
     @Tag(TestTags.S3_TEST)
     void uploadDirectory_Ok() throws Exception {
+        // Prepare
         S3Client s3Client = s3TestHelper.getS3Client();
         s3TestHelper.createBucketIfNotExists(s3Client, s3SourceBucketName);
         s3TestHelper.createBucketIfNotExists(s3Client, s3TargetBucketName);
@@ -76,7 +77,6 @@ public class S3Bucket2BucketTest {
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("bar.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3TargetBucketName).key("download.txt").build());
 
-        // Upload files  and copy files from one bucket to another.
         GradleVariable[] gradleVariables = {
                 GradleVariable.newGradleProperty("s3AccessKey", s3AccessKey),
                 GradleVariable.newGradleProperty("s3SecretKey", s3SecretKey),
@@ -86,6 +86,8 @@ public class S3Bucket2BucketTest {
                 GradleVariable.newGradleProperty("s3Region", s3Region),
                 GradleVariable.newGradleProperty("s3Acl", acl)
         };
+        
+        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3Bucket2Bucket");
         IntegrationTestUtil.executeTestRunner(projectDirectory, "copyfiles", gradleVariables);
 

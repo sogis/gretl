@@ -49,7 +49,7 @@ public class S3DownloadStepTest {
     public static void setUpClass() throws Exception {
         s3AccessKey = localStackContainer.getAccessKey();
         s3SecretKey = localStackContainer.getSecretKey();
-        s3BucketName = System.getProperty("s3BucketName");
+        s3BucketName = "ch.so.agi.gretl.test";
         s3Endpoint = localStackContainer.getEndpointOverride(S3);
         s3Region = localStackContainer.getRegion();
         s3TestHelper = new S3TestHelper(s3AccessKey, s3SecretKey, s3Region, s3Endpoint.toString());
@@ -58,17 +58,17 @@ public class S3DownloadStepTest {
     @Test
     @Tag(TestTags.S3_TEST)
     public void downloadFile_Ok() throws Exception {
+        // Prepare
         S3Client s3Client = s3TestHelper.getS3Client();
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
 
         String key = "foo.txt";
         Path downloadDir = TestUtil.createTempDir(folder, "downloadFile_Ok");
 
-        // Upload the file
         File sourceObject = TestUtil.getResourceFile("data/s3upload/foo.txt");
         s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");
 
-        // Download a single file.
+        // Execute
         S3DownloadStep s3DownloadStep = new S3DownloadStep();
         s3DownloadStep.execute(s3AccessKey, s3SecretKey, s3BucketName, key, s3Endpoint.toString(), s3Region, downloadDir.toFile());
 

@@ -6,7 +6,6 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.PostgisRasterExportStep;
 import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
@@ -21,55 +20,8 @@ public class PostgisRasterExport extends DefaultTask {
 
     private Connector database;
     private String sqlFile;
-
     private Map<String, String> sqlParameters = null;
-
     private Object dataFile = null;
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    @Input
-    public String getSqlFile() {
-        return sqlFile;
-    }
-
-    @Input
-    @Optional
-    public Map<String, String> getSqlParameters() {
-        return sqlParameters;
-    }
-
-    @OutputFile
-    public Object getDataFile() {
-        return dataFile;
-    }
-
-    public void setDatabase(List<String> databaseDetails){
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-
-        this.database = new Connector(databaseUri, databaseUser, databasePassword);
-    }
-
-    public void setSqlFile(String sqlFile) {
-        this.sqlFile = sqlFile;
-    }
-
-    public void setSqlParameters(Map<String, String> sqlParameters) {
-        this.sqlParameters = sqlParameters;
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
 
     @TaskAction
     public void exportRaster() {
@@ -95,9 +47,44 @@ public class PostgisRasterExport extends DefaultTask {
             step.execute(database, sql, data, sqlParameters);
         } catch (Exception e) {
             log.error("Exception in creating / invoking PostgisRasterExportStep.", e);
-
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
+            throw TaskUtil.toGradleException(e);
         }
+    }
+
+    @Input
+    public String getSqlFile() {
+        return sqlFile;
+    }
+
+    @Input
+    @Optional
+    public Map<String, String> getSqlParameters() {
+        return sqlParameters;
+    }
+
+    @OutputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setSqlFile(String sqlFile) {
+        this.sqlFile = sqlFile;
+    }
+
+    public void setSqlParameters(Map<String, String> sqlParameters) {
+        this.sqlParameters = sqlParameters;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
     }
 }

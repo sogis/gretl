@@ -28,9 +28,77 @@ public class GpkgExport extends DefaultTask {
     private Integer batchSize;
     private Integer fetchSize;
 
-    @Input
-    public Connector getDatabase() {
-        return database;
+    @TaskAction
+    public void exportData() {
+        log = LogEnvironment.getLogger(GpkgExport.class);
+
+        if (database == null) {
+            throw new IllegalArgumentException("database must not be null");
+        }
+        if (srcTableName == null) {
+            throw new IllegalArgumentException("srcTableName must not be null");
+        }
+        if (dstTableName == null) {
+            throw new IllegalArgumentException("dstTableName must not be null");
+        }
+        if (dataFile == null) {
+            return;
+        }
+
+        List<String> srcTableNames = getSrcTableNames();
+        List<String> dstTableNames = getDstTableNames();
+
+        if (srcTableNames.size() != dstTableNames.size()) {
+            throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
+        }
+
+        java.sql.Connection conn = null;
+        try {
+            conn = database.connect();
+            if (conn == null) {
+                throw new IllegalArgumentException("connection must not be null");
+            }
+
+            int i=0;
+            for (String srcTableName : srcTableNames) {
+                String dstTableName = dstTableNames.get(i);
+
+                Settings settings = new Settings();
+                settings.setValue(IoxWkfConfig.SETTING_DBTABLE, srcTableName);
+                settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);
+                // set optional parameters
+                if (schemaName != null) {
+                    settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
+                }
+                if (batchSize != null) {
+                    settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
+                }
+                if (fetchSize != null) {
+                    settings.setValue(IoxWkfConfig.SETTING_FETCHSIZE, fetchSize.toString());
+                }
+
+                File data = this.getProject().file(dataFile);
+
+                Db2Gpkg db2gpkg = new Db2Gpkg();
+                db2gpkg.exportData(data, conn, settings);
+                conn.commit();
+                i++;
+            }
+        } catch (Exception e) {
+            log.error("failed to run GpkgExport", e);
+            GradleException ge = TaskUtil.toGradleException(e);
+            throw ge;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    conn.close();
+                } catch (SQLException e) {
+                    log.error("failed to rollback/close", e);
+                }
+                conn = null;
+            }
+        }
     }
 
     @OutputFile
@@ -72,17 +140,15 @@ public class GpkgExport extends DefaultTask {
         return fetchSize;
     }
 
-    public void setDatabase(List<String> databaseDetails){
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-
-        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    @Input
+    public Connector getDatabase() {
+        return database;
     }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
 
     public void setDataFile(Object dataFile) {
         this.dataFile = dataFile;
@@ -112,88 +178,30 @@ public class GpkgExport extends DefaultTask {
         this.fetchSize = fetchSize;
     }
 
-    @TaskAction
-    public void exportData() {
-        log = LogEnvironment.getLogger(GpkgExport.class);
-        if (database == null) {
-            throw new IllegalArgumentException("database must not be null");
-        }
-        if (srcTableName == null) {
-            throw new IllegalArgumentException("srcTableName must not be null");
-        }        
-        if (dstTableName == null) {
-            throw new IllegalArgumentException("dstTableName must not be null");
-        }
-        if (dataFile == null) {
-            return;
-        }
-        
-        List<String> srcTableNames = null;
+    @Internal
+    List<String> getSrcTableNames() {
+        List<String> srcTableNames;
+
         if (srcTableName instanceof String) {
-            srcTableNames =  new ArrayList<String>();
+            srcTableNames = new ArrayList<>();
             srcTableNames.add((String)srcTableName);
         } else {
             srcTableNames = (List)srcTableName;
         }
-        
-        List<String> dstTableNames = null;
+
+        return srcTableNames;
+    }
+
+    @Internal
+    List<String> getDstTableNames() {
+        List<String> dstTableNames;
         if (dstTableName instanceof String) {
-            dstTableNames =  new ArrayList<String>();
+            dstTableNames =  new ArrayList<>();
             dstTableNames.add((String)dstTableName);
         } else {
             dstTableNames = (List)dstTableName;
         }
-        
-        if (srcTableNames.size() != dstTableNames.size()) {
-            throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
-        }
 
-        java.sql.Connection conn = null;
-        try {
-            conn = database.connect();
-            if (conn == null) {
-                throw new IllegalArgumentException("connection must not be null");
-            }
-            
-            int i=0;
-            for (String srcTableName : srcTableNames) {
-                String dstTableName = dstTableNames.get(i);
-                
-                Settings settings = new Settings();
-                settings.setValue(IoxWkfConfig.SETTING_DBTABLE, srcTableName);
-                settings.setValue(IoxWkfConfig.SETTING_GPKGTABLE, dstTableName);
-                // set optional parameters
-                if (schemaName != null) {
-                    settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
-                }
-                if (batchSize != null) {
-                    settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
-                }
-                if (fetchSize != null) {
-                    settings.setValue(IoxWkfConfig.SETTING_FETCHSIZE, fetchSize.toString());
-                }
-
-                File data = this.getProject().file(dataFile);
-                
-                Db2Gpkg db2gpkg = new Db2Gpkg();
-                db2gpkg.exportData(data, conn, settings);
-                conn.commit();
-                i++;
-            }
-       } catch (Exception e) {
-            log.error("failed to run GpkgExport", e);
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException e) {
-                    log.error("failed to rollback/close", e);
-                }
-                conn = null;
-            }
-        }
+        return dstTableNames;
     }
 }

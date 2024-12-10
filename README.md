@@ -40,6 +40,21 @@ Since `java.xml` is part of the JDK but is also a dependency of the Gradle API (
 - Run `./gradlew eclipse`
 - Add `org.eclipse.jdt.core.compiler.ignoreUnnamedModuleForSplitPackage=enabled` to _gretl/.settings/org.eclipse.jdt.core.prefs_.
 
+## Updating Gradle 
+
+Update Gradle for the project:
+
+```
+./gradlew wrapper --gradle-version 8.10.2
+```
+
+Update Gradle in the Dockerfile:
+
+```
+ENV GRADLE_VERSION 8.10.2
+ARG GRADLE_DOWNLOAD_SHA256=31c55713e40233a8303827ceb42ca48a47267a0ad4bab9177123121e71524c26
+```
+
 ## Oracle JDBC
 There are still signs and wonders taking place: Since fall 2019 the Oracle JDBC library can be found on maven central. Oracle database support is now straight forward.
 

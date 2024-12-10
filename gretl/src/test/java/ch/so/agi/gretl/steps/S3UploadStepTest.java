@@ -48,7 +48,7 @@ public class S3UploadStepTest {
     public static void setUp() throws Exception {
         s3AccessKey = localStackContainer.getAccessKey();
         s3SecretKey = localStackContainer.getSecretKey();
-        s3BucketName = System.getProperty("s3BucketName");
+        s3BucketName = "ch.so.agi.gretl.test";
         s3Endpoint = localStackContainer.getEndpointOverride(S3);
         s3Region = localStackContainer.getRegion();
         acl = "public-read";
@@ -58,6 +58,7 @@ public class S3UploadStepTest {
     @Test
     @Tag(TestTags.S3_TEST)
     public void uploadDirectory_Ok() throws Exception {
+        // Prepare
         File sourceObject = TestUtil.getResourceFile("data/s3upload/");
         Map<String,String> metaData = new HashMap<String, String>() {{
             put("lastModified", "2020-08-28");
@@ -69,7 +70,7 @@ public class S3UploadStepTest {
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
-        // Upload files from a directory.
+        // Execute
         S3UploadStep s3UploadStep = new S3UploadStep();
         s3UploadStep.execute(s3AccessKey, s3SecretKey, sourceObject, s3BucketName, s3Endpoint.toString(), s3Region, acl, null, metaData);
         
@@ -98,6 +99,7 @@ public class S3UploadStepTest {
     @Test
     @Tag(TestTags.S3_TEST)
     public void uploadFile_Ok() throws Exception {
+        // Prepare
         File sourceObject = TestUtil.getResourceFile("data/s3upload/foo.txt");
         Map<String,String> metaData = new HashMap<>();
         S3Client s3Client = s3TestHelper.getS3Client();
@@ -125,6 +127,7 @@ public class S3UploadStepTest {
     @Test
     @Tag(TestTags.S3_TEST)
     public void uploadFile_Fail() throws Exception {
+        // Prepare
         File sourceObject = TestUtil.getResourceFile("data/s3upload/foo.txt");
         Map<String,String> metaData = new HashMap<>();
         S3Client s3Client = s3TestHelper.getS3Client();

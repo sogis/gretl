@@ -30,7 +30,7 @@ public class S3DownloadStep {
     
     public S3DownloadStep(String taskName) {
         if (taskName == null) {
-            taskName = S3DownloadStep.class.getSimpleName();
+            this.taskName = S3DownloadStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

@@ -60,6 +60,7 @@ public class S3Bucket2BucketStepTest {
     @Test
     @Tag(TestTags.S3_TEST)
     public void copyFiles_Ok() throws Exception {
+        // Prepare
         S3Client s3Client = s3TestHelper.getS3Client();
         s3TestHelper.createBucketIfNotExists(s3Client, s3SourceBucketName);
         s3TestHelper.createBucketIfNotExists(s3Client, s3TargetBucketName);
@@ -68,7 +69,10 @@ public class S3Bucket2BucketStepTest {
         Map<String,String> metadata = new HashMap<>();
         deleteObjects(s3Client, Arrays.asList("foo.txt", "bar.txt"));
         s3TestHelper.upload(sourceObject, metadata, s3SourceBucketName, acl);
-        copyFiles(metadata);
+        
+        // Execute
+        S3Bucket2BucketStep s3Bucket2Bucket = new S3Bucket2BucketStep();
+        s3Bucket2Bucket.execute(s3AccessKey, s3SecretKey, s3SourceBucketName, s3TargetBucketName, s3Endpoint.toString(), s3Region, acl, metadata);
 
         // Check result. 
         ListObjectsRequest listObjects = ListObjectsRequest.builder().bucket(s3TargetBucketName).build();
@@ -103,15 +107,6 @@ public class S3Bucket2BucketStepTest {
 
             s3Client.deleteObject(deleteObjectRequest);
         }
-    }
-
-    /**
-     * Copy files from one bucket to another
-     * @param metadata metadata
-     */
-    private void copyFiles(Map<String, String> metadata) throws FileNotFoundException, UnsupportedEncodingException {
-        S3Bucket2BucketStep s3Bucket2Bucket = new S3Bucket2BucketStep();
-        s3Bucket2Bucket.execute(s3AccessKey, s3SecretKey, s3SourceBucketName, s3TargetBucketName, s3Endpoint.toString(), s3Region, acl, metadata);
     }
 
     /**

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class S3TestHelper {
-    private static final DockerImageName localstackImage = DockerImageName.parse("localstack/localstack:0.11.2");
+    private static final DockerImageName localstackImage = DockerImageName.parse("localstack/localstack:4.0.2");
     private final String s3AccessKey;
     private final String s3SecretKey;
     private final String s3Region;
@@ -45,7 +45,7 @@ public class S3TestHelper {
      * @param sourceObject directory for S3 bucket data on the local system
      * @param metadata metadata
      */
-    public void upload(
+    public void upload (
             File sourceObject,
             Map<String, String> metadata,
             String s3BucketName,

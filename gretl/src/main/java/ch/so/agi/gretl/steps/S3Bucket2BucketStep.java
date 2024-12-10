@@ -36,7 +36,7 @@ public class S3Bucket2BucketStep {
     
     public S3Bucket2BucketStep(String taskName) {
         if (taskName == null) {
-            taskName = S3Bucket2BucketStep.class.getSimpleName();
+            this.taskName = S3Bucket2BucketStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

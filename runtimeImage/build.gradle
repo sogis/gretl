@@ -2,25 +2,68 @@ apply plugin: 'java-library'
 
 configurations.all {
     resolutionStrategy { 
-        force 'ch.interlis:ili2c-tool:5.3.2' 
-        force 'ch.interlis:ili2c-core:5.3.2'
-        force 'ch.interlis:ili2gpkg:4.11.1'
-        force 'ch.interlis:iox-ili:1.21.18'
+        force libs.ili2c.core
+        force libs.ili2c.tool
+        force libs.ili2gpkg
+        force libs.iox.ili
     }
 }
 
 dependencies {
-    api 'ch.so.agi:gretl:3.0.+'
+    api "ch.so.agi:gretl:$version.major.$version.minor.+"
 
-    // Add 3rd party libs which we want in the docker image.
-    api libs.gradle.download.task
+    // Add 3rd party libs/plugins which we want in the docker image.
+    api libs.gradle.download.task.plugin
     api libs.gradle.ssh.plugin
-    api libs.gradle.aws.plugin
 }
 
-task stageJars(type: Copy) {
+tasks.register('stageJars', Copy) {
     description = 'Copies all jars required by gretl to the temp folder __jars4image.'
     from configurations.compileClasspath
     from configurations.runtimeClasspath
     into "gretl/__jars4image"
+}
+
+// Zum Testen des Images mit den Integrationstest
+tasks.register('buildImage', Exec) {
+    dependsOn 'stageJars'
+    description = 'Build Docker image for unit tests.'
+    def githash = getCheckedOutGitCommitHash()
+    def build_timestamp = getTimestamp()
+
+    workingDir "$projectDir/gretl"
+    commandLine 'docker', 'build',
+                '--no-cache', '--force-rm',
+                '-t', "sogis/gretl:latest",
+                '-f', 'Dockerfile',  '.'
+}
+
+// Zum Publizieren der Images
+tasks.register('buildAndPushMultiArchImage', Exec) {
+    dependsOn 'stageJars'
+    description = 'Build final multi-arch Docker image.'
+    def githash = getCheckedOutGitCommitHash()
+    def build_timestamp = getTimestamp()
+
+    workingDir "$projectDir/gretl"
+    commandLine 'docker', 'buildx', 'build',
+                '--platform', 'linux/amd64,linux/arm64',
+                '-t', "sogis/gretl:$version.major",
+                '-t', "sogis/gretl:$version.major.$version.minor",
+                '-t', "sogis/gretl:$version.major.$version.minor.$version.build",
+                '-t', "sogis/gretl:latest",
+                '--label', "gretl.created=$build_timestamp", 
+                '--label', "gretl.git_commit=$githash",
+                '--label', "gretl.version=$version",
+                //'-f', 'Dockerfile',  '.', '--push'
+                '-f', 'Dockerfile',  '.'
+}
+
+def getCheckedOutGitCommitHash() {
+    'git log -1 --pretty=%H'.execute().text.trim()
+}
+
+def getTimestamp() {
+    def date = new Date()
+    return date.format('yyyy-MM-dd HH:mm:ss')
 }
