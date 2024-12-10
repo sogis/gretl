@@ -108,6 +108,7 @@ public class IntegrationTestUtil {
         arguments.add("--init-script");
         arguments.add(IntegrationTestUtil.getPathToInitScript());
         arguments.add(taskName);
+        arguments.add("-d");
         if(variables != null){
             for(GradleVariable variable: variables){
                 arguments.add(variable.buildOptionString());
