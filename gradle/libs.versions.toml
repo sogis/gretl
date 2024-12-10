@@ -36,7 +36,7 @@ testContainersVersion = "1.15.3"
 sftpFsVersion = "2.0.4"
 tomcatEmbedVersion = "9.0.69"
 gradleDownloadTaskPluginVersion = "5.6.0"
-gradleSshPluginVersion = "2.11.2"
+gradleSshPluginVersion = "2.10.1"
 pluginPublishVersion = "0.21.0"
 cyclonedxBomVersion = "1.7.4"
 awsSdkV1Version = "1.12.761"
@@ -86,7 +86,7 @@ testcontainers-localstack = { group = "org.testcontainers", name = "localstack",
 sftp-fs = { group = "com.github.robtimus", name = "sftp-fs", version.ref = "sftpFsVersion"}
 tomcat-embed-core = { group = "org.apache.tomcat.embed", name = "tomcat-embed-core", version.ref = "tomcatEmbedVersion" }
 gradle-download-task-plugin = {group = "de.undercouch", name = "gradle-download-task", version.ref = "gradleDownloadTaskPluginVersion"}
-gradle-ssh-plugin = {group = "org.hidetake", name = "core", version.ref = "gradleSshPluginVersion"}
+gradle-ssh-plugin = {group = "org.hidetake", name = "gradle-ssh-plugin", version.ref = "gradleSshPluginVersion"}
 
 [plugins]
 plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "pluginPublishVersion" }
