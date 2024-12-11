@@ -1,36 +1,23 @@
-/*
 allprojects {
-    apply from: "../../../../../versioning.gradle"
+    buildscript {
+        def pluginClassPathFile = file('../../../../build/integrationTest/resources/pluginClassPath.txt') // Reference the file
 
-    buildscript {
-        repositories {
-        	mavenLocal()
-            maven { url "https://jars.interlis.ch" }
-            maven { url "https://repo.osgeo.org/repository/release/" }   
-            maven { url "https://s01.oss.sonatype.org/service/local/repositories/releases/content/" } 
-            maven { url "https://s01.oss.sonatype.org/service/local/repositories/snapshots/content/" }
-            mavenCentral()
-        }
+        if (pluginClassPathFile.exists()) {
+            def dependencyPaths = pluginClassPathFile.readLines() // Read the file lines
+                .findAll { it?.trim() } // Exclude empty or blank lines
+                .collect { it.trim() } // Trim whitespace
         
-        dependencies {
-            classpath "ch.so.agi:gretl:$version.major.$version.minor.$version.build" 
-        }
-    }
-}
-*/
-allprojects {
-    buildscript {
-        repositories {
-            mavenLocal()
-            maven { url "https://jars.interlis.ch" }
-            maven { url "https://repo.osgeo.org/repository/release/" }    
-            maven { url "https://s01.oss.sonatype.org/service/local/repositories/snapshots/content/" }
-            mavenCentral()
-        }
-        
-        dependencies {
-            // will match the latest anything - snapshot or release, whatever it finds newer
-            classpath 'ch.so.agi:gretl:latest.integration' 
+            repositories {
+            }
+
+            dependencies {
+                dependencyPaths.each { path ->
+                    //println path
+                    classpath files(path) // Add each file to the classpath
+                }
+            }
+        } else {
+            throw new GradleException("pluginClassPath.txt file not found!")
         }
     }
 }

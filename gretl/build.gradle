@@ -55,9 +55,9 @@ configurations {
 }
 
 dependencies {
-    testRuntime files(writePluginClassPath)
+    //testRuntime files(writePluginClassPath)
 
-    api gradleApi()
+    //api gradleApi()
   
     api libs.ilivalidator
     api libs.ilivalidator.custom.functions
