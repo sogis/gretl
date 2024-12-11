@@ -1,3 +1,4 @@
+/*
 allprojects {
     apply from: "../../../../../versioning.gradle"
 
@@ -13,6 +14,23 @@ allprojects {
         
         dependencies {
             classpath "ch.so.agi:gretl:$version.major.$version.minor.$version.build" 
+        }
+    }
+}
+*/
+allprojects {
+    buildscript {
+        repositories {
+            mavenLocal()
+            maven { url "https://jars.interlis.ch" }
+            maven { url "https://repo.osgeo.org/repository/release/" }    
+            maven { url "https://s01.oss.sonatype.org/service/local/repositories/snapshots/content/" }
+            mavenCentral()
+        }
+        
+        dependencies {
+            // will match the latest anything - snapshot or release, whatever it finds newer
+            classpath 'ch.so.agi:gretl:latest.integration' 
         }
     }
 }
