@@ -32,9 +32,9 @@ jobs:
         # run: |
         #   ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
 
-      - name: Debug1
-        run: |
-          ls -la ~/.m2/repository/ch/so/agi/gretl
+      # - name: Debug1
+      #   run: |
+      #     ls -la ~/.m2/repository/ch/so/agi/gretl
 
       - name: Integration tests (Plugin)
         id: jarTest
