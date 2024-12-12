@@ -14,7 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
 
-@Disabled
+//@Disabled
 @Testcontainers
 public class DbDriverContainedTest {
 
