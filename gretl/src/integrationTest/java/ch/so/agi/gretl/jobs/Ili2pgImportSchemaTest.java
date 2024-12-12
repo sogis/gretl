@@ -37,7 +37,7 @@ public class Ili2pgImportSchemaTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgschemaimport", variables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
         // Check results
         try (
@@ -76,7 +76,7 @@ public class Ili2pgImportSchemaTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgschemaimport", variables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
         // Check results
         try (

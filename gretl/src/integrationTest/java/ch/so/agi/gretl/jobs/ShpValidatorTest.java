@@ -12,7 +12,7 @@ public class ShpValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpValidator");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
     }
 
     @Test
@@ -20,7 +20,7 @@ public class ShpValidatorTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpValidatorFail");
 
         assertThrows(Throwable.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+            IntegrationTestUtil.executeTestRunner(projectDirectory);
         });
     }
 }

@@ -17,7 +17,7 @@ public class Csv2ExcelTest {
     public void convertCsv_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Csv2Excel");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "convertData");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
 
         FileInputStream fis = new FileInputStream(projectDirectory.getAbsolutePath() + "/20230124_sap_Gebaeude.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);

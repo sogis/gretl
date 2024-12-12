@@ -51,7 +51,7 @@ public class SqlExecutorTaskTest {
             IntegrationTestUtilSql.closeCon(con);
 
             File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskChain");
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
+            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -88,7 +88,7 @@ public class SqlExecutorTaskTest {
             IntegrationTestUtilSql.closeCon(con);
 
             File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskRelPath");
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "relativePathConfiguration", gradleVariables);
+            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
         }
         finally {
             IntegrationTestUtilSql.closeCon(con);
@@ -110,7 +110,7 @@ public class SqlExecutorTaskTest {
             IntegrationTestUtilSql.closeCon(con);
 
             File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskParameter");
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
+            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);
@@ -146,7 +146,7 @@ public class SqlExecutorTaskTest {
 
 
             File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskParameterList");
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "insertInto", gradleVariables);
+            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
             //reconnect to check results
             con = IntegrationTestUtilSql.connectPG(postgres);

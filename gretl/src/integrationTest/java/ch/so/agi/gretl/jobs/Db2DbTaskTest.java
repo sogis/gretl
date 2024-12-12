@@ -65,7 +65,7 @@ public class Db2DbTaskTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskFetchSize");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "fetchSizeTask", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.target_data", schemaName);
@@ -95,7 +95,7 @@ public class Db2DbTaskTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskChain");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "bToA", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
@@ -124,7 +124,7 @@ public class Db2DbTaskTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskRelPath");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "relativePath", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
@@ -153,7 +153,7 @@ public class Db2DbTaskTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbTaskDelTable");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "sourceToDestWithDelete", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.albums_dest", schemaName);
@@ -181,7 +181,7 @@ public class Db2DbTaskTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbParameter");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "src2dest", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.dest", schemaName);
@@ -211,7 +211,7 @@ public class Db2DbTaskTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Db2DbParameterList");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "src2dest", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres)) {
             String countDestSql = String.format("SELECT COUNT(*) FROM %s.dest", schemaName);

@@ -48,7 +48,7 @@ public class Gpkg2ShpTest {
                     });
         }
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkg2shp");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
 
         // Check results
         {

@@ -89,7 +89,7 @@ public class S3Bucket2BucketTest {
         
         // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3Bucket2Bucket");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "copyfiles", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check result.
         ListObjectsRequest listObjects = ListObjectsRequest

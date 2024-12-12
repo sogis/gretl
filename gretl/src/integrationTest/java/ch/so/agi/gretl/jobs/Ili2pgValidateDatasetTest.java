@@ -32,7 +32,7 @@ public class Ili2pgValidateDatasetTest {
     @Test
     public void validateSingleDataset_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateSingleDataset");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check result
         String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateSingleDataset/validation.log")));
@@ -42,7 +42,7 @@ public class Ili2pgValidateDatasetTest {
     @Test
     public void validateMultipleDataset_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateMultipleDatasets");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check result
         String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateMultipleDatasets/validation.log")));
@@ -54,7 +54,7 @@ public class Ili2pgValidateDatasetTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateDatasetFail");
 
         assertThrows(Throwable.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate", gradleVariables);
+            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
         });
 
         String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateDatasetFail/validation.log")));

@@ -72,7 +72,7 @@ public class S3DownloadTest {
 
         // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadFile");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "filedownload", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check result.
         S3Client s3client = s3TestHelper.getS3Client();

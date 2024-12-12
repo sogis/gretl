@@ -52,7 +52,7 @@ public class JsonImportTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportObject");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "jsonimport", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Reconnect to check results
         try (
@@ -104,7 +104,7 @@ public class JsonImportTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportArray");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "jsonimport", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Reconnect to check results
         try (
