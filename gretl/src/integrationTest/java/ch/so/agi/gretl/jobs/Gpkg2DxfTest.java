@@ -47,7 +47,7 @@ public class Gpkg2DxfTest {
                     });
         }
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkg2dxf");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
 
         // Check results
         for (String dxfFile : dxfFiles) {

@@ -29,7 +29,7 @@ public class GzipTest {
     @Test
     public void compress_file_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Gzip");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "compressFile");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
                 
         // Validate result
         File gzipFile = new File("src/integrationTest/jobs/Gzip/planregister.xml.gz");

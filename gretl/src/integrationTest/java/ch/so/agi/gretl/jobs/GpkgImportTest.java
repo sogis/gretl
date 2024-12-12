@@ -50,7 +50,7 @@ public class GpkgImportTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgImport");
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkgimport", variables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
         // Reconnect to check results
         try (Connection con = IntegrationTestUtilSql.connectPG(postgres);

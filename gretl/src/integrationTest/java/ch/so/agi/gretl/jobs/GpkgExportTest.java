@@ -56,7 +56,7 @@ public class GpkgExportTest {
             con.commit();
         }
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkgexport", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check results
         try (
@@ -96,7 +96,7 @@ public class GpkgExportTest {
             IntegrationTestUtilSql.closeCon(con);
         }
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "gpkgexport", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check results
         for (int i = 1; i <= 2; i++) {

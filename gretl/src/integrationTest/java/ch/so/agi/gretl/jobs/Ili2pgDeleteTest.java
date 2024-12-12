@@ -37,7 +37,7 @@ public class Ili2pgDeleteTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgdelete", variables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
         try (
             Connection con = IntegrationTestUtilSql.connectPG(postgres);

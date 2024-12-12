@@ -12,14 +12,14 @@ public class GpkgValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidator");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
     }
     @Test
     public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgValidatorFail");
 
         assertThrows(Throwable.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+            IntegrationTestUtil.executeTestRunner(projectDirectory);
         });
     }
 }

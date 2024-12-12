@@ -68,7 +68,7 @@ public class S3UploadTest {
 
         // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadDirectory");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "directoryupload", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check result.
         ListObjectsRequest listObjects = ListObjectsRequest
@@ -101,7 +101,7 @@ public class S3UploadTest {
 
         // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFileTree");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "filetreeupload", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check result
         ListObjectsRequest listObjects = ListObjectsRequest
@@ -134,7 +134,7 @@ public class S3UploadTest {
 
         // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFile");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", gradleVariables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check result.
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -166,7 +166,7 @@ public class S3UploadTest {
 
         // Execute
         assertThrows(Throwable.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "fileupload", gradleVariables);
+            IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
         });
     }
 }

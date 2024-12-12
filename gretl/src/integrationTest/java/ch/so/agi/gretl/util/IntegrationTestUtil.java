@@ -26,11 +26,15 @@ public class IntegrationTestUtil {
     private static final String GRETL_PROJECT_ABSOLUTE_PATH = System.getProperty("GRETL_PROJECT_ABS_PATH");
     private static final String ROOT_PROJECT_ABSOLUTE_PATH = System.getProperty("ROOT_PROJECT_ABS_PATH");
 
-    public static void executeTestRunner(File projectDirectory, String taskName) throws IOException {
-        executeTestRunner(projectDirectory, taskName, null);
+    public static void executeTestRunner(File projectDirectory) throws IOException {
+        executeTestRunner(projectDirectory, null, null);
     }
 
-    public static void executeTestRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException {
+    public static void executeTestRunner(File projectDirectory, GradleVariable[] variables) throws IOException {
+        executeTestRunner(projectDirectory, variables, null);
+    }
+
+    public static void executeTestRunner(File projectDirectory, GradleVariable[] variables, String taskName) throws IOException {
         if (TestType.IMAGE.equals(TEST_TYPE)) {
             executeDockerRunCommand(projectDirectory, variables);
         } else if(TestType.JAR.equals(TEST_TYPE)) {
@@ -46,7 +50,7 @@ public class IntegrationTestUtil {
                 .withProjectDir(projectDirectory)
                 .withArguments(arguments)
                 .forwardOutput().build();
-        TaskOutcome outcome = Objects.requireNonNull(result.task(":" + taskName)).getOutcome();
+        //TaskOutcome outcome = Objects.requireNonNull(result.task(":" + taskName)).getOutcome();
     }
 
     private static void executeDockerRunCommand(File projectDirectory, GradleVariable[] variables) {
@@ -105,9 +109,12 @@ public class IntegrationTestUtil {
         List<String> arguments = new ArrayList<>();
         arguments.add("--init-script");
         arguments.add(IntegrationTestUtil.getPathToInitScript());
-        arguments.add(taskName);
+        if (taskName != null) {
+            arguments.add(taskName);
+        }
+        arguments.add("--rerun-tasks");
         arguments.add("-i");
-        if(variables != null){
+        if (variables != null) {
             for(GradleVariable variable: variables){
                 arguments.add(variable.buildOptionString());
             }

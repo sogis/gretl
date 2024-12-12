@@ -40,7 +40,7 @@ public class Ili2pgImportFileSetTest {
 
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "ili2pgimport", variables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
         // Check results
         try (

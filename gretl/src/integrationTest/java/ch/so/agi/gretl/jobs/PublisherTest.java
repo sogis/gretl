@@ -17,7 +17,7 @@ public class PublisherTest {
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "av_test.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "publishFile");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
     }
 
     @Test
@@ -28,7 +28,7 @@ public class PublisherTest {
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "2502.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "printPublishedRegions");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
     }
 
     private void copyFileFromResourcesToJob(String jobDirectory, String resourceSubDirectory, String filename) throws IOException {

@@ -12,14 +12,14 @@ public class CsvValidatorTest {
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidator");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
     }
     @Test
     public void validationFail() {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CsvValidatorFail");
 
         assertThrows(Throwable.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+            IntegrationTestUtil.executeTestRunner(projectDirectory);
         });
     }
 }

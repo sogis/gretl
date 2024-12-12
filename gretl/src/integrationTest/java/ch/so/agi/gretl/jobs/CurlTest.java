@@ -45,7 +45,7 @@ class CurlTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
         
         // Validate result
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
@@ -74,7 +74,7 @@ class CurlTest {
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
         assertThrows(Throwable.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
+            IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
         });
     }
     
@@ -88,7 +88,7 @@ class CurlTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlPlanregister");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "uploadData", variables);
+        IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
         
         // Validate result
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
@@ -102,7 +102,7 @@ class CurlTest {
     public void downloadFile_Ok() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlDownload");
 
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "downloadData");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
 
         String content = new String(Files.readAllBytes(Paths.get(projectDirectory + "/README.md")));
         assertTrue(content.contains("_GRETL_"));

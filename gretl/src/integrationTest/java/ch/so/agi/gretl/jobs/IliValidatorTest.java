@@ -15,12 +15,12 @@ public class IliValidatorTest {
     @Test
     public void validationOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidator");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
     }
     @Test
     public void validationFileSetOk() throws Exception {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorFileSet");
-        IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
     }
 
     @Test
@@ -28,7 +28,7 @@ public class IliValidatorTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorFail");
 
         assertThrows(Throwable.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+            IntegrationTestUtil.executeTestRunner(projectDirectory);
         });
     }
     
@@ -38,7 +38,7 @@ public class IliValidatorTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/IliValidatorNgk");
 
         assertThrows(Throwable.class, () -> {
-            IntegrationTestUtil.executeTestRunner(projectDirectory, "validate");
+            IntegrationTestUtil.executeTestRunner(projectDirectory);
         });
         
         // Check result
