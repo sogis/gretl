@@ -4,7 +4,7 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'validate'
 
-task validate(type: IliValidator){
+task validate(type: IliValidator) {
     dataFiles = ["Beispiel2a.xtf"]
     logFile = "ilivalidator.log"
 }

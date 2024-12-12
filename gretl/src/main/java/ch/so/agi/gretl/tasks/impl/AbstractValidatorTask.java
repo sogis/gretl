@@ -12,6 +12,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.interlis2.validator.Validator;
 
+import java.io.File;
 import java.util.List;
 
 public class AbstractValidatorTask extends DefaultTask {
@@ -23,6 +24,8 @@ public class AbstractValidatorTask extends DefaultTask {
     private String modeldir = null;
 
     private Object configFile = null;
+    
+    private Object metaConfigFile = null;
 
     private Boolean forceTypeValidation = false;
 
@@ -64,10 +67,16 @@ public class AbstractValidatorTask extends DefaultTask {
         return modeldir;
     }
 
-    @InputFile
+    @Input
     @Optional
     public Object getConfigFile() {
         return configFile;
+    }
+
+    @Input
+    @Optional
+    public Object getMetaConfigFile() {
+        return metaConfigFile;
     }
 
     @Input
@@ -150,6 +159,10 @@ public class AbstractValidatorTask extends DefaultTask {
     public void setConfigFile(Object configFile) {
         this.configFile = configFile;
     }
+    
+    public void setMetaConfigFile(Object metaConfigFile) {
+        this.metaConfigFile = metaConfigFile;
+    }
 
     public void setForceTypeValidation(Boolean forceTypeValidation) {
         this.forceTypeValidation = forceTypeValidation;
@@ -209,6 +222,13 @@ public class AbstractValidatorTask extends DefaultTask {
         }
         if (configFile != null) {
             settings.setValue(Validator.SETTING_CONFIGFILE, this.getProject().file(configFile).getPath());
+        }
+        if (metaConfigFile != null) {
+            if (metaConfigFile instanceof File) {
+                settings.setValue(Validator.SETTING_META_CONFIGFILE, this.getProject().file(metaConfigFile).getPath());                
+            } else {
+                settings.setValue(Validator.SETTING_META_CONFIGFILE, metaConfigFile.toString());                                
+            }
         }
         if (forceTypeValidation) {
             settings.setValue(Validator.SETTING_FORCE_TYPE_VALIDATION, Validator.TRUE);

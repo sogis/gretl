@@ -1,0 +1,103 @@
+INTERLIS 2.3;
+CONTRACTED MODEL GeoW_FunctionsExt
+  AT "mailto:info@geowerkstatt.ch" VERSION "2024-02-26" =
+    IMPORTS GeometryCHLV95_V1;
+    /**
+    * Geometrie-Funktionen
+    */
+    !!@ fn.description = "Ermittelt die Länge einer (bzw. die Summe mehrerer) Linien-Geometrien. Für 'Objects' können Objekte oder Geometrien angegeben werden. Für 'LineAttr' soll der Pfad zur Linien-Geometrie in INTERLIS 2 Syntax angegeben werden. Falls 'Objects' bereits die Geometrien enthält, soll für 'LineAttr' 'UNDEFINED' übergeben werden. Wird über eine Beziehung die gleiche Geometrie mehrmals gefunden, wird dessen Länge mehrmals gezählt.";
+    !!@ fn.param = "Objects: Ausgangsobjekte oder Geometrien."; 
+    !!@ fn.param = "LineAttr: Pfad zum Geometrieattribut oder UNDEFINED";
+    !!@ fn.return = "Länge der Geometrie";
+    !!@ fn.since = "2021-11-15";
+    !!sample = "MANDATORY CONSTRAINT GeoW_FunctionsExt.GetArea(THIS, "testAttribute") < 60;";
+    FUNCTION GetLength (Objects: OBJECTS OF ANYCLASS; LineAttr: TEXT): NUMERIC;
+
+    !!@ fn.description = "Ermittelt die Fläche einer (bzw. die Summe mehrerer) Polygon-Geometrien. Für 'Objects' können Objekte oder Geometrien angegeben werden. Für 'AreaAttr' soll der Pfad zur Flächen-Geometrie in INTERLIS 2 Syntax angegeben werden. Falls 'Objects' bereits die Geometrien enthält, soll für 'AreaAttr' 'UNDEFINED' übergeben werden. Wird über eine Beziehung die gleiche Geometrie mehrmals gefunden, wird dessen Fläche mehrmals gezählt.";
+    !!@ fn.param = "Objects: Ausgangsobjekte oder Geometrien.";
+    !!@ fn.param = "AreaAttr: Pfad zum Geometrieattribut oder UNDEFINED";
+    !!@ fn.return = "Fläche der Geometrie";
+    !!@ fn.since = "2021-11-15";
+    !!sample = "MANDATORY CONSTRAINT GeoW_FunctionsExt.GetLength(THIS, "polylineAttribute") > 13000;";
+    FUNCTION GetArea (Objects: OBJECTS OF ANYCLASS; AreaAttr: TEXT): NUMERIC;
+
+    !!@ fn.description = "Zählt die inneren Ringe in einer Fläche. Für 'Object' kann ein Objekt oder Geometrie angegeben werden. Für 'AreaAttr' soll der Pfad zur Flächen-Geometrie in INTERLIS 2 Syntax angegeben werden.. Falls 'Object' bereits die Geometrie enthält, soll für 'AreaAttr' 'UNDEFINED' übergeben werden.";
+    !!@ fn.param = "Object: Ausgangsobjekt oder Geometrie.";
+    !!@ fn.param = "AreaAttr: Pfad zum Geometrieattribut oder UNDEFINED";
+    !!@ fn.return = "Anzahl innerer Ringe der Flächengeometrie";
+    !!@ fn.since = "2022-12-02";
+    !!sample = "MANDATORY CONSTRAINT GeoW_FunctionsExt.GetInnerRingsCount(THIS, "areaAttribute") == 0;";
+    FUNCTION GetInnerRingsCount (Object: OBJECT OF ANYCLASS; AreaAttr: TEXT): NUMERIC;
+
+    !!@ fn.description = "Gruppiert die Eingabemenge gemäss dem übergebenen Attribut-Kriterium / -Pfad und gibt die Objekte der Eingabemenge als gruppierte Menge zurück. Für 'Attr' soll der Pfad zum klassierenden Attribut in INTERLIS 2 Syntax angegeben werden.";
+    !!@ fn.param = "Objects: Ausgangsobjekte.";
+    !!@ fn.param = "Attr: Pfad zum Attribut welches die Klassierung bestimmen soll";
+    !!@ fn.return = "Zugehörige Gruppe gemäss Attr des aktuellen Kontextobjekt";
+    !!@ fn.since = "2022-12-02";
+    !!sample = "SET CONSTRAINT INTERLIS.elementCount(GeoW_FunctionsExt.GetInGroups(ALL, "textAttr")) == 3;";
+    FUNCTION GetInGroups (Objects: OBJECTS OF ANYCLASS; Attr: TEXT): OBJECTS OF ANYCLASS;
+
+    !!@ fn.description = "Prüft, ob ein Objekt innerhalb einer gegebenen Testgeometrie liegt, welche aus einem externen Datensatz stammt. Der externe Datensatz muss sich in einer INTERLIS 2.3 Transferdatei befinden, die entweder im selben Ordner wie die GeoW_FunctionsExt JAR liegt oder sich in einem JAR befinden, das über den Java Classpath erreichbar ist.";
+    !!@ fn.param = "DatasetName: Qualifizierter Name des Attributes aus dem Transfermodell, in welchem die Objekte zur Prüfung bereitliegen.";
+    !!@ fn.param = "Objects: Objekt(e), über die TID identifiziert, welche zur Prüfung beigezogen werden.";
+    !!@ fn.param = "TestObject: Objekt, welches zu prüfen ist.";
+    !!@ fn.param = "TestObjectgeometry: Geometriefeld, bezogen auf das unter Testobject übergebene Objekt";
+    !!@ fn.return = "Boolean";
+    !!@ fn.since = "2022-12-05";
+    !!sample = "MANDATORY CONSTRAINT GeoW_FunctionsExt.IsInsideExternalXtf("swissBOUNDARIES3D_ili2_LV95_V1_3.TLM_GRENZEN.TLM_KANTONSGEBIET.Shape", "9230,9245,9247,9257", THIS, "testAttributeMultiCoord");";
+    FUNCTION IsInsideExternalXtf (DatasetName: TEXT; Objects: TEXT; TestObject: OBJECT OF ANYCLASS; TestObjectgeometry: TEXT): BOOLEAN;
+
+    !!@ fn.description = "Prüft, ob ein Objekt innerhalb einer gegebenen Testgeometrie liegt, welche aus einem externen Datensatz innerhalb der Ressourcen stammt. Der externe Datensatz muss sich in einer INTERLIS 2.3 Transferdatei befinden, die über den angegebenen Pfad als Ressource erreichbar ist.";
+    !!@ fn.param = "TransferFile: Qualifizierter Name der Transferdatei-Ressource.";
+    !!@ fn.param = "DatasetName: Qualifizierter Name des Attributes aus dem Transfermodell, in welchem die Objekte zur Prüfung bereitliegen.";
+    !!@ fn.param = "Objects: Objekt(e), über die TID identifiziert, welche zur Prüfung beigezogen werden.";
+    !!@ fn.param = "TestObject: Objekt, welches zu prüfen ist.";
+    !!@ fn.param = "TestObjectgeometry: Geometriefeld, bezogen auf das unter Testobject übergebene Objekt";
+    !!@ fn.return = "Boolean";
+    !!@ fn.since = "2023-12-20";
+    !!sample = "MANDATORY CONSTRAINT GeoW_FunctionsExt.IsInsideExternalXtfResource("IsInsideExternalDatasetResource/ch.so.agi.av.hoheitsgrenzen_excerpt.xtf", "SO_Hoheitsgrenzen_Publikation_20170626.Hoheitsgrenzen.Kantonsgrenze.Geometrie", "fubar", THIS, "testAttributeIsInsideCHBaseGeometrie")";"
+    FUNCTION IsInsideExternalXtfResource (TransferFile: TEXT; DatasetName: TEXT; Objects: TEXT; TestObject: OBJECT OF ANYCLASS; TestObjectgeometry: TEXT): BOOLEAN;
+
+    !!@ fn.description = "Prüft, ob ein Objekt innerhalb der Geometrie eines anderen Objektes liegt.";
+    !!@ fn.param = "ReferenceGeometry: Referenzgeometrie, innerhalb welcher das TestObject liegen muss";
+    !!@ fn.param = "ReferenceGeometryAttr: Geometriefeld, bezogen auf das unter ReferenceGeometry übergebene Objekt";
+    !!@ fn.param = "TestObject: Objekt, welches zu prüfen ist.";
+    !!@ fn.param = "TestObjectgeometry: Geometriefeld, bezogen auf das unter Testobject übergebene Objekt";
+    !!@ fn.return = "Boolean";
+    !!@ fn.since = "2023-12-21";
+    !!sample = "MANDATORY CONSTRAINT (GeoW_FunctionsExt.IsInside(Prozessquelle_R->Teilauftrag_R->Abklaerungsperimeter_R, "Geometrie"), THIS, "Geometrie"));";
+    FUNCTION IsInside (ReferenceObject: ANYSTRUCTURE; ReferenceGeometryAttr: TEXT; TestObject: OBJECT OF ANYCLASS; TestObjectgeometry: TEXT): BOOLEAN;
+
+    !!@ fn.description = "Fasst die Flächen-Geometrien aus der Eingabemenge zu einer Flächen-Geometrie zusammen. Für 'Geometries' können nur Geometrien angegeben werden.";
+    !!@ fn.param = "Objects: Objekte, deren Geometrien zusammengefasst werden sollen.";
+    !!@ fn.param = "GeometryAttr: Pfad zum Geometrieattribut oder UNDEFINED";
+    !!@ fn.return = "Zusammengefasste Flächen-Geometrie";
+    !!@ fn.since = "2023-12-13";
+    !!sample = "MANDATORY CONSTRAINT GeoW_FunctionsExt.GetInnerRingsCount(GeoW_FunctionsExt.Union(THIS->surfaceAttribute), UNDEFINED) > 3;";
+    FUNCTION Union (Objects: ANYSTRUCTURE; GeometryAttr: TEXT): GeometryCHLV95_V1.MultiSurface;
+
+    !!@ fn.description = "Prüft, ob sich die Linien-Geometrien überlappen oder eine gemeinsame Teilstrecke vorhanden ist (wenn die Schnittmenge der Innenbereiche einer Linie entspricht). Für 'Objects' können Objekte oder Geometrien angegeben werden. Für 'LineAttr' soll der Pfad zur Linien-Geometrie in INTERLIS 2 Syntax angegeben werden. Falls 'Objects' bereits die Geometrien enthält, soll für 'LineAttr' 'UNDEFINED' übergeben werden.";
+    !!@ fn.param = "Objects: Ausgangsobjekte oder Geometrien.";
+    !!@ fn.param = "LineAttr: Pfad zum Geometrieattribut oder UNDEFINED";
+    !!@ fn.return = "TRUE, wenn sich zwei Linien überlappen oder zwischen zwei Linien eine gemeinsame Teilstrecke vorhanden ist";
+    !!@ fn.since = "2023-12-18";
+    !!sample = "SET CONSTRAINT WHERE type == #t3 : GeoW_FunctionsExt.PolylinesOverlap(ALL, "geometry");";
+    FUNCTION PolylinesOverlap (Objects: OBJECTS OF ANYCLASS; LineAttr: TEXT): BOOLEAN;
+
+    !!@ fn.description = "Sucht im aktuellen Transfer nach Objekten der angegebenen Klasse, welche das Filterkriterium erfüllen. Für 'FilterAttr' soll der Pfad zum Attribut in INTERLIS 2 Syntax angegeben werden. Für 'FilterValue' kann ein beliebiger Wert angegeben werden.";
+    !!@ fn.param = "ObjectClass: Klassenreferenz der Objekte, die gesucht werden.";
+    !!@ fn.param = "FilterAttr: Pfad zum Attribut, welches für den Filter verwendet werden soll.";
+    !!@ fn.param = "FilterValue: Wert für das Filterkriterium";
+    !!@ fn.return = "Alle Objekte der angegebenen Klasse aus dem aktuellen Transfer, welche das Filterkriterium erfüllen";
+    !!@ fn.since = "2024-01-10";
+    !!sample = "MANDATORY CONSTRAINT INTERLIS.elementCount(GeoW_FunctionsExt.FindObjects("ZG_Nutzungsplanung_V1_1.TransferMetadaten.Amt", "Name", "Gemeinde Walchwil")) == 1";
+    FUNCTION FindObjects(ObjectClass: CLASS; FilterAttr: TEXT; FilterValue: ANYSTRUCTURE): BAG OF ANYSTRUCTURE;
+
+    !!@ fn.description = "Filtert die Eingabemenge nach dem übergebenen Filterkriterium. Für 'Filter' soll eine Selection in INTERLIS 2 Syntax angegeben werden.";
+    !!@ fn.param = "Objects: Eingabemenge der Objekte.";
+    !!@ fn.param = "Filter: Filterkriterium in INTERLIS-Syntax (WHERE <logical-expression>;). THIS verweist jeweils auf das aktuelle Objekt.";
+    !!@ fn.return = "Alle Objekte, welche das Filterkriterium erfüllen";
+    !!@ fn.since = "2024-04-04";
+    !!sample = "MANDATORY CONSTRAINT INTERLIS.elementCount(GeoW_FunctionsExt.Filter(THIS->references, "WHERE active == #true;")) >= 1";
+    FUNCTION Filter(Objects: BAG OF ANYSTRUCTURE; Filter: TEXT): BAG OF ANYSTRUCTURE;
+END GeoW_FunctionsExt.

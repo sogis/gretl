@@ -25,14 +25,14 @@ public class IliValidator extends AbstractValidatorTask {
     @TaskAction
     public void validate() {
         log = LogEnvironment.getLogger(IliValidator.class);
-
+        
         if (getDataFiles() == null) {
             return;
         }
-        FileCollection dataFilesCollection=null;
-        if(getDataFiles() instanceof FileCollection) {
+        FileCollection dataFilesCollection = null;
+        if (getDataFiles() instanceof FileCollection) {
             dataFilesCollection=(FileCollection)getDataFiles();
-        }else {
+        } else {
             dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
