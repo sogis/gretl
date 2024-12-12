@@ -194,7 +194,7 @@ public class Publisher extends DefaultTask {
         return _publishedRegions;
     }
 
-    @InputFile
+    @Input
     @Optional
     public Object getValidationConfig() {
         return validationConfig;
