@@ -100,11 +100,39 @@ public class Publisher extends DefaultTask {
             throw new IllegalArgumentException("target must be set");
         }
 
-        Path targetFile = getTargetFile();
-        Path validationFile = getValidationFile();
-        Path groomingFile = getGroomingFile();
-        Settings settings = getSettings();
-        SimiSvcApi simiSvc = getSimiSvcApi();
+        Path targetFile = target.getUrl().startsWith("sftp:")
+                ? getSftpPath()
+                : getProject().file(target.getUrl()).toPath();
+        
+        Path validationFile = validationConfig != null
+                ? getProject().file(validationConfig).toPath()
+                : null;
+        
+        Path groomingFile = grooming != null
+                ? getProject().file(grooming).toPath()
+                : null;
+        
+        Settings settings = new Settings();
+        if (modeldir!=null) {
+            settings.setValue(Validator.SETTING_ILIDIRS, modeldir);
+        }
+        if (proxy != null) {
+            settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_HOST, proxy);
+        }
+        if (proxyPort != null) {
+            settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
+        }
+        
+        SimiSvcApi simiSvc = null;
+        if (kgdiService != null) {
+            if (!kgdiService.getUrl().isEmpty() && !kgdiService.getUser().isEmpty() && !kgdiService.getPassword().isEmpty()) {
+                simiSvc=new SimiSvcClient();
+                simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
+                if(kgdiTokenService!=null) {
+                    simiSvc.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
+                }
+            }
+        }
 
         if (version == null) {
             version = new Date();
@@ -266,16 +294,8 @@ public class Publisher extends DefaultTask {
         this.sourcePath = sourcePath;
     }
 
-    public void setDatabase(List<String> databaseDetails){
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
-        }
-
-        String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
-
-        this.database = new Connector(databaseUri, databaseUser, databasePassword);
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
     public void setDbSchema(String dbSchema) {
@@ -338,60 +358,7 @@ public class Publisher extends DefaultTask {
         this.version = version;
     }
 
-    @Internal
-    Path getTargetFile() {
-        return target.getUrl().startsWith("sftp:")
-                ? getSftpPath()
-                : getProject().file(target.getUrl()).toPath();
-    }
-
-    @Internal
-    Path getValidationFile() {
-        return validationConfig != null
-                ? getProject().file(validationConfig).toPath()
-                : null;
-    }
-
-    @Internal
-    Path getGroomingFile() {
-        return grooming != null
-                ? getProject().file(grooming).toPath()
-                : null;
-    }
-
-    @Internal
-    Settings getSettings() {
-        Settings settings = new Settings();
-        if (modeldir != null) {
-            settings.setValue(Validator.SETTING_ILIDIRS, modeldir);
-        }
-        if (proxy != null) {
-            settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_HOST, proxy);
-        }
-        if (proxyPort != null) {
-            settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
-        }
-        return settings;
-    }
-
-    @Internal
-    SimiSvcApi getSimiSvcApi() {
-        SimiSvcApi simiSvc = null;
-        if (kgdiService != null) {
-            if (!kgdiService.getUrl().isEmpty() && !kgdiService.getUser().isEmpty() && !kgdiService.getPassword().isEmpty()) {
-                simiSvc = new SimiSvcClient();
-                simiSvc.setup(kgdiService.getUrl(), kgdiService.getUser(), kgdiService.getPassword());
-                if (kgdiTokenService != null) {
-                    simiSvc.setupTokenService(kgdiTokenService.getUrl(), kgdiTokenService.getUser(), kgdiTokenService.getPassword());
-                }
-            }
-        }
-
-        return simiSvc;
-    }
-
-    @Internal
-    Path getSftpPath() {
+    private Path getSftpPath() {
         URI host = null;
         URI rawuri = null;
         String path = null;
@@ -415,10 +382,29 @@ public class Publisher extends DefaultTask {
         FileSystem fileSystem = null;
         try {
             fileSystem = FileSystems.newFileSystem( host, environment, SFTPFileSystemProvider.class.getClassLoader() );
+            keepAlive(fileSystem);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
 
         return fileSystem.getPath(path);
+    }
+    
+    private void keepAlive(FileSystem fileSystem) {        
+        Thread keepAliveThread = new Thread(() -> {
+            while (true) {
+                try {
+                    log.debug("sending keep-alive signal to sftp server");
+                    SFTPFileSystemProvider.keepAlive(fileSystem);
+
+                    Thread.sleep(60000);
+                } catch (InterruptedException | IOException e) {
+                    log.error(e.getMessage(), e);
+                    break;
+                }
+            }
+        });
+        keepAliveThread.setDaemon(true);
+        keepAliveThread.start();
     }
 }
