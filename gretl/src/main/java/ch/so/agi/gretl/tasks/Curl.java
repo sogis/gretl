@@ -11,8 +11,11 @@ import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
@@ -36,73 +39,81 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import javax.annotation.Nullable;
 
-
-// README.md eventuell
-// abstract class geht erst mit 5.6 oder so. Nicht mit 5.1.1
-// Dann kommen aber viele Warnungen von anderen Tasks wegen fehlendem Getter o.ae.
-// Publisher-Ansatz geht nicht, weil dann wird wirklich ein Objekt vom Typ Property erwartet.
-// Das ist fuer Anwender doof.
-
 public class Curl extends DefaultTask {
     protected GretlLogger log;
 
     private String serverUrl;
     private MethodType method;
-    private int expectedStatusCode;
+    private Integer expectedStatusCode;
     private String expectedBody;
     private Map<String,Object> formData; // curl [URL] -F key1=value1 -F file1=@my_file.xtf
     private File outputFile; // curl [URL] -o
     private File dataBinary; // curl [URL] --data-binary / ueberschreibt formData, siehe setEntity (glaub)
+    private String data; // curl [URL] --data
     private Map<String,String> headers; // curl [URL] -H ... -H ...
     private String user;
     private String password;
 
-    @Internal
+    @Input
     public String getServerUrl() {
         return serverUrl;
     }
 
-    @Internal
+    @Input
+    @Optional
     public MethodType getMethod() {
         return method;
     }
 
-    @Internal
-    public int getExpectedStatusCode() {
+    @Input
+    public Integer getExpectedStatusCode() {
         return expectedStatusCode;
     }
 
-    @Internal
+    @Input
+    @Optional
     public String getExpectedBody() {
         return expectedBody;
     }
 
-    @Internal
+    @Input
+    @Optional
     public Map<String, Object> getFormData() {
         return formData;
     }
 
-    @Internal
+    @OutputFile
+    @Optional
     public File getOutputFile() {
         return outputFile;
     }
 
-    @Internal
+    @InputFile
+    @Optional
     public File getDataBinary() {
         return dataBinary;
     }
+    
+    @Input
+    @Optional
+    public String getData() {
+        return data;
+    }
 
-    @Internal
+    @Input
+    @Optional
     public Map<String, String> getHeaders() {
         return headers;
     }
 
-    @Internal
+    @Input
+    @Optional
     public String getUser() {
         return user;
     }
 
-    @Internal
+    @Input
+    @Optional
     public String getPassword() {
         return password;
     }
@@ -134,6 +145,10 @@ public class Curl extends DefaultTask {
     public void setDataBinary(File dataBinary) {
         this.dataBinary = dataBinary;
     }
+    
+    public void setData(String data) {
+        this.data = data;
+    }
 
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
@@ -150,7 +165,15 @@ public class Curl extends DefaultTask {
     @TaskAction
     public void request() throws ClientProtocolException, IOException {
         log = LogEnvironment.getLogger(Curl.class);
+        
+        if (serverUrl == null) {
+            throw new IllegalArgumentException("serverUrl must not be null");
+        }
 
+        if (expectedStatusCode == null) {
+            throw new IllegalArgumentException("expectedStatusCode must not be null");
+        }
+        
         RequestBuilder requestBuilder;
         if (method.equals(MethodType.GET)) {
             requestBuilder = RequestBuilder.get();
@@ -178,8 +201,12 @@ public class Curl extends DefaultTask {
         }
         
         if (dataBinary != null) {
-            byte[] data = Files.readAllBytes(dataBinary.toPath());
-            requestBuilder.setEntity(EntityBuilder.create().setBinary(data).build());
+            byte[] data = Files.readAllBytes(((File)dataBinary).toPath());
+            requestBuilder.setEntity(EntityBuilder.create().setBinary(data).build());            
+        }
+        
+        if (data != null) {
+            requestBuilder.setEntity(EntityBuilder.create().setText(data).build());            
         }
         
         if (headers != null) {

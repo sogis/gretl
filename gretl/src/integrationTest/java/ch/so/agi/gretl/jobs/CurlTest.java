@@ -45,6 +45,7 @@ class CurlTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
+        // Execute task
         IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
         
         // Validate result
@@ -73,6 +74,7 @@ class CurlTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlGeodienste");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
+        // Execute task
         assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
         });
@@ -88,6 +90,7 @@ class CurlTest {
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlPlanregister");
         GradleVariable[] variables = { GradleVariable.newGradleProperty("mockWebServerPort", String.valueOf(mockWebServer.getPort())) };
 
+        // Execute task
         IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
         
         // Validate result
@@ -100,10 +103,13 @@ class CurlTest {
     
     @Test
     public void downloadFile_Ok() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/CurlDownload");
 
+        // Execute task
         IntegrationTestUtil.executeTestRunner(projectDirectory);
 
+        // Validate result
         String content = new String(Files.readAllBytes(Paths.get(projectDirectory + "/README.md")));
         assertTrue(content.contains("_GRETL_"));
         assertTrue(content.contains("Licencse"));
