@@ -4,6 +4,8 @@ import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
+import java.io.File;
+
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
@@ -28,17 +30,17 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @Optional
     public abstract Property<Boolean> getSetupPgExt();
 
-    @OutputFile
+    @InputFile
     @Optional
     public abstract Property<Object> getDropscript();
 
-    @OutputFile
+    @InputFile
     @Optional
     public abstract Property<Object> getCreatescript();
-
+    
     @Input
     @Optional
-    public abstract Property<Object> getMetaConfig();
+    public abstract Property<String> getMetaConfig();
 
     @Input
     @Optional
@@ -143,42 +145,55 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @Input
     @Optional
     public abstract Property<Boolean> getCreateStdCols();
+    
     @Input
     @Optional
     public abstract Property<String> getT_id_Name();
+    
     @Input
     @Optional
     public abstract Property<Long> getIdSeqMin();
+    
     @Input
     @Optional
     public abstract Property<Long> getIdSeqMax();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getCreateTypeDiscriminator();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getCreateGeomIdx();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getDisableNameOptimization();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getNameByTopic();
+    
     @Input
     @Optional
     public abstract Property<Integer> getMaxNameLength();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getSqlEnableNull();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getSqlColsAsText();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getSqlExtRefCols();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getKeepAreaRef();
+    
     @Input
     @Optional
     public abstract Property<Boolean> getCreateTidCol();
@@ -237,8 +252,15 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
         if (getCreatescript().isPresent()) {
             settings.setCreatescript(this.getProject().file(getCreatescript().get()).getPath());
         }
-        if (getMetaConfig().isPresent()) {
-            settings.setMetaConfigFile(this.getProject().file(getMetaConfig().get()).getPath());
+        if (getMetaConfig().isPresent()) {            
+            String metaConfigFile = null;
+            if (getMetaConfig().get().startsWith("ilidata")) {
+                metaConfigFile = getMetaConfig().get();
+            } else {
+                File file = this.getProject().file(getMetaConfig().get());
+                metaConfigFile = file.getAbsolutePath();
+            }
+            settings.setMetaConfigFile(metaConfigFile);
         }
         if (getDefaultSrsAuth().isPresent()) {
             String auth = getDefaultSrsAuth().get();

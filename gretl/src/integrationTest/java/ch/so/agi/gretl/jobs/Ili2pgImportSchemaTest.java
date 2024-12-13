@@ -33,17 +33,15 @@ public class Ili2pgImportSchemaTest {
 
     @Test
     public void schemaImportOk() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportSchema");
-
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
         // Check results
-        try (
-            Connection con = IntegrationTestUtilSql.connectPG(postgres);
-            Statement stmt = con.createStatement()
-        ) {
+        try (Connection con = IntegrationTestUtilSql.connectPG(postgres); Statement stmt = con.createStatement()) {
             try (ResultSet rs = stmt.executeQuery("SELECT content FROM gb2av.t_ili2db_model")) {
                 if (!rs.next()) {
                     fail();
@@ -56,7 +54,8 @@ public class Ili2pgImportSchemaTest {
                 }
             }
 
-            try (ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns WHERE table_schema = 'gb2av' AND table_name  = 'vollzugsgegenstand' AND column_name = 'mutationsnummer'")) {
+            try (ResultSet rs = stmt.executeQuery(
+                    "SELECT column_name FROM information_schema.columns WHERE table_schema = 'gb2av' AND table_name  = 'vollzugsgegenstand' AND column_name = 'mutationsnummer'")) {
                 if (!rs.next()) {
                     fail();
                 }
@@ -72,18 +71,17 @@ public class Ili2pgImportSchemaTest {
     
     @Test
     public void schemaImport_Options1_Ok() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportSchema_Options");
-
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
         // Check results
-        try (
-            Connection con = IntegrationTestUtilSql.connectPG(postgres);
-            Statement stmt = con.createStatement()
-        ) {
-            try (ResultSet rs  = stmt.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'gemeinde_bfs'")) {
+        try (Connection con = IntegrationTestUtilSql.connectPG(postgres); Statement stmt = con.createStatement()) {
+            try (ResultSet rs = stmt.executeQuery(
+                    "SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'gemeinde_bfs'")) {
                 if (!rs.next()) {
                     fail();
                 }
@@ -96,7 +94,8 @@ public class Ili2pgImportSchemaTest {
             }
 
             // Check sqlExtRefCols mapping
-            try (ResultSet rs = stmt.executeQuery("SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'geometrie'")) {
+            try (ResultSet rs = stmt.executeQuery(
+                    "SELECT data_type FROM information_schema.columns WHERE table_schema = 'afu_abbaustellen_pub' AND table_name  = 'abbaustelle' AND column_name = 'geometrie'")) {
                 if (!rs.next()) {
                     fail();
                 }
@@ -106,6 +105,57 @@ public class Ili2pgImportSchemaTest {
                 if (rs.next()) {
                     fail();
                 }
+            }
+        }
+    }
+    
+    @Test
+    public void schemaImport_MetaConfigIliData_Ok() throws Exception {
+        // Prepare
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportSchema_MetaConfigIliData");        
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+        // Execute test
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gvs);
+        
+        // Check results
+        try (Connection con = IntegrationTestUtilSql.connectPG(postgres); Statement stmt = con.createStatement()) {
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT setting FROM simple_table_ilidata.t_ili2db_settings WHERE tag ILIKE 'ch.ehi.ili2db.metaConfigFileName'");
+
+            if (!rs.next()) {
+                fail();
+            }
+
+            assertTrue(rs.getString(1).contains("ilidata:metaconfig_simple_table_ini_20240502"));
+
+            if (rs.next()) {
+                fail();
+            }
+        }
+    }
+
+    @Test
+    public void schemaImport_MetaConfigFile_Ok() throws Exception {
+        // Prepare
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgImportSchema_MetaConfigFile");
+        GradleVariable[] gvs = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
+
+        // Execute test
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gvs);
+
+        // Check results
+        try (Connection con = IntegrationTestUtilSql.connectPG(postgres); Statement stmt = con.createStatement()) {
+            ResultSet rs = stmt.executeQuery("SELECT setting FROM simple_table_metaconfigfile.t_ili2db_settings WHERE tag ILIKE 'ch.ehi.ili2db.metaConfigFileName'");
+
+            if(!rs.next()) {
+                fail();
+            }
+
+            assertTrue(rs.getString(1).contains("simple_table_ini_20240502.ini"));
+
+            if(rs.next()) {
+                fail();
             }
         }
     }
