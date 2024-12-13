@@ -3,15 +3,19 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 
 import java.io.File;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Gpkg2ShpStepTest {
 
@@ -20,8 +24,10 @@ public class Gpkg2ShpStepTest {
     
     @Test
     public void export_no_Geometry_Ok() throws Exception {
+        // Prepare
         File gpkgFile = TestUtil.getResourceFile(TestUtil.AGGLOPROGRAMME_GPKG_PATH);
         
+        // Execute step
         Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
         gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), folder.toAbsolutePath().toString());
 
@@ -36,7 +42,10 @@ public class Gpkg2ShpStepTest {
     
     @Test
     public void export_Ok() throws Exception {
+        // Prepare
         File gpkgFile = TestUtil.getResourceFile("data/gpkg2shp/ch.so.agi_av_gb_administrative_einteilungen_2020-08-20.gpkg");
+        
+        // Execute step
         Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
         gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), folder.toAbsolutePath().toString());
         
@@ -61,7 +70,10 @@ public class Gpkg2ShpStepTest {
     
     @Test
     public void export_more_attribute_types_Ok() throws Exception {
+        // Prepare
         File gpkgFile = TestUtil.getResourceFile("data/gpkg2shp/ch.so.afu.abbaustellen.gpkg");
+        
+        // Execute step
         Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
         gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), folder.toAbsolutePath().toString());
 
@@ -80,4 +92,33 @@ public class Gpkg2ShpStepTest {
             assertEquals("java.util.Date", attrDesc.getType().getBinding().getName());
         }
     }
+    
+    @Test
+    public void trimStringValueOk() throws Exception {
+        // Prepare
+        File gpkgFile = TestUtil.getResourceFile("data/gpkg2shp/wanderwege.gpkg");
+
+        // Execute step
+        Gpkg2ShpStep gpkg2shpStep = new Gpkg2ShpStep();
+        gpkg2shpStep.execute(gpkgFile.getAbsolutePath(), folder.toAbsolutePath().toString());
+        
+        //Check results
+        FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File(folder.toAbsolutePath().toString(), "wanderwege_route.shp"));
+        SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
+        assertEquals(2, featuresSource.getFeatures().size()); 
+        
+        boolean found = false;
+        SimpleFeatureCollection fc = featuresSource.getFeatures();
+        SimpleFeatureIterator it = fc.features();
+        while(it.hasNext()) {
+            SimpleFeature feat = it.next();
+            String attrValue = (String) feat.getAttribute("routndrte");
+            System.err.println(attrValue);
+            if (attrValue.contains("TRUNCATED")) {
+                found = true;
+            }   
+        }
+        assertTrue(found);
+    }
+
 }
