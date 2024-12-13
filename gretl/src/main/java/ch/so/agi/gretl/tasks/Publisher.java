@@ -170,11 +170,7 @@ public class Publisher extends DefaultTask {
         return target;
     }
 
-    /*
-     *  @InputFile kann hier nicht verwendet werden, da die Datei existieren muss.
-     *  Bei einem ersten Run dieses Tasks kann es sein, dass die Datei noch nicht existiert.
-     */
-    @Input
+    @InputFile
     @Optional
     public Object getSourcePath() {
         return sourcePath;
