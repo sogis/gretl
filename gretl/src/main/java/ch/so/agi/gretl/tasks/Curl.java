@@ -40,7 +40,12 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import javax.annotation.Nullable;
 
 public class Curl extends DefaultTask {
-    protected GretlLogger log;
+    private static GretlLogger log;
+    
+    static {
+        LogEnvironment.initGradleIntegrated();
+        log = LogEnvironment.getLogger(Db2Db.class);
+    }
 
     private String serverUrl;
     private MethodType method;
