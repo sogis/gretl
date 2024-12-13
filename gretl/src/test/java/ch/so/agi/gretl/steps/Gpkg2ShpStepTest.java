@@ -113,7 +113,6 @@ public class Gpkg2ShpStepTest {
         while(it.hasNext()) {
             SimpleFeature feat = it.next();
             String attrValue = (String) feat.getAttribute("routndrte");
-            System.err.println(attrValue);
             if (attrValue.contains("TRUNCATED")) {
                 found = true;
             }   
