@@ -14,21 +14,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SqlExecutorTaskDuckDbTest {
 
-    // DB-File erstellen.
-    // Tabelle erstellen und Werte inserten
-    // Parquet-Datei importieren
-    // GPKG importieren
     @Test
     public void multipleStuff_Ok() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/SqlExecutorTaskDuckDb");
         String dbName = "foo.duckdb";
         Path pathToDatabase = Paths.get(projectDirectory.getPath(), dbName);
         
-        // Prepare
         if (Files.exists(pathToDatabase)) {
             Files.delete(pathToDatabase);
         }
 
+        // Execute task
         IntegrationTestUtil.executeTestRunner(projectDirectory);
         
         // Check result
