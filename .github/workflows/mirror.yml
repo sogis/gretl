@@ -1,0 +1,25 @@
+name: mirror
+
+on:
+  push:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Mirror commits to Codeberg
+        uses: spyoungtech/mirror-action@v0.7.0
+        with:
+          REMOTE: "https://codeberg.org/sogis/gretl.git"
+          GIT_USERNAME: ${{ secrets.CODEBERG_USER }}
+          GIT_PASSWORD: ${{ secrets.CODEBERG_PASSWORD }}
