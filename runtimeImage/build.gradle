@@ -34,7 +34,7 @@ tasks.register('buildImage', Exec) {
     workingDir "$projectDir/gretl"
     commandLine 'docker', 'build',
                 '--no-cache', '--force-rm',
-                '-t', "sogis/gretl:latest",
+                '-t', "sogis/gretl:test",
                 '-f', 'Dockerfile',  '.'
 }
 

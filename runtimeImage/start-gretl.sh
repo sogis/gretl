@@ -42,5 +42,5 @@ docker run -i --rm \
     -v "$job_directory":/home/gradle/project \
     -v "$HOME"/gradlecache:/home/gradle/.gradle/caches \
     --user $UID \
-    sogis/gretl "-c" \
+    sogis/gretl:test "-c" \
         "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project;$gretl_cmd"
