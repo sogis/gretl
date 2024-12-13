@@ -44,7 +44,7 @@ public class Curl extends DefaultTask {
     
     static {
         LogEnvironment.initGradleIntegrated();
-        log = LogEnvironment.getLogger(Db2Db.class);
+        log = LogEnvironment.getLogger(Curl.class);
     }
 
     private String serverUrl;
