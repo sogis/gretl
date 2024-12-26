@@ -1,25 +1,23 @@
-# FROM gradle:7.6.4-jdk11 AS build-stage 
+FROM gradle:7.6.4-jdk11 AS build-stage 
 
-# COPY stage-duckdb-extensions.gradle /tmp/build.gradle
-# RUN gradle -p /tmp/
-# RUN ls -la /root/.duckdb/extensions
+COPY stage-duckdb-extensions.gradle /tmp/build.gradle
+RUN gradle -p /tmp/
+RUN ls -la /root/.duckdb/extensions
 
-FROM bellsoft/liberica-openjdk-alpine:11.0.18-10
+FROM eclipse-temurin:11.0.25_9-jre-ubi9-minimal
 
 CMD ["gretl"]
 
 ENV HOME=/home/gradle
 ARG UID=1001
-RUN adduser -h $HOME -s /sbin/nologin -G root -u $UID -D appuser
+RUN adduser -d $HOME -s /sbin/nologin -G root -u $UID -M appuser
 
 WORKDIR $HOME
 RUN chgrp root . && chmod g+w .
 
 COPY ca-certificates/ /usr/local/share/ca-certificates/
 
-RUN apk add --no-cache bash ca-certificates java-cacerts curl libgcc libstdc++6 libstdc++ ncurses-libs \
-    && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/lib/security/cacerts
-RUN /usr/glibc/sbin/ldconfig
+RUN microdnf update && microdnf install -y bash ca-certificates unzip findutils 
 
 ENV JAVA_TOOL_OPTIONS=-Duser.home=${HOME}
 ENV GRADLE_HOME /opt/gradle
@@ -45,18 +43,13 @@ COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
 COPY init.gradle /home/gradle/
 COPY known_hosts ${HOME}/.ssh/
-#COPY --from=build-stage /root/.duckdb /home/gradle/.duckdb
-
-# COPY stage-duckdb-extensions.gradle /tmp/build.gradle
-# RUN gradle -p /tmp/ -s
-# todo delete
+COPY --from=build-stage /root/.duckdb /home/gradle/.duckdb
 
 RUN ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
-    ls -la /home/gradle/libs
-    # ls -la /home/gradle/libs && \
-    # ls -la /home/gradle/.duckdb/extensions
-
+    # ls -la /home/gradle/libs
+    ls -la /home/gradle/libs && \
+    ls -la /home/gradle/.duckdb/extensions
 
 WORKDIR ${HOME}/project
 RUN chgrp root . && chmod g+w .

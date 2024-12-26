@@ -1,0 +1,29 @@
+import groovy.sql.Sql 
+
+repositories { mavenCentral() }
+configurations { driver }
+
+dependencies { driver 'org.duckdb:duckdb_jdbc:1.1.3' }
+
+URLClassLoader loader = GroovyObject.class.classLoader
+configurations.driver.each {File file ->
+    loader.addURL(file.toURL())
+}
+
+defaultTasks 'installDuckDBExtensions'
+
+tasks.register('installDuckDBExtensions') {
+    doLast {
+        def props = [] as Properties
+        def connectionUrl = "jdbc:duckdb::memory:"
+        def driver = 'org.duckdb.DuckDBDriver'
+        def sql = Sql.newInstance(connectionUrl, '', '', driver)
+        sql.execute("INSTALL spatial")
+        sql.execute("LOAD spatial")
+        //sql.execute("SELECT ST_GeomFromWKB(NULL)")
+        sql.execute("INSTALL httpfs")
+        sql.execute("LOAD httpfs")
+        logger.info "Closing connection..."
+        sql.close()
+    }
+}
