@@ -232,7 +232,7 @@ public class Curl extends DefaultTask {
           
             Header[] headers = httpResponse.getAllHeaders();
             for (Header header : headers) {
-                log.lifecycle(header.getName() + " -- " + header.getValue());
+                log.debug(header.getName() + " -- " + header.getValue());
             }
 
             responseStatusCode = httpResponse.getStatusLine().getStatusCode();
