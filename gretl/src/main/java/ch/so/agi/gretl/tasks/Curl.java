@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Internal;
@@ -55,7 +56,7 @@ public class Curl extends DefaultTask {
     private File outputFile; // curl [URL] -o
     private File dataBinary; // curl [URL] --data-binary / ueberschreibt formData, siehe setEntity (glaub)
     private String data; // curl [URL] --data
-    private Map<String,String> headers; // curl [URL] -H ... -H ...
+    private MapProperty<String, String> headers = getProject().getObjects().mapProperty(String.class, String.class); // curl [URL] -H ... -H ...
     private String user;
     private String password;
 
@@ -107,7 +108,7 @@ public class Curl extends DefaultTask {
 
     @Input
     @Optional
-    public Map<String, String> getHeaders() {
+    public MapProperty<String, String> getHeaders() {
         return headers;
     }
 
@@ -155,7 +156,7 @@ public class Curl extends DefaultTask {
         this.data = data;
     }
 
-    public void setHeaders(Map<String, String> headers) {
+    public void setHeaders(MapProperty<String, String> headers) {
         this.headers = headers;
     }
 
@@ -214,11 +215,12 @@ public class Curl extends DefaultTask {
             requestBuilder.setEntity(EntityBuilder.create().setText(data).build());            
         }
         
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
+        if (headers.isPresent()) {
+            for (Map.Entry<String, String> entry : headers.get().entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 requestBuilder.addHeader(key, value);
+                log.debug(key + " -- " + value);
             }
         }
        
@@ -227,6 +229,7 @@ public class Curl extends DefaultTask {
         int responseStatusCode;
         String responseContent = null;
         HttpUriRequest request = requestBuilder.build();
+        log.debug(request.toString());
         try (CloseableHttpClient httpClient = HttpClients.createDefault(); 
                 CloseableHttpResponse httpResponse = httpClient.execute(request)) {
           
