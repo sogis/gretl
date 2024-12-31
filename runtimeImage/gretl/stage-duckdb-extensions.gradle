@@ -20,9 +20,10 @@ tasks.register('installDuckDBExtensions') {
         def sql = Sql.newInstance(connectionUrl, '', '', driver)
         sql.execute("INSTALL spatial")
         sql.execute("LOAD spatial")
-        //sql.execute("SELECT ST_GeomFromWKB(NULL)")
         sql.execute("INSTALL httpfs")
         sql.execute("LOAD httpfs")
+        sql.execute("INSTALL postgres")
+        sql.execute("LOAD postgres")
         logger.info "Closing connection..."
         sql.close()
     }
