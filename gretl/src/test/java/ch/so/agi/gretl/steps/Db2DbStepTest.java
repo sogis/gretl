@@ -102,7 +102,7 @@ public class Db2DbStepTest {
                 new TransferSet(sqlFile.getAbsolutePath(), "colors_copy", true)
         ));
 
-        assertThrows(IOException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(this.connector, this.connector, transferSets);
             fail();
