@@ -59,8 +59,8 @@ tasks.register('buildAndPushMultiArchImage', Exec) {
                 '--label', "gretl.created=$build_timestamp", 
                 '--label', "gretl.git_commit=$githash",
                 '--label', "gretl.version=$version",
-                //'-f', 'Dockerfile.ubi',  '.', '--push'
-                '-f', 'Dockerfile.ubi',  '.'
+                '-f', 'Dockerfile.ubi',  '.', '--push'
+                //'-f', 'Dockerfile.ubi',  '.'
 }
 
 def getCheckedOutGitCommitHash() {
