@@ -490,9 +490,6 @@ Die Reihenfolge der .sql-Dateien ist relevant. Dies bedeutet, dass die SQL-Befeh
 angegebenen .sql-Datei zuerst ausgeführt werden müssen, danach die SQL-Befehle der an
 zweiter Stelle angegebenen .sql-Datei, usw.
 
-Es ist auch möglich, in den .sql-Dateien mehr als nur ein SELECT-Query zu formulieren, z.B.
-ein vorgängiges DELETE.
-
 Alle SELECT-Statements werden in einer Transaktion ausgeführt werden, damit ein konsistenter
 Datenstand gelesen wird. Alle INSERT-Statements werden in einer Transaktion ausgeführt
 werden, damit bei einem Fehler der bisherige Datenstand bestehen bleibt und also kein
@@ -502,6 +499,9 @@ Damit dieselbe .sql-Datei für verschiedene Datensätze benutzt werden kann, ist
 innerhalb der .sql-Datei Parameter zu verwenden und diesen Parametern beim Task einen
 konkreten Wert zuzuweisen. Innerhalb der .sql-Datei werden Paramter mit folgender Syntax
 verwendet: ``${paramName}``.
+
+Es ist pro .sql-Datei nur ein SELECT-Statement erlaubt. Ausser das erste Statement ist ein
+"SET search_path TO"-Statement.
 
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
@@ -568,7 +568,7 @@ Dazugehöriger Auszug aus SQL-Datei zur Erzeugung des WKT-Strings mit Hilfe von 
 'Point(' || ue.koordinate_x::text || ' ' || ue.koordinate_y::text || ')' AS geom
 ```
 
-Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
+Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle.
 
 ### FtpDelete
 

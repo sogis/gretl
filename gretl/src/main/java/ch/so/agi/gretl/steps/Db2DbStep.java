@@ -27,7 +27,7 @@ public class Db2DbStep {
     public static final String PREFIX = "ch.so.agi.gretl.steps.Db2DbStep";
     public static final String SETTING_BATCH_SIZE = PREFIX + ".batchSize";
     public static final String SETTING_FETCH_SIZE = PREFIX + ".fetchSize";
-    private static GretlLogger log = LogEnvironment.getLogger(Db2DbStep.class);
+    private static GretlLogger log;
     private String taskName;
     private int batchSize = 5000;
     private int fetchSize = 5000;
@@ -38,7 +38,7 @@ public class Db2DbStep {
 
     public Db2DbStep(String taskName) {
         if (taskName == null) {
-            taskName = Db2DbStep.class.getSimpleName();
+            this.taskName = Db2DbStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }
@@ -174,7 +174,18 @@ public class Db2DbStep {
         if (transferSet.deleteAllRows()) {
             deleteDestTableContents(targetCon, transferSet.getOutputQualifiedTableName());
         }
-        String selectStatement = extractSingleStatement(transferSet.getInputSqlFile(), params);
+//        String selectStatement = extractSingleStatement(transferSet.getInputSqlFile(), params);
+        List<String> selectStatements = extractStatements(transferSet.getInputSqlFile(), params);
+        String selectStatement; 
+        // Sql file can contain two statements. If so, the first on is a "set search_path" statement.
+        if (selectStatements.size() > 1) {
+            try(Statement stmt = srcCon.createStatement()) {
+                stmt.execute(selectStatements.get(0));
+            }
+            selectStatement = selectStatements.get(1);
+        } else {
+            selectStatement = selectStatements.get(0);
+        }
         log.debug("SQL statement: " + selectStatement);
         ResultSet rs = createResultSet(srcCon, selectStatement);
         PreparedStatement insertRowStatement = createInsertRowStatement(srcCon, targetCon, rs, transferSet);
@@ -243,9 +254,9 @@ public class Db2DbStep {
      * @throws SQLException
      */
     private ResultSet createResultSet(Connection srcCon, String sqlSelectStatement) throws SQLException {
-        Statement SQLStatement = srcCon.createStatement();
-        SQLStatement.setFetchSize(fetchSize);
-        ResultSet rs = SQLStatement.executeQuery(sqlSelectStatement);
+        Statement stmt = srcCon.createStatement();
+        stmt.setFetchSize(fetchSize);
+        ResultSet rs = stmt.executeQuery(sqlSelectStatement);
 
         return rs;
     }
@@ -329,12 +340,53 @@ public class Db2DbStep {
     }
 
     /**
-     * Extracts a single statement out of the SQL-file and checks if it fits the
+     * Extracts the statements out of the sql file and checks if it fits the
+     * conditions: the file contains either a single statement or max two
+     * statements, where the first is a "set search_path to" statement.
+     * There are no checks to ensure that the "select" statement is
+     * really a "select" statement.
+     *
+     * @param targetFile
+     * @param params
+     * @return
+     * @throws IOException
+     */
+    private List<String> extractStatements(File targetFile, Map<String, String> params) throws IOException {
+        SqlReader reader = new SqlReader();
+        String firstStmt = reader.readSqlStmt(targetFile, params);
+        if (firstStmt == null) {
+            log.info("Empty file. No statement to execute!");
+            throw new EmptyFileException("Empty file: " + targetFile.getName());
+        } 
+        
+        String secondStmt = reader.nextSqlStmt();
+        if (secondStmt != null) {
+            if (!firstStmt.toLowerCase().trim().startsWith("set search_path to")) {
+                log.info("First statement must be a set search_path statement.");
+                throw new IllegalArgumentException("First statement must be a set search_path statement.");
+            }
+        } 
+        
+        String thirdStmt = reader.nextSqlStmt();
+        if (thirdStmt != null) {
+            log.info("There are more then 2 statement in the file!");
+            throw new IOException("There are more then 2 statement in the file");
+        }
+
+        if (secondStmt != null) {
+            return List.of(firstStmt,secondStmt);
+        } else {
+            return List.of(firstStmt);
+        }
+    } 
+    
+    /**
+     * Extracts a single statement out of the sql file and checks if it fits the
      * conditions.
      * 
      * @param targetFile
-     * @returnA Select Statement as String
-     * @throws FileNotFoundException
+     * @return A select statement as String
+     * @throws IOException
      * @throws EmptyFileException
      */
     private String extractSingleStatement(File targetFile, Map<String, String> params) throws IOException {
@@ -342,13 +394,13 @@ public class Db2DbStep {
         SqlReader reader = new SqlReader();
         String firstStmt = reader.readSqlStmt(targetFile, params);
         if (firstStmt == null) {
-            log.info("Empty File. No Statement to execute!");
-            throw new EmptyFileException("EmptyFile: " + targetFile.getName());
+            log.info("Empty file. No statement to execute!");
+            throw new EmptyFileException("Empty file: " + targetFile.getName());
         }
         String secondStmt = reader.nextSqlStmt();
         if (secondStmt != null) {
-            log.info("There is more then 1 Statement in the file!");
-            throw new IOException("There is more then 1 Statement in the file");
+            log.info("There is more then 1 statement in the file!");
+            throw new IOException("There is more then 1 statement in the file");
         }
         reader.close();
 

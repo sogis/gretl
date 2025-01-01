@@ -346,6 +346,48 @@ public class Db2DbStepTest {
             dropSchema(schemaName, con);
         }
     }
+    
+    @Test
+    @Tag(TestTags.DB_TEST)
+    public void setSearchPath_Ok() throws Exception {
+        // Prepare
+        String schemaName = "SearchPathTest";
+        
+        try (Connection con = connectToPreparedPgDb(schemaName); Statement stmt = con.createStatement()) {
+            stmt.addBatch(String.format("CREATE TABLE %s.source (attr TEXT);", schemaName));
+            stmt.addBatch("CREATE TABLE sink (attr TEXT);");
+            stmt.addBatch(String.format("INSERT INTO %s.source (attr) VALUES ('lorem ipsum')", schemaName));
+            
+            stmt.executeBatch();
+            con.commit();
+        }
+        
+        File queryFile = TestUtil.createTempFile(folder,
+                //String.format("SELECT attr FROM %s.source", schemaName),
+                String.format("SET search_path TO %s, public; SELECT attr FROM source", schemaName),
+                "select.sql"
+        );
+
+        Connector src = new Connector(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        Connector sink = new Connector(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        TransferSet tSet = new TransferSet(
+                queryFile.getAbsolutePath(),
+                "sink",
+                true
+        );
+
+        // Execute
+        Db2DbStep step = new Db2DbStep();
+        step.processAllTransferSets(src, sink, Collections.singletonList(tSet));
+        
+        // Validate
+        try (Connection con = connectToPreparedPgDb(); Statement stmt = con.createStatement()) {
+            ResultSet rs = stmt.executeQuery("SELECT attr FROM sink");
+            rs.next();
+            assertEquals("lorem ipsum",  rs.getString(1));
+        }
+    }
+    
 
     /**
      * Test's loading several hundred thousand rows from sqlite to postgis. Loading
@@ -610,14 +652,27 @@ public class Db2DbStepTest {
         }
     }
 
-    private Connection connectToPreparedPgDb(String schemaName) throws Exception {
+    private Connection connectToPreparedPgDb() throws Exception {
         String url = postgres.getJdbcUrl();
         String user = postgres.getUsername();
         String password = postgres.getPassword();
 
         Connection con = DriverManager.getConnection(url, user, password);
         con.setAutoCommit(false);
+        
+        return con;
+    }
 
+    private Connection connectToPreparedPgDb(String schemaName) throws Exception {
+//        String url = postgres.getJdbcUrl();
+//        String user = postgres.getUsername();
+//        String password = postgres.getPassword();
+//
+//        Connection con = DriverManager.getConnection(url, user, password);
+//        con.setAutoCommit(false);
+
+        Connection con = connectToPreparedPgDb();
+        
         Statement s = con.createStatement();
         s.addBatch(String.format("drop schema if exists %s cascade", schemaName));
         s.addBatch("create schema " + schemaName);
