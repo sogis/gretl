@@ -42,6 +42,10 @@ Für jeden selber programmierten Customtask gibt es (in der Regel) auch einen da
 
 Gradle bietet verschiedene Annotationen für die Task Properties an. So können Properties als optional gekennzeichnet werden oder explizit als Input-Datei. Wird etwas als Input oder Output annotiert, berücksichtig Gradle diese Properties bei der Evaluation, ob ein Task up-to-date ist. Hat sich z.B. ein INTERLIS-Datei nicht geändert, muss sie ja nicht nochmals validiert werden. Wir haben ganz geklärt, ob wir diese Verhalten wünschen. Aus diesem Grund gibt es auch Custom-Tasks, bei denen die Properties mit `Internal` annotiert sind. Diese Properties werden bei der Evaluierung nicht berücksichtigt. Bei unseren Gretljobs haben wird das so gelöst, dass wir den dazu benötigten Cache explizit im Container behalten und nicht lokal speichern. Ein anderes Dockerimage kann das jedoch anders handhaben. Ebenso beim Einsatz des Gradle-Plugins direkt. Hier dient es sich an, dass mit mit `--rerun-tasks` das Ausführen der Tasks forciert. Diese Option wird auch bei den Integrationstests verwendet.
 
+### Configuring Tasks Lazily
+
+... todo ...
+
 ## Testing
 
 Es gibt Unit- und Integrationstests. Die Unittests dienen zum Testen der Steps (und einigen anderen Helfer-Klassen). Es gibt zwei zusätzliche Testgruppen, die separat aufgerufen werden müssen: `dbTest` und `s3Test`. 
