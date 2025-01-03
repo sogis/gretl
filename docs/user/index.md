@@ -47,10 +47,6 @@ apply plugin: 'ch.so.agi.gretl'
 buildscript {
     repositories {
         maven { url "https://jars.interlis.ch" }
-        maven { 
-                url "http://jars.umleditor.org" 
-                allowInsecureProtocol = true
-        }
         maven { url "https://repo.osgeo.org/repository/release/" }
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://s01.oss.sonatype.org/service/local/repositories/releases/content/" }
@@ -58,12 +54,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'ch.so.agi', name: 'gretl',  version: '2.2.+'
+        classpath group: 'ch.so.agi', name: 'gretl',  version: '3.0.+'
     }
 }
 
 defaultTasks 'validate'
-
 
 task validate(type: IliValidator){
     dataFiles = ["BeispielA.xtf"]
@@ -92,17 +87,6 @@ Argument ein:
     cd gretldemo
     gradle
 
-Sie sollten etwa folgende Ausgabe erhalten:
-
-```
-Starting a Gradle Daemon, 1 incompatible and 1 stopped Daemons could not be reused, use --status for details
-Download http://jars.umleditor.org/ch/so/agi/gretl/maven-metadata.xml
-Download http://jars.umleditor.org/ch/so/agi/gretl/1.0.4-SNAPSHOT/maven-metadata.xml
-Download http://jars.umleditor.org/ch/so/agi/gretl/1.0.4-SNAPSHOT/gretl-1.0.4-20180104.152357-34.jar
-
-BUILD SUCCESSFUL in 21s
-```
-
 ``BUILD SUCCESSFUL`` zeigt an, dass der Job (die Validierung der Datei ``BeispielA.xtf``) erfolgreich ausgeführt wurde.
 
 Um dieselbe Job-Konfiguration für verschiedene Datensätze verwenden zu können, muss es parametrisierbar sein. Die Jobs/Tasks können so generisch konfiguriert werden, dass dieselbe Konfiguration z.B. für 
@@ -115,22 +99,18 @@ dem Job mitgegeben werden, also z.B.
     gradle -Pdataset=Olten
 
 ## Systemanforderungen
-Um die aktuelle Version von gretl auszuführen, muss 
+Um die aktuelle Version von _GRETL_ auszuführen, muss 
 
- - die Java-Laufzeitumgebung (JRE), Version 1.8 oder neuer, und 
- - gradle, Version 5.1 oder neuer, auf Ihrem System installiert sein.
+ - die Java-Laufzeitumgebung (JRE), Version 11, und 
+ - Gradle, Version 7.6.x, auf Ihrem System installiert sein.
  
-Die Java-Laufzeitumgebung (JRE) kann auf der Website http://www.java.com/ gratis bezogen werden.
-
-Die gradle-Software kann auf der Website http://www.gradle.org/ gratis bezogen werden.
-
-Um _GRETL_ laufen zu lassen, benötigen sie typischerweise eine Internetverbindung (Ein Installation, die keine Internetverbindung benötigt ist auch möglich, aber aufwendig).
+Um _GRETL_ laufen zu lassen, benötigen sie typischerweise eine Internetverbindung.
 
 ## Installation
 _GRETL_ selbst muss nicht explizit installiert werden, sondern wird dynamisch durch das Internet bezogen.
 
 ## Ausführen
-Um gretl auszuführen, geben Sie auf der Kommandozeile folgendes Kommando ein (wobei ``jobfolder`` der absolute Pfad 
+Um _GRETL_ auszuführen, geben Sie auf der Kommandozeile folgendes Kommando ein (wobei ``jobfolder`` der absolute Pfad 
 zu ihrem Verzeichnis mit der Job Konfiguration ist.)
 
     gradle --project-dir jobfolder
