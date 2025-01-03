@@ -28,7 +28,7 @@ ARG GRADLE_DOWNLOAD_SHA256=31c55713e40233a8303827ceb42ca48a47267a0ad4bab91771231
 
 Ein Update sollte nicht leichtfertig vorgenommen werden, da es verschiedene Auswirkungen haben kann. Andererseits läuft nicht jede Gradle-Version mit jeder neusten Java-Version (was für uns momentan nicht relevant ist).
 
-Die momentan eingesetzt Version 7 funktioniert bis und mit Java 19. Die Version 8 braucht beim allerersten Durchlauf nochmals länger (siehe Kapitel "Running") und loggt auch mehr im Lifecycle-Level.
+Die momentan eingesetzte Version 7 funktioniert bis und mit Java 19. Die Version 8 braucht beim allerersten Durchlauf nochmals länger (siehe Kapitel "Running") und loggt auch mehr im Lifecycle-Level.
 
 ### Dependencies
 
