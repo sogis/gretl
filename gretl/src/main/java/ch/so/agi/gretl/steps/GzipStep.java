@@ -38,7 +38,5 @@ public class GzipStep {
         gzipOS.close();
         fos.close();
         fis.close();
-
     }
-
 }

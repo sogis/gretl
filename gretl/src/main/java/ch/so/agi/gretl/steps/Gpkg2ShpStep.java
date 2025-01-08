@@ -57,7 +57,7 @@ public class Gpkg2ShpStep {
 
     public Gpkg2ShpStep(String taskName) {
         if (taskName == null) {
-            taskName = Gpkg2ShpStep.class.getSimpleName();
+            this.taskName = Gpkg2ShpStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

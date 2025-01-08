@@ -25,9 +25,19 @@ import java.util.Map;
  */
 public class PostgisRasterExportStep {
     private GretlLogger log;
+    private String taskName;
 
     public PostgisRasterExportStep() {
-        log = LogEnvironment.getLogger(PostgisRasterExportStep.class);
+        this(null);
+    }
+    
+    public PostgisRasterExportStep(String taskName) {
+        if (taskName == null) {
+            this.taskName = PostgisRasterExportStep.class.getSimpleName();
+        } else {
+            this.taskName = taskName;
+        }
+        log = LogEnvironment.getLogger(PostgisRasterExportStep.class);        
     }
 
     /**

@@ -31,7 +31,7 @@ public class DatabaseDocumentExportStep {
     
     public DatabaseDocumentExportStep(String taskName) {
         if (taskName == null) {
-            taskName = DatabaseDocumentExportStep.class.getSimpleName();
+            this.taskName = DatabaseDocumentExportStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

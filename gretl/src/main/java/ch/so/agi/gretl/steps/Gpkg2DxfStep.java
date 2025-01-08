@@ -56,7 +56,7 @@ public class Gpkg2DxfStep {
 
     public Gpkg2DxfStep(String taskName) {
         if (taskName == null) {
-            taskName = Gpkg2DxfStep.class.getSimpleName();
+            this.taskName = Gpkg2DxfStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

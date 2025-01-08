@@ -74,10 +74,21 @@ public class PublisherStep {
     public static final String JSON_ATTR_PUBLISHDATE="publishdate";
     private static final Object MODEL_DM01 = DM01AVCH24LV95D_.MODEL;
     private GretlLogger log;
+    private String taskName;
 
     public PublisherStep() {
+        this(null);
+    }
+    
+    public PublisherStep(String taskName) {
+        if (taskName == null) {
+            this.taskName = PublisherStep.class.getSimpleName();
+        } else {
+            this.taskName = taskName;
+        }
         this.log = LogEnvironment.getLogger(this.getClass());
     }
+    
     public void publishDatasetFromDb(Date date,String dataIdent, java.sql.Connection conn, String dbSchema,String datasetName,String modelsToPublish,String exportModels,boolean userFormats, Path target, String regionRegEx,List<String> regionsToPublish,List<String> publishedRegions, Path validationConfig,Path groomingJson,Settings settings,Path tempFolder,SimiSvcApi simiSvc) 
             throws Exception 
     {

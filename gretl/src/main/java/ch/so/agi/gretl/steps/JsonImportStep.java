@@ -19,7 +19,6 @@ import ch.so.agi.gretl.logging.LogEnvironment;
  * The JsonImportStep class is used to import a JSON file into a text column of a database.
  */
 public class JsonImportStep {
-    
     private GretlLogger log;
     private String taskName;
 
@@ -29,7 +28,7 @@ public class JsonImportStep {
     
     public JsonImportStep(String taskName) {
         if (taskName == null) {
-            taskName = JsonImportStep.class.getSimpleName();
+            this.taskName = JsonImportStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }

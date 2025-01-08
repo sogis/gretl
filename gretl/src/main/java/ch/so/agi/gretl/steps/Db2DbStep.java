@@ -23,7 +23,6 @@ import java.util.Map;
  * 3. a qualified target schema and table name (schema.table).
  */
 public class Db2DbStep {
-
     public static final String PREFIX = "ch.so.agi.gretl.steps.Db2DbStep";
     public static final String SETTING_BATCH_SIZE = PREFIX + ".batchSize";
     public static final String SETTING_FETCH_SIZE = PREFIX + ".fetchSize";

@@ -29,7 +29,7 @@ public class SqlExecutorStep {
 
     public SqlExecutorStep(String taskName) {
         if (taskName == null) {
-            taskName = SqlExecutorStep.class.getSimpleName();
+            this.taskName = SqlExecutorStep.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }
