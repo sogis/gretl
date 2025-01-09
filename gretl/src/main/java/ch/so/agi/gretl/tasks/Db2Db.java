@@ -23,11 +23,6 @@ import java.util.Map;
 public abstract class Db2Db extends DefaultTask {
     private static GretlLogger log;
 
-    static {
-        LogEnvironment.initGradleIntegrated();
-        log = LogEnvironment.getLogger(Db2Db.class);
-    }
-
     @Input
     public abstract ListProperty<String> getSourceDb();
     @Input
@@ -46,6 +41,8 @@ public abstract class Db2Db extends DefaultTask {
 
     @TaskAction
     public void executeTask() throws GradleException {
+        log = LogEnvironment.getLogger(Db2Db.class);
+        
         String taskName = ((Task) this).getName();
         List<TransferSet> transferSets = getTransferSets().get();
         Connector sourceDb = TaskUtil.getDatabaseConnectorObject(getSourceDb().get());

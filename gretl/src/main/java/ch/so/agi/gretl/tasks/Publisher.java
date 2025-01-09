@@ -74,6 +74,7 @@ public class Publisher extends DefaultTask {
     @TaskAction
     public void publishAll() {
         log = LogEnvironment.getLogger(Publisher.class);
+        
         PublisherStep step = new PublisherStep();
         Path sourceFile = null;
 

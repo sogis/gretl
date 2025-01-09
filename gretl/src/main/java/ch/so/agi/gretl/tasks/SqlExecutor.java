@@ -27,11 +27,6 @@ import java.util.Map;
 public abstract class SqlExecutor extends DefaultTask {
     private static GretlLogger log;
 
-    static {
-        LogEnvironment.initGradleIntegrated();
-        log = LogEnvironment.getLogger(SqlExecutor.class);
-    }
-
     @Input
     public abstract ListProperty<String> getDatabase();
 
@@ -43,7 +38,8 @@ public abstract class SqlExecutor extends DefaultTask {
 
     @TaskAction
     public void executeSQLExecutor() {
-
+        log = LogEnvironment.getLogger(SqlExecutor.class);
+        
         String taskName = this.getName();
 
         if(!getDatabase().isPresent()) {

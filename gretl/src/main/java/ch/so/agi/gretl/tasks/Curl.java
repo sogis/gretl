@@ -42,11 +42,6 @@ import javax.annotation.Nullable;
 
 public class Curl extends DefaultTask {
     private static GretlLogger log;
-    
-    static {
-        LogEnvironment.initGradleIntegrated();
-        log = LogEnvironment.getLogger(Curl.class);
-    }
 
     private String serverUrl;
     private MethodType method;
