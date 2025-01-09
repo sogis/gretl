@@ -1,10 +1,14 @@
 package ch.so.agi.gretl.tasks;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Optional;
@@ -22,7 +26,7 @@ public class S3Upload extends DefaultTask {
     private String secretKey;
     private Object sourceDir;
     private Object sourceFile;
-    private Object sourceFiles;
+    private FileCollection sourceFiles;
     private String bucketName;
     private String endPoint = "https://s3.eu-central-1.amazonaws.com";
     private String region = "eu-central-1";
@@ -105,7 +109,7 @@ public class S3Upload extends DefaultTask {
         this.sourceFile = sourceFile;
     }
 
-    public void setSourceFiles(Object sourceFiles) {
+    public void setSourceFiles(FileCollection sourceFiles) {
         this.sourceFiles = sourceFiles;
     }
 
@@ -163,7 +167,11 @@ public class S3Upload extends DefaultTask {
         if(sourceDir != null) {
             sourceObject = sourceDir;
         } else if (sourceFiles != null) {
-            sourceObject = sourceFiles;
+            List<File> files = new ArrayList<>();
+            for (File fileObj : sourceFiles) {
+                files.add(fileObj);
+            }
+            sourceObject = files;
         } else {
             sourceObject = sourceFile;
         }

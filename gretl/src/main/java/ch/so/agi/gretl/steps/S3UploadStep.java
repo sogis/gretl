@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.gradle.api.file.FileCollection;
-
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -69,8 +67,8 @@ public class S3UploadStep {
                 files.add(sourceObjectFile);
             }
         } else { 
-            FileCollection dataFilesCollection = (FileCollection) sourceObject;
-            for (File fileObj : dataFilesCollection) {
+            List<File> fileList = (ArrayList<File>) sourceObject;
+            for (File fileObj : fileList) {
                 files.add(fileObj);
             }
         }
