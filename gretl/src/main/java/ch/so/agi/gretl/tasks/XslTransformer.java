@@ -8,7 +8,8 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
@@ -22,6 +23,7 @@ public class XslTransformer extends DefaultTask {
     private Object xslFile;
     private Object xmlFile;
     private File outDirectory;
+    private String fileExtension = "xtf";
 
     @Input
     public Object getXslFile() {
@@ -31,9 +33,15 @@ public class XslTransformer extends DefaultTask {
     public Object getXmlFile() {
         return xmlFile;
     }
-    @InputDirectory
+    @OutputDirectory
     public File getOutDirectory() {
         return outDirectory;
+    }
+    
+    @Optional
+    @Input
+    public String getFileExtension() {
+        return fileExtension;
     }
 
     public void setXslFile(Object xslFile) {
@@ -46,6 +54,10 @@ public class XslTransformer extends DefaultTask {
 
     public void setOutDirectory(File outDirectory) {
         this.outDirectory = outDirectory;
+    }
+    
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
     }
 
     @TaskAction
@@ -82,9 +94,9 @@ public class XslTransformer extends DefaultTask {
             for(String dataFile : files) {
                 XslTransformerStep xslTransformerStep = new XslTransformerStep();
                 if (xslFile instanceof String) {
-                    xslTransformerStep.execute((String) xslFile, new File(dataFile), outDirectory);
+                    xslTransformerStep.execute((String) xslFile, new File(dataFile), outDirectory, fileExtension);
                 } else {
-                    xslTransformerStep.execute((File) xslFile, new File(dataFile), outDirectory);
+                    xslTransformerStep.execute((File) xslFile, new File(dataFile), outDirectory, fileExtension);
                 }
             }
         } catch (Exception e) {

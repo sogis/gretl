@@ -39,14 +39,17 @@ public class XslTransformerStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
     
-    public void execute(File xslFile, File xmlFile, File outputDirectory) throws IOException, SaxonApiException {
+    public void execute(File xslFile, File xmlFile, File outputDirectory, String fileExtension) throws IOException, SaxonApiException {
+        log.lifecycle(String.format("Start XslTransformerStep(Name: %s XslFile: %s XmlFile: %s OutDirectory: %s FileExtension: %s)", taskName,
+                xslFile.getAbsolutePath(), xmlFile.toString(), outputDirectory.toString(), fileExtension));
+
         Processor proc = new Processor(false);
         XsltCompiler comp = proc.newXsltCompiler();
         XsltExecutable exp = comp.compile(new StreamSource(xslFile));
         
         XdmNode source = proc.newDocumentBuilder().build(new StreamSource(xmlFile));
         
-        File outFile = Paths.get(outputDirectory.getAbsolutePath(), FilenameUtils.getBaseName(xmlFile.getName()) + ".xtf").toFile();
+        File outFile = Paths.get(outputDirectory.getAbsolutePath(), FilenameUtils.getBaseName(xmlFile.getName()) + "." + fileExtension).toFile();
         Serializer outFileSerializer = proc.newSerializer(outFile);
         XsltTransformer trans = exp.load();
         trans.setInitialContextNode(source);
@@ -55,16 +58,13 @@ public class XslTransformerStep {
         trans.close();
     }
     
-    public void execute(String xslFileName, File xmlFile, File outputDirectory) throws IOException, SaxonApiException { 
-        log.lifecycle(String.format("Start XslTransformerStep(Name: %s XslFile: %s XmlFile: %s OutDirectory: %s)", taskName,
-                xslFileName, xmlFile.toString(), outputDirectory.toString()));
-
+    public void execute(String xslFileName, File xmlFile, File outputDirectory, String fileExtension) throws IOException, SaxonApiException { 
         String tmpDir = Files.createTempDirectory("xslttransformerstep").toFile().getAbsolutePath();
         File xslFile = new File(Paths.get(tmpDir, xslFileName).toFile().getAbsolutePath());
         InputStream xsltFileInputStream = XslTransformerStep.class.getResourceAsStream("/xslt/"+xslFileName); 
         Files.copy(xsltFileInputStream, xslFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         xsltFileInputStream.close();
         
-        execute(xslFile, xmlFile, outputDirectory);
+        execute(xslFile, xmlFile, outputDirectory, fileExtension);
     }
 }

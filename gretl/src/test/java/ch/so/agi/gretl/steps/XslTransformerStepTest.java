@@ -24,7 +24,7 @@ public class XslTransformerStepTest {
 
         // Transform File
         XslTransformerStep xslTransformerStep = new XslTransformerStep();
-        xslTransformerStep.execute("eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl", sourceFile, outDirectory.toFile());
+        xslTransformerStep.execute("eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl", sourceFile, outDirectory.toFile(), "xtf");
         
         // Check result
         byte[] bytes = Files.readAllBytes(Paths.get(outDirectory.toAbsolutePath().toString(), "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
@@ -42,7 +42,7 @@ public class XslTransformerStepTest {
         
         // Transform File
         XslTransformerStep xslTransformerStep = new XslTransformerStep();
-        xslTransformerStep.execute(xslFile, sourceFile, outDirectory.toFile());
+        xslTransformerStep.execute(xslFile, sourceFile, outDirectory.toFile(), "xtf");
 
         // Check result
         byte[] bytes = Files.readAllBytes(Paths.get(outDirectory.toAbsolutePath().toString(), "MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xtf"));
