@@ -3,7 +3,6 @@ package ch.so.agi.gretl.tasks;
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.iom_j.csv.CsvReader;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
-import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
 import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
@@ -11,7 +10,6 @@ import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.*;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 

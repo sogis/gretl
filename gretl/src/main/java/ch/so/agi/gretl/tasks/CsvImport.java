@@ -15,11 +15,13 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 public class CsvImport extends DefaultTask {
     protected GretlLogger log;
+    
     private Connector database;
     private Object dataFile = null;
     private String tableName = null;
@@ -46,7 +48,7 @@ public class CsvImport extends DefaultTask {
 
         Settings settings = getSettings();
         File data = this.getProject().file(dataFile);
-        java.sql.Connection conn = null;
+        Connection conn = null;
         try {
             conn = database.connect();
             if (conn == null) {

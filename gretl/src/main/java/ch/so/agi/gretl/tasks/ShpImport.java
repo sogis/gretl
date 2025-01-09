@@ -17,6 +17,7 @@ import java.util.List;
 
 public class ShpImport extends DefaultTask {
     protected GretlLogger log;
+    
     private Connector database;
     private Object dataFile = null;
     private String tableName = null;

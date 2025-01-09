@@ -2,7 +2,6 @@ package ch.so.agi.gretl.tasks;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
-import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
 import ch.so.agi.gretl.tasks.impl.GpkgValidatorImpl;
@@ -38,9 +37,9 @@ public class GpkgValidator extends AbstractValidatorTask {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(getDataFiles() instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)getDataFiles();
-        }else {
+        if (getDataFiles() instanceof FileCollection) {
+            dataFilesCollection = (FileCollection)getDataFiles();
+        } else {
             dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {

@@ -5,7 +5,6 @@ import java.io.File;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
@@ -15,7 +14,8 @@ import ch.so.agi.gretl.steps.Gpkg2ShpStep;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class Gpkg2Shp extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
+    
     private Object dataFile = null;
 
     // @OutputDirectory should create directory if it does not exist. Does

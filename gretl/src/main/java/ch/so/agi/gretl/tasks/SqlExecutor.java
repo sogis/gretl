@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This Class represents the Task which executes the SQLExecutorStep Only
- * this Class should execute the SQLExecutorStep. Users must use this Class to
- * access SQLExecutorStep
+ * This class represents the task which executes the SQLExecutorStep. Only
+ * this class should execute the SQLExecutorStep.
  */
 public abstract class SqlExecutor extends DefaultTask {
     private static GretlLogger log;
@@ -32,6 +31,7 @@ public abstract class SqlExecutor extends DefaultTask {
 
     @Input
     public abstract ListProperty<String> getSqlFiles();
+    
     @Input
     @Optional
     public abstract Property<Object> getSqlParameters();

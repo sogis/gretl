@@ -25,16 +25,21 @@ public abstract class Db2Db extends DefaultTask {
 
     @Input
     public abstract ListProperty<String> getSourceDb();
+    
     @Input
     public abstract ListProperty<String> getTargetDb();
+    
     @Input
     public abstract ListProperty<TransferSet> getTransferSets();
+    
     @Input
     @Optional
     public abstract Property<Integer> getBatchSize();
+    
     @Input
     @Optional
     public abstract Property<Integer> getFetchSize();
+    
     @Input
     @Optional
     public abstract Property<Object> getSqlParameters();

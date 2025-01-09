@@ -1,13 +1,10 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -15,7 +12,6 @@ import org.gradle.api.tasks.TaskAction;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.S3DownloadStep;
-import ch.so.agi.gretl.steps.S3UploadStep;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class S3Download extends DefaultTask {

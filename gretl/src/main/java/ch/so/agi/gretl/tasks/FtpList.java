@@ -1,4 +1,5 @@
 package ch.so.agi.gretl.tasks;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class FtpList extends AbstractFtpTask {
     public List<String> files;
 
     @Input
-    public String getRemoteDir(){
+    public String getRemoteDir() {
         return remoteDir;
     }
 
@@ -27,8 +28,7 @@ public class FtpList extends AbstractFtpTask {
     }
 
     @TaskAction
-    void list()
-    {
+    void list() {
         log = LogEnvironment.getLogger(FtpList.class);
         
         FTPClient ftp = null;
@@ -44,7 +44,6 @@ public class FtpList extends AbstractFtpTask {
                     files.add(remoteFileName);
                 }
             }
-
         } catch (Exception e) {
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
@@ -58,6 +57,5 @@ public class FtpList extends AbstractFtpTask {
                 ftp=null;
             }
         }
-        
     }
 }

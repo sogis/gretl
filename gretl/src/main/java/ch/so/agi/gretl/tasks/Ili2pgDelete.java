@@ -20,16 +20,16 @@ public abstract class Ili2pgDelete extends Ili2pgAbstractTask {
         }
         List<String> datasetNames;
         Object dataset = getDataset().get();
-        if(dataset instanceof String) {
-            datasetNames=new ArrayList<>();
+        if (dataset instanceof String) {
+            datasetNames = new ArrayList<>();
             datasetNames.add(dataset.toString());
-        }else {
-            datasetNames=(List)dataset;
+        } else {
+            datasetNames = (List)dataset;
         }
         settings.setBasketHandling(settings.BASKET_HANDLING_READWRITE);
         
         try {
-            for(String datasetName:datasetNames) {
+            for (String datasetName : datasetNames) {
                 settings.setDatasetName(datasetName);
                 run(function, settings);
             }

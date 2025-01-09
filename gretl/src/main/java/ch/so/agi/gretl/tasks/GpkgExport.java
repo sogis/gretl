@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tasks;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class GpkgExport extends DefaultTask {
     protected GretlLogger log;
+    
     private Connector database;
     private Object dataFile;
     private Object dstTableName;
@@ -52,7 +54,7 @@ public class GpkgExport extends DefaultTask {
             throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
         }
 
-        java.sql.Connection conn = null;
+        Connection conn = null;
         try {
             conn = database.connect();
             if (conn == null) {

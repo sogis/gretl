@@ -27,6 +27,7 @@ import ch.so.agi.gretl.util.TaskUtil;
 
 public class Av2geobau extends DefaultTask {
     protected GretlLogger log;
+    
     private Object itfFiles = null;
     private Object dxfDirectory = null;
     private String modeldir = null;
@@ -112,7 +113,7 @@ public class Av2geobau extends DefaultTask {
             new File((String) dxfDirectory).mkdirs();
         }
         
-        Settings settings=new Settings();
+        Settings settings = new Settings();
         settings.setValue(org.interlis2.av2geobau.Av2geobau.SETTING_ILIDIRS, org.interlis2.av2geobau.Av2geobau.SETTING_DEFAULT_ILIDIRS);
         if (itfFiles == null) {
             throw new IllegalArgumentException("itfFiles must not be null");
@@ -131,24 +132,24 @@ public class Av2geobau extends DefaultTask {
         }
 
         FileCollection dataFilesCollection=null;
-        if(itfFiles instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)itfFiles;
-        }else {
-            dataFilesCollection=getProject().files(itfFiles);
+        if (itfFiles instanceof FileCollection) {
+            dataFilesCollection = (FileCollection)itfFiles;
+        } else {
+            dataFilesCollection = getProject().files(itfFiles);
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
         }
-        List<java.io.File> files = new ArrayList<java.io.File>();
-        for (java.io.File fileObj : dataFilesCollection) {
+        List<File> files = new ArrayList<java.io.File>();
+        for (File fileObj : dataFilesCollection) {
             files.add(fileObj);
         }
         File dxfDir = this.getProject().file(dxfDirectory);
         
         boolean ok=true;
         try {
-            for(File itf:files) {
-                File dxf=new File(dxfDir,GenericFileFilter.stripFileExtension(itf.getName())+".dxf");
+            for(File itf : files) {
+                File dxf = new File(dxfDir,GenericFileFilter.stripFileExtension(itf.getName())+".dxf");
                 ok = org.interlis2.av2geobau.Av2geobau.convert(itf,dxf,settings);
                 if(!ok) {
                     break;

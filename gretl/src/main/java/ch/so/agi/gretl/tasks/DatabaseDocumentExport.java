@@ -16,6 +16,7 @@ import java.util.List;
 
 public class DatabaseDocumentExport extends DefaultTask {
     protected GretlLogger log;
+    
     private Connector database;
     private String qualifiedTableName;
     private String documentColumn;

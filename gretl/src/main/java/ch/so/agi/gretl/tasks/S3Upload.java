@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.tasks;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 

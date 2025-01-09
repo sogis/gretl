@@ -2,9 +2,7 @@ package ch.so.agi.gretl.tasks;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.apache.commons.net.ftp.FTPClient;
@@ -52,7 +50,7 @@ public class FtpDelete extends AbstractFtpTask {
         try {
             ftp = setup();
             
-            if(remoteFile == null) {
+            if (remoteFile == null) {
                 for (final FTPFile f : ftp.listFiles(remoteDir)) {
                     if (f.isFile()) {
                         String remoteFileName = f.getName();
@@ -77,7 +75,6 @@ public class FtpDelete extends AbstractFtpTask {
                     throw new Exception("unexpected Argumenttype of remoteFile "+remoteFile.getClass());
                 }
             }
-
         } catch (Exception e) {
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;

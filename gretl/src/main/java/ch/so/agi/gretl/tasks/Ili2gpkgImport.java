@@ -102,10 +102,10 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(dataFile instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)dataFile;
-        }else {
-            dataFilesCollection=getProject().files(dataFile);
+        if (dataFile instanceof FileCollection) {
+            dataFilesCollection = (FileCollection)dataFile;
+        } else {
+            dataFilesCollection = getProject().files(dataFile);
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
@@ -115,13 +115,13 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }
-        java.util.List<String> datasetNames=null;
+        List<String> datasetNames=null;
         if (getDataset() != null) {
             if(getDataset() instanceof String) {
                 datasetNames=new ArrayList<String>();
                 datasetNames.add((String)getDataset());
             }else {
-                datasetNames=(java.util.List)getDataset();
+                datasetNames=(List)getDataset();
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");

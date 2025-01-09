@@ -2,7 +2,6 @@ package ch.so.agi.gretl.tasks;
 
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.shp.ShapeReader;
-import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
 import ch.so.agi.gretl.tasks.impl.ShpValidatorImpl;

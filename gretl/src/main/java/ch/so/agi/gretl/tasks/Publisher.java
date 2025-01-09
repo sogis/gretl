@@ -32,43 +32,24 @@ public class Publisher extends DefaultTask {
     protected GretlLogger log;
 
     private String dataIdent=null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
-
     private Endpoint target=null; // Zielverzeichnis
-
     private Object sourcePath=null; // Quelldatei z.B. "/path/file.xtf"
-
     private Connector database=null; //  Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
-
     private String dbSchema=null; // Schema in der Datenbank z.B. "av"
-
     private String dataset=null; //  ili2db-Datasetname der Quelldaten "dataset"
-
     private String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
-
     private String region; // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
-
     private ListProperty<String> regions = getProject().getObjects().listProperty(String.class); // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
-
     private ListProperty<String> _publishedRegions = getProject().getObjects().listProperty(String.class); // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
-
     private Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
-
     private Boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
-
     private Endpoint kgdiService=null; // Endpunkt des SIMI-Services
-
     private Endpoint kgdiTokenService=null; // Endpunkt des Authentifizierung-Services
-
     private Object grooming=null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
-
     private String exportModels=null; // Das Export-Modell, indem die Daten exportiert werden
-
     private String modeldir=null;     // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
-
     private String proxy=null;        // Proxy Server fuer den Zugriff auf Modell Repositories
-
     private Integer proxyPort=null;    // Proxy Port fuer den Zugriff auf Modell Repositories
-
     private Date version=null;
 
     @TaskAction

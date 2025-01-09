@@ -5,18 +5,16 @@ import java.io.File;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Gpkg2DxfStep;
-import ch.so.agi.gretl.steps.Gpkg2ShpStep;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class Gpkg2Dxf extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
     
     private Object dataFile;
     private File outputDir = null;

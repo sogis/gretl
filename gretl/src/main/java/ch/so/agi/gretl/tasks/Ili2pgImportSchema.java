@@ -14,6 +14,7 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
+    
     @InputFile
     @Optional
     public abstract Property<Object> getIliFile();

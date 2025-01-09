@@ -15,6 +15,7 @@ import java.util.List;
 
 public class JsonImport extends DefaultTask {
     protected GretlLogger log;
+    
     private Connector database;
     private String qualifiedTableName = null;
     private String jsonFile = null;

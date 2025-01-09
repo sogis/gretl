@@ -13,9 +13,11 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 
 public abstract class Ili2pgExport extends Ili2pgAbstractTask {
+    
     @Input
     @Optional
     public abstract Property<Boolean> getExport3();
+    
     @Input
     @Optional
     public abstract Property<String> getExportModels();
