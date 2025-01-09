@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CsvValidator extends AbstractValidatorTask {
-    private GretlLogger log;
     private Boolean firstLineIsHeader = true;
     private Character valueDelimiter = null;
     private Character valueSeparator = null;

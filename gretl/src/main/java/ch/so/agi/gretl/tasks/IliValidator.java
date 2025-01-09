@@ -20,8 +20,7 @@ import ch.interlis.iox_j.validator.InterlisFunction;
 
 
 public class IliValidator extends AbstractValidatorTask {
-    private GretlLogger log;
-
+    
     @TaskAction
     public void validate() {
         log = LogEnvironment.getLogger(IliValidator.class);

@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.tasks.impl;
 
 import ch.ehi.basics.settings.Settings;
+import ch.so.agi.gretl.logging.GretlLogger;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.util.List;
 
 public class AbstractValidatorTask extends DefaultTask {
+    protected GretlLogger log;
 
     private Object dataFiles;
 

@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShpValidator extends AbstractValidatorTask {
-    private GretlLogger log;
-
     private String encoding = null;
 
     @Input
