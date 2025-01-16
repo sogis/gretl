@@ -52,6 +52,8 @@ configurations {
     all*.exclude group: 'ch.qos.logback', module: 'logback-classic' 
     
     all*.exclude group: 'xml-apis'   
+    
+    javadocDoclet
 }
 
 dependencies {
@@ -101,7 +103,7 @@ dependencies {
     
     api libs.saxon
     
-	api libs.sftp.fs
+    api libs.sftp.fs
 
     runtimeOnly libs.postgresql
     runtimeOnly libs.sqlite.jdbc
@@ -127,7 +129,9 @@ dependencies {
     
     testImplementation libs.mock.web.server
 
-    testImplementation libs.tomcat.embed.core    
+    testImplementation libs.tomcat.embed.core  
+    
+    javadocDoclet libs.gretl.doclet  
 }
 
 gradlePlugin {
@@ -256,4 +260,14 @@ processResources{
  */
 processIntegrationTestResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    title = null
+    destinationDir = file("./build/taskdocs/")
+    
+    include 'ch/so/agi/gretl/tasks/**'
+    options.doclet = "ch.so.agi.gretl.doclet.GretlDoclet"
+    options.docletpath = configurations.javadocDoclet.files.asType(List)
 }
