@@ -29,6 +29,9 @@ public class Av2ch extends DefaultTask {
     private String language = "de";
     private Boolean zip = false;
 
+    /**
+     * Zu transformierende ITF-Datei(en). File- oder FileCollection-Objekt.
+     */
     @Input
     public Object getInputFile(){
         return inputFile;

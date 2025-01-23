@@ -6,13 +6,13 @@ The [Gradle](http://www.gradle.org) _GRETL_ plugin extends Gradle for use as a s
 
 ## Manual
 
-A german user manual can be found here: [docs/user/](docs/user/index.md) 
+The german reference documentation can be found here: [docs/user/](docs/user/reference.md) 
 
-The Publisher task is documented here: [Publisher](docs/user/Publisher.md) 
+The Publisher task is documented here: [Publisher](docs/user/publisher.md) 
 
 For more insights (developing, runtimes) see here: [docs/dev/](docs/dev/index.md)
 
-## Licencse
+## License
 
 _GRETL_ is licensed under the [MIT License](LICENSE).
 

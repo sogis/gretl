@@ -14,7 +14,7 @@ java {
 
 compileJava {
     options.compilerArgs.addAll(['--release', '11'])
-    options.encoding = 'US-ASCII'
+    //options.encoding = 'US-ASCII'
 }
 
 apply from: 'integration-test.gradle'
@@ -265,7 +265,7 @@ processIntegrationTestResources {
 javadoc {
     source = sourceSets.main.allJava
     title = null
-    destinationDir = file("./build/taskdocs/")
+    destinationDir = file("./build/docs/tasks/")
     
     include 'ch/so/agi/gretl/tasks/**'
     options.doclet = "ch.so.agi.gretl.doclet.GretlDoclet"
