@@ -241,31 +241,22 @@ tasks.register('csvexport', CsvExport) {
 Daten aus einer CSV-Datei werden in eine bestehende Datenbanktabelle importiert.
 
 Beispiel:
-```
+
+```groovy
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task csvimport(type: CsvImport){
+tasks.register('csvimport',  CsvImport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "csvimport"
     tableName = "importdata"
-    firstLineIsHeader=true
+    firstLineIsHeader = true
     dataFile = "data1.csv"
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank in die importiert werden soll
-dataFile  | Name der CSV-Datei, die gelesen werden soll
-tableName | Name der DB-Tabelle, in die importiert werden soll
-schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-firstLineIsHeader | Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
-valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes vorhanden ist. Default ``"``
-valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten interpretiert werden soll. Default: ``,``
-encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
-batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
 
 Die Tabelle kann weitere Spalten enthalten, die in der CSV-Datei nicht vorkommen. Sie müssen
 aber NULLable sein, oder einen Default-Wert definiert haben.

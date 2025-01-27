@@ -32,6 +32,120 @@ public class CsvImport extends DefaultTask {
     private String encoding = null;
     private Integer batchSize = null;
 
+    /**
+     * Name der CSV-Datei, die gelesen werden soll.
+     */
+    @InputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    /**
+     * Name der DB-Tabelle, in die importiert werden soll.
+     */
+    @Input
+    public String getTableName() {
+        return tableName;
+    }
+
+    /**
+     * Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
+     */
+    @Input
+    @Optional
+    public Boolean isFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
+    /**
+     * Zeichen, das am Anfang und Ende jeden Wertes vorhanden ist. Default `"`
+     */
+    @Input
+    @Optional
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
+    /**
+     * Zeichen, das als Trennzeichen zwischen den Werten interpretiert werden soll. Default: `,`
+     */
+    @Input
+    @Optional
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+
+    /**
+     * Name des DB-Schemas, in dem die DB-Tabelle ist.
+     */
+    @Input
+    @Optional
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    /**
+     * Zeichencodierung der CSV-Datei, z.B. `UTF-8`. Default: Systemeinstellung.
+     */
+    @Input
+    @Optional
+    public String getEncoding() {
+        return encoding;
+    }
+
+    /**
+     * Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden. Default: 5000
+     */
+    @Input
+    @Optional
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    /**
+     * Datenbank in die importiert werden soll.
+     */
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
+        this.firstLineIsHeader = firstLineIsHeader;
+    }
+
+    public void setValueDelimiter(Character valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
+
+    public void setValueSeparator(Character valueSeparator) {
+        this.valueSeparator = valueSeparator;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
     @TaskAction
     public void importData() {
         log = LogEnvironment.getLogger(CsvImport.class);
@@ -73,93 +187,6 @@ public class CsvImport extends DefaultTask {
                 conn = null;
             }
         }
-    }
-
-    @InputFile
-    public Object getDataFile() {
-        return dataFile;
-    }
-
-    @Input
-    public String getTableName() {
-        return tableName;
-    }
-
-    @Input
-    @Optional
-    public Boolean isFirstLineIsHeader() {
-        return firstLineIsHeader;
-    }
-
-    @Input
-    @Optional
-    public Character getValueDelimiter() {
-        return valueDelimiter;
-    }
-
-    @Input
-    @Optional
-    public Character getValueSeparator() {
-        return valueSeparator;
-    }
-
-    @Input
-    @Optional
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    @Input
-    @Optional
-    public String getEncoding() {
-        return encoding;
-    }
-
-    @Input
-    @Optional
-    public Integer getBatchSize() {
-        return batchSize;
-    }
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
-        this.firstLineIsHeader = firstLineIsHeader;
-    }
-
-    public void setValueDelimiter(Character valueDelimiter) {
-        this.valueDelimiter = valueDelimiter;
-    }
-
-    public void setValueSeparator(Character valueSeparator) {
-        this.valueSeparator = valueSeparator;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
-    public void setBatchSize(Integer batchSize) {
-        this.batchSize = batchSize;
     }
 
     private Settings getSettings() {
