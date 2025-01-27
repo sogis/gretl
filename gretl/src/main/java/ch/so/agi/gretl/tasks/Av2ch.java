@@ -14,6 +14,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
@@ -38,7 +39,7 @@ public class Av2ch extends DefaultTask {
     };
 
     // Warum Input?
-    @Input
+    @OutputDirectory
     public Object getOutputDirectory(){
         return outputDirectory;
     }
