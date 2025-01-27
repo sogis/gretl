@@ -146,7 +146,7 @@ Das Bundes-ITF hat denselben Namen wie das Kantons-ITF.
 Aufgrund der sehr vielen Logging-Messages einer verwendeten Bibliothek, wird der `System.err`-Ouput nach `dev/null` [https://github.com/sogis/av2ch/blob/master/src/main/java/ch/so/agi/av/Av2ch.java#L75](gemappt).
 
 ```groovy
-task transform(type: Av2ch) {
+tasks.register('transform', Av2ch) {
     inputFile = file("254900.itf")
     outputDirectory = file("output")
 }
@@ -155,7 +155,7 @@ task transform(type: Av2ch) {
 Es können auch mehrere Dateien gleichzeitig transformiert werden:
 
 ``` groovy
-task transform(type: Av2ch) {
+tasks.register('transform', Av2ch) {
     inputFile = fileTree(".").matching {
             include"*.itf"
         }
@@ -164,28 +164,6 @@ task transform(type: Av2ch) {
 ```
 
 {{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Av2ch.md >}}
-
-### Av2ch (orig)
-
-Transformiert eine INTERLIS1-Transferdatei im kantonalen AV-DM01-Modell in das Bundesmodell. Unterstützt werden die Sprachen _Deutsch_ und _Italienisch_ und der Bezugrahmen _LV95_. Getestet mit Daten aus den Kantonen Solothurn, Glarus und Tessin. Weitere Informationen sind in der Basisbibliothek zu finden: [https://github.com/sogis/av2ch](https://github.com/sogis/av2ch).
-
-Das Bundes-ITF hat denselben Namen wie das Kantons-ITF.
-
-Aufgrund der sehr vielen Logging-Messages einer verwendeten Bibliothek, wird der `System.err`-Ouput nach `dev/null` [https://github.com/sogis/av2ch/blob/master/src/main/java/ch/so/agi/av/Av2ch.java#L75](gemappt).
-
-```
-task transform(type: Av2ch) {
-    inputFile = file("254900.itf")
-    outputDirectory = file("output")
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-inputFile   | Name der zu transformierenden ITF-Datei.
-outputDirectory  | Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
-modeldir | INTERLIS-Modellablage. String separiert mit Semikolon (analog ili2db, ilivalidator).
-zip | Die zu erstellende Datei wird gezippt (Default: false).
 
 ### Av2geobau
 
@@ -198,8 +176,8 @@ Die Datenstruktur der DXF-Datei ist im Prinzip sehr einfach: Die verschiedenen I
 
 Der Datenumbau ist nicht konfigurierbar.
 
-```
-task av2geobau(type: Av2geobau){
+```groovy
+tasks.register('av2geobau', Av2geobau) {
     itfFiles = "ch_254900.itf"
     dxfDirectory = "./out/"
 }
@@ -207,8 +185,8 @@ task av2geobau(type: Av2geobau){
 
 Es können auch mehrere Dateien angegeben werden.
 
-```
-task av2geobau(type: Av2geobau){
+```groovy
+tasks.register('av2geobau', Av2geobau) {
     itfFiles = fileTree(".").matching {
         include"*.itf"
     }
@@ -216,22 +194,15 @@ task av2geobau(type: Av2geobau){
 }
 ```
 
-Parameter    | Beschreibung
--------------|-------------------
-itfFiles     | ITF-Datei, die nach DXF transformiert werden soll. Es können auch mehrere Dateien angegeben werden.
-dxfDirectory | Verzeichnis, in das die DXF-Dateien gespeichert werden.
-modeldir     | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%ITF_DIR;http://models.interlis.ch/``. ``%ITF_DIR`` ist ein Platzhalter für das Verzeichnis mit der ITF-Datei.
-logFile      | Schreibt die log-Meldungen der Konvertierung in eine Text-Datei.
-proxy        | Proxy Server für den Zugriff auf Modell Repositories
-proxyPort    | Proxy Port für den Zugriff auf Modell Repositories
-zip          | Die zu erstellende Datei wird gezippt und es werden zusätzliche Dateien (Musterplan, Layerbeschreibung, Hinweise) hinzugefügt (Default: false).
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Av2geobau.md >}}
 
 ### Csv2Excel (incubating)
 Konvertiert eine CSV-Datei in eine Excel-Datei (*.xlsx). Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert. Die Daten werden vollständig im Speicher vorgehalten. Falls grosse Dateien geschrieben werden müssen, kann das zu Problemen führen. Dann müsste die Apache POI SXSSF Implementierung (Streaming) verwendet werden.
 
 Beispiel:
-```
-task convertData(type: Csv2Excel) {
+
+```groovy
+tasks.register('convertData', Csv2Excel) {
     csvFile = file("./20230124_sap_Gebaeude.csv")
     firstLineIsHeader = true
     valueDelimiter = null
@@ -242,76 +213,29 @@ task convertData(type: Csv2Excel) {
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-csvFile | CSV-Datei, die konvertiert werden soll.
-firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
-valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default ``"``
-valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
-encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
-models | INTERLIS-Modell für Definition der Datentypen in der Excel-Datei.
-modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ";" getrennt werden. Es sind auch URLs von Modell-Repositories möglich.
-outputDir | Verzeichnis, in das die Excel-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
-
-### Csv2Parquet (incubating)
-Konvertiert eine CSV-Datei in eine Parquet-Datei. Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert.
-
-Beispiel:
-```
-task convertData(type: Csv2Parquet) {
-    csvFile = file("./20230124_sap_Gebaeude.csv")
-    firstLineIsHeader = true
-    valueDelimiter = null
-    valueSeparator = ";"
-    encoding = "ISO-8859-1";
-    models = "SO_HBA_Gebaeude_20230111";
-    outputDir = file(".");
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-csvFile | CSV-Datei, die konvertiert werden soll.
-firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
-valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default ``"``
-valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
-encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
-models | INTERLIS-Modell für Definition der Datentypen in der Parquet-Datei.
-modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ";" getrennt werden. Es sind auch URLs von Modell-Repositories möglich.
-outputDir | Verzeichnis, in das die Parquet-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Csv2Excel.md >}}
 
 ### CsvExport
-Daten aus einer bestehenden Datenbanktabelle werden in eine CSV-Datei exportiert.
+Daten aus einer bestehenden Datenbanktabelle werden in eine CSV-Datei exportiert. Geometriespalten können nicht exportiert werden.
 
 Beispiel:
-```
+
+```groovy
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task csvexport(type: CsvExport){
+tasks.register('csvexport', CsvExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "csvexport"
     tableName = "exportdata"
-    firstLineIsHeader=true
+    firstLineIsHeader = true
     attributes = [ "t_id","Aint"]
     dataFile = "data.csv"
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank aus der exportiert werden soll.
-dataFile  | Name der CSV-Datei, die erstellt werden soll.
-tableName | Name der DB-Tabelle, die exportiert werden soll
-schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
-valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default ``"``
-valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
-attributes | Spalten der DB-Tabelle, die exportiert werden sollen. Definiert die Reihenfolge der Spalten in der CSV-Datei. Default: alle Spalten
-encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
-
-Geometriespalten können nicht exportiert werden.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
 
 ### CsvImport
 Daten aus einer CSV-Datei werden in eine bestehende Datenbanktabelle importiert.

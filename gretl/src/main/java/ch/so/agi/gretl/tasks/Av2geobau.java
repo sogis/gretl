@@ -36,39 +36,61 @@ public class Av2geobau extends DefaultTask {
     private Integer proxyPort = null;
     private Boolean zip = false;
 
+    /**
+     * ITF-Datei, die nach DXF transformiert werden soll. Es können auch mehrere Dateien angegeben werden. File- oder FileCollection-Objekt.
+     */
     @InputFiles
     public Object getItfFiles() {
         return itfFiles;
     }
+    
+    /**
+     * Verzeichnis, in das die DXF-Dateien gespeichert werden.
+     */
     @OutputDirectory
     public Object getDxfDirectory() {
         return dxfDirectory;
     }
 
+    /**
+     * INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator).
+     */
     @Input
     @Optional
     public String getModeldir() {
         return modeldir;
     }
 
+    /**
+     * Schreibt die log-Meldungen der Konvertierung in eine Text-Datei.
+     */
     @OutputFile
     @Optional
     public Object getLogFile() {
         return logFile;
     }
 
+    /**
+     * Proxy-Server für den Zugriff auf Model-Repositories.
+     */
     @Input
     @Optional
     public String getProxy() {
         return proxy;
     }
 
+    /**
+     * Proxy-Port für den Zugriff auf Model-Repositories.
+     */
     @Input
     @Optional
     public Integer getProxyPort() {
         return proxyPort;
     }
-
+    
+    /**
+     * Die zu erstellende Datei wird gezippt und es werden zusätzliche Dateien (Musterplan, Layerbeschreibung, Hinweise) hinzugefügt. Default: false
+     */
     @Input
     @Optional
     public Boolean isZip() {

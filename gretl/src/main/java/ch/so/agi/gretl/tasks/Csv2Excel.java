@@ -5,7 +5,10 @@ import java.io.IOException;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.interlis2.validator.Validator;
 
@@ -28,42 +31,73 @@ public class Csv2Excel extends DefaultTask {
     private String modeldir;
     private File outputDir;
 
-    @Internal
+    /**
+     * CSV-Datei, die konvertiert werden soll.
+     */
+    @InputFile
     public File getCsvFile() {
         return csvFile;
     }
 
-    @Internal
+    /**
+     * Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
+     */
+    @Input
+    @Optional
     public Boolean getFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 
-    @Internal
+    /**
+     * Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default `"`
+     */
+    @Input
+    @Optional
     public Character getValueDelimiter() {
         return valueDelimiter;
     }
 
-    @Internal
+    /**
+     * Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: `,`
+     */
+    @Input
+    @Optional
     public Character getValueSeparator() {
         return valueSeparator;
     }
 
-    @Internal
+    /**
+     * Zeichencodierung der CSV-Datei, z.B. `UTF-8`. Default: Systemeinstellung
+     */
+    @Input
+    @Optional
     public String getEncoding() {
         return encoding;
     }
-
-    @Internal
+    
+    /**
+     * INTERLIS-Modell für Definition der Datentypen in der Excel-Datei.
+     */
+    @Input
+    @Optional
     public String getModels() {
         return models;
     }
 
-    @Internal
+    /**
+     * INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator).
+     */
+    @Input
+    @Optional
     public String getModeldir() {
         return modeldir;
     }
 
-    @Internal
+    /**
+     * Verzeichnis, in das die Excel-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
+     */
+    @OutputDirectory
+    @Optional
     public File getOutputDir() {
         return outputDir;
     }

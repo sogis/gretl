@@ -34,31 +34,42 @@ public class Av2ch extends DefaultTask {
      * Zu transformierende ITF-Datei(en). File- oder FileCollection-Objekt.
      */
     @Input
-    public Object getInputFile(){
+    public Object getInputFile() {
         return inputFile;
     };
 
-    // Warum Input?
+    /**
+     * Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
+     */
     @OutputDirectory
-    public Object getOutputDirectory(){
+    public Object getOutputDirectory() {
         return outputDirectory;
     }
     
+    /**
+     * INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator).
+     */
     @Input
     @Optional
-    public String getModeldir(){
+    public String getModeldir() {
         return modeldir;
     }
     
+    /**
+     * Sprache des Modelles / der Datei (de, it). Default: de
+     */
     @Input
     @Optional
-    public String getLanguage(){
+    public String getLanguage() {
         return language;
     }
-    
+
+    /**
+     * Die zu erstellende Datei wird gezippt. Default: false
+     */
     @Input
     @Optional
-    public Boolean getZip(){
+    public Boolean getZip() {
         return zip;
     }
 

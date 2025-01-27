@@ -32,6 +32,120 @@ public class CsvExport extends DefaultTask {
     private String[] attributes = null;
     private String encoding = null;
 
+    /**
+     * Name der CSV-Datei, die erstellt werden soll.
+     */
+    @OutputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    /**
+     * Name der DB-Tabelle, die exportiert werden soll.
+     */
+    @Input
+    public String getTableName() {
+        return tableName;
+    }
+
+    /**
+     * Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
+     */
+    @Input
+    @Optional
+    public Boolean getFirstLineIsHeader() {
+        return firstLineIsHeader;
+    }
+
+    /**
+     * Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default `"`
+     */
+    @Input
+    @Optional
+    public Character getValueDelimiter() {
+        return valueDelimiter;
+    }
+
+    /**
+     * Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: `,`
+     */
+    @Input
+    @Optional
+    public Character getValueSeparator() {
+        return valueSeparator;
+    }
+
+    /**
+     * Name des DB-Schemas, in dem die DB-Tabelle ist.
+     */
+    @Input
+    @Optional
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    /**
+     * Spalten der DB-Tabelle, die exportiert werden sollen. Definiert die Reihenfolge der Spalten in der CSV-Datei. Default: alle Spalten
+     */
+    @Input
+    @Optional
+    public String[] getAttributes(){
+        return attributes;
+    }
+
+    /**
+     * Zeichencodierung der CSV-Datei, z.B. "UTF-8". Default: Systemeinstellung
+     */
+    @Input
+    @Optional
+    public String getEncoding(){
+        return encoding;
+    }
+
+    /**
+     * Datenbank aus der exportiert werden soll.
+     */
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
+        this.firstLineIsHeader = firstLineIsHeader;
+    }
+
+    public void setValueDelimiter(Character valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
+
+    public void setValueSeparator(Character valueSeparator) {
+        this.valueSeparator = valueSeparator;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setAttributes(String[] attributes) {
+        this.attributes = attributes;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
     @TaskAction
     public void exportData() {
         log = LogEnvironment.getLogger(CsvExport.class);
@@ -76,93 +190,6 @@ public class CsvExport extends DefaultTask {
                 conn = null;
             }
         }
-    }
-
-    @OutputFile
-    public Object getDataFile() {
-        return dataFile;
-    }
-
-    @Input
-    public String getTableName() {
-        return tableName;
-    }
-
-    @Input
-    @Optional
-    public Boolean getFirstLineIsHeader() {
-        return firstLineIsHeader;
-    }
-
-    @Input
-    @Optional
-    public Character getValueDelimiter() {
-        return valueDelimiter;
-    }
-
-    @Input
-    @Optional
-    public Character getValueSeparator() {
-        return valueSeparator;
-    }
-
-    @Input
-    @Optional
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    @Input
-    @Optional
-    public String[] getAttributes(){
-        return attributes;
-    }
-
-    @Input
-    @Optional
-    public String getEncoding(){
-        return encoding;
-    }
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public void setFirstLineIsHeader(Boolean firstLineIsHeader) {
-        this.firstLineIsHeader = firstLineIsHeader;
-    }
-
-    public void setValueDelimiter(Character valueDelimiter) {
-        this.valueDelimiter = valueDelimiter;
-    }
-
-    public void setValueSeparator(Character valueSeparator) {
-        this.valueSeparator = valueSeparator;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public void setAttributes(String[] attributes) {
-        this.attributes = attributes;
-    }
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
     }
 
     private Settings getSettings() {
