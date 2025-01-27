@@ -37,6 +37,7 @@ public class Av2ch extends DefaultTask {
         return inputFile;
     };
 
+    // Warum Input?
     @Input
     public Object getOutputDirectory(){
         return outputDirectory;

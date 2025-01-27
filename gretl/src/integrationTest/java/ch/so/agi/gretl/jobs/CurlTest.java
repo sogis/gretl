@@ -112,6 +112,6 @@ class CurlTest {
         // Validate result
         String content = new String(Files.readAllBytes(Paths.get(projectDirectory + "/README.md")));
         assertTrue(content.contains("_GRETL_"));
-        assertTrue(content.contains("Licencse"));
+        assertTrue(content.contains("License"));
     }
 }

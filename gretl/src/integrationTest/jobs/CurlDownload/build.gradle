@@ -6,7 +6,7 @@ apply plugin: 'ch.so.agi.gretl'
 defaultTasks 'downloadData'
 
 task downloadData(type: Curl) {
-    serverUrl = "https://raw.githubusercontent.com/sogis/gretl/master/README.md"
+    serverUrl = "https://raw.githubusercontent.com/sogis/gretl/main/README.md"
     method = MethodType.GET
     outputFile = file("./README.md")
     expectedStatusCode = 200
