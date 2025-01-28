@@ -240,10 +240,17 @@ tasks.register('csvexport', CsvExport) {
 ### CsvImport
 Daten aus einer CSV-Datei werden in eine bestehende Datenbanktabelle importiert.
 
+Die Tabelle kann weitere Spalten enthalten, die in der CSV-Datei nicht vorkommen. Sie müssen
+aber NULLable sein, oder einen Default-Wert definiert haben.
+
+Geometriepalten können nicht importiert werden.
+
+Die Gross-/Kleinschreibung der CSV-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+
 Beispiel:
 
 ```groovy
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
@@ -258,48 +265,21 @@ tasks.register('csvimport',  CsvImport) {
 
 {{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
 
-Die Tabelle kann weitere Spalten enthalten, die in der CSV-Datei nicht vorkommen. Sie müssen
-aber NULLable sein, oder einen Default-Wert definiert haben.
-
-Geometriepalten können nicht importiert werden.
-
-Die Gross-/Kleinschreibung der CSV-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
-
 ### CsvValidator
 
 Prüft eine CSV-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator). Das Datenmodell darf die OID nicht als UUID modellieren (`OID AS INTERLIS.UUIDOID`). 
 
 Beispiel:
-```
-task validate(type: CsvValidator){
+
+```groovy
+tasks.register('validate', CsvValidator) {
     models = "CsvModel"
-    firstLineIsHeader=true
+    firstLineIsHeader = true
     dataFiles = ["data1.csv"]
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-dataFiles | Liste der CSV-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
-models | INTERLIS-Modell, gegen das die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
-modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der CSV-Datei.
-configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
-forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
-disableAreaValidation | Schaltet die AREA-Topologieprüfung aus. Default: false
-multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
-allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
-skipPolygonBuilding | Schaltet die Bildung der Polygone aus (nur ITF). Default: false
-logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
-xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell [IliVErrors](http://models.interlis.ch/models/tools/IliVErrors.ili).
-pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
-proxy | Proxy Server für den Zugriff auf Modell Repositories
-proxyPort | Proxy Port für den Zugriff auf Modell Repositories
-failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
-validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
-firstLineIsHeader | Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
-valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes vorhanden ist. Default ``"``
-valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten interpretiert werden soll. Default: ``,``
-encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.CsvValidator.md >}}
 
 Falls die CSV-Datei eine Header-Zeile enthält (mit den Spaltennamen), wird im gegebenen Modell eine Klasse gesucht, 
 welche die Header-Spaltennamen enthält (Gross-/Kleinschreibung sowie optionale "Spalten" der Modell-Klasse werden ignoriert). 
@@ -313,14 +293,14 @@ Die Prüfung von gleichzeitig mehreren CSV-Dateien führt zu Fehlermeldungen wie
 
 ### Curl
 
-Simuliert mit einem HttpClient einige Curl-Befehle.
+Simuliert mit einem `HttpClient` einige Curl-Befehle.
 
 Beispiele:
 
-```
+```groovy
 import ch.so.agi.gretl.tasks.Curl.MethodType;
 
-task uploadData(type: Curl) {
+tasks.register('uploadData', Curl) {
     serverUrl = "https://geodienste.ch/data_agg/interlis/import"
     method = MethodType.POST
     formData = ["topic": "npl_waldgrenzen", "lv95_file": file("./test.xtf.zip"), "publish": "true", "replace_all": "true"]
@@ -331,10 +311,10 @@ task uploadData(type: Curl) {
 }
 ```
 
-```
+```groovy
 import ch.so.agi.gretl.tasks.Curl.MethodType;
 
-task uploadData(type: Curl) {
+tasks.register('uploadData', Curl) {
     serverUrl = "https://testweb.so.ch/typo3/api/digiplan"
     method = MethodType.POST
     headers = ["Content-Type": "application/xml", "Content-Encoding": "gzip"]
@@ -345,10 +325,10 @@ task uploadData(type: Curl) {
 }
 ```
 
-```
+```groovy
 import ch.so.agi.gretl.tasks.Curl.MethodType;
 
-task downloadData(type: Curl) {
+tasks.register('downloadData', Curl) {
     serverUrl = "https://raw.githubusercontent.com/sogis/gretl/master/README.md"
     method = MethodType.GET
     outputFile = file("./README.md")
@@ -356,20 +336,50 @@ task downloadData(type: Curl) {
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-serverUrl | Die URL des Servers inklusive Pfad und Queryparameter.
-method |  HTTP-Request-Methode. Unterstützt werden `GET` und `POST`.
-expectedStatusCode | Erwarteter Status Code, der vom Server zurückgeliefert wird.
-expectedBody | Erwarteter Text, der vom Server als Body zurückgelieferd wird. (optional)
-formData | Form data parameters. Entspricht `curl [URL] -F key1=value1 -F file1=@my_file.xtf`. (optional)
-dataBinary | Datei, die hochgeladen werden soll. Entspricht `curl [URL] --data-binary`. (optional)
-headers | Request-Header. Entspricht `curl [URL] -H ... -H ...`. (optional)
-user | Benutzername. Wird zusammen mit `password` in einen Authorization-Header umgewandelt. Entspricht `curl [URL] -u user:password`. (optional)
-password | Passwort. Wird zusammen mit `user` in einen Authorization-Header umgewandelt. Entspricht `curl [URL] -u user:password`. (optional)
-outputFile | Datei, in die der Output gespeichert wird. Entspricht `curl [URL] -o`. (optional)
+```groovy
+import groovy.json.JsonSlurper
 
-### DatabaseDocumentExport (Experimental)
+def basicHeader = "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes())
+def token = ""
+
+tasks.register('getToken', Curl) {
+    serverUrl = "https://auth.example.ch/oauth2/token"
+    method = MethodType.POST
+    outputFile = file("./token.json")
+    expectedStatusCode = 200
+    data = "grant_type=client_credentials&client_id=$clientId"
+    headers = [
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": basicHeader
+    ]
+
+    doLast {
+        def slurper = new JsonSlurper();
+        def slurped = slurper.parseText(outputFile.text)
+
+        if (slurped.access_token != null)
+            token = slurped.access_token
+
+        if(token.length() == 0)
+            throw new GradleException("Failed to retrieve access token")
+
+        println "Length of access token is: " + token.length()
+    }
+}
+
+tasks.register('downloadJson', Curl) {
+    dependsOn 'getToken'
+    serverUrl = "https://obs.example.ch/rest/v4/docs.json?projects=83505"
+    method = MethodType.GET
+    outputFile = file("./data.json")
+    expectedStatusCode = 200
+    headers.put("Authorization", providers.provider { "Bearer " + token })
+} 
+```
+
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Curl.md >}}
+
+### DatabaseDocumentExport (deprecated)
 
 Speichert Dokumente, deren URL in einer Spalte einer Datenbanktabelle gespeichert sind, in einem lokalen Verzeichnis. Zukünftig und bei Bedarf kann der Task so erweitert werden, dass auch BLOBs aus der Datenbank gespeichert werden können.
 
@@ -381,12 +391,12 @@ Als Dateiname wird der letzte Teil des URL-Pfades verwendet, z.B. `https://artpl
 
 Es wird `DISTINCT ON (<documentColumn>)` und ein Filter `WHERE <documentColumn> IS NOT NULL` verwendet.
 
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task exportDocuments(type: DatabaseDocumentExport){
+tasks.register('exportDocuments', DatabaseDocumentExport) {
     database = [db_uri, db_user, db_pass]
     qualifiedTableName = "ada_denkmalschutz.fachapplikation_rechtsvorschrift_link"
     documentColumn = "multimedia_link"
@@ -396,14 +406,7 @@ task exportDocuments(type: DatabaseDocumentExport){
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank aus der die Dokumente exportiert werden sollen.
-qualifiedTableName  | Qualifizierter Tabellenname
-documentColumn | DB-Tabellenspalte mit dem Dokument resp. der URL zum Dokument.
-targetDir | Verzeichnis in das die Dokumente exportiert werden sollen.
-fileNamePrefix | Prefix für Dateinamen (optional)
-fileNameExtension | Dateinamen-Extension (optional)
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.DatabaseDocumentExport.md >}}
 
 ### Db2Db
 
@@ -434,17 +437,17 @@ unvollständiger Import zurückgelassen wird.
 Damit dieselbe .sql-Datei für verschiedene Datensätze benutzt werden kann, ist es möglich 
 innerhalb der .sql-Datei Parameter zu verwenden und diesen Parametern beim Task einen
 konkreten Wert zuzuweisen. Innerhalb der .sql-Datei werden Paramter mit folgender Syntax
-verwendet: ``${paramName}``.
+verwendet: `${paramName}`.
 
 Es ist pro .sql-Datei nur ein SELECT-Statement erlaubt. Ausser das erste Statement ist ein
 "SET search_path TO"-Statement.
 
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task transferSomeData(type: Db2Db) {
+tasks.register('transferSomeData', Db2Db) {
     sourceDb = [db_uri, db_user, db_pass]
     targetDb = ['jdbc:sqlite:gretldemo.sqlite',null,null]
     sqlParameters = [dataset:'Olten']
@@ -453,15 +456,16 @@ task transferSomeData(type: Db2Db) {
     ];
 }
 ```
+
 Damit mit einer einzigen Task-Definition mehrere Datensätze verarbeitet werden können, kann auch 
 eine Liste von Parametern angegeben werden.
 
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task transferSomeData(type: Db2Db) {
+tasks.register('transferSomeData', Db2Db) {
     sourceDb = [db_uri, db_user, db_pass]
     targetDb = ['jdbc:sqlite:gretldemo.sqlite',null,null]
     sqlParameters = [[dataset:'Olten'],[dataset:'Grenchen']]
@@ -471,17 +475,9 @@ task transferSomeData(type: Db2Db) {
 }
 ```
 
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Db2Db.md >}}
 
-Parameter | Beschreibung
-----------|-------------------
-sourceDb | Datenbank aus der gelesen werden soll
-targetDb | Datenbank in die geschrieben werden soll
-transferSets  | Eine Liste von ``TransferSet``s.
-sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert (``Map<String,String>``). Oder eine Liste mit Paaren von Parameter-Name und Parameter-Wert (``List<Map<String,String>>``).
-batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). Für sehr grosse Tabellen muss ein kleinerer Wert gewählt werden.
-fetchSize | Anzahl der Records, die auf einmal vom Datenbank-Cursor von der Quell-Datenbank zurückgeliefert werden (Standard: 5000). Für sehr grosse Tabellen muss ein kleinerer Wert gewählt werden.
-
-Eine ``TransferSet`` ist 
+Eine `TransferSet` ist 
 
 - eine SQL-Datei (mit SQL-Anweisungen zum Lesen der Daten aus der sourceDb), 
 - dem Namen der Ziel-Tabelle in der targetDb, und 
@@ -490,21 +486,21 @@ Eine ``TransferSet`` ist
   zu beeinflussen, u.a. um einen WKT-Geometrie-String in eine PostGIS-Geometrie umzuwandeln
 
 Beispiel, Umwandlung Rechtswert/Hochwertspalten in eine PostGIS-Geometrie
-(siehe auch Gretl-Job [afu_onlinerisk_transfer](https://github.com/sogis/gretljobs/tree/main/afu_onlinerisk_transfer) der eine Punktgeometriespalten aus einer Nicht-Postgis-DB übernimmt):
+(siehe auch GRETL-Job [afu_onlinerisk_transfer](https://github.com/sogis/gretljobs/tree/main/afu_onlinerisk_transfer) der eine Punktgeometriespalten aus einer Nicht-Postgis-DB übernimmt):
 
-```
+```groovy
 new TransferSet('untersuchungseinheit.sql', 'afu_qrcat_v1.onlinerisk_untersuchungseinheit', true, (String[])["geom:wkt:2056"])
 ```
 
-"geom" ist der Geometrie-Spalten-Name der verwendet wird.
+`geom` ist der Geometrie-Spalten-Name der verwendet wird.
 
 Dazugehöriger Auszug aus SQL-Datei zur Erzeugung des WKT-Strings mit Hilfe von concatenation:
 
-```
+```sql
 'Point(' || ue.koordinate_x::text || ' ' || ue.koordinate_y::text || ')' AS geom
 ```
 
-Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle.
+Unterstützte Datenbanken: PostgreSQL, SQLite, Oracle, Derby und DuckDB.
 
 ### FtpDelete
 
@@ -512,8 +508,8 @@ Löscht Daten auf einem FTP-Server.
 
 Beispiel, löscht alle Daten in einem Verzeichnis:
 
-```
-task ftpdelete(type: FtpDelete) {
+```groovy
+tasks.register('ftpdelete', FtpDelete) {
     server= "ftp.server.org"
     user= "Hans"
     password= "dummy"
@@ -525,8 +521,8 @@ task ftpdelete(type: FtpDelete) {
 
 Um bestimmte Dateien zu löschen:
 
-```
-task ftpdownload(type: FtpDownload){
+```groovy
+tasks.register('ftpdelete', FtpDelete) {
     server= "ftp.server.org"
     user= "Hans"
     password= "dummy"
@@ -537,8 +533,8 @@ task ftpdownload(type: FtpDownload){
 
 Um heruntergeladene Daten zu löschen:
 
-```
-task ftpdownload(type: FtpDownload){
+```groovy
+tasks.register('ftpdelete', FtpDelete) {
     server= "ftp.server.org"
     user= "Hans"
     password= "dummy"
@@ -547,18 +543,7 @@ task ftpdownload(type: FtpDownload){
 }
 ```
 
-
-Parameter               | Beschreibung
-------------------------|-------------------
-server                  | Name des Servers (ohne ftp://) 
-user                    | Benutzername auf dem Server
-password                | Passwort für den Zugriff auf dem Server
-remoteDir               | Verzeichnis auf dem Server
-remoteFile              | Dateiname oder Liste der Dateinamen auf dem Server (kann auch ein Muster sein (* oder ?)). Ohne diesen Parameter werden alle Dateien aus dem Remoteverzeichnis gelöscht.
-systemType              | UNIX oder WINDOWS. Default ist UNIX.
-fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\\'.
-passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
-controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.FtpDelete.md >}}
 
 ### FtpDownload
 
@@ -567,8 +552,8 @@ Verzeichnis herunter.
 
 Beispiel:
 
-```
-task ftpdownload(type: FtpDownload){
+```groovy
+tasks.register('ftpdownload', FtpDownload) {
     server= "ftp.server.org"
     user= "Hans"
     password= "dummy"
@@ -579,8 +564,8 @@ task ftpdownload(type: FtpDownload){
 
 Um eine bestimmte Datei herunterzuladen:
 
-```
-task ftpdownload(type: FtpDownload){
+```groovy
+tasks.register('ftpdownload', FtpDownload) {
     server="ftp.infogrips.ch"
     user= "Hans"
     password= "dummy"
@@ -591,20 +576,7 @@ task ftpdownload(type: FtpDownload){
 }
 ```
 
-
-Parameter               | Beschreibung
-------------------------|-------------------
-server                  | Name des Servers (ohne ftp://) 
-user                    | Benutzername auf dem Server
-password                | Passwort für den Zugriff auf dem Server
-localDir                | Lokales Verzeichnis indem die Dateien gespeichert werden
-remoteDir               | Verzeichnis auf dem Server
-remoteFile              | Dateiname oder Liste der Dateinamen auf dem Server (kann auch ein Muster sein (* oder ?)). Ohne diesen Parameter werden alle Dateien aus dem Remoteverzeichnis heruntergeladen.
-systemType              | UNIX oder WINDOWS. Default ist UNIX.
-fileType                | ASCII oder BINARY. Default ist ASCII.
-fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\\'.
-passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
-controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.FtpDownload.md >}}
 
 ### FtpList
 
@@ -612,8 +584,8 @@ Liefert eine Liste der Dateien aus dem definierten Verzeichnis des Servers.
 
 Beispiel:
 
-```
-task ftplist(type: FtpList){
+```groovy
+tasks.register('ftplist', FtpList) {
     server= "ftp.server.org"
     user= "Hans"
     password= "dummy"
@@ -624,118 +596,26 @@ task ftplist(type: FtpList){
 }
 ```
 
-
-Parameter               | Beschreibung
-------------------------|-------------------
-server                  | Name des Servers (ohne ftp://) 
-user                    | Benutzername auf dem Server
-password                | Passwort für den Zugriff auf dem Server
-remoteDir               | Verzeichnis auf dem Server
-files                   | Liste der Dateinamen auf dem Server
-systemType              | UNIX oder WINDOWS. Default ist UNIX.
-fileSeparator           | Default ist '/'. (Falls systemType Windows ist, ist der Default '\\'.
-passiveMode             | Aktiv oder Passiv Verbindungsmodus. Default ist Passiv (true)
-controlKeepAliveTimeout | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default ist 300s (=5 Minuten)
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.FtpList.md >}}
 
 ### Gpkg2Dxf 
 
 Exportiert alle Tabellen einer GeoPackage-Datei in DXF-Dateien. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt.
 
-Es werden alle INTERLIS-Klassen exportier (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Der eigentliche SELECT-Befehl ist komplizierter weil für das Layern der einzelnen DXF-Objekte das INTERLIS-Metaattribut `!!@dxflayer="true"` ausgelesen wird. Gibt es kein solches Metaattribut wird alles in den gleichen DXF-Layer (`default`) geschrieben.
+Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABLE_PROP WHERE setting = 'CLASS'`). Der eigentliche SELECT-Befehl ist komplizierter weil für das Layern der einzelnen DXF-Objekte das INTERLIS-Metaattribut `!!@dxflayer="true"` ausgelesen wird. Gibt es kein solches Metaattribut wird alles in den gleichen DXF-Layer (`default`) geschrieben.
  
 **Encoding**: Die DXF-Dateien sind `ISO-8859-1` encodiert.
 
 **Achtung**: Task sollte verbessert werden (siehe E-Mail Claude im Rahmen des Publisher-Projektes).
 
-```
-task gpkg2dxf(type: Gpkg2Dxf) {
+```groovy
+tasks.register('gpkg2dxf', Gpkg2Dxf) {
     dataFile = file("data.gpkg")
     outputDir = file("./out/")
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-dataFile | GeoPackage-Datei, die nach DXF transformiert werden soll.
-outputDir | Verzeichnis, in das die DXF-Dateien gespeichert werden.
-
-### GpkgExport
-
-Daten aus einer bestehenden Datenbanktabelle werden in eine GeoPackage-Datei exportiert.
-
-Beispiele:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task gpkgexport(type: GpkgExport){
-    database = [db_uri, db_user, db_pass]
-    schemaName = "gpkgexport"
-    srcTableName = "exportdata"
-    dataFile = "data.gpkg"
-    dstTableName = "exportdata"
-}
-```
-
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task gpkgexport(type: GpkgExport) {
-    database = [db_uri, db_user, db_pass]
-    schemaName = "gpkgexport"
-    srcTableName = ["exportTable1", "exportTable2"]
-    dataFile = "data.gpkg"
-    dstTableName = ["exportTable1", "exportTable2"]
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank aus der exportiert werden soll
-dataFile  | Name der GeoPackage-Datei, die erstellt werden soll
-srcTableName | Name der DB-Tabelle(n), die exportiert werden soll(en). String oder List.
-schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-dstTableName | Name der Tabelle(n) in der GeoPackage-Datei. String oder List.
-batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank (GeoPackage) geschrieben werden (Standard: 5000). 
-fetchSize | Anzahl der Records, die pro Fetch aus der Quell-Datenbank gelesen werden (Standard: 5000). 
-
-### GpkgImport
-
-Daten aus einer GeoPackage-Datei in eine bestehende Datenbanktabelle importieren.
-
-Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task gpkgimport(type: GpkgImport){
-    database = [db_uri, db_user, db_pass]
-    schemaName = "gpkgimport"
-    srcTableName = "Point"
-    dstTableName = "importdata"
-    dataFile = "point.gpkg"
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank in die importiert werden soll
-dataFile  | Name der GeoPackage-Datei, die gelesen werden soll
-srcTableName | Name der GeoPackage-Tabelle, die importiert werden soll
-schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-dstTableName | Name der DB-Tabelle, in die importiert werden soll 
-~~encoding~~ | ~~Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung~~
-batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
-fetchSize | Anzahl der Records, die pro Fetch aus der Quell-Datenbank gelesen werden (Standard: 5000). 
-
-Die Tabelle kann weitere Spalten enthalten, die in der GeoPackage-Datei nicht vorkommen. Sie müssen
-aber NULLable sein, oder einen Default-Wert definiert haben.
-
-Die Gross-/Kleinschreibung der GeoPckage-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Gpkg2Dxf.md >}}
 
 ### Gpkg2Shp 
 
@@ -747,71 +627,113 @@ Es werden alle INTERLIS-Klassen exportiert (`SELECT tablename FROM T_ILI2DB_TABL
 
 **Achtung**: Task sollte verbessert werden (siehe E-Mail Claude im Rahmen des Publisher-Projektes).
 
-```
-task gpkg2shp(type: Gpkg2Shp) {
+```groovy
+tasks.register('gpkg2shp', Gpkg2Shp) {
     dataFile = file("data.gpkg")
     outputDir = file("./out/")
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-dataFile | GeoPackage-Datei, die nach Shapefile transformiert werden soll.
-outputDir | Verzeichnis, in das die Shapefile gespeichert werden.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Gpkg2Shp.md >}}
+
+### GpkgExport
+
+Daten aus einer bestehenden Datenbanktabelle werden in eine GeoPackage-Datei exportiert.
+
+Beispiele:
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+tasks.register('gpkgexport', GpkgExport) {
+    database = [db_uri, db_user, db_pass]
+    schemaName = "gpkgexport"
+    srcTableName = "exportdata"
+    dataFile = "data.gpkg"
+    dstTableName = "exportdata"
+}
+```
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+tasks.register('gpkgexport', GpkgExport) {
+    database = [db_uri, db_user, db_pass]
+    schemaName = "gpkgexport"
+    srcTableName = ["exportTable1", "exportTable2"]
+    dataFile = "data.gpkg"
+    dstTableName = ["exportTable1", "exportTable2"]
+}
+```
+
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.GpkgExport.md >}}
+
+### GpkgImport
+
+Daten aus einer GeoPackage-Datei in eine bestehende Datenbanktabelle importieren.
+
+Die Tabelle kann weitere Spalten enthalten, die in der GeoPackage-Datei nicht vorkommen. Sie müssen
+aber NULLable sein, oder einen Default-Wert definiert haben.
+
+Die Gross-/Kleinschreibung der GeoPackage-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+
+Beispiel:
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+tasks.register('gpkgimport', GpkgImport) {
+    database = [db_uri, db_user, db_pass]
+    schemaName = "gpkgimport"
+    srcTableName = "Point"
+    dstTableName = "importdata"
+    dataFile = "point.gpkg"
+}
+```
+
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.GpkgImport.md >}}
 
 ### GpkgValidator
 Prüft eine GeoPackage-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
 
 Beispiel:
-```
-task validate(type: GpkgValidator){
+
+```groovy
+tasks.register('validate', GpkgValidator) {
     models = "GpkgModel"
     dataFiles = ["attributes.gpkg"]
     tableName = "Attributes"
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-dataFiles | Liste der GeoPackage-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
-tableName | Name der Tabelle in den GeoPackage-Dateien.
-models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
-modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der SHP-Datei.
-configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
-forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
-disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
-multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
-allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
-logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
-xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
-pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
-proxy | Proxy Server für den Zugriff auf Modell Repositories
-proxyPort | Proxy Port für den Zugriff auf Modell Repositories
-failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
-validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.GpkgValidator.md >}}
 
 ### Gzip
 Gzipped eine einzelne Datei. Es gibt einen eingebauten Tar-Task, der - nomen est omen - aber immer zuerst eine Tar-Datei erstellt. 
 
-Parameter | Beschreibung
-----------|-------------------
-dataFile | Datei, die gezipped werden soll.
-gzipFile | Output-Datei
-
 Beispiel:
-```
-task compressFile(type: Gzip) {
+
+```groovy
+tasks.register('compressFile', Gzip) {
     dataFile = file("./planregister.xml");
     gzipFile = file("./planregister.xml.gz");
 }
 ```
+
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Gzip.md >}}
 
 ### Ili2gpkgImport
 
 Importiert Daten aus einer INTERLIS-Transferdatei in eine GeoPackage-Datei.
 
 Die Tabellen werden implizit auch angelegt, falls sie noch nicht vorhanden sind. Falls die Tabellen in der Datenbank 
-schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. bfsnr, datum etc.), welche beim Import leer bleiben.
+schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. `bfsnr`, `datum` etc.), welche beim Import leer bleiben.
 
 Falls beim Import ein Datensatz-Identifikator (dataset) definiert wird, darf dieser Datensatz-Identifikator in der 
 Datenbank noch nicht vorhanden sein. 
@@ -821,44 +743,18 @@ Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2g
 Die Option `--doSchemaImport` wird automatisch gesetzt.
 
 Beispiel:
-```
-task importData(type: Ili2gpkgImport) {
+
+```groovy
+tasks.register('importData', Ili2gpkgImport) {
     models = "SO_AGI_AV_GB_Administrative_Einteilungen_20180613"
     dataFile = file("data.xtf");
     dbfile = file("data.gpkg")    
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-dbfile | GeoPackage-Datei in die importiert werden soll
-dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein.
-proxy  | Entspricht der ili2gpkg Option --proxy
-proxyPort  | Entspricht der ili2gpkg Option --proxyPort
-modeldir  | Entspricht der ili2gpkg Option --modeldir
-models  | Entspricht der ili2gpkg Option --models
-dataset  | Entspricht der ili2gpkg Option --dataset
-baskets  | Entspricht der ili2gpkg Option --baskets
-topics  | Entspricht der ili2gpkg Option --topics
-preScript  | Entspricht der ili2gpkg Option --preScript
-postScript  | Entspricht der ili2gpkg Option --postScript
-deleteData  | Entspricht der ili2gpkg Option --deleteData
-logFile  | Entspricht der ili2gpkg Option --logFile
-validConfigFile  | Entspricht der ili2gpkg Option --validConfigFile
-disableValidation  | Entspricht der ili2gpkg Option --disableValidation
-disableAreaValidation  | Entspricht der ili2gpkg Option --disableAreaValidation
-forceTypeValidation  | Entspricht der ili2gpkg Option --forceTypeValidation
-strokeArcs  | Entspricht der ili2gpkg Option --strokeArcs
-skipPolygonBuilding  | Entspricht der ili2gpkg Option --skipPolygonBuilding
-skipGeometryErrors  | Entspricht der ili2gpkg Option --skipGeometryErrors
-iligml20  | Entspricht der ili2gpkg Option --iligml20
-coalesceJson  | Entspricht der ili2gpkg Option --coalesceJson
-nameByTopic  | Entspricht der ili2gpkg Option --nameByTopic
-defaultSrsCode  | Entspricht der ili2gpkg Option --defaultSrsCode
-createEnumTabs  | Entspricht der ili2gpkg Option --createEnumTabs
-createMetaInfo  | Entspricht der ili2gpkg Option --createMetaInfo
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2gpkgImport.md >}}
 
-Für die Beschreibung der einzenen ili2gpkg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+Für die Beschreibung der einzenen ili2gpkg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
 ### Ili2pgExport
 
@@ -897,7 +793,6 @@ task exportData(type: Ili2pgExport){
     logFile = "ili2pg.log"
 }
 ```
-
 
 Parameter | Beschreibung
 ----------|-------------------
@@ -1446,6 +1341,13 @@ Die Tabelle darf eine Geometriespalte enthalten.
 
 Daten aus einer Shp-Datei in eine bestehende Datenbanktabelle importieren.
 
+Die Tabelle kann weitere Spalten enthalten, die in der Shp-Datei nicht vorkommen. Sie müssen
+aber NULLable sein, oder einen Default-Wert definiert haben.
+
+Die Tabelle muss eine Geometriespalte enthalten. Der Name der Geometriespalte kann beliebig gewählt werden.
+
+Die Gross-/Kleinschreibung der Shp-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+
 Beispiel:
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
@@ -1468,13 +1370,6 @@ tableName | Name der DB-Tabelle, in die importiert werden soll
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
-
-Die Tabelle kann weitere Spalten enthalten, die in der Shp-Datei nicht vorkommen. Sie müssen
-aber NULLable sein, oder einen Default-Wert definiert haben.
-
-Die Tabelle muss eine Geometriespalte enthalten. Der Name der Geometriespalte kann beliebig gewählt werden.
-
-Die Gross-/Kleinschreibung der Shp-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
 
 ### ShpValidator
 

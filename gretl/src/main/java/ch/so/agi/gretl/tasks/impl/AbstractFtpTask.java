@@ -18,39 +18,60 @@ public class AbstractFtpTask extends DefaultTask {
     private Boolean passiveMode=true;
     private Long controlKeepAliveTimeout=300L; // set timeout to 5 minutes
 
+    /**
+     * Name des Servers (ohne ftp://).
+     */
     @Input
     public String getServer(){
         return server;
     }
 
+    /**
+     * Benutzername auf dem Server.
+     */
     @Input
     public String getUser(){
        return user;
     }
 
+    /**
+     * Passwort für den Zugriff auf dem Server.
+     */
     @Input
     public String getPassword(){
         return this.password;
     }
 
+    /**
+     * `UNIX` oder `WINDOWS`. Default: `UNIX`.
+     */
     @Input
     @Optional
     public String getSystemType(){
         return systemType;
     }
 
+    /**
+     * Default: `/`. (Falls systemType Windows ist, ist der Default `\`.
+     */
     @Input
     @Optional
     public String getFileSeparator(){
         return this.fileSeparator;
     }
 
+    /**
+     * Aktiv- oder Passiv-Verbindungsmodus. Default: Passiv (true)
+     */
     @Input
     @Optional
     public Boolean getPassiveMode(){
         return passiveMode;
     }
 
+    /**
+     * Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default: 300s (=5 Minuten)
+     */
     @Input
     @Optional
     public Long getControlKeepAliveTimeout(){

@@ -23,23 +23,41 @@ import java.util.Map;
 public abstract class Db2Db extends DefaultTask {
     private static GretlLogger log;
 
+    /**
+     * Datenbank, aus der gelesen werden soll.
+     */
     @Input
     public abstract ListProperty<String> getSourceDb();
     
+    /**
+     * Datenbank, in die geschrieben werden soll.
+     */
     @Input
     public abstract ListProperty<String> getTargetDb();
     
+    /**
+     * Eine Liste von `TransferSet`s.
+     */
     @Input
     public abstract ListProperty<TransferSet> getTransferSets();
     
+    /**
+     * Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Default: 5000). Für sehr grosse Tabellen muss ein kleinerer Wert gewählt werden.
+     */
     @Input
     @Optional
     public abstract Property<Integer> getBatchSize();
     
+    /**
+     * Anzahl der Records, die auf einmal vom Datenbank-Cursor von der Quell-Datenbank zurückgeliefert werden (Standard: 5000). Für sehr grosse Tabellen muss ein kleinerer Wert gewählt werden.
+     */
     @Input
     @Optional
     public abstract Property<Integer> getFetchSize();
     
+    /**
+     * Eine Map mit Paaren von Parameter-Name und Parameter-Wert (`Map<String,String>`). Oder eine Liste mit Paaren von Parameter-Name und Parameter-Wert (`List<Map<String,String>>`).
+     */
     @Input
     @Optional
     public abstract Property<Object> getSqlParameters();

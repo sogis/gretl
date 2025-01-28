@@ -71,7 +71,7 @@ public class Av2geobau extends DefaultTask {
     }
 
     /**
-     * Proxy-Server für den Zugriff auf Model-Repositories.
+     * Proxy-Server für den Zugriff auf Modell-Repositories.
      */
     @Input
     @Optional
@@ -80,7 +80,7 @@ public class Av2geobau extends DefaultTask {
     }
 
     /**
-     * Proxy-Port für den Zugriff auf Model-Repositories.
+     * Proxy-Port für den Zugriff auf Modell-Repositories.
      */
     @Input
     @Optional

@@ -18,6 +18,9 @@ public class FtpList extends AbstractFtpTask {
 
     public List<String> files;
 
+    /**
+     * Verzeichnis auf dem Server.
+     */
     @Input
     public String getRemoteDir() {
         return remoteDir;

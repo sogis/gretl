@@ -17,6 +17,9 @@ import java.util.List;
 public class GpkgValidator extends AbstractValidatorTask {
     private String tableName;
 
+    /**
+     * Name der Tabelle in den GeoPackage-Dateien.
+     */
     @Input
     public String getTableName(){
         return tableName;

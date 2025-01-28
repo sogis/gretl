@@ -19,16 +19,103 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class GpkgExport extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
     
     private Connector database;
-    private Object dataFile;
+    private File dataFile;
     private Object dstTableName;
     private Object srcTableName;
     private String schemaName;
-    private String encoding;
     private Integer batchSize;
     private Integer fetchSize;
+
+    /**
+     * Name der GeoPackage-Datei, die erstellt werden soll.
+     */
+    @OutputFile
+    public File getDataFile() {
+        return dataFile;
+    }
+
+    /**
+     * Name der Tabelle(n) in der GeoPackage-Datei. `String` oder `List`.
+     */
+    @Input
+    public Object getDstTableName() {
+        return dstTableName;
+    }
+
+    /**
+     * Name der DB-Tabelle(n), die exportiert werden soll(en). `String` oder `List`.
+     */
+    @Input
+    public Object getSrcTableName() {
+        return srcTableName;
+    }
+
+    /**
+     * Name des DB-Schemas, in dem die DB-Tabelle ist.
+     */
+    @Input
+    @Optional
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    /**
+     * Anzahl der Records, die pro Batch in die Ziel-Datenbank (GeoPackage) geschrieben werden. Default: 5000
+     */
+    @Input
+    @Optional
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    /**
+     * Anzahl der Records, die pro Fetch aus der Quell-Datenbank gelesen werden. Default: 5000
+     */
+    @Input
+    @Optional
+    public Integer getFetchSize() {
+        return fetchSize;
+    }
+
+    /**
+     * Datenbank aus der exportiert werden soll.
+     */
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+
+    public void setDataFile(File dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setDstTableName(Object dstTableName) {
+        this.dstTableName = dstTableName;
+    }
+
+    public void setSrcTableName(Object srcTableName) {
+        this.srcTableName = srcTableName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public void setFetchSize(Integer fetchSize) {
+        this.fetchSize = fetchSize;
+    }
 
     @TaskAction
     public void exportData() {
@@ -103,84 +190,6 @@ public class GpkgExport extends DefaultTask {
         }
     }
 
-    @OutputFile
-    public Object getDataFile() {
-        return dataFile;
-    }
-
-    @Input
-    public Object getDstTableName() {
-        return dstTableName;
-    }
-
-    @Input
-    public Object getSrcTableName() {
-        return srcTableName;
-    }
-
-    @Input
-    @Optional
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    @Input
-    @Optional
-    public String getEncoding() {
-        return encoding;
-    }
-
-    @Input
-    @Optional
-    public Integer getBatchSize() {
-        return batchSize;
-    }
-
-    @Input
-    @Optional
-    public Integer getFetchSize() {
-        return fetchSize;
-    }
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
-    }
-
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
-
-    public void setDstTableName(Object dstTableName) {
-        this.dstTableName = dstTableName;
-    }
-
-    public void setSrcTableName(Object srcTableName) {
-        this.srcTableName = srcTableName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
-    public void setBatchSize(Integer batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    public void setFetchSize(Integer fetchSize) {
-        this.fetchSize = fetchSize;
-    }
-
-    @Internal
     List<String> getSrcTableNames() {
         List<String> srcTableNames;
 
@@ -194,7 +203,6 @@ public class GpkgExport extends DefaultTask {
         return srcTableNames;
     }
 
-    @Internal
     List<String> getDstTableNames() {
         List<String> dstTableNames;
         if (dstTableName instanceof String) {

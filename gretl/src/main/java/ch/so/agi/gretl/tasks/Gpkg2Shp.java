@@ -16,23 +16,28 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class Gpkg2Shp extends DefaultTask {
     private GretlLogger log;
     
-    private Object dataFile = null;
-
+    private File dataFile = null;
     // @OutputDirectory should create directory if it does not exist. Does
     // not seem to work here!?
     private File outputDir = null;
 
+    /**
+     * GeoPackage-Datei, die nach Shapefile transformiert werden soll.
+     */
     @Input
-    public Object getDataFile() {
+    public File getDataFile() {
         return dataFile;
     }
 
+    /**
+     * Verzeichnis, in das die Shapefile gespeichert werden.
+     */
     @OutputDirectory
     public File getOutputDir() {
         return outputDir;
     }
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
     }
 

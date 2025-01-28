@@ -4,142 +4,173 @@ import ch.ehi.basics.settings.Settings;
 import ch.so.agi.gretl.logging.GretlLogger;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.interlis2.validator.Validator;
 
 import java.io.File;
-import java.util.List;
 
 public class AbstractValidatorTask extends DefaultTask {
     protected GretlLogger log;
 
     private Object dataFiles;
-
     private String models = null;
-
     private String modeldir = null;
-
     private Object configFile = null;
-    
     private Object metaConfigFile = null;
-
     private Boolean forceTypeValidation = false;
-
     private Boolean disableAreaValidation = false;
-
     private Boolean multiplicityOff = false;
-
     private Boolean allObjectsAccessible = false;
-
     private Boolean skipPolygonBuilding = false;
-
     private Object logFile = null;
-
     private Object xtflogFile = null;
-
     private Object pluginFolder = null;
-
     private String proxy = null;
-
     private Integer proxyPort = null;
-
     private Boolean failOnError = true;
     protected boolean validationOk = true;
 
+    /**
+     * Liste der CSV-Dateien, die validiert werden sollen. FileCollection oder List. Eine leere Liste ist kein Fehler.
+     */
     @InputFiles
     public Object getDataFiles() {
         return dataFiles;
     }
 
+    /**
+     * INTERLIS-Modell, gegen das die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
+     */
     @Input
     @Optional
     public String getModels() {
         return models;
     }
 
+    /**
+     * INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator).
+     */
     @Input
     @Optional
     public String getModeldir() {
         return modeldir;
     }
 
+    /**
+     * Konfiguriert die Datenprüfung mit Hilfe einer ini-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration 
+     */
     @Input
     @Optional
     public Object getConfigFile() {
         return configFile;
     }
 
+    /**
+     * Konfiguriert den Validator mit Hilfe einer ini-Datei. Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration 
+     */
     @Input
     @Optional
     public Object getMetaConfigFile() {
         return metaConfigFile;
     }
 
+    /**
+     * Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
+     */
     @Input
     @Optional
     public Boolean getForceTypeValidation() {
         return forceTypeValidation;
     }
 
+    /**
+     * Schaltet die AREA-Topologieprüfung aus. Default: false
+     */
     @Input
     @Optional
     public Boolean getDisableAreaValidation() {
         return disableAreaValidation;
     }
+    
+    /**
+     * Schaltet die Prüfung der Multiplizität generell aus. Default: false
+     */
     @Input
     @Optional
     public Boolean getMultiplicityOff() {
         return multiplicityOff;
     }
 
+    /**
+     * Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
+     */
     @Input
     @Optional
     public Boolean getAllObjectsAccessible() {
         return allObjectsAccessible;
     }
 
+    /**
+     * Schaltet die Bildung der Polygone aus (nur ITF). Default: false
+     */
     @Input
     @Optional
     public Boolean getSkipPolygonBuilding() {
         return skipPolygonBuilding;
     }
 
+    /**
+     * Schreibt die log-Meldungen der Validierung in eine Text-Datei.
+     */
     @OutputFile
     @Optional
     public Object getLogFile() {
         return logFile;
     }
 
+    /**
+     * Schreibt die log-Meldungen in eine INTERLIS-2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
+     */
     @OutputFile
     @Optional
     public Object getXtflogFile() {
         return xtflogFile;
     }
 
+    /**
+     * Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten.
+     */
     @InputDirectory
     @Optional
     public Object getPluginFolder() {
         return pluginFolder;
     }
 
+    /**
+     * Proxy-Server für den Zugriff auf Modell-Repositories.
+     */
     @Input
     @Optional
     public String getProxy() {
         return proxy;
     }
 
+    /**
+     * Proxy-Port für den Zugriff auf Modell-Repositories.
+     */
     @Input
     @Optional
     public Integer getProxyPort() {
         return proxyPort;
     }
 
+    /**
+     * Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
+     */
     @Input
     @Optional
     public Boolean getFailOnError() {

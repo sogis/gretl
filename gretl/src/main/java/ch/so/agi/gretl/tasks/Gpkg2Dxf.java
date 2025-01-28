@@ -16,20 +16,26 @@ import ch.so.agi.gretl.util.TaskUtil;
 public class Gpkg2Dxf extends DefaultTask {
     private GretlLogger log;
     
-    private Object dataFile;
+    private File dataFile;
     private File outputDir = null;
 
+    /**
+     * GeoPackage-Datei, die nach DXF transformiert werden soll.
+     */
     @Input
-    public Object getDataFile() {
+    public File getDataFile() {
         return dataFile;
     }
 
+    /**
+     * Verzeichnis, in das die DXF-Dateien gespeichert werden.
+     */
     @OutputDirectory
     public File getOutputDir() {
         return outputDir;
     }
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
     }
 

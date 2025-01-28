@@ -19,21 +19,34 @@ public class FtpDownload extends AbstractFtpTask {
     private Object remoteFile=null;
     private String fileType="ASCII";
 
+    /**
+     * Lokales Verzeichnis, in dem die Dateien gespeichert werden.
+     */
     @OutputDirectory
     public String getLocalDir() {
         return localDir;
     }
+    
+    /**
+     * Verzeichnis auf dem Server.
+     */
     @Input
     public String getRemoteDir() {
         return remoteDir;
     }
 
+    /**
+     * Dateiname oder Liste der Dateinamen auf dem Server (kann auch ein Muster sein (* oder ?)). Ohne diesen Parameter werden alle Dateien aus dem Remoteverzeichnis heruntergeladen.
+     */
     @Input
     @Optional
     public Object getRemoteFile() {
         return remoteFile;
     }
 
+    /**
+     * `ASCII` oder `BINARY`. Default: `ASCII`.
+     */
     @Input
     @Optional
     public String getFileType() {

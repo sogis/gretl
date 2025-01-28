@@ -16,184 +16,229 @@ import org.gradle.api.tasks.OutputFile;
 import java.io.File;
 
 public abstract class Ili2gpkgAbstractTask extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
 
-    private Object dbfile;
-
+    private File dbfile;
     private String proxy = null;
-
     private Integer proxyPort = null;
-
     private String modeldir = null;
-
     private String models = null;
-
     private Object dataset = null;
-
     private String baskets = null;
-
     private String topics = null;
-
     private Boolean importTid = false;
-
     private File preScript = null;
-
     private File postScript = null;
-
     private Boolean deleteData = false;
-
     private Object logFile = null;
-
     private Boolean trace = false;
-
     private File validConfigFile = null;
-
     private Boolean disableValidation = false;
-
     private Boolean disableAreaValidation = false;
-
     private Boolean forceTypeValidation = false;
-
     private Boolean strokeArcs = false;
-
     private Boolean skipPolygonBuilding = false;
-
     private Boolean skipGeometryErrors = false;
-
     private Boolean iligml20 = false;
 
+    /**
+     * GeoPackage-Datei in die importiert werden soll.
+     */
     @OutputFile
-    public Object getDbfile() {
+    public File getDbfile() {
         return dbfile;
     }
 
+    /**
+     * Entspricht der ili2gpkg Option `--proxy`
+     */
     @Input
     @Optional
     public String getProxy() {
         return proxy;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--proxyPort`
+     */
     @Input
     @Optional
     public Integer getProxyPort() {
         return proxyPort;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--modeldir`
+     */
     @Input
     @Optional
     public String getModeldir() {
         return modeldir;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--models`
+     */
     @Input
     @Optional
     public String getModels() {
         return models;
     }
-
+    
+    /**
+     * Entspricht der ili2gpkg-Option `--dataset`
+     */
     @Input
     @Optional
     public Object getDataset() {
         return dataset;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--baskets`
+     */
     @Input
     @Optional
     public String getBaskets() {
         return baskets;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--topics`
+     */
     @Input
     @Optional
     public String getTopics() {
         return topics;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--importTid`
+     */
     @Input
     @Optional
     public Boolean isImportTid() {
         return importTid;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--preScript`
+     */
     @InputFile
     @Optional
     public File getPreScript() {
         return preScript;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--postScript`
+     */
     @InputFile
     @Optional
     public File getPostScript() {
         return postScript;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--deleteData`
+     */
     @Input
     @Optional
     public Boolean isDeleteData() {
         return deleteData;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--logFile`
+     */
     @OutputFile
     @Optional
     public Object getLogFile() {
         return logFile;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--trace`
+     */
     @Input
     @Optional
     public Boolean isTrace() {
         return trace;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--validConfigFile`
+     */
     @InputFile
     @Optional
     public File getValidConfigFile() {
         return validConfigFile;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--disableValidation`
+     */
     @Input
     @Optional
     public Boolean isDisableValidation() {
         return disableValidation;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--disableAreaValidation`
+     */
     @Input
     @Optional
     public Boolean isDisableAreaValidation() {
         return disableAreaValidation;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--forceTypeValidation`
+     */
     @Input
     @Optional
     public Boolean isForceTypeValidation() {
         return forceTypeValidation;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--strokeArcs`
+     */
     @Input
     @Optional
     public Boolean isStrokeArcs() {
         return strokeArcs;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--skipPolygonBuilding`
+     */
     @Input
     @Optional
     public Boolean isSkipPolygonBuilding() {
         return skipPolygonBuilding;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--skipGeometryErrors`
+     */
     @Input
     @Optional
     public Boolean isSkipGeometryErrors() {
         return skipGeometryErrors;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--iligml20`
+     */
     @Input
     @Optional
     public Boolean isIligml20() {
         return iligml20;
     }
 
-    public void setDbfile(Object dbfile) {
+    public void setDbfile(File dbfile) {
         this.dbfile = dbfile;
     }
 

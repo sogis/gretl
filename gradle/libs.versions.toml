@@ -40,7 +40,7 @@ gradleSshPluginVersion = "2.10.1"
 pluginPublishVersion = "0.21.0"
 cyclonedxBomVersion = "1.7.4"
 awsSdkV1Version = "1.12.761"
-gretlDocletVersion = "0.0.9"
+gretlDocletVersion = "0.0.10"
 
 [libraries]
 ili2c-core = { group = "ch.interlis", name = "ili2c-core", version.ref = "ili2cCoreVersion" }

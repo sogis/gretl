@@ -19,23 +19,36 @@ public class CsvValidator extends AbstractValidatorTask {
     private Character valueSeparator = null;
     private String encoding = null;
 
+    /**
+     * Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
+     */
     @Input
     @Optional
     public Boolean getFirstLineIsHeader() {
         return firstLineIsHeader;
     }
 
+    /**
+     * Zeichen, das am Anfang und Ende jeden Wertes vorhanden ist. Default `"`
+     */
     @Input
     @Optional
     public Character getValueDelimiter() {
         return valueDelimiter;
     }
 
+    /**
+     * Zeichen, das als Trennzeichen zwischen den Werten interpretiert werden soll. Default: `,`
+     */
     @Input
     @Optional
     public Character getValueSeparator() {
         return valueSeparator;
     }
+    
+    /**
+     * Zeichencodierung der CSV-Datei, z.B. `UTF-8`. Default: Systemeinstellung
+     */
     @Input
     @Optional
     public String getEncoding(){
@@ -66,9 +79,9 @@ public class CsvValidator extends AbstractValidatorTask {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(getDataFiles() instanceof FileCollection) {
+        if (getDataFiles() instanceof FileCollection) {
             dataFilesCollection=(FileCollection)getDataFiles();
-        }else {
+        } else {
             dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {

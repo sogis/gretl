@@ -18,14 +18,101 @@ import java.sql.Connection;
 import java.util.List;
 
 public class GpkgImport extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
     private Connector database;
-    private Object dataFile;
+    private File dataFile;
     private String srcTableName;
     private String dstTableName;
     private String schemaName;
     private Integer batchSize;
     private Integer fetchSize;
+
+    /**
+     * Name der GeoPackage-Datei, die gelesen werden soll.
+     */
+    @InputFile
+    public File getDataFile(){
+        return dataFile;
+    }
+
+    /**
+     * Name der GeoPackage-Tabelle, die importiert werden soll.
+     */
+    @Input
+    String getSrcTableName() {
+        return srcTableName;
+    }
+
+    /**
+     * Name der DB-Tabelle, in die importiert werden soll.
+     */
+    @Input
+    public String getDstTableName(){
+        return dstTableName;
+    }
+
+    /**
+     * Name des DB-Schemas, in dem die DB-Tabelle ist.
+     */
+    @Input
+    @Optional
+    public String getSchemaName(){
+      return schemaName;
+    }
+    
+    /**
+     * Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden. Default: 5000
+     */
+    @Input
+    @Optional
+    public Integer getBatchSize(){
+        return batchSize;
+    }
+
+    /**
+     * Anzahl der Records, die pro Fetch aus der Quell-Datenbank gelesen werden. Default: 5000
+     */
+    @Input
+    @Optional
+    public Integer getFetchSize(){
+        return fetchSize;
+    }
+
+    /**
+     * Datenbank, in die importiert werden soll.
+     */
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setDataFile(File dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setSrcTableName(String srcTableName) {
+        this.srcTableName = srcTableName;
+    }
+
+    public void setDstTableName(String dstTableName) {
+        this.dstTableName = dstTableName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public void setFetchSize(Integer fetchSize) {
+        this.fetchSize = fetchSize;
+    }
 
     @TaskAction
     public void importData() {
@@ -56,72 +143,6 @@ public class GpkgImport extends DefaultTask {
             log.error("failed to run GpkgImport", e);
             throw TaskUtil.toGradleException(e);
         }
-    }
-
-    @InputFile
-    public Object getDataFile(){
-        return dataFile;
-    }
-
-    @Input
-    String getSrcTableName() {
-        return srcTableName;
-    }
-
-    @Input
-    public String getDstTableName(){
-        return dstTableName;
-    }
-
-    @Input
-    @Optional
-    public String getSchemaName(){
-      return schemaName;
-    }
-
-    @Input
-    @Optional
-    public Integer getBatchSize(){
-        return batchSize;
-    }
-
-    @Input
-    @Optional
-    public Integer getFetchSize(){
-        return fetchSize;
-    }
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
-
-    public void setSrcTableName(String srcTableName) {
-        this.srcTableName = srcTableName;
-    }
-
-    public void setDstTableName(String dstTableName) {
-        this.dstTableName = dstTableName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public void setBatchSize(Integer batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    public void setFetchSize(Integer fetchSize) {
-        this.fetchSize = fetchSize;
     }
 
     private Settings getSettings() {

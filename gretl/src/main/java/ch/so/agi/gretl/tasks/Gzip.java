@@ -15,11 +15,17 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.GzipStep;
 
 public abstract class Gzip extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
 
+    /**
+     * Datei, die gezipped werden soll.
+     */
     @InputFile
     public abstract Property<File> getDataFile();
 
+    /**
+     * Output-Datei
+     */
     @OutputFile
     public abstract Property<File> getGzipFile();
 

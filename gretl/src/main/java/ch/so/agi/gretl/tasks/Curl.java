@@ -49,64 +49,97 @@ public class Curl extends DefaultTask {
     private String user;
     private String password;
 
+    /**
+     * Die URL des Servers inklusive Pfad und Queryparameter.
+     */
     @Input
     public String getServerUrl() {
         return serverUrl;
     }
 
+    /**
+     * HTTP-Request-Methode. Unterstützt werden `GET` und `POST`.
+     */
     @Input
     @Optional
     public MethodType getMethod() {
         return method;
     }
 
+    /**
+     * Erwarteter Status Code, der vom Server zurückgeliefert wird.
+     */
     @Input
     public Integer getExpectedStatusCode() {
         return expectedStatusCode;
     }
 
+    /**
+     * Erwarteter Text, der vom Server als Body zurückgelieferd wird.
+     */
     @Input
     @Optional
     public String getExpectedBody() {
         return expectedBody;
     }
 
+    /**
+     * Form data parameters. Entspricht `curl [URL] -F key1=value1 -F file1=@my_file.xtf`.
+     */
     @Input
     @Optional
     public Map<String, Object> getFormData() {
         return formData;
     }
 
+    /**
+     * Datei, in die der Output gespeichert wird. Entspricht `curl [URL] -o`.
+     */
     @OutputFile
     @Optional
     public File getOutputFile() {
         return outputFile;
     }
 
+    /**
+     * Datei, die hochgeladen werden soll. Entspricht `curl [URL] --data-binary`. 
+     */
     @InputFile
     @Optional
     public File getDataBinary() {
         return dataBinary;
     }
     
+    /**
+     * String, der via POST hochgeladen werden soll. Entspricht `curl [URL] --data`.
+     */
     @Input
     @Optional
     public String getData() {
         return data;
     }
 
+    /**
+     * Request-Header. Entspricht `curl [URL] -H ... -H ....`.
+     */
     @Input
     @Optional
     public MapProperty<String, String> getHeaders() {
         return headers;
     }
 
+    /**
+     * Benutzername. Wird zusammen mit `password` in einen Authorization-Header umgewandelt. Entspricht `curl [URL] -u user:password`.
+     */
     @Input
     @Optional
     public String getUser() {
         return user;
     }
 
+    /**
+     * Passwort. Wird zusammen mit `user` in einen Authorization-Header umgewandelt. Entspricht `curl [URL] -u user:password`.
+     */
     @Input
     @Optional
     public String getPassword() {

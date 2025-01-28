@@ -22,11 +22,17 @@ public class FtpDelete extends AbstractFtpTask {
     private String remoteDir;
     private Object remoteFile;
 
+    /**
+     * Verzeichnis auf dem Server.
+     */
     @Input
     public String getRemoteDir() {
         return remoteDir;
     }
 
+    /**
+     * Dateiname oder Liste der Dateinamen auf dem Server (kann auch ein Muster sein (* oder ?)). Ohne diesen Parameter werden alle Dateien aus dem Remoteverzeichnis gelöscht.
+     */
     @Optional
     @Input
     public Object getRemoteFile() {

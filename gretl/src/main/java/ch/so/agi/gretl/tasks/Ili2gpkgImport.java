@@ -23,41 +23,62 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
     private Boolean createMetaInfo = false;
     private Boolean createGeomIdx = false;
 
+    /**
+     * Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `File`
+     */
     @InputFiles
     public Object getDataFile(){
         return dataFile;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--coalesceJson`
+     */
     @Input
     @Optional
     public Boolean isCoalesceJson() {
         return coalesceJson;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--nameByTopic`
+     */
     @Input
     @Optional
     public Boolean isNameByTopic() {
         return nameByTopic;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--defaultSrsCode`
+     */
     @Input
     @Optional
     public String getDefaultSrsCode() {
         return defaultSrsCode;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--createEnumTabs`
+     */
     @Input
     @Optional
     public Boolean isCreateEnumTabs() {
         return createEnumTabs;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--createMetaInfo`
+     */
     @Input
     @Optional
     public Boolean isCreateMetaInfo() {
         return createMetaInfo;
     }
 
+    /**
+     * Entspricht der ili2gpkg-Option `--createGeomIdx`
+     */
     @Input
     @Optional
     public Boolean isCreateGeomIdx() {
@@ -128,7 +149,6 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
             }
             settings.setBasketHandling(Config.BASKET_HANDLING_READWRITE);
         }
-
         
         if (coalesceJson) {
             settings.setJsonTrafo(Config.JSON_TRAFO_COALESCE);
@@ -156,7 +176,7 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
 
         int function = Config.FC_IMPORT;
         ch.ehi.basics.logging.FileListener fileLogger=null;
-        if(getLogFile()!=null){
+        if (getLogFile() != null) {
             // setup logger here, so that multiple file imports result in one logfile
             java.io.File logFilepath=this.getProject().file(getLogFile());
             fileLogger=new FileLogger(logFilepath);
@@ -164,24 +184,24 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
         }
         try {
             int i=0;
-            for(String xtfFilename:files) {
+            for (String xtfFilename:files) {
                 if (Ili2db.isItfFilename(xtfFilename)) {
                     settings.setItfTransferfile(true);
                 }else {
                     settings.setItfTransferfile(false);
                 }
                 settings.setXtffile(xtfFilename);
-                if(datasetNames!=null) {
+                if (datasetNames != null ) {
                     settings.setDatasetName(datasetNames.get(i));
                 }
                 run(function, settings);            
                 i++;
             }
-        }finally{
-            if(fileLogger!=null){
+        } finally {
+            if (fileLogger != null) {
                 EhiLogger.getInstance().removeListener(fileLogger);
                 fileLogger.close();
-                fileLogger=null;
+                fileLogger = null;
             }
         }
     }
