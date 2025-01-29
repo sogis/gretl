@@ -134,8 +134,21 @@ public class GpkgExport extends DefaultTask {
             return;
         }
 
-        List<String> srcTableNames = getSrcTableNames();
-        List<String> dstTableNames = getDstTableNames();
+        List<String> srcTableNames = null;
+        if (srcTableName instanceof String) {
+            srcTableNames =  new ArrayList<String>();
+            srcTableNames.add((String)srcTableName);
+        } else {
+            srcTableNames = (List)srcTableName;
+        }
+        
+        List<String> dstTableNames = null;
+        if (dstTableName instanceof String) {
+            dstTableNames =  new ArrayList<String>();
+            dstTableNames.add((String)dstTableName);
+        } else {
+            dstTableNames = (List)dstTableName;
+        }
 
         if (srcTableNames.size() != dstTableNames.size()) {
             throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");
@@ -188,30 +201,5 @@ public class GpkgExport extends DefaultTask {
                 conn = null;
             }
         }
-    }
-
-    List<String> getSrcTableNames() {
-        List<String> srcTableNames;
-
-        if (srcTableName instanceof String) {
-            srcTableNames = new ArrayList<>();
-            srcTableNames.add((String)srcTableName);
-        } else {
-            srcTableNames = (List)srcTableName;
-        }
-
-        return srcTableNames;
-    }
-
-    List<String> getDstTableNames() {
-        List<String> dstTableNames;
-        if (dstTableName instanceof String) {
-            dstTableNames =  new ArrayList<>();
-            dstTableNames.add((String)dstTableName);
-        } else {
-            dstTableNames = (List)dstTableName;
-        }
-
-        return dstTableNames;
     }
 }

@@ -756,6 +756,39 @@ tasks.register('importData', Ili2gpkgImport) {
 
 Für die Beschreibung der einzenen ili2gpkg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
+### Ili2pgDelete
+
+Löscht einen Datensatz in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators. Diese Funktion bedingt, dass das Datenbankschema mit der Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema). Der Parameter `failOnException` muss `false` sein, ansonsten bricht der Job ab.
+
+Beispiel:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task deleteDataset(type: Ili2pgDelete){
+    database = [db_uri, db_user, db_pass]
+    models = "DM01AVSO24LV95"
+    dbschema = "dm01"
+    dataset = "kammersrohr"
+}
+```
+
+Es können auch mehrere Datensätze pro Task gelöscht werden:
+```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task deleteDataset(type: Ili2pgDelete){
+    database = [db_uri, db_user, db_pass]
+    dbschema = "dm01"
+    dataset = ["Olten","Grenchen"]
+}
+```
+
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgDelete.md >}}
+
 ### Ili2pgExport
 
 Exportiert Daten aus der PostgreSQL-Datenbank in eine INTERLIS-Transferdatei.
@@ -1003,38 +1036,6 @@ task replaceData(type: Ili2pgReplace){
 }
 ```
 Die Parameter sind analog wie bei Ili2pgImport.
-
-### Ili2pgDelete
-
-Löscht einen Datensatz in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators. Diese Funktion bedingt, dass das Datenbankschema mit der Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema). Der Parameter `failOnException` muss `false` sein, ansonsten bricht der Job ab.
-
-Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task deleteDataset(type: Ili2pgDelete){
-    database = [db_uri, db_user, db_pass]
-    models = "DM01AVSO24LV95"
-    dbschema = "dm01"
-    dataset = "kammersrohr"
-}
-```
-
-Es können auch mehrere Datensätze pro Task gelöscht werden:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
-def db_user = "dmluser"
-def db_pass = "dmluser"
-
-task deleteDataset(type: Ili2pgDelete){
-    database = [db_uri, db_user, db_pass]
-    dbschema = "dm01"
-    dataset = ["Olten","Grenchen"]
-}
-```
-
 
 ### Ili2pgUpdate
 
