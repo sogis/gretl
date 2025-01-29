@@ -112,6 +112,10 @@ Es gibt relativ neu (mit Version 7 immer noch experimental) den Konfigurationsca
 
 Gradle-Daemons können mit dem Dockerimage nicht persistiert werden (weil der JVM-Prozess mit dem Container stirbt).
 
+## Dokumentation
+
+TODO ...
+
 ## Varia
 
 ### Eclipse
