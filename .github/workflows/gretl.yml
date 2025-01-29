@@ -85,6 +85,15 @@ jobs:
             quarto render gretl/src/docs/  --to gfm --output-dir ../../../docs/user
             ls -la docs/user
 
+      - name: Commit/push documentation to repository
+        uses: devops-infra/action-commit-push@master
+        with:
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
+          add_timestamp: true
+          commit_prefix: "[AUTO]"
+          commit_message: "Automatic commit"
+          force: false
+
       # - name: Login to Docker Container Registry
       #   if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
       #   uses: docker/login-action@v2
