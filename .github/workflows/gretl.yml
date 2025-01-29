@@ -31,77 +31,87 @@ jobs:
         run: ./gradlew clean gretl:classes 
 
       - name: Unit tests and publish plugin to local maven repo
-        run: |
-          TZ="Europe/Zurich" ./gradlew gretl:test gretl:dbTest gretl:s3Test
-          ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
         # run: |
-        #   ./gradlew gretl:build gretl:publishPluginMavenPublicationToMavenLocal -x test
-
-      - name: Debug1
+        #   TZ="Europe/Zurich" ./gradlew gretl:test gretl:dbTest gretl:s3Test
+        #   ./gradlew gretl:build gretl:javadoc gretl:publishPluginMavenPublicationToMavenLocal -x test
         run: |
-          ls -la ~/.m2/repository/ch/so/agi/gretl
+          ./gradlew gretl:build gretl:javadoc gretl:publishPluginMavenPublicationToMavenLocal -x test
 
-      - name: Integration tests (Plugin)
-        id: jarTest
-        run: |
-          TZ="Europe/Zurich" ./gradlew gretl:jarTest gretl:jarS3Test
+      # - name: Debug1
+      #   run: |
+      #     ls -la ~/.m2/repository/ch/so/agi/gretl
 
-      - uses: actions/upload-artifact@v4
-        if: always() && (steps.jarTest.outcome == 'failure')
+      # - name: Integration tests (Plugin)
+      #   id: jarTest
+      #   run: |
+      #     TZ="Europe/Zurich" ./gradlew gretl:jarTest gretl:jarS3Test
+
+      # - uses: actions/upload-artifact@v4
+      #   if: always() && (steps.jarTest.outcome == 'failure')
+      #   with:
+      #     name: reports-jar
+      #     path: gretl/build/reports/tests/
+
+      # - name: Build Docker image for integration tests
+      #   run: |
+      #     ./gradlew runtimeImage:buildImage
+
+      # - name: List images
+      #   run: |
+      #     docker images
+
+      # - name: Integration tests (Docker image)
+      #   id: imageTest
+      #   run: |
+      #     mkdir -p "$HOME"/gradlecache
+      #     chmod 777 -R "$HOME"/gradlecache
+      #     TZ="Europe/Zurich" ./gradlew gretl:imageTest gretl:imageS3Test
+      #   # run: |
+      #   #   TZ="Europe/Zurich" ./gradlew gretl:imageTest --tests ch.so.agi.gretl.jobs.XslTransformerTest
+
+      # - uses: actions/upload-artifact@v4
+      #   if: always() && (steps.imageTest.outcome == 'failure')
+      #   with:
+      #     name: reports-image
+      #     path: gretl/build/reports/tests/
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
         with:
-          name: reports-jar
-          path: gretl/build/reports/tests/
+          version: 1.6.40
 
-      - name: Build Docker image for integration tests
+      - name: Render documentation with Quarto
         run: |
-          ./gradlew runtimeImage:buildImage
+            quarto render gretl/src/docs/  --to gfm --output-dir ../../../docs/user
+            ls -la ../../../docs/user
 
-      - name: List images
-        run: |
-          docker images
+      # - name: Login to Docker Container Registry
+      #   if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ env.DOCKER_USERNAME }}
+      #     password: ${{ env.DOCKER_PASSWORD }}
 
-      - name: Integration tests (Docker image)
-        id: imageTest
-        run: |
-          mkdir -p "$HOME"/gradlecache
-          chmod 777 -R "$HOME"/gradlecache
-          TZ="Europe/Zurich" ./gradlew gretl:imageTest gretl:imageS3Test
-        # run: |
-        #   TZ="Europe/Zurich" ./gradlew gretl:imageTest --tests ch.so.agi.gretl.jobs.XslTransformerTest
+      # - name: Login to GitHub Container Registry
+      #   if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+      #   uses: docker/login-action@v2
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
-        if: always() && (steps.imageTest.outcome == 'failure')
-        with:
-          name: reports-image
-          path: gretl/build/reports/tests/
+      # - name: Set up Docker Buildx
+      #   if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+      #   uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker Container Registry
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
-        uses: docker/login-action@v2
-        with:
-          username: ${{ env.DOCKER_USERNAME }}
-          password: ${{ env.DOCKER_PASSWORD }}
+      # - name: Publish plugin
+      #   if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+      #   run: ./gradlew gretl:publishPlugins -s
+      #   env:
+      #     gradlePublishKey: ${{ secrets.GRADLEPUBLISHKEY }}
+      #     gradlePublishSecret: ${{ secrets.GRADLEPUBLISHSECRET }}
 
-      - name: Login to GitHub Container Registry
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
-        uses: docker/setup-buildx-action@v2
-
-      - name: Publish plugin
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
-        run: ./gradlew gretl:publishPlugins -s
-        env:
-          gradlePublishKey: ${{ secrets.GRADLEPUBLISHKEY }}
-          gradlePublishSecret: ${{ secrets.GRADLEPUBLISHSECRET }}
-
-      - name: Build final multi-arch Docker image and push to registry 
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
-        run: |
-          ./gradlew runtimeImage:buildAndPushMultiArchImage
+      # - name: Build final multi-arch Docker image and push to registry 
+      #   if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+      #   run: |
+      #     ./gradlew runtimeImage:buildAndPushMultiArchImage
