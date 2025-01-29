@@ -265,7 +265,8 @@ processIntegrationTestResources {
 javadoc {
     source = sourceSets.main.allJava
     title = null
-    destinationDir = file("./build/docs/tasks/")
+    //destinationDir = file("./build/docs/tasks/")
+    destinationDir = file("./src/docs/tasks/")
     
     include 'ch/so/agi/gretl/tasks/**'
     options.doclet = "ch.so.agi.gretl.doclet.GretlDoclet"

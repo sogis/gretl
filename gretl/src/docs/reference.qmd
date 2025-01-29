@@ -163,7 +163,7 @@ tasks.register('transform', Av2ch) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Av2ch.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Av2ch.md >}}
 
 ### Av2geobau
 
@@ -194,7 +194,7 @@ tasks.register('av2geobau', Av2geobau) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Av2geobau.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Av2geobau.md >}}
 
 ### Csv2Excel (incubating)
 Konvertiert eine CSV-Datei in eine Excel-Datei (*.xlsx). Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert. Die Daten werden vollständig im Speicher vorgehalten. Falls grosse Dateien geschrieben werden müssen, kann das zu Problemen führen. Dann müsste die Apache POI SXSSF Implementierung (Streaming) verwendet werden.
@@ -213,7 +213,7 @@ tasks.register('convertData', Csv2Excel) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Csv2Excel.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Csv2Excel.md >}}
 
 ### CsvExport
 Daten aus einer bestehenden Datenbanktabelle werden in eine CSV-Datei exportiert. Geometriespalten können nicht exportiert werden.
@@ -235,7 +235,7 @@ tasks.register('csvexport', CsvExport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
 
 ### CsvImport
 Daten aus einer CSV-Datei werden in eine bestehende Datenbanktabelle importiert.
@@ -263,7 +263,7 @@ tasks.register('csvimport',  CsvImport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
 
 ### CsvValidator
 
@@ -279,7 +279,7 @@ tasks.register('validate', CsvValidator) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.CsvValidator.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.CsvValidator.md >}}
 
 Falls die CSV-Datei eine Header-Zeile enthält (mit den Spaltennamen), wird im gegebenen Modell eine Klasse gesucht, 
 welche die Header-Spaltennamen enthält (Gross-/Kleinschreibung sowie optionale "Spalten" der Modell-Klasse werden ignoriert). 
@@ -377,7 +377,7 @@ tasks.register('downloadJson', Curl) {
 } 
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Curl.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Curl.md >}}
 
 ### DatabaseDocumentExport (deprecated)
 
@@ -406,7 +406,7 @@ tasks.register('exportDocuments', DatabaseDocumentExport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.DatabaseDocumentExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.DatabaseDocumentExport.md >}}
 
 ### Db2Db
 
@@ -475,7 +475,7 @@ tasks.register('transferSomeData', Db2Db) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Db2Db.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Db2Db.md >}}
 
 Eine `TransferSet` ist 
 
@@ -543,7 +543,7 @@ tasks.register('ftpdelete', FtpDelete) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.FtpDelete.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.FtpDelete.md >}}
 
 ### FtpDownload
 
@@ -576,7 +576,7 @@ tasks.register('ftpdownload', FtpDownload) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.FtpDownload.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.FtpDownload.md >}}
 
 ### FtpList
 
@@ -596,7 +596,7 @@ tasks.register('ftplist', FtpList) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.FtpList.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.FtpList.md >}}
 
 ### Gpkg2Dxf 
 
@@ -615,7 +615,7 @@ tasks.register('gpkg2dxf', Gpkg2Dxf) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Gpkg2Dxf.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Gpkg2Dxf.md >}}
 
 ### Gpkg2Shp 
 
@@ -634,7 +634,7 @@ tasks.register('gpkg2shp', Gpkg2Shp) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Gpkg2Shp.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Gpkg2Shp.md >}}
 
 ### GpkgExport
 
@@ -670,7 +670,7 @@ tasks.register('gpkgexport', GpkgExport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.GpkgExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.GpkgExport.md >}}
 
 ### GpkgImport
 
@@ -697,7 +697,7 @@ tasks.register('gpkgimport', GpkgImport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.GpkgImport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.GpkgImport.md >}}
 
 ### GpkgValidator
 Prüft eine GeoPackage-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
@@ -712,7 +712,7 @@ tasks.register('validate', GpkgValidator) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.GpkgValidator.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.GpkgValidator.md >}}
 
 ### Gzip
 Gzipped eine einzelne Datei. Es gibt einen eingebauten Tar-Task, der - nomen est omen - aber immer zuerst eine Tar-Datei erstellt. 
@@ -726,7 +726,7 @@ tasks.register('compressFile', Gzip) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Gzip.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Gzip.md >}}
 
 ### Ili2gpkgImport
 
@@ -752,7 +752,7 @@ tasks.register('importData', Ili2gpkgImport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2gpkgImport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2gpkgImport.md >}}
 
 Für die Beschreibung der einzenen ili2gpkg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -789,7 +789,7 @@ tasks.register('deleteDataset', Ili2pgDelete) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgDelete.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgDelete.md >}}
 
 Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -832,7 +832,7 @@ tasks.register('exportData', Ili2pgExport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgExport.md >}}
 
 Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -882,7 +882,7 @@ tasks.register('importData', Ili2pgImport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgImport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgImport.md >}}
 
 Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -907,7 +907,7 @@ tasks.register('importSchema', Ili2pgImportSchema) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgImportSchema.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgImportSchema.md >}}
 
 Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -946,7 +946,7 @@ tasks.register('importData', Ili2pgReplace) {
     datasetSubstring = 0..4
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgReplace.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgReplace.md >}}
 
 Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -974,7 +974,7 @@ tasks.register('updateData', Ili2pgUpdate) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgUpdate.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgUpdate.md >}}
 
 Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -1000,7 +1000,7 @@ tasks.register('validate', Ili2pgValidate) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgValidate.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgValidate.md >}}
 
 Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
@@ -1017,7 +1017,7 @@ tasks.register('validate', IliValidator) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.IliValidator.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.IliValidator.md >}}
 
 Zusatzfunktionen (Custom Functions): Die `pluginFolder`-Option ist zum jetzigen Zeitpunkt ohne Wirkung. Die Zusatzfunktionen werden als normale Abhängigkeit definiert und in der ilivalidator-Task-Implementierung registriert. Das Laden der Klassen zur Laufzeit in _iox-ili_ hat nicht funktioniert (`NoClassDefFoundError`...). Der Plugin-Mechanismus von _ilivalidator_ wird momentan ohnehin geändert ("Ahead-Of-Time-tauglich" gemacht).
 
@@ -1036,7 +1036,7 @@ tasks.register('importJson', JsonImport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.JsonImport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.JsonImport.md >}}
 
 ### PostgisRasterExport
 
@@ -1058,7 +1058,7 @@ tasks.register('exportTiff', PostgisRasterExport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.PostgisRasterExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.PostgisRasterExport.md >}}
 
 ### Publisher
 
@@ -1082,7 +1082,7 @@ tasks.register('copyFiles', S3Bucket2Bucket) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.S3Bucket2Bucket.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.S3Bucket2Bucket.md >}}
 
 ### S3Download
 
@@ -1102,7 +1102,7 @@ tasks.register('downloadFile', S3Download) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.S3Download.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.S3Download.md >}}
 
 ### S3Upload
 
@@ -1125,7 +1125,7 @@ tasks.register('uploadDirectory', S3Upload) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.S3Upload.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.S3Upload.md >}}
 
 ### ShpExport
 Daten aus einer bestehenden Datenbanktabelle werden in eine SHP-Datei exportiert.
@@ -1145,7 +1145,7 @@ tasks.register('shpexport', ShpExport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.ShpExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.ShpExport.md >}}
 
 ### ShpImport
 
@@ -1173,7 +1173,7 @@ tasks.register('shpimport', ShpImport) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.ShpExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.ShpExport.md >}}
 
 ### ShpValidator
 
@@ -1194,7 +1194,7 @@ tasks.register('validate', ShpValidator) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.ShpValidator.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.ShpValidator.md >}}
 
 ### SqlExecutor
 
@@ -1253,7 +1253,7 @@ tasks.register('executeSomeSql', SqlExecutor) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.SqlExecutor.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.SqlExecutor.md >}}
 
 ### XslTransformer (incubating)
 
@@ -1287,4 +1287,4 @@ tasks.register('transform', XslTransformer) {
 }
 ```
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.XslTransformer.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.XslTransformer.md >}}

@@ -39,7 +39,7 @@ Bei Problemen mit der Datenqualität der Originaldaten schlägt der Task "pubEdi
 
 ## Parameter
 
-{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Publisher.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Publisher.md >}}
 
 ## XTF -> XTF
 

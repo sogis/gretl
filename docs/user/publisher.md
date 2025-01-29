@@ -1,5 +1,6 @@
 # Publisher
 
+
 GRETL-Task, welcher für Vektordaten die aktuellen Geodaten-Dateien
 bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
 
