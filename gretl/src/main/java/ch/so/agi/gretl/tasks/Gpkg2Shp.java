@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
@@ -24,7 +24,7 @@ public class Gpkg2Shp extends DefaultTask {
     /**
      * GeoPackage-Datei, die nach Shapefile transformiert werden soll.
      */
-    @Input
+    @InputFile
     public File getDataFile() {
         return dataFile;
     }
