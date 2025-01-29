@@ -1712,7 +1712,7 @@ tasks.register('exportTiff', PostgisRasterExport) {
 Stellt für Vektordaten die aktuellsten Geodaten-Dateien bereit und
 pflegt das Archiv der vorherigen Zeitstände.
 
-[Details](publisher.md)
+[Details](publisher.qmd)
 
 ### S3Bucket2Bucket
 
