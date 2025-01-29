@@ -83,7 +83,7 @@ jobs:
       - name: Render documentation with Quarto
         run: |
             quarto render gretl/src/docs/  --to gfm --output-dir ../../../docs/user
-            ls -la ../../../docs/user
+            ls -la ~/gretl/docs/user
 
       # - name: Login to Docker Container Registry
       #   if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
