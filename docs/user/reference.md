@@ -1,6 +1,8 @@
 # Referenzdokumentation
 
 
+TEST
+
 Das Datenmanagement-Tool *GRETL* ist ein Werkzeug, das für Datenimports,
 Datenumbauten (Modellumbau) und Datenexports eingesetzt wird. *GRETL*
 führt Jobs aus, wobei ein Job aus mehreren atomaren Tasks besteht. Damit
