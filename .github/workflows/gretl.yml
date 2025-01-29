@@ -17,6 +17,9 @@ jobs:
 
     runs-on: ubuntu-22.04
     
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -86,13 +89,8 @@ jobs:
             ls -la docs/user
 
       - name: Commit/push documentation to repository
-        uses: devops-infra/action-commit-push@master
-        with:
-          github_token: "${{ secrets.GITHUB_TOKEN }}"
-          commit_prefix: "[AUTO] "
-          commit_message: "Automatic commit"
-          force: false
-          target_branch: main
+        uses: stefanzweifel/git-auto-commit-action@v5
+
 
       # - name: Login to Docker Container Registry
       #   if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
