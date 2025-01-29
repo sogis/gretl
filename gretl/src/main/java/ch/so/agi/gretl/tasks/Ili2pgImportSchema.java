@@ -15,202 +15,352 @@ import org.gradle.api.tasks.TaskAction;
 
 public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
     
+    /**
+     * Name der ili-Datei, die gelesen werden soll.
+     */
     @InputFile
     @Optional
     public abstract Property<Object> getIliFile();
 
+    /**
+     * Entspricht der ili2pg-Option `--iliMetaAttrs`.
+     */    
     @InputFile
     @Optional
     public abstract Property<Object> getIliMetaAttrs();
 
+    /**
+     * Entspricht der ili2pg-Option `--oneGeomPerTable`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getOneGeomPerTable();
 
+    /**
+     * Entspricht der ili2pg-Option `--setupPgExt`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getSetupPgExt();
 
+    /**
+     * Entspricht der ili2pg-Option `--dropscript`.
+     */
     @InputFile
     @Optional
     public abstract Property<Object> getDropscript();
 
+    /**
+     * Entspricht der ili2pg-Option `--createscript`.
+     */
     @InputFile
     @Optional
     public abstract Property<Object> getCreatescript();
     
+    /**
+     * Entspricht der ili2pg-Option `--metaConfig`.
+     */
     @Input
     @Optional
     public abstract Property<String> getMetaConfig();
 
+    /**
+     * Entspricht der ili2pg-Option `--defaultSrsAuth`.
+     */
     @Input
     @Optional
     public abstract Property<String> getDefaultSrsAuth();
 
+    /**
+     * Entspricht der ili2pg-Option `--defaultSrsCode`.
+     */
     @Input
     @Optional
     public abstract Property<String> getDefaultSrsCode();
 
+    /**
+     * Entspricht der ili2pg-Option `--createSingleEnumTab`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateSingleEnumTab();
 
+    /**
+     * Entspricht der ili2pg-Option `--createEnumTabs`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateEnumTabs();
 
+    /**
+     * Entspricht der ili2pg-Option `--createEnumTxtCol`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateEnumTxtCol();
 
+    /**
+     * Entspricht der ili2pg-Option `--createEnumColAsItfCode`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateEnumColAsItfCode();
 
+    /**
+     * Entspricht der ili2pg-Option `--createEnumTabsWithId`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateEnumTabsWithId();
 
+    /**
+     * Entspricht der ili2pg-Option `--createImportTabs`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateImportTabs();
 
+    /**
+     * Entspricht der ili2pg-Option `--beautifyEnumDispName`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getBeautifyEnumDispName();
 
+    /**
+     * Entspricht der ili2pg-Option `--noSmartMapping`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getNoSmartMapping();
 
+    /**
+     * Entspricht der ili2pg-Option `--smart1Inheritance`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getSmart1Inheritance();
 
+    /**
+     * Entspricht der ili2pg-Option `--smart2Inheritance`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getSmart2Inheritance();
 
+    /**
+     * Entspricht der ili2pg-Option `--coalesceCatalogueRef`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCoalesceCatalogueRef();
 
+    /**
+     * Entspricht der ili2pg-Option `--coalesceMultiSurface`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCoalesceMultiSurface();
 
+    /**
+     * Entspricht der ili2pg-Option `--coalesceMultiline`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCoalesceMultiLine();
 
+    /**
+     * Entspricht der ili2pg-Option `--expandMultilingual`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getExpandMultilingual();
 
+    /**
+     * Entspricht der ili2pg-Option `--coalesceJson`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCoalesceJson();
 
+    /**
+     * Entspricht der ili2pg-Option `--coalesceArray`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCoalesceArray();
 
+    /**
+     * Entspricht der ili2pg-Option `--createTypeConstraint`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateTypeConstraint();
 
+    /**
+     * Entspricht der ili2pg-Option `--createFk`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateFk();
 
+    /**
+     * Entspricht der ili2pg-Option `--createFkIdx`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateFkIdx();
 
+    /**
+     * Entspricht der ili2pg-Option `--createUnique`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateUnique();
 
+    /**
+     * Entspricht der ili2pg-Option `--createNumChecks`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateNumChecks();
 
+    /**
+     * Entspricht der ili2pg-Option `--createTextChecks`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateTextChecks();
 
+    /**
+     * Entspricht der ili2pg-Option `--createDateTimeChecks`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateDateTimeChecks();
 
+    /**
+     * Entspricht der ili2pg-Option `--createStdCols`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateStdCols();
     
+    /**
+     * Entspricht der ili2pg-Option `--t_id_Name`.
+     */
     @Input
     @Optional
     public abstract Property<String> getT_id_Name();
     
+    /**
+     * Entspricht der ili2pg-Option `--idSeqMin`.
+     */
     @Input
     @Optional
     public abstract Property<Long> getIdSeqMin();
     
+    /**
+     * Entspricht der ili2pg-Option `--idSeqMax`.
+     */
     @Input
     @Optional
     public abstract Property<Long> getIdSeqMax();
     
+    /**
+     * Entspricht der ili2pg-Option `--createTypeDescriminator`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateTypeDiscriminator();
     
+    /**
+     * Entspricht der ili2pg-Option `--createGeomIdx`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateGeomIdx();
     
+    /**
+     * Entspricht der ili2pg-Option `--disableNameOptimization`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getDisableNameOptimization();
     
+    /**
+     * Entspricht der ili2pg-Option `--nameByTopic`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getNameByTopic();
     
+    /**
+     * Entspricht der ili2pg-Option `--maxNameLength`.
+     */
     @Input
     @Optional
     public abstract Property<Integer> getMaxNameLength();
     
+    /**
+     * Entspricht der ili2pg-Option `--sqlEnableNull`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getSqlEnableNull();
     
+    /**
+     * Entspricht der ili2pg-Option `--sqlColsAsText`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getSqlColsAsText();
     
+    /**
+     * Entspricht der ili2pg-Option `--sqlExtRefCols`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getSqlExtRefCols();
     
+    /**
+     * Entspricht der ili2pg-Option `--keepAreaRef`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getKeepAreaRef();
     
+    /**
+     * Entspricht der ili2pg-Option `--createTidCol`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateTidCol();
 
+    /**
+     * Entspricht der ili2pg-Option `--createBasketCol`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateBasketCol();
 
+    /**
+     * Entspricht der ili2pg-Option `--createDatasetCol`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateDatasetCol();
 
+    /**
+     * Entspricht der ili2pg-Option `--translation`.
+     */
     @Input
     @Optional
     public abstract Property<String> getTranslation();
 
+    /**
+     * Entspricht der ili2pg-Option `--createMetaInfo`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getCreateMetaInfo();

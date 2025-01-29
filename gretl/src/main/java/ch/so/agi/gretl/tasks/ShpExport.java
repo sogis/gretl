@@ -12,6 +12,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.*;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -24,71 +25,43 @@ public class ShpExport extends DefaultTask {
     private String schemaName = null;
     private String encoding = null;
 
-    @TaskAction
-    public void exportData() {
-        log = LogEnvironment.getLogger(ShpExport.class);
-
-        if (database == null) {
-            throw new IllegalArgumentException("database must not be null");
-        }
-        if (tableName == null) {
-            throw new IllegalArgumentException("tableName must not be null");
-        }
-        if (dataFile == null) {
-            return;
-        }
-
-        Settings settings = getSettings();
-        File data = this.getProject().file(dataFile);
-        java.sql.Connection conn = null;
-        try {
-            conn = database.connect();
-            if (conn == null) {
-                throw new IllegalArgumentException("connection must not be null");
-            }
-            Db2Shp db2shp = new Db2Shp();
-            db2shp.exportData(data, conn, settings);
-            conn.commit();
-            conn.close();
-            conn = null;
-        } catch (Exception e) {
-            log.error("failed to run ShpExport", e);
-            throw TaskUtil.toGradleException(e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException e) {
-                    log.error("failed to rollback/close", e);
-                }
-                conn = null;
-            }
-        }
-    }
-
+    /**
+     * Name der SHP-Datei, die erstellt werden soll.
+     */
     @OutputFile
     public Object getDataFile() {
         return dataFile;
     }
 
+    /**
+     * Name der DB-Tabelle, die exportiert werden soll.
+     */
     @Input
     public String getTableName() {
         return tableName;
     }
 
+    /**
+     * Name des DB-Schemas, in dem die DB-Tabelle ist.
+     */
     @Input
     @Optional
     public String getSchemaName() {
         return schemaName;
     }
 
+    /**
+     * Zeichencodierung der SHP-Datei, z.B. `UTF-8`. Default: Systemeinstellung
+     */
     @Input
     @Optional
     public String getEncoding() {
         return encoding;
     }
 
+    /**
+     * Datenbank, aus der exportiert werden soll.
+     */
     @Input
     public Connector getDatabase() {
         return database;
@@ -114,8 +87,20 @@ public class ShpExport extends DefaultTask {
         this.encoding = encoding;
     }
 
-    @Internal
-    Settings getSettings() {
+    @TaskAction
+    public void exportData() {
+        log = LogEnvironment.getLogger(ShpExport.class);
+
+        if (database == null) {
+            throw new IllegalArgumentException("database must not be null");
+        }
+        if (tableName == null) {
+            throw new IllegalArgumentException("tableName must not be null");
+        }
+        if (dataFile == null) {
+            return;
+        }
+
         Settings settings = new Settings();
         settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
         // set optional parameters
@@ -125,6 +110,32 @@ public class ShpExport extends DefaultTask {
         if (encoding != null) {
             settings.setValue(ShapeReader.ENCODING, encoding);
         }
-        return settings;
+
+        File data = this.getProject().file(dataFile);
+        Connection conn = null;
+        try {
+            conn = database.connect();
+            if (conn == null) {
+                throw new IllegalArgumentException("connection must not be null");
+            }
+            Db2Shp db2shp = new Db2Shp();
+            db2shp.exportData(data, conn, settings);
+            conn.commit();
+            conn.close();
+            conn = null;
+        } catch (Exception e) {
+            log.error("failed to run ShpExport", e);
+            throw TaskUtil.toGradleException(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    conn.close();
+                } catch (SQLException e) {
+                    log.error("failed to rollback/close", e);
+                }
+                conn = null;
+            }
+        }
     }
 }

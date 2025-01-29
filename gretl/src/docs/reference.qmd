@@ -761,12 +761,13 @@ Für die Beschreibung der einzenen ili2gpkg-Optionen: https://github.com/claeis/
 Löscht einen Datensatz in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators. Diese Funktion bedingt, dass das Datenbankschema mit der Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema). Der Parameter `failOnException` muss `false` sein, ansonsten bricht der Job ab.
 
 Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task deleteDataset(type: Ili2pgDelete){
+tasks.register('deleteDataset', Ili2pgDelete) {
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24LV95"
     dbschema = "dm01"
@@ -775,12 +776,13 @@ task deleteDataset(type: Ili2pgDelete){
 ```
 
 Es können auch mehrere Datensätze pro Task gelöscht werden:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task deleteDataset(type: Ili2pgDelete){
+tasks.register('deleteDataset', Ili2pgDelete) {
     database = [db_uri, db_user, db_pass]
     dbschema = "dm01"
     dataset = ["Olten","Grenchen"]
@@ -789,21 +791,24 @@ task deleteDataset(type: Ili2pgDelete){
 
 {{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgDelete.md >}}
 
+Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+
 ### Ili2pgExport
 
 Exportiert Daten aus der PostgreSQL-Datenbank in eine INTERLIS-Transferdatei.
 
-Mit dem Parameter ``models``, ``topics``, ``baskets`` oder ``dataset`` wird definiert, welche Daten exportiert werden.
+Mit dem Parameter `models`, `topics`, `baskets` oder `dataset` wird definiert, welche Daten exportiert werden.
 
-Ob die Daten im INTERLIS 1-, INTERLIS 2- oder GML-Format geschrieben werden, ergibt sich aus der Dateinamenserweiterung der Ausgabedatei. Für eine INTERLIS 1-Transferdatei muss die Erweiterung .itf verwendet werden. Für eine GML-Transferdatei muss die Erweiterung .gml verwendet werden.
+Ob die Daten im INTERLIS-1-, INTERLIS-2- oder GML-Format geschrieben werden, ergibt sich aus der Dateinamenserweiterung der Ausgabedatei. Für eine INTERLIS-1-Transferdatei muss die Erweiterung .itf verwendet werden. Für eine GML-Transferdatei muss die Erweiterung .gml verwendet werden.
 
 Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task exportData(type: Ili2pgExport){
+tasks.register('exportData', Ili2pgExport) {
     database = [db_uri, db_user, db_pass]
     dataFile = "lv03_254900-out.itf"
     dataset = "254900"
@@ -814,12 +819,12 @@ task exportData(type: Ili2pgExport){
 Damit mit einer einzigen Task-Definition mehrere Datensätze verarbeitet werden können, kann auch 
 eine Liste von Dateinamen und Datensätzen angegeben werden.
 
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task exportData(type: Ili2pgExport){
+tasks.register('exportData', Ili2pgExport) {
     database = [db_uri, db_user, db_pass]
     dataFile = ["lv03_254900-out.itf","lv03_255000-out.itf"]
     dataset = ["254900","255000"]
@@ -827,35 +832,9 @@ task exportData(type: Ili2pgExport){
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank aus der exportiert werden soll
-dataFile  | Name der XTF-/ITF-Datei, die erstellt werden soll
-dbschema  | Entspricht der ili2pg Option --dbschema
-proxy  | Entspricht der ili2pg Option --proxy
-proxyPort  | Entspricht der ili2pg Option --proxyPort
-modeldir  | Entspricht der ili2pg Option --modeldir
-models  | Entspricht der ili2pg Option --models
-dataset  | Entspricht der ili2pg Option --dataset
-baskets  | Entspricht der ili2pg Option --baskets
-topics  | Entspricht der ili2pg Option --topics
-preScript  | Entspricht der ili2pg Option --preScript
-postScript  | Entspricht der ili2pg Option --postScript
-deleteData  | Entspricht der ili2pg Option --deleteData
-logFile  | Entspricht der ili2pg Option --logFile
-validConfigFile  | Entspricht der ili2pg Option --validConfigFile
-disableValidation  | Entspricht der ili2pg Option --disableValidation
-disableAreaValidation  | Entspricht der ili2pg Option --disableAreaValidation
-forceTypeValidation  | Entspricht der ili2pg Option --forceTypeValidation
-strokeArcs  | Entspricht der ili2pg Option --strokeArcs
-skipPolygonBuilding  | Entspricht der ili2pg Option --skipPolygonBuilding
-skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
-export3  | Entspricht der ili2pg Option --export3
-iligml20  | Entspricht der ili2pg Option --iligml20
-disableRounding  | Entspricht der ili2pg Option --disableRounding
-failOnException | Task wirft Exception, falls ili2db-Prozess fehlerhaft ist (= Ili2dbException). Default: true.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgExport.md >}}
 
-Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
 ### Ili2pgImport
 
@@ -872,12 +851,13 @@ Falls man mehrere Dateien importieren will, diese jedoch erst zur Laufzeit eruie
 Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2pgReplace verwendet werden.
 
 Beispiel 1:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task importData(type: Ili2pgImport){
+tasks.register('importData', Ili2pgImport) {
     database = [db_uri, db_user, db_pass]
     dataFile = "lv03_254900.itf"
     logFile = "ili2pg.log"
@@ -888,12 +868,12 @@ Beispiel 2:
 
 Import der AV-Daten. In der `t_datasetname`-Spalte soll die BFS-Nummer stehen. Die BFS-Nummer entspricht den ersten vier Zeichen des Filenamens. 
 
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task importData(type: Ili2pgImport){
+tasks.register('importData', Ili2pgImport) {
     database = [db_uri, db_user, db_pass]
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
     dataset = dataFile
@@ -902,51 +882,24 @@ task importData(type: Ili2pgImport){
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank in die importiert werden soll
-dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein.
-dbschema  | Entspricht der ili2pg Option --dbschema
-proxy  | Entspricht der ili2pg Option --proxy
-proxyPort  | Entspricht der ili2pg Option --proxyPort
-modeldir  | Entspricht der ili2pg Option --modeldir
-models  | Entspricht der ili2pg Option --models
-dataset  | Entspricht der ili2pg Option --dataset
-datasetSubstring | Range für das Extrahieren eines Substrings von Datasets
-baskets  | Entspricht der ili2pg Option --baskets
-topics  | Entspricht der ili2pg Option --topics
-preScript  | Entspricht der ili2pg Option --preScript
-postScript  | Entspricht der ili2pg Option --postScript
-deleteData  | Entspricht der ili2pg Option --deleteData
-logFile  | Entspricht der ili2pg Option --logFile
-importTid | Entspricht der ili2pg Option --importTid
-importBid | Entspricht der lii2pg Option --importBid
-validConfigFile  | Entspricht der ili2pg Option --validConfigFile
-disableValidation  | Entspricht der ili2pg Option --disableValidation
-disableAreaValidation  | Entspricht der ili2pg Option --disableAreaValidation
-forceTypeValidation  | Entspricht der ili2pg Option --forceTypeValidation
-strokeArcs  | Entspricht der ili2pg Option --strokeArcs
-skipPolygonBuilding  | Entspricht der ili2pg Option --skipPolygonBuilding
-skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
-iligml20  | Entspricht der ili2pg Option --iligml20
-disableRounding  | Entspricht der ili2pg Option --disableRounding
-failOnException | Task wirft Exception, falls ili2db-Prozess fehlerhaft ist (= Ili2dbException). Default: true.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgImport.md >}}
 
-Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
 ### Ili2pgImportSchema
 
 Erstellt die Tabellenstruktur in der PostgreSQL-Datenbank anhand eines INTERLIS-Modells.
 
-Der Parameter ``iliFile`` oder ``models``  muss gesetzt werden.
+Der Parameter `iliFile` oder `models`  muss gesetzt werden.
 
 Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task importSchema(type: Ili2pgImportSchema){
+tasks.register('importSchema', Ili2pgImportSchema) {
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24"
     dbschema = "gretldemo"
@@ -954,67 +907,9 @@ task importSchema(type: Ili2pgImportSchema){
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank in die importiert werden soll
-iliFile  | Name der ili-Datei die gelesen werden soll
-models  | Name des ili-Modells, das gelesen werden soll
-dbschema  | Entspricht der ili2pg Option --dbschema
-proxy  | Entspricht der ili2pg Option --proxy
-proxyPort  | Entspricht der ili2pg Option --proxyPort
-modeldir  | Entspricht der ili2pg Option --modeldir
-dataset  | Entspricht der ili2pg Option --dataset
-baskets  | Entspricht der ili2pg Option --baskets
-topics  | Entspricht der ili2pg Option --topics
-preScript  | Entspricht der ili2pg Option --preScript
-postScript  | Entspricht der ili2pg Option --postScript
-logFile  | Entspricht der ili2pg Option --logFile
-strokeArcs  | Entspricht der ili2pg Option --strokeArcs
-oneGeomPerTable | Entspricht der ili2pg Option --oneGeomPerTable
-setupPgExt | Entspricht der ili2pg Option --setupPgExt
-dropscript | Entspricht der ili2pg Option --dropscript
-createscript | Entspricht der ili2pg Option --createscript
-defaultSrsAuth | Entspricht der ili2pg Option --defaultSrsAuth
-defaultSrsCode | Entspricht der ili2pg Option --defaultSrsCode
-createSingleEnumTab | Entspricht der ili2pg Option --createSingleEnumTab
-createEnumTabs | Entspricht der ili2pg Option --createEnumTabs
-createEnumTxtCol | Entspricht der ili2pg Option --createEnumTxtCol
-createEnumColAsItfCode | Entspricht der ili2pg Option --createEnumColAsItfCode
-beautifyEnumDispName | Entspricht der ili2pg Option --beautifyEnumDispName
-noSmartMapping | Entspricht der ili2pg Option --noSmartMapping
-smart1Inheritance | Entspricht der ili2pg Option --smart1Inheritance
-smart2Inheritance | Entspricht der ili2pg Option --smart2Inheritance
-coalesceCatalogueRef | Entspricht der ili2pg Option --coalesceCatalogueRef
-coalesceMultiSurface | Entspricht der ili2pg Option --coalesceMultiSurface
-coalesceMultiLine | Entspricht der ili2pg Option --coalesceMultiLine
-expandMultilingual | Entspricht der ili2pg Option --expandMultilingual
-coalesceJson | Entspricht der ili2pg Option --coalesceJson
-createFk | Entspricht der ili2pg Option --createFk
-createFkIdx | Entspricht der ili2pg Option --createFkIdx
-createUnique | Entspricht der ili2pg Option --createUnique
-createNumChecks | Entspricht der ili2pg Option --createNumChecks
-createStdCols | Entspricht der ili2pg Option --createStdCols
-t_id_Name | Entspricht der ili2pg Option --t_id_Name
-idSeqMin | Entspricht der ili2pg Option --idSeqMin
-idSeqMax | Entspricht der ili2pg Option --idSeqMax
-createTypeDiscriminator | Entspricht der ili2pg Option --createTypeDiscriminator
-createGeomIdx | Entspricht der ili2pg Option --createGeomIdx
-disableNameOptimization | Entspricht der ili2pg Option --disableNameOptimization
-nameByTopic | Entspricht der ili2pg Option --nameByTopic
-maxNameLength | Entspricht der ili2pg Option --maxNameLength
-sqlEnableNull | Entspricht der ili2pg Option --sqlEnableNull
-sqlColsAsText | Entspricht der ili2pg Option --sqlColsAsText
-sqlExtRefCols | Entspricht der ili2pg Option --sqlExtRefCols
-keepAreaRef | Entspricht der ili2pg Option --keepAreaRef
-createTidCol | Entspricht der ili2pg Option --createTidCol
-createBasketCol | Entspricht der ili2pg Option --createBasketCol
-createDatasetCol | Entspricht der ili2pg Option --createDatasetCol
-ver4_translation | Entspricht der ili2pg Option --ver4_translation
-translation | Entspricht der ili2pg Option --translation
-createMetaInfo | Entspricht der ili2pg Option --createMetaInfo
-failOnException | Task wirft Exception, falls ili2db-Prozess fehlerhaft ist (= Ili2dbException). Default: true.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgImportSchema.md >}}
 
-Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
 ### Ili2pgReplace
 
@@ -1023,19 +918,37 @@ Daten aus einer INTERLIS-Transferdatei. Diese Funktion bedingt, dass das Datenba
 Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema).
 
 Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task replaceData(type: Ili2pgReplace){
+tasks.register('replaceData', Ili2pgReplace) {
     database = [db_uri, db_user, db_pass]
     dataFile = "lv03_254900.itf"
     dataset = "254900"
     logFile = "ili2pg.log"
 }
 ```
-Die Parameter sind analog wie bei Ili2pgImport.
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+tasks.register('importData', Ili2pgReplace) {
+    database = [db_uri, db_user, db_pass]
+    models = 'DM01AVSO24LV95'
+    dbschema = 'agi_dm01avso24'
+    dataFile = fileTree(dir: dm01SoDir, include: '*.itf')
+    dataset = dataFile
+    datasetSubstring = 0..4
+```
+
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgReplace.md >}}
+
+Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
 ### Ili2pgUpdate
 
@@ -1043,16 +956,17 @@ Aktualisiert die Daten in der PostgreSQL-Datenbank anhand einer INTERLIS-Transfe
 neue Objekte werden eingefügt, bestehende Objekte werden aktualisiert und in der Transferdatei nicht mehr 
 vorhandene Objekte werden gelöscht. 
 
-Diese Funktion bedingt, dass das Datenbankschema mit der Option `createBasketCol` erstellt wurde (via Task Ili2pgImportSchema), 
+Diese Funktion bedingt, dass das Datenbankschema mit der Option `--createBasketCol` erstellt wurde (via Task Ili2pgImportSchema), 
 und dass die Klassen und Topics eine stabile OID haben.
 
 Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task updateData(type: Ili2pgUpdate){
+tasks.register('updateData', Ili2pgUpdate) {
     database = [db_uri, db_user, db_pass]
     dataFile = "lv03_254900.itf"
     dataset = "254900"
@@ -1060,7 +974,9 @@ task updateData(type: Ili2pgUpdate){
 }
 ```
 
-Die Parameter sind analog wie bei Ili2pgImport.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgUpdate.md >}}
+
+Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
 ### Ili2pgValidate
 
@@ -1069,8 +985,9 @@ Prüft die Daten ohne diese in eine Datei zu exportieren. Der Task ist erfolgrei
 Mit dem Parameter `--models`, `--topics`, `--baskets` oder `--dataset` wird definiert, welche Daten geprüft werden. Parameter `--dataset` akzeptiert auch eine Liste von Datasets.
 
 Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
@@ -1083,36 +1000,24 @@ tasks.register('validate', Ili2pgValidate) {
 }
 ```
 
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.Ili2pgValidate.md >}}
+
+Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+
 ### IliValidator
 
 Prüft eine INTERLIS-Datei (.itf oder .xtf) gegenüber einem INTERLIS-Modell (.ili). Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
 
 Beispiel:
-```
-task validate(type: IliValidator){
+
+```groovy
+tasks.register('validate', IliValidator) {
     dataFiles = ["Beispiel2a.xtf"]
     logFile = "ilivalidator.log"
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-dataFiles | Liste der XTF- oder ITF-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
-models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Wird anhand der dataFiles ermittelt.
-modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der CSV-Datei.
-configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
-forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
-disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
-multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
-allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
-skipPolygonBuilding | Schaltet die Bildung der Polygone aus (nur ITF). Default: false
-logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
-xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
-~~pluginFolder~~ | ~~Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten.~~ 
-proxy | Proxy Server für den Zugriff auf Modell Repositories
-proxyPort | Proxy Port für den Zugriff auf Modell Repositories
-failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
-validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.IliValidator.md >}}
 
 Zusatzfunktionen (Custom Functions): Die `pluginFolder`-Option ist zum jetzigen Zeitpunkt ohne Wirkung. Die Zusatzfunktionen werden als normale Abhängigkeit definiert und in der ilivalidator-Task-Implementierung registriert. Das Laden der Klassen zur Laufzeit in _iox-ili_ hat nicht funktioniert (`NoClassDefFoundError`...). Der Plugin-Mechanismus von _ilivalidator_ wird momentan ohnehin geändert ("Ahead-Of-Time-tauglich" gemacht).
 
@@ -1121,8 +1026,9 @@ Zusatzfunktionen (Custom Functions): Die `pluginFolder`-Option ist zum jetzigen 
 Daten aus einer Json-Datei in eine Datenbanktabelle importieren. Die gesamte Json-Datei (muss UTF-8 encoded sein) wird als Text in eine Spalte importiert. Ist das Json-Objekt in der Datei ein Top-Level-Array wird für jedes Element des Arrays ein Record in der Datenbanktabelle erzeugt.
 
 Beispiel:
-```
-task importJson(type: JsonImport){
+
+```groovy
+tasks.register('importJson', JsonImport) {
     database = [db_uri, db_user, db_pass]
     jsonFile = "data.json"
     qualifiedTableName = "jsonimport.jsonarray"
@@ -1130,97 +1036,29 @@ task importJson(type: JsonImport){
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank in die importiert werden soll
-jsonFile | Json-Datei, die importiert werden soll
-qualifiedTableName | Qualifizierter Tabellennamen ("schema.tabelle") in die importiert werden soll
-columnName | Spaltenname der Tabelle in die importiert werden soll
-deleteAllRows | Inhalt der Tabelle vorgängig löschen?
-
-### MetaPublisher (incubating)
-
-Der MetaPublisher dient zum Publizieren von Metadaten/-dateien. Er erstellt eine INTERLIS-Transferdatei pro Themenpublikation für die Datensuche, falls nötig eine GeoJSON-Datei und die Geocat-XML-Datei. Die GeoJSON-Datei ist entweder statisch (für Raster o.ä.) oder dynamisch (z.B. amtliche Vermessung). Bei einer dynamischen GeoJSON-Datei wird das Datum nachgeführt.
-
-Pro Themenpublikation (also pro Publisher-Task) kann resp. muss es auch einen MetaPublisher-Task geben. Informationen zum Thema sind in einer Toml-Datei gespeichert. Diese dient auch zum Überschreiben von Klassen- und Attributbeschreibungen, die aus der Modelldatei gelesen werden. Die GeoJSON-Datei muss im gleichen Verzeichnis wie die Toml-Datei vorliegen.
-
-Momentan werden die erzeugen Meta-Dateien im jeweiligen Ordner der Themenpublikation im _meta_-Verzeichnis gespeicher und zusätzlich (damit es für die Datensuche leichter fällt) in einem übergeordneten _config_-Verzeichnis.
-
-Beispiele:
-
-```
-tasks.register('publishMetaFile', MetaPublisher){
-    metaConfigFile = file("meta.toml")
-    target = ["sftp://foo.bar.ch", "user", "pwd"]      
-    geocatTarget = [Paths.get(project.buildDir.getAbsolutePath(), "geocat").toFile()]
-}
-```
-
-```
-tasks.register('publishMetaFiles', MetaPublisher) {
-    dependsOn 'publishFiles'
-    metaConfigFile = file("meta-dm01_so.toml")
-    target = [project.buildDir]  
-    regions = publishFiles.publishedRegions
-}
-```
-
-Im zweiten Beispiel werden die Regionen aus dem vorausgegangenen Publisher-Task als Input verwendet. 
-
-Parameter | Beschreibung
-----------|-------------------
-metaConfigFile | Toml-Datei mit Metainformationen zur Themenpublikation
-target | Zielverzeichnis der Metadateien (sftp oder Filesystem)
-regions | Liste (resp. ListProperty) mit den durch den PublisherTask publizierten Regionen.
-geocatTarget | Zielverzeichnis für Geocat-Output (sftp oder Filesystem)
-
-### OgdMetaPublisher (incubating)
-
-Publiziert die Metadaten eines OGD-Datensatzes. Im Gegensatz zum "MetaPublisher" ist es weniger als Publisher (mit viel Konvention), sondern eher ein Generator, der aus dem Toml-File und der INTERLIS-Modelldatei die Metainfo-Datei erstellt. Beim Resultat handelt es sich um eine INTERLIS-Transferdatei (mit eigenem OgdMeta-Modell).
-
-Mit dem "MetaPublisher" teilt er sich einiges an Copy/Paste-Code. Man könnte gewissen Aspekte wohl zusammenlegen (z.B. Infos aus INTERLIS-Modell lesen).
-
-Die INTERLIS-Modelldatei muss entweder in einem (bekannten) Repo sein oder im Verzeichnis der Toml-Datei vorliegen.
-
-Beispiel:
-
-```
-task publishMeta(type: OgdMetaPublisher) {
-    configFile = file("./ch.so.hba.kantonale_gebaeude.toml")
-    outputDir = file(".")
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-configFile | Toml-Datei mit Metainformationen zum Datensatz.
-outputDir | Verzeichnis, in das die Metainfo-Datei gespeichert wird.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.JsonImport.md >}}
 
 ### PostgisRasterExport
 
-Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert. Das Outputformat und die Formatoptionen müssen in der SQL-Datei (in der Select-Query) angegeben werden, z.B.:
+Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es wird angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert. Das Outputformat und die Formatoptionen müssen in der SQL-Datei (in der Select-Query) angegeben werden, z.B.:
 
-```
+```sql
 SELECT
     1::int AS foo, ST_AsGDALRaster((ST_AsRaster(ST_Buffer(ST_Point(2607880,1228287),10),150, 150)), 'AAIGrid', ARRAY[''], 2056) AS raster
 ;
 ```
 
 Beispiel:
-```
-task exportTiff(type: PostgisRasterExport) {
+
+```groovy
+tasks.register('exportTiff', PostgisRasterExport) {
     database = [db_uri, db_user, db_pass]
     sqlFile = "raster.sql"
     dataFile = "export.tif"
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank aus der exportiert werden soll.
-sqlFile  | Name der SQL-Datei aus das SQL-Statement gelesen und ausgeführt wird.
-sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert.
-dataFile | Name der Rasterdatei, die erstellt werden soll.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.PostgisRasterExport.md >}}
 
 ### Publisher
 
@@ -1228,14 +1066,34 @@ Stellt für Vektordaten die aktuellsten Geodaten-Dateien bereit und pflegt das A
 
 [Details](Publisher.md)
 
+### S3Bucket2Bucket
+
+Kopiert Objekte von einem Bucket in einen anderen. Die Buckets müssen in der gleichen Region sein. Die Permissions werden nicht mitkopiert und müssen explizit gesetzt werden. 
+
+Beispiel:
+
+```groovy
+tasks.register('copyFiles', S3Bucket2Bucket) {
+    accessKey = s3AccessKey
+    secretKey = s3SecretKey
+    sourceBucket = s3SourceBucket
+    targetBucket = s3TargetBucket
+    acl = "public-read"
+}
+```
+
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.S3Bucket2Bucket.md >}}
+
 ### S3Download
 
 Lädt eine Datei aus einem S3-Bucket herunter.
 
-```
-task downloadFile(type: S3Download) {
-    accessKey = abcdefg
-    secretKey = hijklmnopqrstuvwxy
+Beispiel:
+
+```groovy
+tasks.register('downloadFile', S3Download) {
+    accessKey = 'abcdefg'
+    secretKey = 'hijklmnopqrstuvwxy'
     downloadDir = file("./path/to/dir/")
     bucketName = "ch.so.ada.denkmalschutz"
     key = "foo.pdf"
@@ -1244,15 +1102,7 @@ task downloadFile(type: S3Download) {
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-accessKey | AccessKey
-secretKey | SecretKey
-downloadDir  | Verzeichnis in das die Datei heruntergeladen werden soll.
-bucketName  | Name des Buckets, in dem die Datei gespeichert ist.
-key | Name der Datei
-endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
-region | S3-Region (default: `eu-central-1`). 
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.S3Download.md >}}
 
 ### S3Upload
 
@@ -1260,10 +1110,12 @@ Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sou
 
 Mit dem passenden Content-Typ kann man das Verhalten des Browsers steuern. Default ist 'application/octect-stream', was dazu führt, dass die Datei immer heruntergeladen wird. Soll z.B. ein PDF oder ein Bild im Browser direkt angezeigt werden, muss der korrekte Content-Typ gewählt werden.
 
-```
-task uploadDirectory(type: S3Upload) {
-    accessKey = abcdefg
-    secretKey = hijklmnopqrstuvwxy
+Beispiel: 
+
+```groovy 
+tasks.register('uploadDirectory', S3Upload) {
+    accessKey = 'abcdefg'
+    secretKey = 'hijklmnopqrstuvwxy'
     sourceDir = file("./docs")
     bucketName = "ch.so.ada.denkmalschutz"
     endPoint = "https://s3.eu-central-1.amazonaws.com" 
@@ -1273,53 +1125,19 @@ task uploadDirectory(type: S3Upload) {
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-accessKey | AccessKey
-secretKey | SecretKey
-sourceDir  | Verzeichnis mit den Dateien, die hochgeladen werden sollen.
-sourceFile  | Datei, die hochgeladen werden soll.
-sourceFiles  | FileCollection mit den Dateien, die hochgeladen werden sollen, z.B. `fileTree("/path/to/directoy/") { include "*.itf" }`
-bucketName  | Name des Buckets, in dem die Dateien gespeichert werden sollen.
-endPoint | S3-Endpunkt (default: `https://s3.eu-central-1.amazonaws.com/`)
-region | S3-Region (default: `eu-central-1`). 
-acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
-contentType | Content-Type
-metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
-
-### S3Bucket2Bucket
-
-Kopiert Objekte von einem Bucket in einen anderen. Die Buckets müssen in der gleichen Region sein. Die Permissions werden nicht mitkopiert und müssen explizit gesetzt werden. 
-
-```
-task copyFiles(type: S3Bucket2Bucket, dependsOn:'directoryupload') {
-    accessKey = s3AccessKey
-    secretKey = s3SecretKey
-    sourceBucket = s3SourceBucket
-    targetBucket = s3TargetBucket
-    acl = "public-read"
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-accessKey | AccessKey
-secretKey | SecretKey
-sourceBucket  | Bucket aus dem die Objekte kopiert werden.
-targetBucket  | Bucket in den die Objekte kopiert werden.
-acl | Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
-metaData  | Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.S3Upload.md >}}
 
 ### ShpExport
-Daten aus einer bestehenden Datenbanktabelle werden in eine Shp-Datei exportiert.
+Daten aus einer bestehenden Datenbanktabelle werden in eine SHP-Datei exportiert.
 
 Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task shpexport(type: ShpExport){
+tasks.register('shpexport', ShpExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "shpexport"
     tableName = "exportdata"
@@ -1327,35 +1145,27 @@ task shpexport(type: ShpExport){
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank aus der exportiert werden soll
-dataFile  | Name der SHP Datei, die erstellt werden soll
-tableName | Name der DB-Tabelle, die exportiert werden soll
-schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
-encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
-
-Die Tabelle darf eine Geometriespalte enthalten.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.ShpExport.md >}}
 
 ### ShpImport
 
-Daten aus einer Shp-Datei in eine bestehende Datenbanktabelle importieren.
+Daten aus einer SHP-Datei in eine bestehende Datenbanktabelle importieren.
 
-Die Tabelle kann weitere Spalten enthalten, die in der Shp-Datei nicht vorkommen. Sie müssen
+Die Tabelle kann weitere Spalten enthalten, die in der SHP-Datei nicht vorkommen. Sie müssen
 aber NULLable sein, oder einen Default-Wert definiert haben.
 
 Die Tabelle muss eine Geometriespalte enthalten. Der Name der Geometriespalte kann beliebig gewählt werden.
 
-Die Gross-/Kleinschreibung der Shp-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+Die Gross-/Kleinschreibung der SHP-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
 
 Beispiel:
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+
+```groovy
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task shpimport(type: ShpImport){
+tasks.register('shpimport', ShpImport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "shpimport"
     tableName = "importdata"
@@ -1363,51 +1173,28 @@ task shpimport(type: ShpImport){
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank in die importiert werden soll
-dataFile  | Name der SHP-Datei, die gelesen werden soll
-tableName | Name der DB-Tabelle, in die importiert werden soll
-schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
-encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
-batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.ShpExport.md >}}
 
 ### ShpValidator
 
 Prüft eine SHP-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
-
-Beispiel:
-```
-task validate(type: ShpValidator){
-    models = "ShpModel"
-    dataFiles = ["data.shp"]
-}
-```
-
-Parameter | Beschreibung
-----------|-------------------
-dataFiles | Liste der SHP-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
-models | INTERLIS-Modell, gegen das die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der SHP-Datei.
-modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der SHP-Datei.
-configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
-forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
-disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
-multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
-allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
-logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
-xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
-pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
-proxy | Proxy Server für den Zugriff auf Modell Repositories
-proxyPort | Proxy Port für den Zugriff auf Modell Repositories
-failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
-validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
-encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 
 Im gegebenen Modell wird eine Klasse gesucht, 
 die genau die Attributenamen wie in der Shp-Datei enthält (wobei die Gross-/Kleinschreibung ignoriert wird); 
 die Attributtypen werden ignoriert. Wird keine solche Klasse gefunden, gilt das als Validierungsfehler.
 
 Die Prüfung von gleichzeitig mehreren Shapefiles führt zu Fehlermeldungen wie `OID o3158 of object <Modelname>.<Topicname>.<Klassenname> already exists in ...`. Beim Öffnen und Lesen eines Shapefiles wird immer der Zähler, der die interne (im Shapefile nicht vorhandene) `OID` generiert, zurückgesetzt. Somit kann immer nur ein Shapefile pro Task geprüft werden.
+
+Beispiel:
+
+```groovy
+tasks.register('validate', ShpValidator) {
+    models = "ShpModel"
+    dataFiles = ["data.shp"]
+}
+```
+
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.ShpValidator.md >}}
 
 ### SqlExecutor
 

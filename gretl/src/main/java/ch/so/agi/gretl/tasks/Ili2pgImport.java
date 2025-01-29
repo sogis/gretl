@@ -21,6 +21,9 @@ import org.gradle.api.tasks.TaskAction;
 
 public abstract class Ili2pgImport extends Ili2pgAbstractTask {
     
+    /**
+     * Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `String`.
+     */
     @InputFiles
     public abstract Property<Object> getDataFile();
 
@@ -32,7 +35,7 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
             return;
         }
         
-        // Liste mit saemtlicheen Dateipfaeden oder ilidata-Ids.
+        // Liste mit saemtlichen Dateipfaeden oder ilidata-Ids.
         List<String> files = new ArrayList<>();
 
         FileCollection dataFilesCollection;

@@ -23,110 +23,197 @@ import java.sql.SQLException;
 public abstract class Ili2pgAbstractTask extends DefaultTask {
     protected GretlLogger log = LogEnvironment.getLogger(Ili2pgAbstractTask.class);
 
+    /**
+     * Datenbank aus der exportiert werden soll.
+     */
     @Input
     public abstract ListProperty<String> getDatabase();
 
+    /**
+     * Entspricht der ili2pg-Option `--dbschema`.
+     */
     @Input
     @Optional
     public abstract Property<String> getDbschema();
 
+    /**
+     * Entspricht der ili2pg-Option `--proxy`.
+     */
     @Input
     @Optional
     public abstract Property<String> getProxy();
 
+    /**
+     * Entspricht der ili2pg-Option `--proxyPort`.
+     */
     @Input
     @Optional
     public abstract Property<Integer> getProxyPort();
 
+    /**
+     * Entspricht der ili2pg-Option `--modeldir`.
+     */
     @Input
     @Optional
     public abstract Property<String> getModeldir();
 
+    /**
+     * Entspricht der ili2pg-Option `--models`.
+     */
     @Input
     @Optional
     public abstract Property<String> getModels();
 
+    /**
+     * Entspricht der ili2pg-Option `--dataset`.
+     */
     @Input
     @Optional
     public abstract Property<Object> getDataset();
 
+    /**
+     * Entspricht der ili2pg-Option `--baskets`.
+     */
     @Input
     @Optional
     public abstract Property<String> getBaskets();
 
+    /**
+     * Entspricht der ili2pg-Option `--topics`.
+     */
     @Input
     @Optional
     public abstract Property<String> getTopics();
 
+    /**
+     * Entspricht der ili2pg-Option `--importTid`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getImportTid();
 
+    /**
+     * Entspricht der ili2pg-Option `--exportTid`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getExportTid();
+    
+    /**
+     * Entspricht der ili2pg-Option `--importBid`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getImportBid();
+    
+    /**
+     * Entspricht der ili2pg-Option `--preScript`.
+     */
     @InputFile
     @Optional
     public abstract Property<File> getPreScript();
 
+    /**
+     * Entspricht der ili2pg-Option `--postScript`.
+     */
     @InputFile
     @Optional
     public abstract Property<File> getPostScript();
 
+    /**
+     * Entspricht der ili2pg-Option `--deleteData`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getDeleteData();
 
+    /**
+     * Entspricht der ili2pg-Option `--logFile`.
+     */
     @OutputFile
     @Optional
     public abstract Property<Object> getLogFile();
 
+    /**
+     * Entspricht der ili2pg-Option `--trace`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getTrace();
 
+    /**
+     * Entspricht der ili2pg-Option `--validConfigFile`.
+     */
     @InputFile
     @Optional
     public abstract Property<File> getValidConfigFile();
+    
+    /**
+     * Entspricht der ili2pg-Option `--disableValidation`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getDisableValidation();
 
+    /**
+     * Entspricht der ili2pg-Option `--disableAreaValidation`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getDisableAreaValidation();
 
+    /**
+     * Entspricht der ili2pg-Option `--forceTypeValidation`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getForceTypeValidation();
 
+    /**
+     * Entspricht der ili2pg-Option `--strokeArcs`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getStrokeArcs();
 
+    /**
+     * Entspricht der ili2pg-Option `--skipPolygonBuilding`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getSkipPolygonBuilding();
 
+    /**
+     * Entspricht der ili2pg-Option `--skipGeometryErrors`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getSkipGeometryErrors();
 
+    /**
+     * Entspricht der ili2pg-Option `--iligml20`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getIligml20();
 
+    /**
+     * Entspricht der ili2pg-Option `--disableRounding`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getDisableRounding();
 
+    /**
+     * Entspricht der ili2pg-Option `--failOnException`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getFailOnException();
 
+    /**
+     * Entspricht der ili2pg-Option `--datasetSubstring`.
+     */
     @Input
     @Optional
     public abstract ListProperty<Integer> getDatasetSubstring();

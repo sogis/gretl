@@ -34,59 +34,94 @@ public class S3Upload extends DefaultTask {
     private String contentType = null;
     private Map<String,String> metaData = null;
 
+    /**
+     * AccessKey
+     */
     @Input
     public String getAccessKey() {
         return accessKey;
     }
 
+    /**
+     * SecretKey
+     */
     @Input
     public String getSecretKey() {
         return secretKey;
     }
+    
+    /**
+     * Verzeichnis mit den Dateien, die hochgeladen werden sollen.
+     */
     @InputDirectory
     @Optional
     public Object getSourceDir() {
         return sourceDir;
     }
+    
+    /**
+     * Datei, die hochgeladen werden soll.
+     */
     @Input
     @Optional
     public Object getSourceFile() {
         return sourceFile;
     }
 
+    /**
+     * `FileCollection` mit den Dateien, die hochgeladen werden sollen, z.B. `fileTree("/path/to/directoy/") { include "*.itf" }`
+     */
     @Input
     @Optional
     public Object getSourceFiles() {
         return sourceFiles;
     }
 
+    /**
+     * Name des Buckets, in dem die Dateien gespeichert werden sollen.
+     */
     @Input
     public String getBucketName() {
         return bucketName;
     }
 
+    /**
+     * S3-Endpunkt. Default: `https://s3.eu-central-1.amazonaws.com/`
+     */
     @Input
     @Optional
     public String getEndPoint() {
         return endPoint;
     }
 
+    /**
+     * S3-Region. `Default: eu-central-1`
+     */
     @Input
     public String getRegion() {
         return region;
     }
 
+    /**
+     * Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
+     */
     @Input
     public String getAcl() {
         return acl;
     }
 
+    /**
+     * Content-Type
+     */
     @Input
     @Optional
     public String getContentType() {
         return contentType;
     }
 
+    /**
+     * Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`
+     */
     @Input
     @Optional
     public Map<String, String> getMetaData() {

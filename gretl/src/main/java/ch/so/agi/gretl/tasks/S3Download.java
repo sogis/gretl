@@ -25,32 +25,60 @@ public class S3Download extends DefaultTask {
     private String endPoint = "https://s3.eu-central-1.amazonaws.com";
     private String region = "eu-central-1";
     
+    /**
+     * AccessKey
+     */
     @Input
     public String getAccessKey() {
         return accessKey;
     }
+    
+    /**
+     * SecretKey
+     */
     @Input
     public String getSecretKey() {
         return secretKey;
     }
+    
+    /**
+     * Name des Buckets, in dem die Datei gespeichert ist.
+     */
     @Input
     public String getBucketName() {
         return bucketName;
     }
+    
+    /**
+     * Name der Datei.
+     */
     @Input
     public String getKey() {
         return key;
     }
+    
+    /**
+     * Verzeichnis, in das die Datei heruntergeladen werden soll.
+     */
     @OutputDirectory
     public File getDownloadDir() {
         return downloadDir;
     }
+    
+    /**
+     * S3-Endpunkt. Default: `https://s3.eu-central-1.amazonaws.com/`
+     */
     @Input
     @Optional
     public String getEndPoint() {
         return endPoint;
     }
+    
+    /**
+     * S3-Region. Default: `eu-central-1`
+     */
     @Input
+    @Optional
     public String getRegion() {
         return region;
     }

@@ -23,6 +23,55 @@ public class PostgisRasterExport extends DefaultTask {
     private Map<String, String> sqlParameters = null;
     private Object dataFile = null;
 
+    /**
+     * Name der SQL-Datei aus der das SQL-Statement gelesen und ausgeführt wird.
+     */
+    @Input
+    public String getSqlFile() {
+        return sqlFile;
+    }
+
+    /**
+     * Eine Map mit Paaren von Parameter-Name und Parameter-Wert.
+     */
+    @Input
+    @Optional
+    public Map<String, String> getSqlParameters() {
+        return sqlParameters;
+    }
+
+    /**
+     * Name der Rasterdatei, die erstellt werden soll.
+     */
+    @OutputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    /**
+     * Datenbank, aus der exportiert werden soll.
+     */
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setSqlFile(String sqlFile) {
+        this.sqlFile = sqlFile;
+    }
+
+    public void setSqlParameters(Map<String, String> sqlParameters) {
+        this.sqlParameters = sqlParameters;
+    }
+
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
     @TaskAction
     public void exportRaster() {
         log = LogEnvironment.getLogger(PostgisRasterExport.class);
@@ -49,42 +98,5 @@ public class PostgisRasterExport extends DefaultTask {
             log.error("Exception in creating / invoking PostgisRasterExportStep.", e);
             throw TaskUtil.toGradleException(e);
         }
-    }
-
-    @Input
-    public String getSqlFile() {
-        return sqlFile;
-    }
-
-    @Input
-    @Optional
-    public Map<String, String> getSqlParameters() {
-        return sqlParameters;
-    }
-
-    @OutputFile
-    public Object getDataFile() {
-        return dataFile;
-    }
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
-    }
-
-    public void setSqlFile(String sqlFile) {
-        this.sqlFile = sqlFile;
-    }
-
-    public void setSqlParameters(Map<String, String> sqlParameters) {
-        this.sqlParameters = sqlParameters;
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
     }
 }

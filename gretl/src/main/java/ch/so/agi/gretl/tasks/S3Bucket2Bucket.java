@@ -26,42 +26,67 @@ public class S3Bucket2Bucket extends DefaultTask {
     private String acl = null;
     private Map<String,String> metaData = new HashMap<String,String>();
 
+    /**
+     * AccessKey
+     */
     @Input
     public String getAccessKey() {
         return accessKey;
     }
 
+    /**
+     * SecretKey
+     */
     @Input
     public String getSecretKey() {
         return secretKey;
     }
 
+    /**
+     * Bucket, aus dem die Objekte kopiert werden.
+     */
     @Input
     public String getSourceBucket() {
         return sourceBucket;
     }
 
+    /**
+     * Bucket, in den die Objekte kopiert werden.
+     */
     @Input
     public String getTargetBucket() {
         return targetBucket;
     }
 
+    /**
+     * S3-Endpunkt. Default: `https://s3.eu-central-1.amazonaws.com/`
+     */
     @Input
     @Optional
     public String getEndPoint() {
         return endPoint;
     }
 
+    /**
+     * S3-Region. Default: `eu-central-1`
+     */
     @Input
+    @Optional
     public String getRegion() {
         return region;
     }
 
+    /**
+     * Access Control Layer `[private, public-read, public-read-write, authenticated-read, aws-exec-read, bucket-owner-read, bucket-owner-full-control]`
+     */
     @Input
     public String getAcl() {
         return acl;
     }
 
+    /**
+     * Metadaten des Objektes resp. der Objekte, z.B. `["lastModified":"2020-08-28"]`.
+     */
     @Input
     @Optional
     public Map<String, String> getMetaData() {

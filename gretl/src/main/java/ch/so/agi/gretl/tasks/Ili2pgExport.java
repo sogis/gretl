@@ -14,14 +14,23 @@ import org.gradle.api.tasks.*;
 
 public abstract class Ili2pgExport extends Ili2pgAbstractTask {
     
+    /**
+     * Entspricht der ili2pg-Option `--export3`.
+     */
     @Input
     @Optional
     public abstract Property<Boolean> getExport3();
     
+    /**
+     * Entspricht der ili2pg-Option `--exportModels`.
+     */    
     @Input
     @Optional
     public abstract Property<String> getExportModels();
 
+    /**
+     * Name der XTF-/ITF-/GML-Datei, die erstellt werden soll. `FileCollection` oder `String`.
+     */
     @OutputFiles
     public abstract Property<Object> getDataFile();
 
@@ -40,10 +49,10 @@ public abstract class Ili2pgExport extends Ili2pgAbstractTask {
         }
         FileCollection dataFilesCollection;
         Object dataFile = getDataFile().get();
-        if(dataFile instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)dataFile;
-        }else {
-            dataFilesCollection=getProject().files(dataFile);
+        if (dataFile instanceof FileCollection) {
+            dataFilesCollection = (FileCollection)dataFile;
+        } else {
+            dataFilesCollection = getProject().files(dataFile);
         }
         if (dataFilesCollection.isEmpty()) {
             return;

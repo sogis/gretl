@@ -22,6 +22,67 @@ public class JsonImport extends DefaultTask {
     private String columnName = null;
     private Boolean deleteAllRows = false;
 
+    /**
+     * Qualifizierter Namen der Tabelle ("schema.tabelle"), in die importiert werden soll.
+     */
+    @Input
+    public String getQualifiedTableName() {
+        return qualifiedTableName;
+    }
+
+    /**
+     * JSON-Datei, die importiert werden soll.
+     */
+    @Input
+    public String getJsonFile() {
+        return jsonFile;
+    }
+
+    /**
+     * Spaltenname der Tabelle, in die importiert werden soll.
+     */
+    @Input
+    public String getColumnName() {
+        return columnName;
+    }
+
+    /**
+     * Inhalt der Tabelle vorgängig löschen?
+     */
+    @Input
+    @Optional
+    public Boolean isDeleteAllRows() {
+        return deleteAllRows;
+    }
+
+    /**
+     * Datenbank, in die importiert werden soll.
+     */
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setQualifiedTableName(String qualifiedTableName) {
+        this.qualifiedTableName = qualifiedTableName;
+    }
+
+    public void setJsonFile(String jsonFile) {
+        this.jsonFile = jsonFile;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
+
+    public void setDeleteAllRows(Boolean deleteAllRows) {
+        this.deleteAllRows = deleteAllRows;
+    }
+
     @TaskAction
     public void importJsonFile() {
         log = LogEnvironment.getLogger(JsonImport.class);
@@ -48,51 +109,5 @@ public class JsonImport extends DefaultTask {
             log.error("Exception in JsonImport task.", e);
             throw TaskUtil.toGradleException(e);
         }
-    }
-
-    @Input
-    public String getQualifiedTableName() {
-        return qualifiedTableName;
-    }
-
-    @Input
-    public String getJsonFile() {
-        return jsonFile;
-    }
-
-    @Input
-    public String getColumnName() {
-        return columnName;
-    }
-
-    @Input
-    @Optional
-    public Boolean isDeleteAllRows() {
-        return deleteAllRows;
-    }
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
-    }
-
-    public void setQualifiedTableName(String qualifiedTableName) {
-        this.qualifiedTableName = qualifiedTableName;
-    }
-
-    public void setJsonFile(String jsonFile) {
-        this.jsonFile = jsonFile;
-    }
-
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
-
-    public void setDeleteAllRows(Boolean deleteAllRows) {
-        this.deleteAllRows = deleteAllRows;
     }
 }

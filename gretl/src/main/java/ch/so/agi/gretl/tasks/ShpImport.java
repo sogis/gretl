@@ -12,6 +12,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.*;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -24,6 +25,81 @@ public class ShpImport extends DefaultTask {
     private String schemaName = null;
     private String encoding = null;
     private Integer batchSize = null;
+
+    /**
+     * Name der SHP-Datei, die gelesen werden soll.
+     */
+    @InputFile
+    public Object getDataFile() {
+        return dataFile;
+    }
+
+    /**
+     * Name der DB-Tabelle, in die importiert werden soll.
+     */
+    @Input
+    public String getTableName() {
+        return tableName;
+    }
+
+    /**
+     * Name des DB-Schemas, in dem die DB-Tabelle ist.
+     */
+    @Input
+    @Optional
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    /**
+     * Zeichencodierung der SHP-Datei, z.B. `UTF-8`. Default: Systemeinstellung
+     */
+    @Input
+    @Optional
+    public String getEncoding() {
+        return encoding;
+    }
+
+    /**
+     * Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden. Default: 5000)
+     */
+    @Input
+    @Optional
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    /**
+     * Datenbank, in die importiert werden soll.
+     */
+    @Input
+    public Connector getDatabase() {
+        return database;
+    }
+    
+    public void setDataFile(Object dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
 
     @TaskAction
     public void importData() {
@@ -39,9 +115,21 @@ public class ShpImport extends DefaultTask {
             return;
         }
 
-        Settings settings = getSettings();
+        Settings settings = new Settings();
+        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
+        // set optional parameters
+        if (schemaName != null) {
+            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
+        }
+        if (encoding != null) {
+            settings.setValue(ShapeReader.ENCODING, encoding);
+        }
+        if (batchSize != null) {
+            settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
+        }
+
         File data = this.getProject().file(dataFile);
-        java.sql.Connection conn = null;
+        Connection conn = null;
         try {
             conn = database.connect();
             if (conn == null) {
@@ -66,80 +154,5 @@ public class ShpImport extends DefaultTask {
                 conn = null;
             }
         }
-    }
-
-    @InputFile
-    public Object getDataFile() {
-        return dataFile;
-    }
-
-    public void setDataFile(Object dataFile) {
-        this.dataFile = dataFile;
-    }
-
-    @Input
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    @Input
-    @Optional
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    @Input
-    @Optional
-    public String getEncoding() {
-        return encoding;
-    }
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
-    @Input
-    @Optional
-    public Integer getBatchSize() {
-        return batchSize;
-    }
-
-    public void setBatchSize(Integer batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    @Input
-    public Connector getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
-    }
-
-    @Internal
-    Settings getSettings() {
-        Settings settings = new Settings();
-        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
-        // set optional parameters
-        if (schemaName != null) {
-            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA, schemaName);
-        }
-        if (encoding != null) {
-            settings.setValue(ShapeReader.ENCODING, encoding);
-        }
-        if (batchSize != null) {
-            settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
-        }
-
-        return settings;
     }
 }

@@ -7,6 +7,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.interlis2.validator.Validator;
@@ -33,9 +34,9 @@ public class AbstractValidatorTask extends DefaultTask {
     private Integer proxyPort = null;
     private Boolean failOnError = true;
     protected boolean validationOk = true;
-
+    
     /**
-     * Liste der CSV-Dateien, die validiert werden sollen. FileCollection oder List. Eine leere Liste ist kein Fehler.
+     * Liste der Dateien, die validiert werden sollen. `FileCollection` oder `List`. Eine leere Liste ist kein Fehler.
      */
     @InputFiles
     public Object getDataFiles() {
@@ -176,7 +177,16 @@ public class AbstractValidatorTask extends DefaultTask {
     public Boolean getFailOnError() {
         return failOnError;
     }
-
+    
+    // Braucht eigentlich keine Annotation. Aber ohne wird das Property vom Doclet nicht gefunden.
+    /**
+     * OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false.
+     */
+    @Internal
+    public boolean getValidationOk() {
+        return validationOk;    
+    }
+    
     public void setDataFiles(Object dataFiles) {
         this.dataFiles = dataFiles;
     }

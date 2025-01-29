@@ -20,7 +20,7 @@ import java.util.List;
 public class GpkgImport extends DefaultTask {
     private GretlLogger log;
     private Connector database;
-    private File dataFile;
+    private Object dataFile;
     private String srcTableName;
     private String dstTableName;
     private String schemaName;
@@ -30,8 +30,8 @@ public class GpkgImport extends DefaultTask {
     /**
      * Name der GeoPackage-Datei, die gelesen werden soll.
      */
-    @InputFile
-    public File getDataFile(){
+    @Input
+    public Object getDataFile(){
         return dataFile;
     }
 
@@ -90,7 +90,7 @@ public class GpkgImport extends DefaultTask {
         this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
-    public void setDataFile(File dataFile) {
+    public void setDataFile(Object dataFile) {
         this.dataFile = dataFile;
     }
 

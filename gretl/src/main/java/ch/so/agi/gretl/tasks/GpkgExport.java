@@ -22,7 +22,7 @@ public class GpkgExport extends DefaultTask {
     private GretlLogger log;
     
     private Connector database;
-    private File dataFile;
+    private Object dataFile;
     private Object dstTableName;
     private Object srcTableName;
     private String schemaName;
@@ -33,7 +33,7 @@ public class GpkgExport extends DefaultTask {
      * Name der GeoPackage-Datei, die erstellt werden soll.
      */
     @OutputFile
-    public File getDataFile() {
+    public Object getDataFile() {
         return dataFile;
     }
 
@@ -93,7 +93,7 @@ public class GpkgExport extends DefaultTask {
     }
 
 
-    public void setDataFile(File dataFile) {
+    public void setDataFile(Object dataFile) {
         this.dataFile = dataFile;
     }
 

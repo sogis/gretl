@@ -12,12 +12,16 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShpValidator extends AbstractValidatorTask {
     private String encoding = null;
 
+    /**
+     * Zeichencodierung der SHP-Datei, z.B. `UTF-8`. Default: Systemeinstellung
+     */
     @Input
     @Optional
     public String getEncoding(){
@@ -36,16 +40,16 @@ public class ShpValidator extends AbstractValidatorTask {
             return;
         }
         FileCollection dataFilesCollection=null;
-        if(getDataFiles() instanceof FileCollection) {
+        if (getDataFiles() instanceof FileCollection) {
             dataFilesCollection=(FileCollection)getDataFiles();
-        }else {
+        } else {
             dataFilesCollection=getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
         }
         List<String> files = new ArrayList<String>();
-        for (java.io.File fileObj : dataFilesCollection) {
+        for (File fileObj : dataFilesCollection) {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }
@@ -61,5 +65,4 @@ public class ShpValidator extends AbstractValidatorTask {
             throw new TaskExecutionException(this, new Exception("validation failed"));
         }
     }
-
 }
