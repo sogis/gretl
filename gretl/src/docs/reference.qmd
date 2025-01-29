@@ -1220,14 +1220,18 @@ Tabellen zulassen. D.h. es muss z.B. möglich sein, innerhalb einer Tabelle nur 
 bestimmten Gemeinde zu aktualisieren. Darum ist es möglich 
 innerhalb der .sql-Datei Paramater zu verwenden und diesen Parametern beim Task einen
 konkreten Wert zuzuweisen. Innerhalb der .sql-Datei werden Paramter mit folgender Syntax
-verwendet: ``${paramName}``.
+verwendet: `${paramName}`.
 
-```
-def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+Unterstützte Datenbanken: PostgreSQL, SQLite, Oracle, Derby und DuckDB.
+
+Beispiele:
+
+```groovy 
+def db_uri = 'jdbc:postgresql://localhost:54321/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task executeSomeSql(type: SqlExecutor){
+tasks.register('executeSomeSql', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
     sqlParameters = [dataset:'Olten']
     sqlFiles = ['demo.sql']
@@ -1237,51 +1241,44 @@ task executeSomeSql(type: SqlExecutor){
 Damit mit einer einzigen Task-Definition mehrere Datensätze verarbeitet werden können, kann auch 
 eine Liste von Parametern angegeben werden.
 
-```
+```groovy
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-task executeSomeSql(type: SqlExecutor){
+tasks.register('executeSomeSql', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
     sqlParameters = [[dataset:'Olten'],[dataset:'Grenchen']]
     sqlFiles = ['demo.sql']
 }
 ```
 
-
-Parameter | Beschreibung
-----------|-------------------
-database | Datenbank in die importiert werden soll
-sqlFiles  | Name der SQL-Datei aus der SQL-Statements gelesen und ausgeführt werden
-sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert (``Map<String,String>``). Oder eine Liste mit Paaren von Parameter-Name und Parameter-Wert (``List<Map<String,String>>``).
-
-Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.SqlExecutor.md >}}
 
 ### XslTransformer (incubating)
 
-**TODO:** Wie sieht es mit der Endung aus? Immer XTF (wohl auch nicht)
-
 Transformiert eine Datei mittels einer XSL-Transformation ein eine andere Datei. Ist der `xslFile`-Parameter ein String, wird erwartet, dass die Datei im GRETL-Verzeichnis im Ressourcenordner `src/main/resources/xslt`-Verzeichnis gespeichert ist. Falls der `xslFile`-Parameter ein File-Objekt ist, können lokale Dateien verwendet werden.
 
-```
-task transform(type: XslTransformer) {
+Beispiele:
+
+```groovy
+tasks.register('transform', XslTransformer) {
     xslFile = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
     xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
     outDirectory = file(".")
 }
 ```
 
-```
-task transform(type: XslTransformer) {
+```groovy
+tasks.register('transform', XslTransformer) {
     xslFile = file("path/to/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl")
     xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
     outDirectory = file(".")
 }
 ```
 
-```
-task transform(type: XslTransformer) {
+```groovy
+tasks.register('transform', XslTransformer) {
     xslFile = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
     xmlFile = fileTree(".").matching {
         include "*.xml"
@@ -1290,8 +1287,4 @@ task transform(type: XslTransformer) {
 }
 ```
 
-Parameter | Beschreibung
-----------|-------------------
-xslFile | Name der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss oder File-Objekt (beliebier Pfad).
-xmlFile | Datei oder FileTree, die/der transformiert werden soll.
-outDirectory | Verzeichnis, in das die transformierte Datei gespeichert wird. Der Name der transformierten Datei entspricht dem Namen der Inpuzt-Datei mit Endung `.xtf`.
+{{< include ../../build/docs/tasks/_ch.so.agi.gretl.tasks.XslTransformer.md >}}

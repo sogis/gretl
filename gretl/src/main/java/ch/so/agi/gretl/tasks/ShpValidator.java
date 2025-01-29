@@ -39,11 +39,11 @@ public class ShpValidator extends AbstractValidatorTask {
         if (getDataFiles() == null) {
             return;
         }
-        FileCollection dataFilesCollection=null;
+        FileCollection dataFilesCollection = null;
         if (getDataFiles() instanceof FileCollection) {
             dataFilesCollection=(FileCollection)getDataFiles();
         } else {
-            dataFilesCollection=getProject().files(getDataFiles());
+            dataFilesCollection = getProject().files(getDataFiles());
         }
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;

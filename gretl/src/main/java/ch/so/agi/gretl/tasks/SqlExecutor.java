@@ -26,12 +26,21 @@ import java.util.Map;
 public abstract class SqlExecutor extends DefaultTask {
     private static GretlLogger log;
 
+    /**
+     * Datenbank, in die importiert werden soll.
+     */
     @Input
     public abstract ListProperty<String> getDatabase();
 
+    /**
+     * Name der SQL-Datei aus der SQL-Statements gelesen und ausgeführt werden.
+     */
     @Input
     public abstract ListProperty<String> getSqlFiles();
     
+    /**
+     * Eine Map mit Paaren von Parameter-Name und Parameter-Wert (`Map<String,String>`). Oder eine Liste mit Paaren von Parameter-Name und Parameter-Wert (`List<Map<String,String>>`).
+     */
     @Input
     @Optional
     public abstract Property<Object> getSqlParameters();
@@ -42,7 +51,7 @@ public abstract class SqlExecutor extends DefaultTask {
         
         String taskName = this.getName();
 
-        if(!getDatabase().isPresent()) {
+        if (!getDatabase().isPresent()) {
             throw new GradleException("database is null");
         }
 
@@ -56,13 +65,13 @@ public abstract class SqlExecutor extends DefaultTask {
 
         try {
             SqlExecutorStep step = new SqlExecutorStep(taskName);
-            if(!getSqlParameters().isPresent()) {
+            if (!getSqlParameters().isPresent()) {
                 step.execute(database, files, null);
-            }else if(getSqlParameters().get() instanceof Map) {
+            } else if (getSqlParameters().get() instanceof Map) {
                 step.execute(database, files, (Map<String,String>)getSqlParameters().get());
-            }else {
-                List<java.util.Map<String,String>> paramList=(List<Map<String,String>>)getSqlParameters().get();
-                for(Map<String,String> sqlParams:paramList) {
+            } else {
+                List<java.util.Map<String,String>> paramList = (List<Map<String,String>>)getSqlParameters().get();
+                for (Map<String,String> sqlParams : paramList) {
                     step.execute(database, files, sqlParams);
                 }
             }
@@ -74,7 +83,6 @@ public abstract class SqlExecutor extends DefaultTask {
     }
 
     private List<File> convertToFileList(ListProperty<String> filePaths) {
-
         List<File> files = new ArrayList<>();
 
         for (String filePath : filePaths.get()) {
@@ -84,7 +92,7 @@ public abstract class SqlExecutor extends DefaultTask {
             File absolute = TaskUtil.createAbsolutePath(filePath, ((Task) this).getProject());
             files.add(absolute);
         }
-
+        
         return files;
     }
 }

@@ -25,19 +25,33 @@ public class XslTransformer extends DefaultTask {
     private File outDirectory;
     private String fileExtension = "xtf";
 
+    /**
+     * Name der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss oder File-Objekt (beliebiger Pfad).
+     */
     @Input
     public Object getXslFile() {
         return xslFile;
     }
+    
+    /**
+     * Datei oder FileTree, die/der transformiert werden soll.
+     */
     @Input
     public Object getXmlFile() {
         return xmlFile;
     }
+    
+    /**
+     * Verzeichnis, in das die transformierte Datei gespeichert wird. Der Name der transformierten Datei entspricht standardmässig dem Namen der Input-Datei mit Endung `.xtf`.
+     */
     @OutputDirectory
     public File getOutDirectory() {
         return outDirectory;
     }
     
+    /**
+     * Fileextension der Resultatdatei. Default: `xtf`
+     */
     @Optional
     @Input
     public String getFileExtension() {

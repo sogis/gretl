@@ -31,26 +31,277 @@ import java.util.List;
 public class Publisher extends DefaultTask {
     protected GretlLogger log;
 
-    private String dataIdent=null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
-    private Endpoint target=null; // Zielverzeichnis
-    private Object sourcePath=null; // Quelldatei z.B. "/path/file.xtf"
-    private Connector database=null; //  Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
-    private String dbSchema=null; // Schema in der Datenbank z.B. "av"
-    private String dataset=null; //  ili2db-Datasetname der Quelldaten "dataset"
-    private String modelsToPublish=null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
+    private String dataIdent = null; // Identifikator der Daten z.B. "ch.so.agi.vermessung.edit"
+    private Endpoint target = null; // Zielverzeichnis
+    private Object sourcePath = null; // Quelldatei z.B. "/path/file.xtf"
+    private Connector database = null; //  Datenbank mit Quelldaten z.B. ["uri","user","password"]. Alternative zu sourcePath
+    private String dbSchema = null; // Schema in der Datenbank z.B. "av"
+    private String dataset = null; //  ili2db-Datasetname der Quelldaten "dataset"
+    private String modelsToPublish = null; //  ili2db-Modellname(n) zur Auswahl der Quelldaten
     private String region; // Muster der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. "[0-9][0-9][0-9][0-9]"
     private ListProperty<String> regions = getProject().getObjects().listProperty(String.class); // Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen). Nur falls die Publikation Regionen-weise erfolgen soll
     private ListProperty<String> _publishedRegions = getProject().getObjects().listProperty(String.class); // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
-    private Object validationConfig=null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
-    private Boolean userFormats=false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
-    private Endpoint kgdiService=null; // Endpunkt des SIMI-Services
-    private Endpoint kgdiTokenService=null; // Endpunkt des Authentifizierung-Services
-    private Object grooming=null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
-    private String exportModels=null; // Das Export-Modell, indem die Daten exportiert werden
-    private String modeldir=null;     // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
-    private String proxy=null;        // Proxy Server fuer den Zugriff auf Modell Repositories
-    private Integer proxyPort=null;    // Proxy Port fuer den Zugriff auf Modell Repositories
-    private Date version=null;
+    private Object validationConfig = null; // Konfiguration fuer die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini"
+    private Boolean userFormats = false; // Benutzerformat (Geopackage, Shapefile, Dxf) erstellen
+    private Endpoint kgdiService = null; // Endpunkt des SIMI-Services
+    private Endpoint kgdiTokenService = null; // Endpunkt des Authentifizierung-Services
+    private Object grooming = null; // Konfiguration fuer die Ausduennung z.B. "grooming.json"
+    private String exportModels = null; // Das Export-Modell, indem die Daten exportiert werden
+    private String modeldir = null;     // Dateipfade, die Modell-Dateien (ili-Dateien) enthalten
+    private String proxy = null;        // Proxy Server fuer den Zugriff auf Modell Repositories
+    private Integer proxyPort = null;    // Proxy Port fuer den Zugriff auf Modell Repositories
+    private Date version = null;
+
+    /**
+     * Identifikator der Daten z.B. "ch.so.agi.vermessung.edit".
+     */
+    @Input
+    public String getDataIdent() {
+        return dataIdent;
+    }
+
+    /**
+     * Zielverzeichnis z.B. `[ "sftp://ftp.server.ch/data", "user", "password" ]` oder einfach ein Pfad `[file("/out")]`
+     */
+    @Input
+    public Endpoint getTarget() {
+        return target;
+    }
+
+    /**
+     * Quelldatei z.B. `file("/path/file.xtf")`
+     */
+    @InputFile
+    @Optional
+    public Object getSourcePath() {
+        return sourcePath;
+    }
+
+    /**
+     * Datenbank mit Quelldaten z.B. `["uri","user","password"]`. Alternative zu sourcePath.
+     */
+    @Input
+    @Optional
+    public Connector getDatabase() {
+        return database;
+    }
+
+    /**
+     * Schema in der Datenbank z.B. `"av"`
+     */
+    @Input
+    @Optional
+    public String getDbSchema() {
+        return dbSchema;
+    }
+
+    /**
+     * ili2db-Datasetname der Quelldaten "dataset" (Das ili2db-Schema muss also immer mit `--createBasketCol` erstellt werden)
+     */
+    @Input
+    @Optional
+    public String getDataset() {
+        return dataset;
+    }
+
+    /**
+     * INTERLIS-Modellnamen der Quelldaten in der DB (Nur für "einfache" Modelle, deren ili2db-Schema ohne `--createBasketCol` erstellt werden kann).
+     */
+    @Input
+    @Optional
+    public String getModelsToPublish() {
+        return modelsToPublish;
+    }
+
+    /**
+     * Muster (Regular Expression) der Dateinamen oder Datasetnamen, falls die Publikation Regionen-weise erfolgt z.B. `"[0-9][0-9][0-9][0-9]"`. Alternative zum Parameter regions,<br/><br/>Bei Quelle "Datei" ist die Angabe einer "stellvertretenden" Transferdatei mittels "sourcePath" zwingend. Bsp.: Bei sourcePath `file("/transferfiles/dummy.xtf")` werden alle im Ordner "transferfiles" enthaltenen Transferdateien mit dem Muster verglichen und bei "match" selektiert und verarbeitet.
+     */
+    @Input
+    @Optional
+    public String getRegion() {
+        return region;
+    }
+
+    /**
+     * Liste der zu publizierenden Regionen (Dateinamen oder Datasetnamen), falls die Publikation Regionen-weise erfolgen soll. Alternative zum Parameter `region`.
+     */
+    @Input
+    @Optional
+    public ListProperty<String> getRegions() {
+        return regions;
+    }
+
+    /**
+     * Liste der effektiv publizierten Regionen.
+     */
+    @Internal
+    public ListProperty<String> getPublishedRegions() {
+        // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
+        return _publishedRegions;
+    }
+
+    /**
+     * Konfiguration für die Validierung (eine ilivalidator-config-Datei) z.B. "validationConfig.ini".
+     */
+    @Input
+    @Optional
+    public Object getValidationConfig() {
+        return validationConfig;
+    }
+
+    /**
+     * Benutzerformat (Geopackage, Shapefile, Dxf) erstellen. Default: false
+     */
+    @Input
+    @Optional
+    public Boolean isUserFormats() {
+        return userFormats;
+    }
+
+    /**
+     * Endpunkt des SIMI-Services für die Rückmeldung des Publikationsdatums und die Erstellung des Beipackzettels, z.B. `["http://api.kgdi.ch/metadata","user","pwd"]`. Publisher ergänzt die URL fallabhängig mit `/pubsignal` respektive `/doc`.
+     */
+    @Input
+    @Optional
+    public Endpoint getKgdiService() {
+        return kgdiService;
+    }
+
+    /**
+     * Endpunkt des Authentifizierung-Services, z.B. `["http://api.kgdi.ch/metadata","user","pwd"]`. Publisher ergänzt die URL mit `/v2/oauth/token`.
+     */
+    @Input
+    @Optional
+    public Endpoint getKgdiTokenService() {
+        return kgdiTokenService;
+    }
+
+    /**
+     * Konfiguration für die Ausdünnung z.B. `"grooming.json"`. Ohne Angabe wird nicht aufgeräumt.
+     */
+    @InputFile
+    @Optional
+    public Object getGrooming() {
+        return grooming;
+    }
+
+    /**
+     * Das Export-Modell, indem die Daten exportiert werden. Der Parameter wird nur bei der Ausdünnung benötigt. Als Export-Modelle sind Basis-Modelle zulässig.
+     */
+    @Input
+    @Optional
+    public String getExportModels() {
+        return exportModels;
+    }
+
+    /**
+     * Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon `;` getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: `%ITF_DIR;http://models.interlis.ch/`. `%ITF_DIR` ist ein Platzhalter für das Verzeichnis mit der ITF-Datei.
+     */
+    @Input
+    @Optional
+    public String getModeldir() {
+        return modeldir;
+    }
+
+    /**
+     * Proxy-Server für den Zugriff auf Modell-Repositories.
+     */
+    @Input
+    @Optional
+    public String getProxy() {
+        return proxy;
+    }
+
+    /**
+     * Proxy-Port für den Zugriff auf Modell-Repositories.
+     */
+    @Input
+    @Optional
+    public Integer getProxyPort() {
+        return proxyPort;
+    }
+
+    @Input
+    @Optional
+    public Date getVersion() {
+        return version;
+    }
+
+    public void setDataIdent(String dataIdent) {
+        this.dataIdent = dataIdent;
+    }
+
+    public void setTarget(Endpoint target) {
+        this.target = target;
+    }
+
+    public void setSourcePath(Object sourcePath) {
+        this.sourcePath = sourcePath;
+    }
+
+    public void setDatabase(List<String> databaseDetails) {
+        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
+    }
+
+    public void setDbSchema(String dbSchema) {
+        this.dbSchema = dbSchema;
+    }
+
+    public void setDataset(String dataset) {
+        this.dataset = dataset;
+    }
+
+    public void setModelsToPublish(String modelsToPublish) {
+        this.modelsToPublish = modelsToPublish;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setRegions(List<String> regions) {
+        this.regions.set(regions);
+    }
+
+    public void setValidationConfig(Object validationConfig) {
+        this.validationConfig = validationConfig;
+    }
+
+    public void setUserFormats(Boolean userFormats) {
+        this.userFormats = userFormats;
+    }
+
+    public void setKgdiService(Endpoint kgdiService) {
+        this.kgdiService = kgdiService;
+    }
+
+    public void setKgdiTokenService(Endpoint kgdiTokenService) {
+        this.kgdiTokenService = kgdiTokenService;
+    }
+
+    public void setGrooming(Object grooming) {
+        this.grooming = grooming;
+    }
+
+    public void setExportModels(String exportModels) {
+        this.exportModels = exportModels;
+    }
+
+    public void setModeldir(String modeldir) {
+        this.modeldir = modeldir;
+    }
+
+    public void setProxy(String proxy) {
+        this.proxy = proxy;
+    }
+
+    public void setProxyPort(Integer proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setVersion(Date version) {
+        this.version = version;
+    }
 
     @TaskAction
     public void publishAll() {
@@ -140,200 +391,6 @@ public class Publisher extends DefaultTask {
             log.error("failed to run Publisher", e);
             throw TaskUtil.toGradleException(e);
         }
-    }
-
-    @Input
-    public String getDataIdent() {
-        return dataIdent;
-    }
-
-    @Input
-    public Endpoint getTarget() {
-        return target;
-    }
-
-    @InputFile
-    @Optional
-    public Object getSourcePath() {
-        return sourcePath;
-    }
-
-    @Input
-    @Optional
-    public Connector getDatabase() {
-        return database;
-    }
-
-    @Input
-    @Optional
-    public String getDbSchema() {
-        return dbSchema;
-    }
-
-    @Input
-    @Optional
-    public String getDataset() {
-        return dataset;
-    }
-
-    @Input
-    @Optional
-    public String getModelsToPublish() {
-        return modelsToPublish;
-    }
-
-    @Input
-    @Optional
-    public String getRegion() {
-        return region;
-    }
-
-    @Input
-    @Optional
-    public ListProperty<String> getRegions() {
-        return regions;
-    }
-
-    @Internal
-    public ListProperty<String> getPublishedRegions() {
-        // Falls die Publikation Regionen-weise erfolgt (region!=null): Liste der tatsaechlich publizierten Regionen
-        return _publishedRegions;
-    }
-
-    @Input
-    @Optional
-    public Object getValidationConfig() {
-        return validationConfig;
-    }
-
-    @Input
-    @Optional
-    public Boolean isUserFormats() {
-        return userFormats;
-    }
-
-    @Input
-    @Optional
-    public Endpoint getKgdiService() {
-        return kgdiService;
-    }
-
-    @Input
-    @Optional
-    public Endpoint getKgdiTokenService() {
-        return kgdiTokenService;
-    }
-
-    @InputFile
-    @Optional
-    public Object getGrooming() {
-        return grooming;
-    }
-
-    @Input
-    @Optional
-    public String getExportModels() {
-        return exportModels;
-    }
-
-    @Input
-    @Optional
-    public String getModeldir() {
-        return modeldir;
-    }
-
-    @Input
-    @Optional
-    public String getProxy() {
-        return proxy;
-    }
-
-    @Input
-    @Optional
-    public Integer getProxyPort() {
-        return proxyPort;
-    }
-
-    @Input
-    @Optional
-    public Date getVersion() {
-        return version;
-    }
-
-    public void setDataIdent(String dataIdent) {
-        this.dataIdent = dataIdent;
-    }
-
-    public void setTarget(Endpoint target) {
-        this.target = target;
-    }
-
-    public void setSourcePath(Object sourcePath) {
-        this.sourcePath = sourcePath;
-    }
-
-    public void setDatabase(List<String> databaseDetails) {
-        this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
-    }
-
-    public void setDbSchema(String dbSchema) {
-        this.dbSchema = dbSchema;
-    }
-
-    public void setDataset(String dataset) {
-        this.dataset = dataset;
-    }
-
-    public void setModelsToPublish(String modelsToPublish) {
-        this.modelsToPublish = modelsToPublish;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    public void setRegions(List<String> regions) {
-        this.regions.set(regions);
-    }
-
-    public void setValidationConfig(Object validationConfig) {
-        this.validationConfig = validationConfig;
-    }
-
-    public void setUserFormats(Boolean userFormats) {
-        this.userFormats = userFormats;
-    }
-
-    public void setKgdiService(Endpoint kgdiService) {
-        this.kgdiService = kgdiService;
-    }
-
-    public void setKgdiTokenService(Endpoint kgdiTokenService) {
-        this.kgdiTokenService = kgdiTokenService;
-    }
-
-    public void setGrooming(Object grooming) {
-        this.grooming = grooming;
-    }
-
-    public void setExportModels(String exportModels) {
-        this.exportModels = exportModels;
-    }
-
-    public void setModeldir(String modeldir) {
-        this.modeldir = modeldir;
-    }
-
-    public void setProxy(String proxy) {
-        this.proxy = proxy;
-    }
-
-    public void setProxyPort(Integer proxyPort) {
-        this.proxyPort = proxyPort;
-    }
-
-    public void setVersion(Date version) {
-        this.version = version;
     }
 
     private Path getSftpPath() {
