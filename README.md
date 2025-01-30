@@ -6,9 +6,7 @@ The [Gradle](http://www.gradle.org) _GRETL_ plugin extends Gradle for use as a s
 
 ## Manual
 
-The german reference documentation can be found here: [docs/user/](docs/user/reference.md) 
-
-The Publisher task is documented here: [Publisher](docs/user/publisher.md) 
+The german reference documentation can be found [here](https://gretl.app/reference.html).
 
 For more insights (developing, runtimes) see here: [docs/dev/](docs/dev/index.md)
 
