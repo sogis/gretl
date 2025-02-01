@@ -269,13 +269,25 @@ tasks.register('csvimport',  CsvImport) {
 
 Prüft eine CSV-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator). Das Datenmodell darf die OID nicht als UUID modellieren (`OID AS INTERLIS.UUIDOID`). 
 
-Beispiel:
+Beispiele:
 
 ```groovy
 tasks.register('validate', CsvValidator) {
     models = "CsvModel"
     firstLineIsHeader = true
     dataFiles = ["data1.csv"]
+}
+```
+
+```groovy
+tasks.register('validateFahrzeugbestandCsv', CsvValidator) {
+    description = "Validiert die CSV-Datei der Fahrzeugbestände"
+    models = "SO_MFK_Fahrzeugbestand_20250201"
+    modeldir = "../models/"
+    firstLineIsHeader = true
+    dataFiles = ["../data/ch.so.mfk.fahrzeugbestand.csv"]
+    valueSeparator = ';'
+    valueDelimiter = null
 }
 ```
 
