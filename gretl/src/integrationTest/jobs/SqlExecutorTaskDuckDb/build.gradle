@@ -4,7 +4,6 @@ apply plugin: 'ch.so.agi.gretl'
 
 def pwd = rootProject.projectDir.toString()
 def db_uri = "jdbc:duckdb:$pwd/foo.duckdb".toString()
-
 def db_user = ""
 def db_pass = ""
 

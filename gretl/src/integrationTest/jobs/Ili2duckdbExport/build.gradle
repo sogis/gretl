@@ -4,7 +4,18 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'ili2duckdbexport'
 
+def pwd = rootProject.projectDir.toString()
+def db_uri = "jdbc:duckdb:$pwd/my_gb2av.duckdb".toString()
+def db_user = ""
+def db_pass = ""
+
+tasks.register("workaround", SqlExecutor) {
+    database = [db_uri, db_user, db_pass]
+    sqlFiles = ['init.sql']
+}
+
 tasks.register("ili2duckdbexport", Ili2duckdbExport) {
+    dependsOn 'workaround'
     models = "GB2AV"
     dbschema = "gb2av"
     dataFile = file("VOLLZUG_SO0200002401_1531_20180105113131.xml")

@@ -40,36 +40,6 @@ public class Ili2duckdbExportTest {
 
         // Check results
         assertXtfFile(new File("src/integrationTest/jobs/Ili2duckdbExport/VOLLZUG_SO0200002401_1531_20180105113131.xml"));
-
-//        String url = "jdbc:duckdb:" +
-//                new File(projectDirectory + "/VOLLZUG_SO0200002401_1531_20180105113131.xml").getAbsolutePath();
-//
-//        try (Connection con = DriverManager.getConnection(url); Statement stmt = con.createStatement()) {
-//            try (ResultSet rs = stmt.executeQuery("SELECT content FROM gb2av.t_ili2db_model")) {
-//                if (!rs.next()) {
-//                    fail();
-//                }
-//
-//                assertTrue(rs.getString(1).contains("INTERLIS 2.2;"));
-//
-//                if (rs.next()) {
-//                    fail();
-//                }
-//            }
-//
-//            try (ResultSet rs = stmt.executeQuery(
-//                    "SELECT astatus FROM gb2av.vollzugsgegenstand")) {
-//                if (!rs.next()) {
-//                    fail();
-//                }
-//
-//                assertTrue(rs.getString(1).contains("Eintrag"));
-//
-//                if (rs.next()) {
-//                    fail();
-//                }
-//            }
-//        }
     }
     
     private void assertXtfFile(File file) throws IoxException {
