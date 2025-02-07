@@ -1,0 +1,22 @@
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+defaultTasks 'ili2duckdbimport'
+
+tasks.register("schemaimport", Ili2duckdbImportSchema) {
+    dbfile = file("my_gb2av.duckdb")
+    models = "GB2AV"
+    modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
+    dbschema = "gb2av"
+    coalesceJson = true
+    createBasketCol = true
+}
+
+tasks.register("ili2duckdbimport", Ili2duckdbImport) {
+    dependsOn 'schemaimport'
+    models = "GB2AV"
+    dbschema = "gb2av"
+    dataFile = file("VOLLZUG_SO0200002401_1531_20180105113131.xml")
+    dbfile = file("my_gb2av.duckdb")
+}

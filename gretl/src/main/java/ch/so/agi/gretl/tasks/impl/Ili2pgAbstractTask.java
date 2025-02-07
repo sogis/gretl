@@ -18,6 +18,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 public abstract class Ili2pgAbstractTask extends DefaultTask {
@@ -211,9 +212,6 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @Optional
     public abstract Property<Boolean> getFailOnException();
 
-    /**
-     * Entspricht der ili2pg-Option `--datasetSubstring`.
-     */
     @Input
     @Optional
     public abstract ListProperty<Integer> getDatasetSubstring();
@@ -304,7 +302,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
         Connector database = TaskUtil.getDatabaseConnectorObject(getDatabase().get());
 
         try {
-            java.sql.Connection conn = database.connect();
+            Connection conn = database.connect();
             if (conn == null) {
                 throw new IllegalArgumentException("connection must not be null");
             }
@@ -329,7 +327,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
                     database.connect().rollback();
                 } catch (SQLException e) {
                     log.error("failed to rollback", e);
-                }finally {
+                } finally {
                     try {
                         database.close();
                     } catch (SQLException e) {

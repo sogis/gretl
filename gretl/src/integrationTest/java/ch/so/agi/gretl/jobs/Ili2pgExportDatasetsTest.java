@@ -31,13 +31,14 @@ public class Ili2pgExportDatasetsTest {
 
     @Test
     public void exportOk() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgExportDatasets");
-
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
         
-        // check results
+        // Check results
         {
             assertXtfFile(new File("src/integrationTest/jobs/Ili2pgExportDatasets/DatasetA-out.xtf"));
         }
@@ -46,7 +47,7 @@ public class Ili2pgExportDatasetsTest {
         }
     }
 
-    private void assertXtfFile(java.io.File file) throws IoxException {
+    private void assertXtfFile(File file) throws IoxException {
         XtfReader reader=new XtfReader(file);
         assertInstanceOf(StartTransferEvent.class, reader.read());
         assertInstanceOf(StartBasketEvent.class, reader.read());

@@ -27,18 +27,17 @@ public class Ili2gpkgImportTest {
 
     @Test
     public void importOk() throws Exception {
-
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2gpkgImport");
-
         Files.deleteIfExists(Paths.get(projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg"));
 
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory);
 
-
+        // Check results
         String url = "jdbc:sqlite:" +
                 new File(projectDirectory + "/ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg").getAbsolutePath();
 
-        // Check results
         try (
             Connection connection = DriverManager.getConnection(url);
             Statement stmt = connection.createStatement();

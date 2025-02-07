@@ -17,7 +17,7 @@ RUN chgrp root . && chmod g+w .
 
 COPY ca-certificates/ /usr/local/share/ca-certificates/
 
-RUN microdnf update && microdnf install -y bash ca-certificates unzip findutils 
+RUN microdnf update -y && microdnf install -y bash ca-certificates unzip findutils 
 
 ENV JAVA_TOOL_OPTIONS=-Duser.home=${HOME}
 ENV GRADLE_HOME /opt/gradle

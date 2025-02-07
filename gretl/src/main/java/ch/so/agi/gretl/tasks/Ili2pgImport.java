@@ -126,13 +126,13 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
         ch.ehi.basics.logging.FileListener fileLogger=null;
         if(getLogFile().isPresent()){
             // setup logger here, so that multiple file imports result in one logfile
-            java.io.File logFilepath=this.getProject().file(getLogFile().get());
+            File logFilepath = this.getProject().file(getLogFile().get());
             fileLogger=new FileLogger(logFilepath);
             EhiLogger.getInstance().addListener(fileLogger);
         }
         try {
             int i=0;
-            for(String xtfFilename:files) {
+            for (String xtfFilename:files) {
                 settings.setItfTransferfile(Ili2db.isItfFilename(xtfFilename));
                 if(datasetNames!=null) {
                     settings.setDatasetName(datasetNames.get(i));
@@ -141,11 +141,11 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
                 run(function, settings);            
                 i++;
             }
-        }finally{
-            if(fileLogger!=null){
+        } finally {
+            if (fileLogger != null){
                 EhiLogger.getInstance().removeListener(fileLogger);
                 fileLogger.close();
-                fileLogger=null;
+                fileLogger = null;
             }
         }
         

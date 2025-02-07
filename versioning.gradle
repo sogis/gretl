@@ -9,7 +9,7 @@ if (System.env.BUILD_NUMBER) {
     buildNumber = System.env.GITHUB_RUN_NUMBER
 }
 
-version = new ProjectVersion(3, 0, buildNumber)
+version = new ProjectVersion(3, 1, buildNumber)
 
 class ProjectVersion {
     Integer major

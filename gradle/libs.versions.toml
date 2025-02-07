@@ -1,16 +1,17 @@
 [versions]
-ili2cCoreVersion = "5.6.0"
-ili2cToolVersion = "5.6.0"
-ioxIliVersion = "1.23.2"
+ili2cCoreVersion = "5.6.3"
+ili2cToolVersion = "5.6.3"
+ioxIliVersion = "1.23.4"
 ilivalidatorVersion = "1.14.3"
 ilivalidatorCustomFunctionsVersion = "1.1.50"
 ilivalidatorCustomFunctionsGeometriesVersion = "0.0.8"
 geowCustomFunctionsVersion = "0.2.0"
 geowNgkFunctionsVersion = '1.0.2'
-ili2pgVersion = "5.2.0"
-ili2gpkgVersion = "5.2.0"
+ili2pgVersion = "5.2.2-SNAPSHOT"
+ili2gpkgVersion = "5.2.2-SNAPSHOT"
+ili2duckdbVersion = "5.2.2-SNAPSHOT"
 ioxWkfVersion = "2.0.0"
-ehiSqlgenVersion = "1.16.0"
+ehiSqlgenVersion = "1.16.1-SNAPSHOT"
 ioxFormatsVersion = "1.0.1"
 av2chVersion = "1.1.8"
 av2geobauVersion = "1.4.0"
@@ -53,6 +54,7 @@ geow-custom-functions = { group = "ch.geowerkstatt.ilivalidator.extensions.funct
 geow-ngk-functions = { group = "ch.geowerkstatt.ilivalidator.extensions.functions", name = "interlis-functions-ngk-so", version.ref = "geowNgkFunctionsVersion" }
 ili2pg = { group = "ch.interlis", name = "ili2pg", version.ref = "ili2pgVersion" }
 ili2gpkg = { group = "ch.interlis", name = "ili2gpkg", version.ref = "ili2gpkgVersion" }
+ili2duckdb = { group = "ch.interlis", name = "ili2duckdb", version.ref = "ili2duckdbVersion" }
 iox-wkf = { group = "ch.interlis", name = "iox-wkf", version.ref = "ioxWkfVersion" }
 ehisqlgen = { group = "ch.ehi", name = "ehisqlgen", version.ref = "ehiSqlgenVersion" }
 iox-formats = { group = "io.github.sogis", name = "iox-formats", version.ref = "ioxFormatsVersion" }

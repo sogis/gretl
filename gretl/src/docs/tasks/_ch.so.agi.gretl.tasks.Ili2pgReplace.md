@@ -4,7 +4,7 @@ baskets | `Property<String>` | Entspricht der ili2pg-Option `--baskets`. | ja
 dataFile | `Property<Object>` | null | nein
 database | `ListProperty<String>` | Datenbank aus der exportiert werden soll. | nein
 dataset | `Property<Object>` | Entspricht der ili2pg-Option `--dataset`. | ja
-datasetSubstring | `ListProperty<Integer>` | Entspricht der ili2pg-Option `--datasetSubstring`. | ja
+datasetSubstring | `ListProperty<Integer>` | null | ja
 dbschema | `Property<String>` | Entspricht der ili2pg-Option `--dbschema`. | ja
 deleteData | `Property<Boolean>` | Entspricht der ili2pg-Option `--deleteData`. | ja
 disableAreaValidation | `Property<Boolean>` | Entspricht der ili2pg-Option `--disableAreaValidation`. | ja

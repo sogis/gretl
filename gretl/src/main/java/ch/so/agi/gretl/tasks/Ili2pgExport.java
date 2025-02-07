@@ -62,16 +62,16 @@ public abstract class Ili2pgExport extends Ili2pgAbstractTask {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }
-        List<String> datasetNames=null;
+        List<String> datasetNames = null;
         if (getDataset().isPresent()) {
             Object dataset = getDataset().get();
-            if(dataset instanceof String) {
+            if (dataset instanceof String) {
                 datasetNames=new ArrayList<>();
                 datasetNames.add((String)dataset);
             }else {
                 datasetNames=(List)dataset;
             }
-            if(files.size()!=datasetNames.size()) {
+            if (files.size() != datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
             }
         }
@@ -79,7 +79,7 @@ public abstract class Ili2pgExport extends Ili2pgAbstractTask {
         int i=0;
         for(String xtfFilename:files) {
             settings.setItfTransferfile(Ili2db.isItfFilename(xtfFilename));
-            if(datasetNames!=null) {
+            if (datasetNames != null) {
                 settings.setDatasetName(datasetNames.get(i));
             }
             settings.setXtffile(xtfFilename);

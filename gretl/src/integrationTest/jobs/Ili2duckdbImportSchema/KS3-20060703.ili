@@ -1,0 +1,657 @@
+INTERLIS 2.2;
+
+/** Dieses Datenmodell beschreibt die auszutauschenden Daten zwischen "Grundbuch" und "Amtliche Vermessung".
+ * Das Datenmodell ist in vier Themen (Gruppen bzw. Pakete) unterteilt, einerseits um den rechtsgültigen Teil vom provisorischen zu trennen, und andererseits um die Datenhoheit (Grundbuch oder Amtliche Vermessung) zu respektieren.
+ * @Version 2006-07-03
+ * @Author ceis
+ */
+MODEL GB2AV (de) =
+  CONTRACT ISSUED BY VD_GBA;
+
+  UNIT
+
+    /** Einheit für ein Flächenmass.
+     */
+    Area (ABSTRACT) = (INTERLIS.LENGTH * INTERLIS.LENGTH);
+
+    
+
+  DOMAIN
+
+    /** Wertebereich für die Art der Bodenbedeckung, z.B. Schilfguertel
+     */
+    BBArt= (
+      Gebaeude
+      ,befestigt(
+        Strasse_Weg
+        ,Trottoir
+        ,Verkehrsinsel
+        ,Bahn
+        ,Flugplatz
+        ,Wasserbecken
+        ,uebrige_befestigte
+      )
+      ,humusiert(
+        Acker_Wiese_Weide
+        ,Intensivkultur(
+          Reben
+          ,uebrige_Intensivkultur
+        )
+        ,Gartenanlage
+        ,Hoch_Flachmoor
+        ,uebrige_humusierte
+      )
+      ,Gewaesser(
+        stehendes
+        ,fliessendes
+        ,Schilfguertel
+      )
+      ,bestockt(
+        geschlossener_Wald
+        ,Wytweide(
+          Wytweide_dicht
+          ,Wytweide_offen
+        )
+        ,uebrige_bestockte
+      )
+      ,vegetationslos(
+        Fels
+        ,Gletscher_Firn
+        ,Geroell_Sand
+        ,Abbau_Deponie
+        ,uebrige_vegetationslose
+      )
+    );
+
+    /** Datum im Format CCYY-MM-DD (gem. XML-Schema date Datentyp)
+     */
+    Datum= TEXT*10;
+
+    /** Wertebereich für die Art des Grundstücks gemäss Datenmodell der Amtlichen Vermessung (gem. DM 01), z.B. Liegenschaft.
+     */
+    GrundstuecksArtAV= (
+      Liegenschaft
+      ,SelbstRecht(
+        Baurecht
+        ,Quellenrecht
+        ,Konzessionsrecht
+        ,weitere
+      )
+      ,Bergwerk
+    );
+
+    /** Wertebereich für die Art des Grundstücks aus der Sicht des Grundbuchs (gem. ZGB 943 ), z.B. Liegenschaft.
+     */
+    GrundstuecksArtGB= (
+      Liegenschaft
+      ,Konzession
+      ,selbstdauerndesRecht
+      ,MitEigAnteil(
+        Stockwerk
+        ,weitere
+      )
+      /** z.B. Fischenzrecht
+       */
+      ,KantonaleArt
+    );
+
+    GWR_EGID= 1..999999999;
+
+    NBIdentAV= TEXT*12;
+
+  /** Angaben zur Flur.
+   */
+  STRUCTURE Flurname =
+    /** Name der Flur.
+     * DM01: Nomenklatur.Flurname->Name
+     */
+    Name : MANDATORY TEXT*40;
+  END Flurname;
+
+  STRUCTURE Gemeinde =
+    Name : MANDATORY TEXT*30;
+    BFSNr : MANDATORY 1..9999;
+  END Gemeinde;
+
+  /** Schweiz-weite, eindeutge Kennung eines Grundstücks.
+   * Die Nummerierung ist 5-stufig. (Amt, SubKreis, Los, Nummer, NummerZusatz). SubKreis, Los und NummerZusatz sind optional.
+   */
+  STRUCTURE GrundstueckNummer =
+    /** Die(neue) schweizweit eindeutige Nummer eines Grundstückes. Das Nummerierungsschema muss noch durch das  Eidg. Grundbuchamt festgelegt werden.
+     */
+    EGRID : TEXT*14;
+    /** Die Nummer des Grundstücks, ohne Angabe des Grundbuchamtes,  Subkreises oder Loses.
+     * DM01: Liegenschaften. Grundstueck->Nummer
+     */
+    Nummer : MANDATORY TEXT*12;
+    /** BE: Nummer des Teilgrundstücks. FR; Index des Grundstücks (Schlüsselfeld im Fall MCA, plans graphiques provisoires et registre foncier cantonal) 
+     * DM01: Liegenschaften.Liegenschaft->NummerTeilGrundstueck
+     */
+    NummerZusatz : TEXT*12;
+    /** Die Nummer des Grundbuchamtes. Die Nummer eines Grundbuchamtes wird durch das Eidg. Grundbuchamt festgelegt.
+     * Ab KS3-20050901 nicht mehr verwenden!
+     */
+    Amt : TEXT*3;
+    /** Die Nummer des Sub-Kreises innerhalb eines Grundbuchamtes. Die Unterteilung in Sub-Kreise und deren Nummerierung erfolgt durch das entsprechende Grundbuchamt bzw. den Kanton.
+     */
+    SubKreis : TEXT*15;
+    /** Die Nummer des Loses innerhalb eines Subkreises. Die Unterteilung in Lose und deren Nummerierung erfolgt durch das entsprechende Grundbuchamt bzw. den Kanton.
+     */
+    Los : TEXT*15;
+  END GrundstueckNummer;
+
+  UNIT
+
+    /** Die Einheit Quadratmeter.
+     */
+    Square_Meter [m2] EXTENDS Area = (INTERLIS.m * INTERLIS.m);
+
+    
+
+  /** Angaben zum Grundbuchplan
+   */
+  STRUCTURE GBPlan =
+    /** Die Nummer des Grundbuchplans.
+     * DM01: Planeinteilung.Plan->Nummer
+     */
+    Nummer : MANDATORY TEXT*12;
+    /** Der Nummerierungsbereich, indem die Nummer eindeutig ist.
+     * DM01: Planeinteilung.Plan->NBIdent
+     */
+    NBIdent : MANDATORY NBIdentAV;
+  END GBPlan;
+
+  /** gem. SN 612040 bzw. GWR.
+   */
+  STRUCTURE GebaeudeeingangAdresse =
+    /** Der Strassenname, z.B. Blümlisalpstrasse.
+     * DM01: Gebaeudeadressen.Gebaeudeeingang
+     * ->Lokalisation->Text; Art==Strasse/Platz
+     */
+    Strasse : TEXT*60;
+    /** Die Hauseingangsnummer, z.B. 65A.
+     * DM01: Gebaeudeadressen.Gebaeudeeingang->Hausnummer
+     */
+    Hausnummer : TEXT*12;
+    /** Die Objektbeschreibung, z.B. Hotel Anker.
+     * DM01: GebaeudeName->Text
+     */
+    GebaeudeBezeichnung : TEXT*60;
+    /** Das Quartier, z.B. Seefeld.
+     * DM01: BenanntesGebiet->Lokalisation->Lokalisationsname->Text; Art== BenanntesGebiet
+     */
+    BenanntesGebiet : TEXT*60;
+    /** Die Postleitzahl.
+     * DM01: PLZOrtschaft.PLZ6->PLZ
+     */
+    PLZ : MANDATORY 1000..9999;
+    /** Die Postleitzahlzusatzziffern. (Zusammen mit PLZ eindeutiger Verweis auf Postleitzahlenverzeichnis der Post.)
+     * DM01: PLZOrtschaft.PLZ6->Zusatzziffern
+     */
+    PlzZusatzziffern : 0..99;
+    /** Die Ortsbezeichnung, z.B. Bern. Falls erforderlich inkl. Kantonskürzel, z.B. Muri/BE.
+     * DM01: PLZOrtschaft.PLZ6->OrtschaftZuPLZ
+     */
+    Ortschaft : MANDATORY TEXT*40;
+    /** Wert nur vorhanden, falls der Gebäudegrundriss (Bodenbedeckungs-/Einzelobjektfläche) in der AV mehrere GWR Gebäude representiert.
+     * s.a. Kap. 6.5 in
+     * http://www.cadastre.ch/pub/down/publications/kva/ve/VE_05_14_Beilage_de.pdf
+     */
+    GWR_EGID : GWR_EGID;
+    /** Eidg. Eingang-Identifikator wenn verfuegbar.
+     * DM01: Gebaeudeadressen.Gebaeudeeingang->GWR_EDID
+     */
+    GWR_EDID : 0..99;
+  END GebaeudeeingangAdresse;
+
+  /** Schweiz-weite, eindeutge Kennung einer Mutation.
+   */
+  STRUCTURE MutationsNummer =
+    /** Die Nummer der Mutation. Diese wird durch den Geometer vergeben. Die Mutationsnummer ist pro Kreis eindeutig. (In der Regel das Jahr und eine Laufnummer.)
+     * DM01: Liegenschaften.LSNachfuehrung->Identifikator
+     */
+    Nummer : MANDATORY TEXT*12;
+    /** Die Nummer eines Kreises wird je nach Kanton unterschiedlich vergeben. Diese Nummern entsprechen dem Nummerierungsbereich aus dem DM01, d.h. Kantonskürzel + 10 stelliger durch den Kanton organisierter Code.
+     * DM01: Liegenschaften.LSNachfuehrung->NBIdent
+     */
+    NBIdent : MANDATORY NBIdentAV;
+  END MutationsNummer;
+
+  DOMAIN
+
+    /** Wertebereich für ein Flächenmass in Quadratmeter mit einer Nachkommastelle.
+     */
+    Flaeche= 0.0..1000000000.0 [m2];
+
+    FlaechenKorrektur= -10000.0..10000.0 [m2];
+
+  /** Daten, die vom Grundbuch der Amtlichen Vermessung angeboten werden. Dieses Thema beschreibt die rechtsgültigen Eigentumsverhältnisse und dient dem Geometer zum Auffinden des Eigentümers einer Liegenschaft.
+   */
+  TOPIC Eigentumsverhaeltnis =
+
+    /** Ein (Teil-)Recht, z.B. Eigentum, an einem Grundstück.
+     */
+    CLASS Eigentum(ABSTRACT) =
+      /** Zähler der Bruchzahl, falls es sich um einen Teil-Recht handelt.
+       */
+      AnteilZaehler : 1..1000000000;
+      /** Nenner der Bruchzahl, falls es sich um einen Teil-Recht handelt.
+       */
+      AnteilNenner : 1..1000000000;
+      /** z.B. un demi d'un demi
+       */
+      Bemerkungen : TEXT*200;
+    END Eigentum;
+
+    /** Angaben zu einem Grundstück.
+     */
+    CLASS Grundstueck =
+      /** Die Art des Grundstücks, z.B. Liegenschaft.
+       */
+      Art : GB2AV.GrundstuecksArtGB;
+      /** Die Grundstücksnummer,
+       * z.B. eine Liegenschaftennummer oder Wegrechtnummer.
+       */
+      Nummer : MANDATORY GB2AV.GrundstueckNummer;
+      UNIQUE Nummer->Nummer, Nummer->NummerZusatz, Nummer->Amt, Nummer->SubKreis, Nummer->Los;
+      
+    END Grundstueck;
+
+    /** Angaben zu einer Person.
+     */
+    CLASS Person =
+      /** Die Art der Person, z.B. natürliche Person oder AG.
+       */
+      Art : (
+        Gemeinschaft(
+          EinfacheGesellschaft
+          ,KollektiveGesellschaft
+          ,Kommanditgesellschaft
+          ,Guetergemeinschaft
+          ,Erbengemeinschaft
+          ,weitere
+        )
+        ,natuerlichePerson
+        ,juristischePerson(
+          Aktiengesellschaft
+          ,Kommanditaktiengesellschaft
+          ,GmbH
+          ,Genossenschaft
+          ,Verein
+          ,Stiftung
+          ,weitere
+        )
+      );
+      /** Name der Person oder Firma, z.B. "Meier" oder "Kiosk AG".
+       */
+      Name : MANDATORY TEXT*200;
+      /** Vorname der Person.
+       */
+      Vorname : TEXT*30;
+      /** Der Strassenname, z.B. Blümlisalpstrasse.
+       */
+      Strasse : TEXT*60;
+      /** Die Hauseingangsnummer, z.B. 65A.
+       */
+      Hausnummer : TEXT*12;
+      /** Die Objektbeschreibung, z.B. Hotel Anker.
+       */
+      GebaeudeBezeichnung : TEXT*60;
+      /** Das Quartier, z.B. Seefeld.
+       */
+      Ortsteil : TEXT*60;
+      /** Die Postleitzahl.
+       */
+      PLZ : TEXT*15;
+      /** Der Name des Orts, z.B. Bern. Falls erforderlich inkl. Kantonskürzel, z.B. Muri/BE.
+       */
+      Ortschaft : TEXT*40;
+      /** Der Name des Landes, falls die Adresse der Person nicht in der Schweiz ist.
+       */
+      Land : TEXT*20;
+      /** Geburtsjahr der Person.
+       */
+      Geburtsjahr : 1880..2100;
+      /** Geburtsmonat der Person.
+       */
+      Geburtsmonat : 1..12;
+      /** Geburtstag der Person.
+       */
+      Geburtstag : 1..31;
+      /** Zusätzliche Empfängerinformation, z.B. c/o.
+       */
+      ZusatzinformationEmpfaenger : TEXT*40;
+      /** Postlagernd oder das Postfach des Empfängers, z.B. "Postlagernd" oder "Postfach 33" oder leer wenn der Empfänger kein Postfach hat.
+       */
+      PostDienstleistung : TEXT*30;
+      /** Das Geschlecht einer natürlichen Person (z.B. weiblich).
+       */
+      Geschlecht : (
+        maennlich
+        ,weiblich
+      );
+      /** Der Sitz einer juristischen Person.
+       */
+      Sitz : TEXT*40;
+      /** Eidg. Personen Identifikator.
+       */
+      EPID : TEXT*20;
+      /** Eidg. Unternehmensidentifikator
+       */
+      UID : TEXT*20;
+    END Person;
+
+    /** Stellt die Veknüpfung vom Grundstück zu einem anderen Grundstück her, falls es sich um ein Grundstück handelt, das am Grundstück berechtigt ist.
+     */
+    CLASS RechtGrundstueck
+    EXTENDS Eigentum =
+      /** Definiert, ob es sich um ein Recht handelt, dass fest mit dem  berechtigten Grundstück verknüpft ist.
+       */
+      SubjektivDinglich : MANDATORY BOOLEAN;
+    END RechtGrundstueck;
+
+    /** Stellt die Verknüpfung vom Grundstück zur Person her, falls es sich um eine Person handelt, die am Grundstück berechtigt ist.
+     */
+    CLASS RechtPerson
+    EXTENDS Eigentum =
+      /** Art des Rechts, z.B. Alleineigentum.
+       */
+      Art : (
+        AlleinEigentum
+        ,MitEigentum
+        ,GesamtEigentum
+        ,Herrenlos
+      );
+    END RechtPerson;
+
+    ASSOCIATION betroffenesGrundstueckRecht =
+      /** Das Grundstück, auf das sich das Recht bezieht.
+       */
+      betroffenesGrundstueck -<#> {1} Grundstueck;
+      /** Ein Recht, z.B. Eigentum, an diesem Grundstück.
+       */
+      Recht -- {0..*} Eigentum;
+    END betroffenesGrundstueckRecht;
+
+    ASSOCIATION GemeinschaftTeilhaber =
+      /** Die Gemeinschaft, z.B. die Erbengemeinschaft, in der diese Person Teilhaber ist.
+       */
+      Gemeinschaft -- {0..*} Person;
+      /** Falls dieses Objekt eine Gemeinschaft ist, sind dies die Teilhaber (z.B. die Erben) dieser Gemeinschaft (z.B. die Erbengemeinschaft).
+       */
+      Teilhaber -- {0..*} Person;
+    END GemeinschaftTeilhaber;
+
+    ASSOCIATION BerechtigterRecht =
+      /** Berechtigte Person.
+       */
+      Berechtigter -- {0..1} Person;
+      /** Verweis auf das Grundstück.
+       */
+      Grundstueck -- {0..*} RechtPerson;
+    END BerechtigterRecht;
+
+    ASSOCIATION berechtigtesGrundstueckRecht =
+      /** Das berechtigte Grundstück.
+       */
+      berechtigtesGrundstueck -- {1} Grundstueck;
+      /** Verweis auf das belastete Grundstück.
+       */
+      belastetesGrundstueck -- {0..*} RechtGrundstueck;
+    END berechtigtesGrundstueckRecht;
+
+  END Eigentumsverhaeltnis;
+
+  /** Daten, die von der amtlichen Vermessung dem Grundbuch angeboten werden. Dieses Thema beschreibt die Liegenschaften gemäss dem rechtsgültigen Zustand.
+   * 
+   * Beantwortete Fragen:
+   * - werden die Grundbuchpläne auch geliefert (oder werden sie  irgendwo bereitgestellt, wenn ja wo)? In welchem Format?
+   * Die Grundbuchpläne sind nicht Teil dieser Schnittstelle.
+   * - die Grundbuchpläne als Bild sind nicht Teil der AVS. Wer erzeugt sie (Geometer oder diese Schnittstelle)?
+   * Die Grundbuchpläne sind nicht Teil dieser Schnittstelle.
+   */
+  TOPIC Grundstuecksbeschrieb =
+
+    CLASS AVBemerkung =
+      Art : MANDATORY (
+        StreitigeGrenze
+        ,Lagefixpunkt
+        ,Naturdenkmal
+        ,eingedoltesGewaesser
+        ,andere
+      );
+      /** falls Art==#andere
+       */
+      AndereArt : TEXT*20;
+      Bemerkung : TEXT*200;
+    END AVBemerkung;
+
+    /** Angaben zur Bodenbedeckung.
+     */
+    STRUCTURE BodbdAnteil =
+      /** Die Art der Bodenbedeckung, z.B. Schilfgürtel.
+       * DM01: Bodenbedeckung.BoFlaeche->Art
+       */
+      Art : MANDATORY GB2AV.BBArt;
+      /** Die Grösse der einzelnen Bodenbedeckungsfläche.
+       * DM01: muss aus der Geometrie berechnet werden.
+       */
+      Flaechenmass : MANDATORY GB2AV.Flaeche;
+      /** Die Art der Bodenbedeckung als Klartext.
+       */
+      ArtBezeichnung : TEXT*40;
+    END BodbdAnteil;
+
+    CLASS Gebaeude =
+      /** Kein Wert vorhanden (Leer/NULL), falls kein GWR_EGID in der AV vorhanden ist, oder falls der Gebäudegrundriss (Bodenbedeckungs-/Einzelobjektfläche) in der AV mehrere GWR Gebäude representiert.
+       */
+      GWR_EGID : GB2AV.GWR_EGID;
+      istProjektiert : MANDATORY BOOLEAN;
+      istUnterirdisch : MANDATORY BOOLEAN;
+      Nummer : TEXT*12;
+      /** DM01OS: Gebaeudenummer->Gebaeudehauptnutzung
+       */
+      Gebaeudeart : TEXT*30;
+      /** DM01OS: Gebaeudenummer->Nutzungscode
+       * DM01FR: Code_Csol_FR
+       */
+      GebaeudeartCode : TEXT*4;
+      Flaechenmass : MANDATORY GB2AV.Flaeche;
+      Adresse : BAG {0..*} OF GB2AV.GebaeudeeingangAdresse;
+    END Gebaeude;
+
+    CLASS Grundstueck(ABSTRACT) =
+      /** Die Grösse dieses Grundstücks.
+       */
+      Flaechenmass : GB2AV.Flaeche;
+      GrundstueckArt : GB2AV.GrundstuecksArtAV;
+      KantonaleUnterArt : TEXT*60;
+      Gemeinde : MANDATORY GB2AV.Gemeinde;
+      /** Die Nummer der letzten vollzogenen, dieses Grundstück betreffenden, Mutation.
+       * Ab KS3-20050901 nicht mehr verwenden!
+       */
+      letzteVollzogeneMutation : GB2AV.MutationsNummer;
+      /** Die Grundstücksnummer der Liegenschaft.
+       */
+      Nummer : MANDATORY GB2AV.GrundstueckNummer;
+      /** Die Grundbuchpläne auf der die Liegenschaft liegt.
+       * DM01: muss berechnet werden, durch Schnitt mit dem Thema Planeinteilung.
+       */
+      GBPlaene : BAG {1..*} OF GB2AV.GBPlan;
+      /** Die zutreffenden Flurnamen.
+       * DM01: muss berechnet werden, durch Schnitt mit Nomenklatur.Flurname
+       */
+      Flurnamen : BAG {0..*} OF GB2AV.Flurname;
+      UNIQUE Nummer->Nummer, Nummer->NummerZusatz, Nummer->Amt, Nummer->SubKreis, Nummer->Los;
+
+      
+    END Grundstueck;
+
+    CLASS Flaeche
+    EXTENDS Grundstueck =
+      MANDATORY CONSTRAINT GrundstueckArt!=#Liegenschaft;
+    END Flaeche;
+
+    /** Angaben zur rechtsgültigen Liegenschaft.
+     */
+    CLASS Liegenschaft
+    EXTENDS Grundstueck =
+      /** Die Bodenbedeckungsanteile.
+       * DM01: muss berechnet werden, durch Schnitt mit Thema Bodenbedeckung
+       */
+      BodbdAnteil : BAG {0..*} OF BodbdAnteil;
+      /** Nur ein Eintrag pro Bodenbedeckungsart.
+       */
+      UNIQUE (LOCAL) BodbdAnteil : Art;
+      MANDATORY CONSTRAINT GrundstueckArt==#Liegenschaft;
+    END Liegenschaft;
+
+    ASSOCIATION AVBemerkungGrundstueck =
+      AVBemerkung -- {0..*} AVBemerkung;
+      Grundstueck -<> {1..*} Grundstueck;
+    END AVBemerkungGrundstueck;
+
+    /** Gebaeude zu allen überdeckten Liegenschaften und falls vorhanden Baurechten liefern. Der Grundbuchverwalter entscheidet selbst, bei welchem Grundstücksbeschrieb das Gebaeude eingetragen wird.
+     */
+    ASSOCIATION GrundstueckGebaeude =
+      Gebaeude -- {0..*} Gebaeude;
+      Grundstueck -<> {1..*} Grundstueck;
+      Flaechenmass : MANDATORY GB2AV.Flaeche;
+    END GrundstueckGebaeude;
+
+    ASSOCIATION Anteil =
+      flaeche -- {0..*} Flaeche;
+      liegt_auf -- {0..*} Grundstueck;
+      Flaechenmass : GB2AV.Flaeche;
+    END Anteil;
+
+  END Grundstuecksbeschrieb;
+
+  /** Daten als Meldungen, die das Grundbuch der Amtlichen Vermessung schickt. Dieses Thema beschreibt die Informationen die vom Grundbuch als Folge einer Mutation zurück zum Geometer müssen, wie z.B. die definitiven Grundstücksnummern.
+   * 
+   * Beantwortete Fragen:
+   * - Wie wird die Abweisung einer Mutation gemeldet?
+   * Via Vollzugsgegenstand.Status==Abweisung
+   */
+  TOPIC Vollzugsgegenstaende =
+
+    /** Angaben zum Vollzug einer Mutation im Grundbuch.
+     */
+    CLASS Vollzugsgegenstand =
+      /** Aktueller Status der Mutation im Grundbuch, z.B. Eintrag.
+       */
+      Status : MANDATORY (
+        /** Das Geschäft wurde durch den Kunden beim Grundbuchamt angemeldet.
+         */
+        Eingangsmeldung
+        /** Das Geschäft wurde im Grundbuchamt eingetragen. Der Geometer vollzieht die Mutation definitiv.
+         */
+        ,Eintrag
+        /** Das Geschäft wurde durch das Grundbuchamt abgewiesen. Der Geometer muss die entsprechende Mutation rückgängig machen.
+         */
+        ,Abweisung
+      );
+      /** z.B. der Grund für die Abweisung
+       */
+      Bemerkungen : TEXT*200;
+      /** Datum des rechtsgültigen Eintrags im Grundbuch.
+       */
+      GrundbuchEintrag : GB2AV.Datum;
+      /** Datum des Tagebucheintrags im Grundbuch
+       */
+      TagebuchEintrag : TEXT*20;
+      /** Zusammen mit Attribut TagebuchEintrag Referenz auf das Tagebuch.
+       */
+      TagebuchBeleg : TEXT*20;
+      /** Nummer der Mutation, die diese Vollzugsinformation betrifft.
+       */
+      !!@ili2db.mapping=JSON
+      Mutationsnummer : MANDATORY GB2AV.MutationsNummer;
+    END Vollzugsgegenstand;
+
+  END Vollzugsgegenstaende;
+
+  TOPIC Mutationstabelle
+  EXTENDS GB2AV.Grundstuecksbeschrieb =
+
+    STRUCTURE Abschnitt =
+      Flaechenmass : MANDATORY GB2AV.Flaeche;
+      /** Liegenschaft, von der die Fläche abgetrennt wird.
+       */
+      von : MANDATORY GB2AV.GrundstueckNummer;
+    END Abschnitt;
+
+    /** Der Grundbuchverwalter kann entscheiden, ob er aus einer AV-Bemerkung nur einen, das Grundstück beschreibenden "Vermerk" (kein Tagebucheintrag erforderlich) in der Liegenschaftsbeschreibung macht, oder eine Anmerkung samt Tagebucheintrag erstellt.
+     */
+    CLASS AVBemerkung(EXTENDED) =
+    END AVBemerkung;
+
+    /** Angaben zu einer AV-Mutation.
+     */
+    CLASS AVMutation =
+      /** Kommentar des Geometers zur Mutation.
+       */
+      Beschrieb : TEXT*50;
+      /** Name der Datei mit dem Bild des Mutationsplan. Das Dateiformat ist GIF oder PDF.
+       */
+      DateinamePlan : TEXT*80;
+      /** Datum der technischen Fertigstellung der Mutation (DM01: Liegenschaften.LSNachfuehrung->GueltigerEintrag bzw. bei alten Daten je nach Kanton Datum1 oder Datum2)
+       */
+      EndeTechnBereit : MANDATORY GB2AV.Datum;
+      /** Hinweis das zu dieser Mutation eine Abschlussmutation erforderlich ist.
+       */
+      istProjektMutation : MANDATORY (
+        Projekt
+        ,Normal
+        ,Abschluss
+      );
+      /** Die Nummer der Mutation. Diese wird durch den Geometer vergeben.
+       */
+      MutationsNummer : MANDATORY GB2AV.MutationsNummer;
+      geloeschteGrundstuecke : BAG {0..*} OF GB2AV.GrundstueckNummer;
+      UNIQUE MutationsNummer->Nummer, MutationsNummer->NBIdent;
+    END AVMutation;
+
+    /** Meldung für die Widerrufung einer Mutation durch den Geometer. z.B. wenn die Frist abgelaufen ist oder der Kunde das Geschäft zurückzieht.
+     */
+    CLASS AVMutationsAnnulation =
+      /** z.B. der Grund für die Widerrufung
+       */
+      Bemerkungen : TEXT*200;
+      /** Die Nummer der Mutation, die widerrufen wird.
+       */
+      MutationsNummer : MANDATORY GB2AV.MutationsNummer;
+      UNIQUE MutationsNummer->Nummer, MutationsNummer->NBIdent;
+    END AVMutationsAnnulation;
+
+    CLASS Flaeche(EXTENDED) =
+      /** leer wenn keine Flächekorrektur erfolgt.
+       */
+      Korrektur : GB2AV.FlaechenKorrektur;
+      /** leer wenn keine Flächenkorrektur erfolgt. (bisherige Fläche+Koorektur==korrigiertesFlaechenmass)
+       */
+      korrigiertesFlaechenmass : GB2AV.Flaeche;
+    END Flaeche;
+
+    CLASS Liegenschaft(EXTENDED) =
+      /** leer wenn keine Flächenkorrektur erfolgt.
+       */
+      Korrektur : GB2AV.FlaechenKorrektur;
+      /** leer wenn keine Flächenkorrektur erfolgt. (bisherige Fläche+Koorektur==korrigiertesFlaechenmass)
+       */
+      korrigiertesFlaechenmass : GB2AV.Flaeche;
+      /** Abschnittsfläche die der Liegenschaft hinzugefügt wird. Je nach Art der Mutation, werden keine Abschnittsflächen ausgewiesen (z.B. Neuvermessung).
+       */
+      Zugang : BAG {0..*} OF Abschnitt;
+    END Liegenschaft;
+
+    ASSOCIATION AVMutationBetroffeneGrundstuecke =
+      /** Ein Grundstück hat keine Beziehung zu AVMutation, wenn es nicht Teil der Mutation ist, aber unter einem SDR (z.B. Baurecht) liegt, das Teil der Mutation ist.
+       */
+      AVMutation -<#> {0..1} AVMutation;
+      betroffeneGrundstuecke -- {0..*} GB2AV.Grundstuecksbeschrieb.Grundstueck;
+    END AVMutationBetroffeneGrundstuecke;
+
+  END Mutationstabelle;
+
+END GB2AV.
