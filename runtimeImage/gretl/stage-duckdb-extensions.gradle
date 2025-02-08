@@ -22,6 +22,8 @@ tasks.register('installDuckDBExtensions') {
         sql.execute("LOAD spatial")
         sql.execute("INSTALL httpfs")
         sql.execute("LOAD httpfs")
+        sql.execute("INSTALL aws")
+        sql.execute("LOAD aws")
         sql.execute("INSTALL postgres")
         sql.execute("LOAD postgres")
         logger.info "Closing connection..."
