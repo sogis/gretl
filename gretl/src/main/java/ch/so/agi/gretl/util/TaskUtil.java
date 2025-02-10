@@ -42,13 +42,14 @@ public class TaskUtil {
     }
 
     public static Connector getDatabaseConnectorObject(List<String> databaseDetails) {
-        if (databaseDetails.size() != 3) {
-            throw new IllegalArgumentException("Values for db_uri, db_user, db_pass are required.");
+        if (databaseDetails == null || databaseDetails.isEmpty() || databaseDetails.size() > 3) {
+            throw new IllegalArgumentException("At least the database URI is required.");
         }
 
         String databaseUri = databaseDetails.get(0);
-        String databaseUser = databaseDetails.get(1);
-        String databasePassword = databaseDetails.get(2);
+        String databaseUser = databaseDetails.size() > 1 ? databaseDetails.get(1) : null;
+        String databasePassword = databaseDetails.size() > 2 ? databaseDetails.get(2) : null;
+
         return new Connector(databaseUri, databaseUser, databasePassword);
     }
 }
