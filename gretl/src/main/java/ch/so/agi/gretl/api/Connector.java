@@ -26,7 +26,7 @@ public class Connector implements Serializable {
     }
 
     public Connector(String dbUri, String dbUser) {
-        this(dbUri, dbUri, null);
+        this(dbUri, dbUser, null);
     }
 
     public Connector(String dbUri, String dbUser, String dbPassword) {
