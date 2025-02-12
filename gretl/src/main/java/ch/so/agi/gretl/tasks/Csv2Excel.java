@@ -173,7 +173,7 @@ public class Csv2Excel extends DefaultTask {
         try {
             Csv2ExcelStep csv2ExcelStep = new Csv2ExcelStep();
             csv2ExcelStep.execute(getCsvFile().toPath(), getOutputDir().toPath(), settings);
-            log.lifecycle("Excel file written: " + getCsvFile().getParentFile().getAbsolutePath());
+            log.lifecycle("Excel file written: " + getOutputDir().toPath().toFile().getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
             throw new GradleException("Could not write Excel file: " + e.getMessage());
