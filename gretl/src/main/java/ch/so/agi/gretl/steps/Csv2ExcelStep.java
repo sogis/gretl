@@ -25,7 +25,8 @@ import ch.interlis.iox.IoxEvent;
 import ch.interlis.iox_j.EndBasketEvent;
 import ch.interlis.iox_j.EndTransferEvent;
 import ch.interlis.iox_j.ObjectEvent;
-
+import ch.interlis.iox_j.StartBasketEvent;
+import ch.interlis.iox_j.StartTransferEvent;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
@@ -59,7 +60,7 @@ public class Csv2ExcelStep {
         }
         
         CsvReader reader = null;
-        try {
+        try {            
             reader = new CsvReader(csvPath.toFile(), config); // config notwendig, wegen encoding, das im Reader gesetzt wird.
         } catch (IoxException e) {
             throw new IOException(e.getMessage());
@@ -101,31 +102,38 @@ public class Csv2ExcelStep {
         String[] attrs = null;
 
         try {
-            IoxEvent event = reader.read();
+            writer.write(new StartTransferEvent());
 
-            while (event instanceof IoxEvent) {
-                //event = reader.read();
-                if (event instanceof ObjectEvent) {
-                    if (attrs == null) {
-                        attrs = reader.getAttributes();
-                        
-                        // Funktioniert, falls die Reihenfolge garantiert ist.
-                        // Man muss die Attribute explizit setzen. Sonst kann 
-                        // passieren, dass Attribute komplett fehlen, weil das
-                        // erste Objekt analysiert wird und einige Attribute davon
-                        // null sind und im IomObjekt nicht vorkommen.
-                        // Und funktioniert nur, falls Header-Zeile vorhanden.
-                        if (firstLineIsHeader && config.getValue(Validator.SETTING_MODELNAMES) == null) {
-                            List<ExcelAttributeDescriptor> attrDescs = new ArrayList<>();
-                            for(String attrName : attrs) {                        
-                                ExcelAttributeDescriptor attrDesc = new ExcelAttributeDescriptor();
-                                attrDesc.setAttributeName(attrName);
-                                attrDesc.setBinding(String.class);
-                                attrDescs.add(attrDesc);
-                            }
-                            writer.setAttributeDescriptors(attrDescs);                        
+            IoxEvent event = reader.read();
+            
+            // Siehe CsvReader: Erst wenn er im Basket ("state"), wird der Header gelesen.
+            if (event instanceof StartTransferEvent) {
+                // StartBasketEvent: siehe ExcelWriter was in diesem Event passiert.
+                event = reader.read();
+                if (attrs == null) {
+                    attrs = reader.getAttributes();
+                    // Funktioniert, falls die Reihenfolge garantiert ist.
+                    // Man muss die Attribute explizit setzen. Sonst kann 
+                    // passieren, dass Attribute komplett fehlen, weil das
+                    // erste Objekt analysiert wird und einige Attribute davon
+                    // null sind und im IomObjekt nicht vorkommen.
+                    // Und funktioniert nur, falls Header-Zeile vorhanden.
+                    if (firstLineIsHeader && config.getValue(Validator.SETTING_MODELNAMES) == null) {
+                        List<ExcelAttributeDescriptor> attrDescs = new ArrayList<>();
+                        for(String attrName : attrs) {                        
+                            ExcelAttributeDescriptor attrDesc = new ExcelAttributeDescriptor();
+                            attrDesc.setAttributeName(attrName);
+                            attrDesc.setBinding(String.class);
+                            attrDescs.add(attrDesc);
                         }
-                    }                    
+                        writer.setAttributeDescriptors(attrDescs); 
+                    }
+                }
+                writer.write(event);
+            }
+            
+            while (event instanceof IoxEvent) {
+                if (event instanceof ObjectEvent) {
                     writer.write(event);
                 }
                 event = reader.read();
