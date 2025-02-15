@@ -10,6 +10,6 @@ task convertData(type: Csv2Excel) {
     valueDelimiter = null
     valueSeparator = ";"
     encoding = "ISO-8859-1";
-    models = "SO_HBA_Gebaeude_20230111";
-    outputDir = file(".");
+    models = "SO_HBA_Gebaeude_20230111"
+    outputDir = file(".")
 }

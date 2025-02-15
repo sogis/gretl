@@ -113,7 +113,7 @@ public class IntegrationTestUtil {
             arguments.add(taskName);
         }
         arguments.add("--rerun-tasks");
-        arguments.add("-i");
+        arguments.add("-s");
         if (variables != null) {
             for(GradleVariable variable: variables){
                 arguments.add(variable.buildOptionString());

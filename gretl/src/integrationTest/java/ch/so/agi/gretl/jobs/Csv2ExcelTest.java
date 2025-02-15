@@ -15,10 +15,14 @@ public class Csv2ExcelTest {
 
     @Test
     public void convertCsv_Ok() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Csv2Excel");
+        new File(projectDirectory.getAbsolutePath() + "/20230124_sap_Gebaeude.xlsx").delete();
 
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory);
 
+        // Validate
         FileInputStream fis = new FileInputStream(projectDirectory.getAbsolutePath() + "/20230124_sap_Gebaeude.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         XSSFSheet sheet = workbook.getSheetAt(0);
@@ -30,6 +34,30 @@ public class Csv2ExcelTest {
         assertEquals(7, dataRow.getLastCellNum());
 
         assertEquals(308, sheet.getLastRowNum());
+
+        workbook.close();
+        fis.close();
+    }
+    
+    @Test
+    public void convertEmptyCsv_Ok() throws Exception {
+        // Prepare
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Csv2ExcelEmptyFile");
+        new File(projectDirectory.getAbsolutePath() + "/superflous_publication_formats.xlsx").delete();
+
+        // Execute test
+        IntegrationTestUtil.executeTestRunner(projectDirectory);
+
+        // Validate
+        FileInputStream fis = new FileInputStream(projectDirectory.getAbsolutePath() + "/superflous_publication_formats.xlsx");
+        XSSFWorkbook workbook = new XSSFWorkbook(fis);
+        XSSFSheet sheet = workbook.getSheetAt(0);
+
+        Row headerRow = sheet.getRow(0);
+        assertEquals("egid", headerRow.getCell(0).getStringCellValue());
+        assertEquals("xkoordinaten", headerRow.getCell(1).getStringCellValue());
+
+        assertEquals(0, sheet.getLastRowNum());
 
         workbook.close();
         fis.close();
