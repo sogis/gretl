@@ -37,7 +37,7 @@ public class Csv2ExcelStepTest {
         
         // Run
         Csv2ExcelStep csv2excelStep = new Csv2ExcelStep();
-        csv2excelStep.execute(csvFile.toPath(), folder, settings);
+        csv2excelStep.execute(csvFile.toPath(), folder.resolve("20230124_sap_Gebaeude.xlsx"), settings);
 
         // Validate
         FileInputStream fis = new FileInputStream(Paths.get(folder.toFile().getAbsolutePath(), "20230124_sap_Gebaeude.xlsx").toFile());
