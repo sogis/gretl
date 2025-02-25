@@ -16,6 +16,7 @@ import org.interlis2.validator.Validator;
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.iom_j.csv.CsvReader;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
+import ch.interlis.ioxwkf.excel.ExcelWriter;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Csv2ExcelStep;
@@ -170,6 +171,8 @@ public class Csv2Excel extends DefaultTask {
             throw new IllegalArgumentException("outputFile must not be null");
         }
 
+        settings.setValue(ExcelWriter.SHEET_NAME, csvFile.getName());
+        
         try {
             Csv2ExcelStep csv2ExcelStep = new Csv2ExcelStep();
             csv2ExcelStep.execute(getCsvFile().toPath(), getOutputFile().toPath(), settings);
