@@ -47,14 +47,14 @@ public class Csv2ExcelStep {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
     
-    public void execute(Path csvPath, Path outputPath, Settings config) throws IOException {
-        log.lifecycle(String.format("Start Csv2ExcelStep(Name: %s csvPath: %s outputPath: %s config: %s)", taskName,
-                csvPath, outputPath, config));
+    public void execute(Path csvPath, Path outputFile, Settings config) throws IOException {
+        log.lifecycle(String.format("Start Csv2ExcelStep(Name: %s csvPath: %s outputFile: %s config: %s)", taskName,
+                csvPath, outputFile, config));
 
         String csvBaseName = FilenameUtils.getBaseName(csvPath.getFileName().toString());
         ExcelWriter writer = null;
         try {
-            writer = new ExcelWriter(Paths.get(outputPath.toString(), csvBaseName + ".xlsx").toFile());
+            writer = new ExcelWriter(outputFile.toFile());
         } catch (IoxException e) {
             throw new IOException(e.getMessage());
         }

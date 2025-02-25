@@ -9,6 +9,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.interlis2.validator.Validator;
 
@@ -29,7 +30,7 @@ public class Csv2Excel extends DefaultTask {
     private String encoding;
     private String models;
     private String modeldir;
-    private File outputDir;
+    private File outputFile;
 
     /**
      * CSV-Datei, die konvertiert werden soll.
@@ -94,12 +95,11 @@ public class Csv2Excel extends DefaultTask {
     }
 
     /**
-     * Verzeichnis, in das die Excel-Datei gespeichert wird. Default: Verzeichnis, in dem die CSV-Datei vorliegt.
+     * Excel-Datei (.xlsx), in die die CSV-Datei umgewandelt resp. importiert werden soll.
      */
-    @OutputDirectory
-    @Optional
-    public File getOutputDir() {
-        return outputDir;
+    @OutputFile
+    public File getOutputFile() {
+        return outputFile;
     }
 
     public void setCsvFile(File csvFile) {
@@ -130,8 +130,8 @@ public class Csv2Excel extends DefaultTask {
         this.modeldir = modeldir;
     }
 
-    public void setOutputDir(File outputDir) {
-        this.outputDir = outputDir;
+    public void setOutputDir(File outputFile) {
+        this.outputFile = outputFile;
     }
 
     @TaskAction
@@ -166,14 +166,14 @@ public class Csv2Excel extends DefaultTask {
             settings.setValue(Validator.SETTING_ILIDIRS, modeldir);
         }
 
-        if (outputDir == null) {
-            outputDir = getCsvFile().getParentFile();
+        if (outputFile == null) {
+            throw new IllegalArgumentException("outputFile must not be null");
         }
 
         try {
             Csv2ExcelStep csv2ExcelStep = new Csv2ExcelStep();
-            csv2ExcelStep.execute(getCsvFile().toPath(), getOutputDir().toPath(), settings);
-            log.lifecycle("Excel file written: " + getOutputDir().toPath().toFile().getAbsolutePath());
+            csv2ExcelStep.execute(getCsvFile().toPath(), getOutputFile().toPath(), settings);
+            log.lifecycle("Excel file written: " + getOutputFile().toPath().toFile().getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
             throw new GradleException("Could not write Excel file: " + e.getMessage());
