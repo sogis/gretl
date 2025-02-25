@@ -130,7 +130,7 @@ public class Csv2Excel extends DefaultTask {
         this.modeldir = modeldir;
     }
 
-    public void setOutputDir(File outputFile) {
+    public void setOutputFile(File outputFile) {
         this.outputFile = outputFile;
     }
 
