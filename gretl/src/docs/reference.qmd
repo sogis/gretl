@@ -197,7 +197,7 @@ tasks.register('av2geobau', Av2geobau) {
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Av2geobau.md >}}
 
 ### Csv2Excel (incubating)
-Konvertiert eine CSV-Datei in eine Excel-Datei (*.xlsx). Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert. Die Daten werden vollständig im Speicher vorgehalten. Falls grosse Dateien geschrieben werden müssen, kann das zu Problemen führen. Dann müsste die Apache POI SXSSF Implementierung (Streaming) verwendet werden.
+Konvertiert eine CSV-Datei in eine Excel-Datei (*.xlsx). Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert. Die Daten werden vollständig im Speicher vorgehalten. Falls grosse Dateien geschrieben werden müssen, kann das zu Problemen führen. Dann müsste die Apache POI SXSSF Implementierung (Streaming) verwendet werden. Existiert die Datei (`outputFile`) bereits, wird ein neues Sheet erstellt, d.h. die Datei wird nicht überschrieben. Der Sheet-Name ist immer der normaliserte Name der CSV-Datei. Es wird ein Fehler gemeldet, falls der Sheet-Name bereits existiert.
 
 Beispiel:
 
@@ -209,7 +209,7 @@ tasks.register('convertData', Csv2Excel) {
     valueSeparator = ";"
     encoding = "ISO-8859-1";
     models = "SO_HBA_Gebaeude_20230111";
-    outputDir = file(".");
+    outputFile = file(".");
 }
 ```
 
@@ -740,6 +740,67 @@ tasks.register('compressFile', Gzip) {
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Gzip.md >}}
 
+### Ili2duckdbExport
+
+Exportiert Daten aus der DuckDB-Datenbank in eine INTERLIS-Transferdatei.
+
+Beispiel:
+
+```groovy
+tasks.register("ili2duckdbexport", Ili2duckdbExport) {
+    models = "GB2AV"
+    dbschema = "gb2av"
+    dataFile = file("VOLLZUG_SO0200002401_1531_20180105113131.xml")
+    dbfile = file("my_gb2av.duckdb")
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2duckdbExport.md >}}
+
+
+### Ili2duckdbImport
+
+Importiert Daten aus einer INTERLIS-Transferdatei in die DuckDB-Datenbank.
+
+Das Property `dataFile` kann mehreren Datentypen entsprechen:
+
+- `File`: Es wird eine einzelne Datei importiert.
+- `List`: Es werden mehrere Dateien gleichzeitig importiert. Die Namen der Dateien sind bereits vor Start des Jobs klar.
+- `FileCollection`: Es werden mehrere Dateien gleichzeitig importiert. Die Namen der Dateien sind erst zur Laufzeit bekannt (z.B. nach Download von FTP-Server o.ä.).
+- `String`: Es wird eine einzelne Datei aus einem ilidata-Repository automatisch heruntergeladen und importiert. 
+
+Beispiel:
+
+```groovy
+tasks.register("ili2duckdbimport", Ili2duckdbImport) {
+    models = "GB2AV"
+    dbschema = "gb2av"
+    dataFile = file("VOLLZUG_SO0200002401_1531_20180105113131.xml")
+    dbfile = file("my_gb2av.duckdb")
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2duckdbImport.md >}}
+
+### Ili2duckdbImportSchema
+
+Erstellt die Tabellenstruktur in der DuckDB-Datenbank anhand eines INTERLIS-Modells. Fremdschlüssel werden nicht unterstützt (weil `ADD CONSTRAINT`-Syntax nicht unterstützt wird). Es muss `--strokeArcs` verwendet werden. Räumlicher Index von DuckDB ist noch rudimentär umgesetzt.
+
+Beispiel:
+
+```groovy
+tasks.register("ili2duckdbschemaimport", Ili2duckdbImportSchema) {
+    dbfile = file("my_gb2av.duckdb")
+    models = "GB2AV"
+    modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
+    dbschema = "gb2av"
+    coalesceJson = true
+    createBasketCol = true
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2duckdbImportSchema.md >}}
+
 ### Ili2gpkgImport
 
 Importiert Daten aus einer INTERLIS-Transferdatei in eine GeoPackage-Datei.
@@ -852,13 +913,18 @@ Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/il
 
 Importiert Daten aus einer INTERLIS-Transferdatei in die PostgreSQL-Datenbank.
 
-Die Tabellen werden implizit auch angelegt, falls sie noch nicht vorhanden sind. Falls die Tabellen in der Datenbank 
+Falls die Tabellen in der Datenbank 
 schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. bfsnr, datum etc.), welche beim Import leer bleiben.
 
 Falls beim Import ein Datensatz-Identifikator (dataset) definiert wird, darf dieser Datensatz-Identifikator in der 
 Datenbank noch nicht vorhanden sein. 
 
-Falls man mehrere Dateien importieren will, diese jedoch erst zur Laufzeit eruiert werden können, muss der Parameter `dataFile` eine Gradle `FileCollection` resp. eine implementierende Klasse (z.B. `FileTree`) sein. Gleiches gilt für den `dataset`-Parameter. Als einzelner Wert für das Dataset wird in diesem Fall der Name der Datei _ohne_ Extension und _ohne_ Pfad verwendet. Leider kann nicht bereits in der Task-Definition aus dem Filetree eine Liste gemacht werden, z.B. `fileTree(pathToUnzipFolder) { include '*.itf' }.files.name`. Diese Liste ist leer.
+Das Property `dataFile` kann mehreren Datentypen entsprechen:
+
+- `File`: Es wird eine einzelne Datei importiert.
+- `List`: Es werden mehrere Dateien gleichzeitig importiert. Die Namen der Dateien sind bereits vor Start des Jobs klar.
+- `FileCollection`: Es werden mehrere Dateien gleichzeitig importiert. Die Namen der Dateien sind erst zur Laufzeit bekannt (z.B. nach Download von FTP-Server o.ä.).
+- `String`: Es wird eine einzelne Datei aus einem ilidata-Repository automatisch heruntergeladen und importiert. 
 
 Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2pgReplace verwendet werden.
 

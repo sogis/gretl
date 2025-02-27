@@ -4,7 +4,7 @@ baskets | `Property<String>` | Entspricht der ili2db-Option `--baskets`. | ja
 dataFile | `Property<Object>` | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `String`. | nein
 dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. | ja
 datasetSubstring | `ListProperty<Integer>` | null | ja
-dbfile | `Property<File>` | GeoPackage-Datei in die importiert werden soll. | nein
+dbfile | `Property<File>` | Datenbank-Datei in die importiert werden soll. | nein
 dbschema | `Property<String>` | Entspricht der ili2db-Option `--dbschema`. | ja
 deleteData | `Property<Boolean>` | Entspricht der ili2db-Option `--deleteData`. | ja
 disableAreaValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--disableAreaValidation`. | ja

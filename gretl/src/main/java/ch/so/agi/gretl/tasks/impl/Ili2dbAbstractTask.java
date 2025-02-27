@@ -32,7 +32,7 @@ public abstract class Ili2dbAbstractTask extends DefaultTask {
 //    public abstract ListProperty<String> getDatabase();
 
     /**
-     * GeoPackage-Datei in die importiert werden soll.
+     * Datenbank-Datei in die importiert werden soll.
      */
     @OutputFile
     public abstract Property<File> getDbfile();

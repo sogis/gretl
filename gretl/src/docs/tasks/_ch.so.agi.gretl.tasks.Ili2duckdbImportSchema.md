@@ -30,7 +30,7 @@ createUnique | `Property<Boolean>` | Entspricht der ili2db-Option `--createUniqu
 createscript | `Property<Object>` | Entspricht der ili2db-Option `--createscript`. | ja
 dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. | ja
 datasetSubstring | `ListProperty<Integer>` | null | ja
-dbfile | `Property<File>` | GeoPackage-Datei in die importiert werden soll. | nein
+dbfile | `Property<File>` | Datenbank-Datei in die importiert werden soll. | nein
 dbschema | `Property<String>` | Entspricht der ili2db-Option `--dbschema`. | ja
 defaultSrsAuth | `Property<String>` | Entspricht der ili2db-Option `--defaultSrsAuth`. | ja
 defaultSrsCode | `Property<String>` | Entspricht der ili2db-Option `--defaultSrsCode`. | ja
