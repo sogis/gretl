@@ -4,8 +4,7 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'validate'
 
-task validate(type: CsvValidator){
-	models = "CsvModel"
-	firstLineIsHeader=false
-    dataFiles = ["data1.csv"]
+task validate(type: JsonValidator){
+	models = "Test1"
+    dataFiles = ["simpleAttr.json"]
 }
