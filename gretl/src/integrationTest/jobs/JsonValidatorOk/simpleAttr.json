@@ -1,0 +1,12 @@
+[
+    {
+      "@type": "Test1.Topic1.SimpleAttr",
+      "@id": "o1",
+      "@bid": "bid1",
+      "@topic": "Test1.Topic1",
+      "attrText": "lineA",
+      "attrMtext": "lineB\nnextlineB",
+      "attrInt": -20,
+      "attrDec": -10.123
+    }
+]
