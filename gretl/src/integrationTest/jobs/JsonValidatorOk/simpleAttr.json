@@ -7,6 +7,9 @@
       "attrText": "lineA",
       "attrMtext": "lineB\nnextlineB",
       "attrInt": -20,
-      "attrDec": -10.123
+      "attrDec": -10.123,
+      "attrBool": true,
+      "attrDate": "2025-03-17",
+      "attrDateTime": "2025-03-16T21:05:40.451"
     }
 ]

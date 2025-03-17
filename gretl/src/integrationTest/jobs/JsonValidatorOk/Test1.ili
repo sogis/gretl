@@ -11,10 +11,13 @@ MODEL Test1 (de) AT "mailto:ceis@localhost" VERSION "20170703" =
     TOPIC Topic1 =
     
         CLASS SimpleAttr =
-            attrText : TEXT*60;
+            attrText : TEXT*2;
             attrMtext : MTEXT*60;
             attrInt : -1000 .. 1000;
             attrDec : -1000.000 .. 1000.000;
+            attrBool : MANDATORY BOOLEAN;
+            attrDate : INTERLIS.XMLDate;
+            attrDateTime : INTERLIS.XMLDateTime;
         END SimpleAttr;
 
         CLASS PointOfInterest =
