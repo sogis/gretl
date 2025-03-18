@@ -4,7 +4,9 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'validate'
 
-task validate(type: JsonValidator){
-	models = "Test1"
-    dataFiles = ["simpleAttr.json"]
+task validate(type: JsonValidator) {
+    //models = "Test1"
+    //dataFiles = ["simpleAttr.json"]
+    models = "Test2"
+    dataFiles = ["structAttr.json"]
 }
