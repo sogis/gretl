@@ -1116,6 +1116,69 @@ tasks.register('importJson', JsonImport) {
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.JsonImport.md >}}
 
+
+### JsonValidator
+
+Prüft eine Json-Datei gegenüber einem INTERLIS-Modell. Basiert auf _ilivalidator_. Der verwendete JsonReader (IoxReader-Implementierung) ist sehr elaboriert und unterstützt viele Sprachfeatures von INTERLIS. So werden zwingend verschiedene Attribute verlangt (`@type`, `@bid`, `@id`, `@topic`). Diese sind allesamt notwendig, um korrekt Daten transferieren zu können. Für unseren Anwendungfalls reicht (momentan) jedoch die Information des Typs. Aus diesem Grund müssen die anderen Attribute nicht vorhanden sein und werden vor der Validierung automatisch hinzugefügt. Ebenso müsste das Toplevel-Objekt ein Array sein. Auch dies ist nicht zwingend und wird bei Bedarf hinzugefügt.
+
+TODO: Strict mode einführen, um das Originalverhalten des JsonReaders widerzuspiegeln.
+
+Beispiel:
+
+```groovy
+task validate(type: JsonValidator) {
+    models = "Test2"
+    dataFiles = ["structAttr.json"]
+}
+```
+
+```json
+{
+    "@type": "Test2.Topic2.ClassA",
+    "attrText" : "line0",
+    "attrStruct": {
+    "@type": "Test2.Topic2.StructA",
+    "attrText": "lineA"
+    },
+    "attrBag": [
+    {
+        "@type": "Test2.Topic2.StructA",
+        "attrText": "li"
+    },
+    {
+        "@type": "Test2.Topic2.StructA",
+        "attrText": "lineC"
+    }
+    ]
+}
+```
+
+```
+INTERLIS 2.4;
+
+MODEL Test2 (de) AT "mailto:ceis@localhost" VERSION "20170703" =
+    
+    TOPIC Topic2 =
+    
+        STRUCTURE StructA =
+            attrText : TEXT*3;
+            attrInt : -1000 .. 1000;
+        END StructA;
+
+        CLASS ClassA =
+            attrText : TEXT*60;
+            attrStruct : StructA;
+            attrBag : BAG OF StructA;
+            attrTextBag : LIST {0..*} OF TEXT*5;
+        END ClassA;
+    
+    END Topic2;
+    
+END Test2.
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.JsonValidator.md >}}
+
 ### PostgisRasterExport
 
 Exportiert eine PostGIS-Raster-Spalte in eine Raster-Datei mittels SQL-Query. Die SQL-Query darf nur einen Record zurückliefern, d.h. es muss unter Umständen `ST_Union()` verwendet werden. Es wird angenommen, dass die erste _bytea_-Spalte des Resultsets die Rasterdaten enthält. Weitere _bytea_-Spalten werden ignoriert. Das Outputformat und die Formatoptionen müssen in der SQL-Datei (in der Select-Query) angegeben werden, z.B.:

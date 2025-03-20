@@ -20,7 +20,6 @@ MODEL Test2 (de) AT "mailto:ceis@localhost" VERSION "20170703" =
             attrStruct : StructA;
             attrBag : BAG OF StructA;
             attrTextBag : LIST {0..*} OF TEXT*5;
-
         END ClassA;
     
     END Topic2;

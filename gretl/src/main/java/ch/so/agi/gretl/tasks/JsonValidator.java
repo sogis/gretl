@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonValidator extends AbstractValidatorTask {
-
-    // Ggf Umgang mit Top Level Array. Falls Reader es verlangt, für Benutzer aber "unlogisch".
     
     @TaskAction
     public void validate() {
@@ -41,6 +39,8 @@ public class JsonValidator extends AbstractValidatorTask {
         Settings settings = new Settings();
         initSettings(settings);
 
+        // TODO Man könnte einen strict mode einführen, der das Json-Preprocessing nicht macht.
+        
         validationOk = new JsonValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
         if (!validationOk && getFailOnError()) {
             throw new TaskExecutionException(this, new Exception("validation failed"));
