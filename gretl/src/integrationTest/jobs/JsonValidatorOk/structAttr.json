@@ -1,4 +1,4 @@
-
+[
     {
       "@type": "Test2.Topic2.ClassA",
       "attrText" : "line0",
@@ -15,5 +15,28 @@
           "@type": "Test2.Topic2.StructA",
           "attrText": "lineC"
         }
-      ]
-    }
+      ],
+      "attrTextList": ["lineDXXXX", "lineE"],
+      "attrSurface" : "POLYGON ((2460000 1045000, 2460001 1045000, 2460001 1045001, 2460000 1045001, 2460000 1045000))"
+    },
+    {
+      "@type": "Test2.Topic2.ClassA",
+      "attrText" : "line0",
+      "attrStruct": {
+        "@type": "Test2.Topic2.StructA",
+        "attrText": "lineA"
+      },
+      "attrBag": [
+        {
+          "@type": "Test2.Topic2.StructA",
+          "attrText": "li"
+        },
+        {
+          "@type": "Test2.Topic2.StructA",
+          "attrText": "lineC"
+        }
+      ],
+      "attrTextList": ["lineDXXXX", "lineE"],
+      "attrSurface" : "POLYGON ((2460000.5 1045000, 2460002 1045000, 2460002 1045001, 2460001 1045001, 2460000.5 1045000))"
+    }    
+]

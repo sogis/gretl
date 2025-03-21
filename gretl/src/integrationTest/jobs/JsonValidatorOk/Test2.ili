@@ -19,7 +19,8 @@ MODEL Test2 (de) AT "mailto:ceis@localhost" VERSION "20170703" =
             attrText : TEXT*60;
             attrStruct : StructA;
             attrBag : BAG OF StructA;
-            attrTextBag : LIST {0..*} OF TEXT*5;
+            attrTextList : LIST {0..*} OF TEXT*5;
+            attrSurface : AREA WITH (STRAIGHTS, ARCS) VERTEX Coord2 WITHOUT OVERLAPS > 0.001;
         END ClassA;
     
     END Topic2;

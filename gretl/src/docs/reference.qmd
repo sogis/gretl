@@ -1137,19 +1137,21 @@ task validate(type: JsonValidator) {
     "@type": "Test2.Topic2.ClassA",
     "attrText" : "line0",
     "attrStruct": {
-    "@type": "Test2.Topic2.StructA",
-    "attrText": "lineA"
+        "@type": "Test2.Topic2.StructA",
+        "attrText": "lineA"
     },
     "attrBag": [
-    {
-        "@type": "Test2.Topic2.StructA",
-        "attrText": "li"
-    },
-    {
-        "@type": "Test2.Topic2.StructA",
-        "attrText": "lineC"
-    }
-    ]
+        {
+            "@type": "Test2.Topic2.StructA",
+            "attrText": "li"
+        },
+        {
+            "@type": "Test2.Topic2.StructA",
+            "attrText": "lineC"
+        }
+    ],
+    "attrTextList": ["lineDXXXX", "lineE"],
+    "attrSurface" : "POLYGON ((2460000 1045000, 2460001 1045000, 2460001 1045001, 2460000 1045001, 2460000 1045000))"
 }
 ```
 
@@ -1169,7 +1171,8 @@ MODEL Test2 (de) AT "mailto:ceis@localhost" VERSION "20170703" =
             attrText : TEXT*60;
             attrStruct : StructA;
             attrBag : BAG OF StructA;
-            attrTextBag : LIST {0..*} OF TEXT*5;
+            attrTextList : LIST {0..*} OF TEXT*5;
+            attrSurface : AREA WITH (STRAIGHTS, ARCS) VERTEX Coord2 WITHOUT OVERLAPS > 0.001;
         END ClassA;
     
     END Topic2;
