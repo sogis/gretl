@@ -164,6 +164,7 @@ public class SimiSvcClient implements SimiSvcApi {
         int responseCode=HttpURLConnection.HTTP_INTERNAL_ERROR;
         InputStreamReader in=null;
         java.io.StringWriter fos=null;
+        System.err.println("response (intern): " + response);
         try{
             if(response!=null) {
                 fos=new java.io.StringWriter();
@@ -172,6 +173,7 @@ public class SimiSvcClient implements SimiSvcApi {
                     if(encoding==null){
                         encoding="UTF-8";
                     }
+                    System.err.println("responseCode: " + responseCode);
                     responseCode=conn.getResponseCode();
                     InputStream inStream = conn.getErrorStream();
                     if(inStream==null){
@@ -194,6 +196,7 @@ public class SimiSvcClient implements SimiSvcApi {
                     } catch (IOException e) {
                         throw new IllegalArgumentException("failed to read response",e);
                     }
+                    System.err.println("fos.toString: " + fos.toString());
                     response.append(fos.toString());
                 }
             }
