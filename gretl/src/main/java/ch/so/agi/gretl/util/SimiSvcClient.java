@@ -82,8 +82,6 @@ public class SimiSvcClient implements SimiSvcApi {
             token=getAccessToken();
         }
         int status=doHttpRequest(response,"GET",endpoint+"/doc?dataident="+dataIdent+"&published="+versionTag,null,"text/html",null,null);
-        System.err.println("status: " + status);
-        System.err.println("response: " + response);
         if(status!=HttpURLConnection.HTTP_OK) {
             if(response.length()>0) {
                 log.info(response.toString());
@@ -110,6 +108,14 @@ public class SimiSvcClient implements SimiSvcApi {
         }
     }
     private int doHttpRequest(StringBuilder response,String requestMethod,String endpoint,String request,String contentType,String usr,String pwd) throws IOException {
+        System.err.println("response: " + response);
+        System.err.println("requestMethod: " + requestMethod);
+        System.err.println("endpoint: " + endpoint);
+        System.err.println("request: " + request);
+        System.err.println("contentType: " + contentType);
+        System.err.println("usr: " + usr);
+        System.err.println("pwd: " + pwd);
+                
         HttpURLConnection conn=null;
         try {
             //
@@ -154,7 +160,9 @@ public class SimiSvcClient implements SimiSvcApi {
         }
         if(request!=null) {
             try {
+                System.err.println("BEFORE getOutputStream().write(request.getBytes(\"UTF-8\")");
                 conn.getOutputStream().write(request.getBytes("UTF-8"));
+                System.err.println("AFTER getOutputStream().write(request.getBytes(\"UTF-8\")");
             } catch (UnsupportedEncodingException e) {
                 throw new IllegalArgumentException(e);
             } catch (IOException e) {
@@ -164,18 +172,19 @@ public class SimiSvcClient implements SimiSvcApi {
         int responseCode=HttpURLConnection.HTTP_INTERNAL_ERROR;
         InputStreamReader in=null;
         java.io.StringWriter fos=null;
-        System.err.println("response (intern): " + response);
         try{
             if(response!=null) {
                 fos=new java.io.StringWriter();
                 try {
                     String encoding=conn.getContentEncoding();
+                    System.err.println("getContentEncoding: " + encoding);
                     if(encoding==null){
                         encoding="UTF-8";
                     }
-                    System.err.println("responseCode: " + responseCode);
                     responseCode=conn.getResponseCode();
+                    System.err.println("responseCode: " + responseCode);
                     InputStream inStream = conn.getErrorStream();
+                    System.err.println("getErrorStream: " + inStream);
                     if(inStream==null){
                         inStream=conn.getInputStream();
                     }
