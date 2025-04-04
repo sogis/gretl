@@ -41,6 +41,8 @@ public class SimiSvcClient implements SimiSvcApi {
         this.tokenEndpoint=endpoint;
         this.tokenUsr=usr;
         this.tokenPwd=pwd;
+        
+        System.setProperty("javax.net.debug","all");
     }
     /*
     curl -X POST \
@@ -171,6 +173,7 @@ public class SimiSvcClient implements SimiSvcApi {
             System.out.println(entry.getKey() + "/" + entry.getValue());
         }      
         
+        // Ist null. Aus Sicherheitsgründen normales Verhalten.
         System.err.println("Auth request property: " + conn.getRequestProperty("Authorization"));
 
         if(request!=null) {
