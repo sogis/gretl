@@ -8,4 +8,4 @@ fi
 
 gradle $run_parameter \
        --init-script /home/gradle/init.gradle \
-       --no-daemon
+       --no-daemon -s
