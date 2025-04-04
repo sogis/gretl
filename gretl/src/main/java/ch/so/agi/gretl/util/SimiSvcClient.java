@@ -43,6 +43,7 @@ public class SimiSvcClient implements SimiSvcApi {
         this.tokenPwd=pwd;
         
         System.setProperty("javax.net.debug","all");
+        System.setProperty("java.net.debug", "all");
     }
     /*
     curl -X POST \
