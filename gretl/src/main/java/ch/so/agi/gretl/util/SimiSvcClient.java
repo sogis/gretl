@@ -79,6 +79,7 @@ public class SimiSvcClient implements SimiSvcApi {
         StringBuilder response=new StringBuilder();
         String versionTag=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(publishDate);
 
+        System.err.println("token 1: " + token);
         if(usr!=null && token==null) {
             token=getAccessToken();
         }
@@ -117,6 +118,8 @@ public class SimiSvcClient implements SimiSvcApi {
         System.err.println("usr: " + usr);
         System.err.println("pwd: " + pwd);
                 
+        System.err.println("token 2: " + token);
+
         HttpURLConnection conn=null;
         try {
             //
@@ -157,9 +160,11 @@ public class SimiSvcClient implements SimiSvcApi {
         }else if(token!=null) {
             System.err.println("usr!=null");
             authHeaderValue = "Bearer " + token;
+            System.err.println("authHeaderValue" + authHeaderValue);
         }
         conn.setRequestProperty("Content-Type",contentType);
         if(authHeaderValue!=null) {
+            System.err.println("authHeaderValue!=null");
             conn.setRequestProperty("Authorization", authHeaderValue);
         }
         for (Map.Entry entry : conn.getRequestProperties().entrySet()) {
