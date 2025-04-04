@@ -169,7 +169,10 @@ public class SimiSvcClient implements SimiSvcApi {
         }
         for (Map.Entry entry : conn.getRequestProperties().entrySet()) {
             System.out.println(entry.getKey() + "/" + entry.getValue());
-        }        
+        }      
+        
+        System.err.println("Auth request property: " + conn.getRequestProperty("Authorization"));
+
         if(request!=null) {
             try {
                 System.err.println("BEFORE getOutputStream().write(request.getBytes(\"UTF-8\")");
