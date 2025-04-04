@@ -158,9 +158,9 @@ public class SimiSvcClient implements SimiSvcApi {
             byte[] encodedAuth = java.util.Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
             authHeaderValue = "Basic " + new String(encodedAuth);
         }else if(token!=null) {
-            System.err.println("usr!=null");
+            System.err.println("token!=null");
             authHeaderValue = "Bearer " + token;
-            System.err.println("authHeaderValue" + authHeaderValue);
+            System.err.println("authHeaderValue: " + authHeaderValue);
         }
         conn.setRequestProperty("Content-Type",contentType);
         if(authHeaderValue!=null) {
