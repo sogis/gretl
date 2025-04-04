@@ -35,6 +35,10 @@ public class SimiSvcClient implements SimiSvcApi {
         this.tokenEndpoint=endpoint;
         this.usr=usr;
         this.pwd=pwd;
+        
+        System.setProperty("javax.net.debug","all");
+        System.setProperty("java.net.debug", "all");
+
     }
     @Override
     public void setupTokenService(String endpoint,String usr,String pwd) {
