@@ -9,7 +9,6 @@ import java.net.ProtocolException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,19 +34,12 @@ public class SimiSvcClient implements SimiSvcApi {
         this.tokenEndpoint=endpoint;
         this.usr=usr;
         this.pwd=pwd;
-        
-        System.setProperty("javax.net.debug","all");
-        System.setProperty("java.net.debug", "all");
-
     }
     @Override
     public void setupTokenService(String endpoint,String usr,String pwd) {
         this.tokenEndpoint=endpoint;
         this.tokenUsr=usr;
         this.tokenPwd=pwd;
-        
-        System.setProperty("javax.net.debug","all");
-        System.setProperty("java.net.debug", "all");
     }
     /*
     curl -X POST \
@@ -86,7 +78,6 @@ public class SimiSvcClient implements SimiSvcApi {
         StringBuilder response=new StringBuilder();
         String versionTag=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(publishDate);
 
-        System.err.println("token 1: " + token);
         if(usr!=null && token==null) {
             token=getAccessToken();
         }
@@ -117,16 +108,6 @@ public class SimiSvcClient implements SimiSvcApi {
         }
     }
     private int doHttpRequest(StringBuilder response,String requestMethod,String endpoint,String request,String contentType,String usr,String pwd) throws IOException {
-        System.err.println("response: " + response);
-        System.err.println("requestMethod: " + requestMethod);
-        System.err.println("endpoint: " + endpoint);
-        System.err.println("request: " + request);
-        System.err.println("contentType: " + contentType);
-        System.err.println("usr: " + usr);
-        System.err.println("pwd: " + pwd);
-                
-        System.err.println("token 2: " + token);
-
         HttpURLConnection conn=null;
         try {
             //
@@ -150,7 +131,6 @@ public class SimiSvcClient implements SimiSvcApi {
             throw e;
         }
         if(request!=null) {
-            System.err.println("setDoOutput=true");
             conn.setDoOutput(true);
         }
         try {
@@ -160,32 +140,19 @@ public class SimiSvcClient implements SimiSvcApi {
         }
         String authHeaderValue=null;
         if(usr!=null) {
-            System.err.println("usr!=null");
             String auth = usr + ":" + pwd;
             byte[] encodedAuth = java.util.Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
             authHeaderValue = "Basic " + new String(encodedAuth);
         }else if(token!=null) {
-            System.err.println("token!=null");
             authHeaderValue = "Bearer " + token;
-            System.err.println("authHeaderValue: " + authHeaderValue);
         }
         conn.setRequestProperty("Content-Type",contentType);
         if(authHeaderValue!=null) {
-            System.err.println("authHeaderValue!=null");
             conn.setRequestProperty("Authorization", authHeaderValue);
         }
-        for (Map.Entry entry : conn.getRequestProperties().entrySet()) {
-            System.out.println(entry.getKey() + "/" + entry.getValue());
-        }      
-        
-        // Ist null. Aus Sicherheitsgründen normales Verhalten.
-        System.err.println("Auth request property: " + conn.getRequestProperty("Authorization"));
-
         if(request!=null) {
             try {
-                System.err.println("BEFORE getOutputStream().write(request.getBytes(\"UTF-8\")");
                 conn.getOutputStream().write(request.getBytes("UTF-8"));
-                System.err.println("AFTER getOutputStream().write(request.getBytes(\"UTF-8\")");
             } catch (UnsupportedEncodingException e) {
                 throw new IllegalArgumentException(e);
             } catch (IOException e) {
@@ -200,14 +167,11 @@ public class SimiSvcClient implements SimiSvcApi {
                 fos=new java.io.StringWriter();
                 try {
                     String encoding=conn.getContentEncoding();
-                    System.err.println("getContentEncoding: " + encoding);
                     if(encoding==null){
                         encoding="UTF-8";
                     }
                     responseCode=conn.getResponseCode();
-                    System.err.println("responseCode: " + responseCode);
                     InputStream inStream = conn.getErrorStream();
-                    System.err.println("getErrorStream: " + inStream);
                     if(inStream==null){
                         inStream=conn.getInputStream();
                     }
@@ -228,7 +192,6 @@ public class SimiSvcClient implements SimiSvcApi {
                     } catch (IOException e) {
                         throw new IllegalArgumentException("failed to read response",e);
                     }
-                    System.err.println("fos.toString: " + fos.toString());
                     response.append(fos.toString());
                 }
             }
