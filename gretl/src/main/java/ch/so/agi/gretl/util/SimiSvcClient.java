@@ -146,7 +146,11 @@ public class SimiSvcClient implements SimiSvcApi {
         }else if(token!=null) {
             authHeaderValue = "Bearer " + token;
         }
-        conn.setRequestProperty("Content-Type",contentType);
+        if (requestMethod.equalsIgnoreCase("get")) {
+            conn.setRequestProperty("Accept",contentType);
+        } else {
+            conn.setRequestProperty("Content-Type",contentType);                        
+        }
         if(authHeaderValue!=null) {
             conn.setRequestProperty("Authorization", authHeaderValue);
         }
