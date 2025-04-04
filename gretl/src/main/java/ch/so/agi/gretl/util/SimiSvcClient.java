@@ -9,6 +9,7 @@ import java.net.ProtocolException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -139,6 +140,7 @@ public class SimiSvcClient implements SimiSvcApi {
             throw e;
         }
         if(request!=null) {
+            System.err.println("setDoOutput=true");
             conn.setDoOutput(true);
         }
         try {
@@ -148,16 +150,21 @@ public class SimiSvcClient implements SimiSvcApi {
         }
         String authHeaderValue=null;
         if(usr!=null) {
+            System.err.println("usr!=null");
             String auth = usr + ":" + pwd;
             byte[] encodedAuth = java.util.Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
             authHeaderValue = "Basic " + new String(encodedAuth);
         }else if(token!=null) {
+            System.err.println("usr!=null");
             authHeaderValue = "Bearer " + token;
         }
         conn.setRequestProperty("Content-Type",contentType);
         if(authHeaderValue!=null) {
             conn.setRequestProperty("Authorization", authHeaderValue);
         }
+        for (Map.Entry entry : conn.getRequestProperties().entrySet()) {
+            System.out.println(entry.getKey() + "/" + entry.getValue());
+        }        
         if(request!=null) {
             try {
                 System.err.println("BEFORE getOutputStream().write(request.getBytes(\"UTF-8\")");
