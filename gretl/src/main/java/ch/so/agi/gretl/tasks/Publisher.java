@@ -71,7 +71,7 @@ public class Publisher extends DefaultTask {
     /**
      * Quelldatei z.B. `file("/path/file.xtf")`
      */
-    @InputFile
+    @Input
     @Optional
     public Object getSourcePath() {
         return sourcePath;
