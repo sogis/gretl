@@ -15,8 +15,6 @@ RUN adduser -d $HOME -s /sbin/nologin -G root -u $UID -M appuser
 WORKDIR $HOME
 RUN chgrp root . && chmod g+w .
 
-COPY ca-certificates/ /usr/local/share/ca-certificates/
-
 RUN microdnf update -y && microdnf install -y bash ca-certificates unzip findutils 
 
 ENV JAVA_TOOL_OPTIONS=-Duser.home=${HOME}
