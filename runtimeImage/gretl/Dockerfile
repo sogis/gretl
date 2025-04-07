@@ -15,8 +15,6 @@ RUN adduser -h $HOME -s /sbin/nologin -G root -u $UID -D appuser
 WORKDIR $HOME
 RUN chgrp root . && chmod g+w .
 
-COPY ca-certificates/ /usr/local/share/ca-certificates/
-
 RUN apk add --no-cache bash ca-certificates java-cacerts curl libgcc libstdc++6 libstdc++ ncurses-libs \
     && ln -sf /etc/ssl/certs/java/cacerts $JAVA_HOME/lib/security/cacerts
 RUN /usr/glibc/sbin/ldconfig
