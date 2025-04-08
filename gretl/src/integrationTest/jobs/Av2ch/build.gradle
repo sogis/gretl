@@ -5,6 +5,6 @@ apply plugin: 'ch.so.agi.gretl'
 defaultTasks 'transform'
 
 task transform(type: Av2ch) {
-    inputFile = file("254900.itf")
+    inputFile = files("254900.itf")
     outputDirectory = file("output")
 }

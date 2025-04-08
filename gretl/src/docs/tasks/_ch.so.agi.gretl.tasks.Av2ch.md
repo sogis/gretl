@@ -1,6 +1,6 @@
 Parameter | Datentyp | Beschreibung | Optional
 ----------|----------|-------------|-------------
-inputFile | `Object` | Zu transformierende ITF-Datei(en). `File`-, `String`- oder `FileCollection`-Objekt. `File-` und `String`-Objekte werden im Task mittels `files()` gecastet. | nein
+inputFile | `FileCollection` | Zu transformierende ITF-Datei(en). | nein
 language | `String` | Sprache des Modelles / der Datei (de, it). Default: de | ja
 modeldir | `String` | INTERLIS-Modellrepository. `String`, separiert mit Semikolon (analog ili2db, ilivalidator). | ja
 outputDirectory | `File` | Verzeichnis, in das die zu erstellende Datei geschrieben wird. | nein

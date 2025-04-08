@@ -26,21 +26,21 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class Av2geobau extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
     
-    private Object itfFiles = null;
-    private Object dxfDirectory = null;
+    private FileCollection itfFiles = null;
+    private File dxfDirectory = null;
     private String modeldir = null;
-    private Object logFile = null;
+    private File logFile = null;
     private String proxy = null;
     private Integer proxyPort = null;
     private Boolean zip = false;
 
     /**
-     * ITF-Datei, die nach DXF transformiert werden soll. Es können auch mehrere Dateien angegeben werden. File- oder FileCollection-Objekt.
+     * ITF-Dateien, die nach DXF transformiert werden soll. 
      */
     @InputFiles
-    public Object getItfFiles() {
+    public FileCollection getItfFiles() {
         return itfFiles;
     }
     
@@ -48,7 +48,7 @@ public class Av2geobau extends DefaultTask {
      * Verzeichnis, in das die DXF-Dateien gespeichert werden.
      */
     @OutputDirectory
-    public Object getDxfDirectory() {
+    public File getDxfDirectory() {
         return dxfDirectory;
     }
 
@@ -66,7 +66,7 @@ public class Av2geobau extends DefaultTask {
      */
     @OutputFile
     @Optional
-    public Object getLogFile() {
+    public File getLogFile() {
         return logFile;
     }
 
@@ -93,15 +93,15 @@ public class Av2geobau extends DefaultTask {
      */
     @Input
     @Optional
-    public Boolean isZip() {
+    public Boolean getZip() {
         return zip;
     }
 
-    public void setItfFiles(Object itfFiles) {
+    public void setItfFiles(FileCollection itfFiles) {
         this.itfFiles = itfFiles;
     }
 
-    public void setDxfDirectory(Object dxfDirectory) {
+    public void setDxfDirectory(File dxfDirectory) {
         this.dxfDirectory = dxfDirectory;
     }
 
@@ -109,7 +109,7 @@ public class Av2geobau extends DefaultTask {
         this.modeldir = modeldir;
     }
 
-    public void setLogFile(Object logFile) {
+    public void setLogFile(File logFile) {
         this.logFile = logFile;
     }
 
@@ -129,11 +129,7 @@ public class Av2geobau extends DefaultTask {
     public void runTransformation() {
         log = LogEnvironment.getLogger(Av2geobau.class);
         
-        if (dxfDirectory instanceof File) {
-            ((File) dxfDirectory).mkdirs();
-        } else {
-            new File((String) dxfDirectory).mkdirs();
-        }
+        dxfDirectory.mkdirs();
         
         Settings settings = new Settings();
         settings.setValue(org.interlis2.av2geobau.Av2geobau.SETTING_ILIDIRS, org.interlis2.av2geobau.Av2geobau.SETTING_DEFAULT_ILIDIRS);
@@ -153,12 +149,7 @@ public class Av2geobau extends DefaultTask {
             settings.setValue(ch.interlis.ili2c.gui.UserSettings.HTTP_PROXY_PORT, proxyPort.toString());
         }
 
-        FileCollection dataFilesCollection=null;
-        if (itfFiles instanceof FileCollection) {
-            dataFilesCollection = (FileCollection)itfFiles;
-        } else {
-            dataFilesCollection = getProject().files(itfFiles);
-        }
+        FileCollection dataFilesCollection = (FileCollection) itfFiles;
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
         }

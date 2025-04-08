@@ -147,7 +147,7 @@ Aufgrund der sehr vielen Logging-Messages einer verwendeten Bibliothek, wird der
 
 ```groovy
 tasks.register('transform', Av2ch) {
-    inputFile = file("254900.itf")
+    inputFile = files("254900.itf")
     outputDirectory = file("output")
 }
 ```
@@ -178,8 +178,8 @@ Der Datenumbau ist nicht konfigurierbar.
 
 ```groovy
 tasks.register('av2geobau', Av2geobau) {
-    itfFiles = "ch_254900.itf"
-    dxfDirectory = "./out/"
+    itfFiles = files("ch_254900.itf")
+    dxfDirectory = file("./out/")
 }
 ```
 
@@ -190,7 +190,7 @@ tasks.register('av2geobau', Av2geobau) {
     itfFiles = fileTree(".").matching {
         include"*.itf"
     }
-    dxfDirectory = "./out/"
+    dxfDirectory = file("./out/")
 }
 ```
 

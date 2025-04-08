@@ -13,6 +13,7 @@ import java.util.zip.ZipOutputStream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -22,19 +23,19 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class Av2ch extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
     
-    private Object inputFile = null;
+    private FileCollection inputFile = null;
     private File outputDirectory = null;
     private String modeldir = null;
     private String language = "de";
     private Boolean zip = false;
 
     /**
-     * Zu transformierende ITF-Datei(en). `File`-, `String`- oder `FileCollection`-Objekt. `File-` und `String`-Objekte werden im Task mittels `files()` gecastet.
+     * Zu transformierende ITF-Datei(en).
      */
-    @Input
-    public Object getInputFile() {
+    @InputFiles
+    public FileCollection getInputFile() {
         return inputFile;
     };
 
@@ -73,7 +74,7 @@ public class Av2ch extends DefaultTask {
         return zip;
     }
 
-    public void setInputFile(Object inputFile) {
+    public void setInputFile(FileCollection inputFile) {
         this.inputFile = inputFile;
     }
 
@@ -110,12 +111,7 @@ public class Av2ch extends DefaultTask {
         
         outputDirectory.mkdirs();
 
-        FileCollection dataFilesCollection = null;
-        if (inputFile instanceof FileCollection) {
-            dataFilesCollection = (FileCollection)inputFile;
-        } else {
-            dataFilesCollection = this.getProject().files(inputFile);
-        }
+        FileCollection dataFilesCollection = (FileCollection) inputFile;
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
         }
