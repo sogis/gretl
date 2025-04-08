@@ -53,7 +53,7 @@ public class AbstractValidatorTask extends DefaultTask {
     }
 
     /**
-     * INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator).
+     * INTERLIS-Modellrepository. `String`, separiert mit Semikolon (analog ili2db, ilivalidator).
      */
     @Input
     @Optional

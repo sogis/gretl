@@ -281,7 +281,6 @@ tasks.register('validate', CsvValidator) {
 
 ```groovy
 tasks.register('validateFahrzeugbestandCsv', CsvValidator) {
-    description = "Validiert die CSV-Datei der Fahrzeugbestände"
     models = "SO_MFK_Fahrzeugbestand_20250201"
     modeldir = "../models/"
     firstLineIsHeader = true

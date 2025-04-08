@@ -20,7 +20,7 @@ public class CsvValidator extends AbstractValidatorTask {
     private String encoding = null;
 
     /**
-     * Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
+     * Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: `true`
      */
     @Input
     @Optional
