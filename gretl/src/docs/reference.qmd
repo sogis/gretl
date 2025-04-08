@@ -231,7 +231,7 @@ tasks.register('csvexport', CsvExport) {
     tableName = "exportdata"
     firstLineIsHeader = true
     attributes = [ "t_id","Aint"]
-    dataFile = "data.csv"
+    dataFile = file("data.csv")
 }
 ```
 

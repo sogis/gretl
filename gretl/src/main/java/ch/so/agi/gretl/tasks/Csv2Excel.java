@@ -42,7 +42,7 @@ public class Csv2Excel extends DefaultTask {
     }
 
     /**
-     * Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
+     * Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: `true`
      */
     @Input
     @Optional
@@ -51,7 +51,7 @@ public class Csv2Excel extends DefaultTask {
     }
 
     /**
-     * Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default `"`
+     * Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default: `"`
      */
     @Input
     @Optional

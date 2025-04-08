@@ -15,5 +15,5 @@ tasks.register('csvexport', CsvExport) {
 	tableName = "exportdata"
 	firstLineIsHeader = true
 	attributes = ["t_id", "Aint", "adec", "atext", "aenum", "adate", "atimestamp", "aboolean"]
-	dataFile = "data.csv"
+	dataFile = file("data.csv")
 }

@@ -89,7 +89,7 @@ public class Av2geobau extends DefaultTask {
     }
     
     /**
-     * Die zu erstellende Datei wird gezippt und es werden zusätzliche Dateien (Musterplan, Layerbeschreibung, Hinweise) hinzugefügt. Default: false
+     * Die zu erstellende Datei wird gezippt und es werden zusätzliche Dateien (Musterplan, Layerbeschreibung, Hinweise) hinzugefügt. Default: `false`
      */
     @Input
     @Optional

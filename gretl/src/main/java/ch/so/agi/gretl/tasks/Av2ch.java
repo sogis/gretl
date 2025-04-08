@@ -57,7 +57,7 @@ public class Av2ch extends DefaultTask {
     }
     
     /**
-     * Sprache des Modelles / der Datei (de, it). Default: de
+     * Sprache des Modelles / der Datei (de, it). Default: `de`
      */
     @Input
     @Optional
@@ -66,7 +66,7 @@ public class Av2ch extends DefaultTask {
     }
 
     /**
-     * Die zu erstellende Datei wird gezippt. Default: false
+     * Die zu erstellende Datei wird gezippt. Default: `false`
      */
     @Input
     @Optional
