@@ -157,7 +157,7 @@ Es können auch mehrere Dateien gleichzeitig transformiert werden:
 ``` groovy
 tasks.register('transform', Av2ch) {
     inputFile = fileTree(".").matching {
-            include"*.itf"
+            include "*.itf"
         }
     outputDirectory = file("output")
 }

@@ -25,13 +25,13 @@ public class Av2ch extends DefaultTask {
     protected GretlLogger log;
     
     private Object inputFile = null;
-    private Object outputDirectory = null;
+    private File outputDirectory = null;
     private String modeldir = null;
     private String language = "de";
     private Boolean zip = false;
 
     /**
-     * Zu transformierende ITF-Datei(en). File- oder FileCollection-Objekt.
+     * Zu transformierende ITF-Datei(en). `File`-, `String`- oder `FileCollection`-Objekt. `File-` und `String`-Objekte werden im Task mittels `files()` gecastet.
      */
     @Input
     public Object getInputFile() {
@@ -39,15 +39,15 @@ public class Av2ch extends DefaultTask {
     };
 
     /**
-     * Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
+     * Verzeichnis, in das die zu erstellende Datei geschrieben wird.
      */
     @OutputDirectory
-    public Object getOutputDirectory() {
+    public File getOutputDirectory() {
         return outputDirectory;
     }
     
     /**
-     * INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator).
+     * INTERLIS-Modellrepository. `String`, separiert mit Semikolon (analog ili2db, ilivalidator).
      */
     @Input
     @Optional
@@ -77,7 +77,7 @@ public class Av2ch extends DefaultTask {
         this.inputFile = inputFile;
     }
 
-    public void setOutputDirectory(Object outputDirectory) {
+    public void setOutputDirectory(File outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
 
@@ -108,12 +108,8 @@ public class Av2ch extends DefaultTask {
             throw new IllegalArgumentException("language '" + language + "' is not supported.");
         }
         
-        if (outputDirectory instanceof File) {
-            ((File) outputDirectory).mkdirs();
-        } else {
-            new File((String) outputDirectory).mkdirs();
-        }
-        
+        outputDirectory.mkdirs();
+
         FileCollection dataFilesCollection = null;
         if (inputFile instanceof FileCollection) {
             dataFilesCollection = (FileCollection)inputFile;
