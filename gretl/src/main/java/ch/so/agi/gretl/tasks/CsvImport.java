@@ -23,7 +23,7 @@ public class CsvImport extends DefaultTask {
     protected GretlLogger log;
     
     private Connector database;
-    private Object dataFile = null;
+    private File dataFile = null;
     private String tableName = null;
     private Boolean firstLineIsHeader = true;
     private Character valueDelimiter = null;
@@ -33,10 +33,10 @@ public class CsvImport extends DefaultTask {
     private Integer batchSize = null;
 
     /**
-     * Name der CSV-Datei, die gelesen werden soll.
+     * CSV-Datei, die importiert werden soll.
      */
     @InputFile
-    public Object getDataFile() {
+    public File getDataFile() {
         return dataFile;
     }
 
@@ -49,7 +49,7 @@ public class CsvImport extends DefaultTask {
     }
 
     /**
-     * Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
+     * Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: `true`
      */
     @Input
     @Optional
@@ -94,7 +94,7 @@ public class CsvImport extends DefaultTask {
     }
 
     /**
-     * Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden. Default: 5000
+     * Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden. Default: `5000`
      */
     @Input
     @Optional
@@ -114,7 +114,7 @@ public class CsvImport extends DefaultTask {
         this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
     }
 

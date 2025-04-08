@@ -259,7 +259,7 @@ tasks.register('csvimport',  CsvImport) {
     schemaName = "csvimport"
     tableName = "importdata"
     firstLineIsHeader = true
-    dataFile = "data1.csv"
+    dataFile = file("data1.csv")
 }
 ```
 
