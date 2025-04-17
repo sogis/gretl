@@ -31,6 +31,7 @@ configurations.all {
         force libs.ili2c.tool
         force libs.ili2gpkg
         force libs.iox.ili
+        force libs.duckdb
     }
 }
 

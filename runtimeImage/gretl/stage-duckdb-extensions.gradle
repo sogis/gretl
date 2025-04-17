@@ -3,7 +3,7 @@ import groovy.sql.Sql
 repositories { mavenCentral() }
 configurations { driver }
 
-dependencies { driver 'org.duckdb:duckdb_jdbc:1.1.3' }
+dependencies { driver 'org.duckdb:duckdb_jdbc:1.2.2.0' }
 
 URLClassLoader loader = GroovyObject.class.classLoader
 configurations.driver.each {File file ->

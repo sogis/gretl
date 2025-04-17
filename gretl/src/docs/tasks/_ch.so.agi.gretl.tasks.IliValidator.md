@@ -8,7 +8,7 @@ failOnError | `Boolean` | Steuert, ob der Task bei einem Validierungsfehler fehl
 forceTypeValidation | `Boolean` | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false | ja
 logFile | `Object` | Schreibt die log-Meldungen der Validierung in eine Text-Datei. | ja
 metaConfigFile | `Object` | Konfiguriert den Validator mit Hilfe einer ini-Datei. Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration | ja
-modeldir | `String` | INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator). | ja
+modeldir | `String` | INTERLIS-Modellrepository. `String`, separiert mit Semikolon (analog ili2db, ilivalidator). | ja
 models | `String` | INTERLIS-Modell, gegen das die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei. | ja
 multiplicityOff | `Boolean` | Schaltet die Prüfung der Multiplizität generell aus. Default: false | ja
 pluginFolder | `Object` | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. | ja
