@@ -1,12 +1,9 @@
 [
     {
       "@type": "Test2.Topic2.ClassA",
-      "@id": "o1",
-      "@bid": "bid1",
-      "@topic": "Test2.Topic2",
       "attrStruct": {
         "@type": "Test2.Topic2.StructA",
-        "attrText": "lineA"
+        "attrText": "lin"
       },
       "attrBag": [
         {
@@ -15,9 +12,9 @@
         },
         {
           "@type": "Test2.Topic2.StructA",
-          "attrText": "lineC"
+          "attrText": "lin"
         }
       ],
-      "attrTextBag": ["foo", "bar"]
+      "attrTextList": ["foo", "bar"]
     }
 ]

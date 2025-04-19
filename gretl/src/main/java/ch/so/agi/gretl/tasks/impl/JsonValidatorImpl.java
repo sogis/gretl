@@ -40,31 +40,6 @@ public class JsonValidatorImpl extends Validator {
             e.printStackTrace();
             throw new IoxException(e);
         }
-
-//        boolean firstLineIsHeader = false;
-//        {
-//            String val = settings.getValue(IoxWkfConfig.SETTING_FIRSTLINE);
-//            if (IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER.equals(val)) {
-//                firstLineIsHeader = true;
-//            }
-//        }
-//        reader.setFirstLineIsHeader(firstLineIsHeader);
-//        char valueDelimiter = IoxWkfConfig.SETTING_VALUEDELIMITER_DEFAULT;
-//        {
-//            String val = settings.getValue(IoxWkfConfig.SETTING_VALUEDELIMITER);
-//            if (val != null) {
-//                valueDelimiter = val.charAt(0);
-//            }
-//        }
-//        reader.setValueDelimiter(valueDelimiter);
-//        char valueSeparator = IoxWkfConfig.SETTING_VALUESEPARATOR_DEFAULT;
-//        {
-//            String val = settings.getValue(IoxWkfConfig.SETTING_VALUESEPARATOR);
-//            if (val != null) {
-//                valueSeparator = val.charAt(0);
-//            }
-//        }
-//        reader.setValueSeparator(valueSeparator);
     }
     
     private Path preprocessJsonFile(String jsonFile) throws IOException {
