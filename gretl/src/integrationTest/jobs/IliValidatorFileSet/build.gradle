@@ -8,5 +8,5 @@ task validate(type: IliValidator){
     dataFiles = fileTree(".").matching {
     	include"*.xtf"
     }
-    logFile = "ilivalidator.log"
+    logFile = file("ilivalidator.log")
 }

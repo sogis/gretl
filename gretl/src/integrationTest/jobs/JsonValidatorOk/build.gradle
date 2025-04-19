@@ -6,5 +6,5 @@ defaultTasks 'validate'
 
 task validate(type: JsonValidator) {
     models = "Test2"
-    dataFiles = ["structAttrList.json"]
+    dataFiles = files("structAttrList.json")
 }

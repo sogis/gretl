@@ -263,7 +263,7 @@ tasks.register('csvimport',  CsvImport) {
 }
 ```
 
-{{< include ./tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.CsvImport.md >}}
 
 ### CsvValidator
 
@@ -275,7 +275,7 @@ Beispiele:
 tasks.register('validate', CsvValidator) {
     models = "CsvModel"
     firstLineIsHeader = true
-    dataFiles = ["data1.csv"]
+    dataFiles = files("data1.csv")
 }
 ```
 
@@ -284,7 +284,7 @@ tasks.register('validateFahrzeugbestandCsv', CsvValidator) {
     models = "SO_MFK_Fahrzeugbestand_20250201"
     modeldir = "../models/"
     firstLineIsHeader = true
-    dataFiles = ["../data/ch.so.mfk.fahrzeugbestand.csv"]
+    dataFiles = files("../data/ch.so.mfk.fahrzeugbestand.csv")
     valueSeparator = ';'
     valueDelimiter = null
 }
@@ -718,7 +718,7 @@ Beispiel:
 ```groovy
 tasks.register('validate', GpkgValidator) {
     models = "GpkgModel"
-    dataFiles = ["attributes.gpkg"]
+    dataFiles = files("attributes.gpkg")
     tableName = "Attributes"
 }
 ```
@@ -1089,8 +1089,8 @@ Beispiel:
 
 ```groovy
 tasks.register('validate', IliValidator) {
-    dataFiles = ["Beispiel2a.xtf"]
-    logFile = "ilivalidator.log"
+    dataFiles = files("Beispiel2a.xtf")
+    logFile = file("ilivalidator.log")
 }
 ```
 
@@ -1127,7 +1127,7 @@ Beispiel:
 ```groovy
 task validate(type: JsonValidator) {
     models = "Test2"
-    dataFiles = ["structAttr.json"]
+    dataFiles = files("structAttr.json")
 }
 ```
 
@@ -1333,7 +1333,7 @@ Beispiel:
 ```groovy
 tasks.register('validate', ShpValidator) {
     models = "ShpModel"
-    dataFiles = ["data.shp"]
+    dataFiles = files("data.shp")
 }
 ```
 

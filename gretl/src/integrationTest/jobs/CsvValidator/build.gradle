@@ -6,6 +6,7 @@ defaultTasks 'validate'
 
 task validate(type: CsvValidator){
 	models = "CsvModel"
-	firstLineIsHeader=false
-    dataFiles = ["data1.csv"]
+	firstLineIsHeader = false
+    dataFiles = files("data1.csv")
+    logFile = file("csvvalidator.log")
 }

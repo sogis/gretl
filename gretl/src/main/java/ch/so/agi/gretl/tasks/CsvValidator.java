@@ -10,6 +10,7 @@ import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,17 +79,13 @@ public class CsvValidator extends AbstractValidatorTask {
         if (getDataFiles() == null) {
             return;
         }
-        FileCollection dataFilesCollection=null;
-        if (getDataFiles() instanceof FileCollection) {
-            dataFilesCollection=(FileCollection)getDataFiles();
-        } else {
-            dataFilesCollection=getProject().files(getDataFiles());
-        }
+        
+        FileCollection dataFilesCollection = (FileCollection) getDataFiles();
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
         }
         List<String> files = new ArrayList<String>();
-        for (java.io.File fileObj : dataFilesCollection) {
+        for (File fileObj : dataFilesCollection) {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }
