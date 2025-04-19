@@ -546,9 +546,9 @@ Um heruntergeladene Daten zu löschen:
 
 ```groovy
 tasks.register('ftpdelete', FtpDelete) {
-    server= "ftp.server.org"
-    user= "Hans"
-    password= "dummy"
+    server = "ftp.server.org"
+    user = "Hans"
+    password = "dummy"
     remoteDir = "\\dm01avso24lv95\\itf"
     remoteFile = fileTree(pathToDownloadFolder) { include '*.zip' } 
 }
@@ -565,11 +565,11 @@ Beispiel:
 
 ```groovy
 tasks.register('ftpdownload', FtpDownload) {
-    server= "ftp.server.org"
-    user= "Hans"
-    password= "dummy"
-    localDir= "downloads"
-    remoteDir= ""
+    server = "ftp.server.org"
+    user = "Hans"
+    password = "dummy"
+    localDir = file("downloads")
+    remoteDir = ""
 }
 ```
 
@@ -577,13 +577,13 @@ Um eine bestimmte Datei herunterzuladen:
 
 ```groovy
 tasks.register('ftpdownload', FtpDownload) {
-    server="ftp.infogrips.ch"
-    user= "Hans"
-    password= "dummy"
-    systemType="WINDOWS"
-    localDir= "downloads"
-    remoteDir="\\dm01avso24lv95\\itf"
-    remoteFile="240100.zip"
+    server ="ftp.infogrips.ch"
+    user = "Hans"
+    password = "dummy"
+    systemType = "WINDOWS"
+    localDir = file("downloads")
+    remoteDir ="\\dm01avso24lv95\\itf"
+    remoteFile ="240100.zip"
 }
 ```
 

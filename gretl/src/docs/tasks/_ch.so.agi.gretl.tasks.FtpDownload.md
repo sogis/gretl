@@ -3,7 +3,7 @@ Parameter | Datentyp | Beschreibung | Optional
 controlKeepAliveTimeout | `Long` | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default: 300s (=5 Minuten) | ja
 fileSeparator | `String` | Default: `/`. (Falls systemType Windows ist, ist der Default `\`. | ja
 fileType | `String` | `ASCII` oder `BINARY`. Default: `ASCII`. | ja
-localDir | `String` | Lokales Verzeichnis, in dem die Dateien gespeichert werden. | nein
+localDir | `File` | Lokales Verzeichnis, in dem die Dateien gespeichert werden. | nein
 passiveMode | `Boolean` | Aktiv- oder Passiv-Verbindungsmodus. Default: Passiv (true) | ja
 password | `String` | Passwort für den Zugriff auf dem Server. | nein
 remoteDir | `String` | Verzeichnis auf dem Server. | nein
