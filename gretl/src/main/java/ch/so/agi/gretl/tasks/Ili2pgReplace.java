@@ -19,8 +19,9 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
-    /*
-        Input kann hier FileCollection, File oder String sein.
+    
+    /**
+     * Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `List`.
      */
     @Input
     public abstract Property<Object> getDataFile();
@@ -33,54 +34,39 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
             return;
         }
         
-        // Liste mit saemtlicheen Dateipfaeden oder ilidata-Ids.
+        // Liste mit saemtlichen Dateipfaeden oder ilidata-Ids.
         List<String> files = new ArrayList<>();
-        FileCollection dataFilesCollection;
         Object dataFile = getDataFile().get();
-        if(dataFile instanceof FileCollection) {
-            dataFilesCollection = (FileCollection) dataFile;
-            
+        if (dataFile instanceof FileCollection) {
+            FileCollection dataFilesCollection = (FileCollection) dataFile;
             if (dataFilesCollection.isEmpty()) {
                 return;
             }
-            
             for (File fileObj : dataFilesCollection) {
                 String fileName = fileObj.getPath();
                 files.add(fileName);
             }
-        } else if(dataFile instanceof File) {
-            File file = (File) dataFile;
-            files.add(file.getAbsolutePath());
-        } else if(dataFile instanceof String) {
-            String fileName = (String) dataFile;
-            if (fileName.startsWith("ilidata")) {
-                files.add(fileName);
-            } else {
-                File file = this.getProject().file(fileName);
-                files.add(file.getAbsolutePath());
-            }
-        } else {            
+        } else if (dataFile instanceof List) {            
             List<String> dataFileList = (ArrayList) dataFile;
             for (String fileName : dataFileList) {
-                
-                if (fileName.startsWith("ilidata")) {
-                    files.add(fileName);
-                } else {
-                    File file = this.getProject().file(fileName);
-                    files.add(file.getAbsolutePath());
+                if (!fileName.startsWith("ilidata")) {
+                    throw new GradleException("dataFile: must start with ilidata");
                 }
+                files.add(fileName);
             }    
-            if (files.size() == 0) {
-                return;
-            }
+        } else {            
+            throw new GradleException("dataFile: illegal data type <"+dataFile.getClass()+">");
         }
-        
+
+        if (files.size() == 0) {
+            return;
+        }
+
         List<String> datasetNames=null;
-        
         if (getDataFile().isPresent()) {
             Object dataset = getDataset().get();
             if(dataset instanceof String) {
-                datasetNames=new ArrayList<>();
+                datasetNames = new ArrayList<>();
                 datasetNames.add((String)dataset);
             } else if (dataset instanceof FileCollection) {
                 Set<File> datasetFiles = ((FileTree)dataset).getFiles();
@@ -100,7 +86,7 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
                     }
                 }
             } else {
-                datasetNames=new ArrayList<>();
+                datasetNames = new ArrayList<>();
                 if (getDatasetSubstring().isPresent()) {
                     List<String> fileNames = (List)dataset;
                     List<Integer> datasetSubstring = getDatasetSubstring().get();
@@ -125,7 +111,7 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
         ch.ehi.basics.logging.FileListener fileLogger=null;
         if(getLogFile().isPresent()){
             // setup logger here, so that multiple file imports result in one logfile
-            java.io.File logFilepath=this.getProject().file(getLogFile().get());
+            File logFilepath = this.getProject().file(getLogFile().get());
             fileLogger=new FileLogger(logFilepath);
             EhiLogger.getInstance().addListener(fileLogger);
         }
@@ -141,8 +127,8 @@ public abstract class Ili2pgReplace extends Ili2pgAbstractTask {
                 run(function, settings);            
                 i++;
             }
-        }finally{
-            if(fileLogger!=null){
+        } finally {
+            if (fileLogger != null){
                 EhiLogger.getInstance().removeListener(fileLogger);
                 fileLogger.close();
                 fileLogger=null;
