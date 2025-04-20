@@ -661,9 +661,9 @@ def db_pass = "dmluser"
 tasks.register('gpkgexport', GpkgExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "gpkgexport"
-    srcTableName = "exportdata"
-    dataFile = "data.gpkg"
-    dstTableName = "exportdata"
+    srcTableName = ["exportdata"]
+    dataFile = file("data.gpkg")
+    dstTableName = ["exportdata"]
 }
 ```
 
@@ -676,7 +676,7 @@ tasks.register('gpkgexport', GpkgExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "gpkgexport"
     srcTableName = ["exportTable1", "exportTable2"]
-    dataFile = "data.gpkg"
+    dataFile = file("data.gpkg")
     dstTableName = ["exportTable1", "exportTable2"]
 }
 ```
@@ -704,7 +704,7 @@ tasks.register('gpkgimport', GpkgImport) {
     schemaName = "gpkgimport"
     srcTableName = "Point"
     dstTableName = "importdata"
-    dataFile = "point.gpkg"
+    dataFile = file("point.gpkg")
 }
 ```
 

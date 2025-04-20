@@ -14,7 +14,7 @@ tasks.register('gpkgimport', GpkgImport) {
     schemaName = "gpkgimport"
     srcTableName = "Point"
     dstTableName = "importdata"
-    dataFile = "point.gpkg"
+    dataFile = file("point.gpkg")
     batchSize = 200
     fetchSize = 200
 }
