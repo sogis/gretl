@@ -999,7 +999,7 @@ def db_pass = "dmluser"
 
 tasks.register('replaceData', Ili2pgReplace) {
     database = [db_uri, db_user, db_pass]
-    dataFile = "lv03_254900.itf"
+    dataFile = files("lv03_254900.itf")
     dataset = "254900"
     logFile = "ili2pg.log"
 }
@@ -1016,7 +1016,7 @@ tasks.register('importData', Ili2pgReplace) {
     dbschema = 'agi_dm01avso24'
     dataFile = fileTree(dir: dm01SoDir, include: '*.itf')
     dataset = dataFile
-    datasetSubstring = 0..4
+    datasetSubstring = (0..4).toList()
 ```
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgReplace.md >}}
@@ -1041,9 +1041,9 @@ def db_pass = "dmluser"
 
 tasks.register('updateData', Ili2pgUpdate) {
     database = [db_uri, db_user, db_pass]
-    dataFile = "lv03_254900.itf"
+    dataFile = files("lv03_254900.itf")
     dataset = "254900"
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 
