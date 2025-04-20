@@ -17,14 +17,14 @@ public abstract class Ili2dbImportSchema extends Ili2dbAbstractTask {
      */
     @InputFile
     @Optional
-    public abstract Property<Object> getIliFile();
+    public abstract Property<File> getIliFile();
 
     /**
      * Entspricht der ili2db-Option `--iliMetaAttrs`.
      */    
     @InputFile
     @Optional
-    public abstract Property<Object> getIliMetaAttrs();
+    public abstract Property<File> getIliMetaAttrs();
 
     /**
      * Entspricht der ili2db-Option `--oneGeomPerTable`.
@@ -45,14 +45,14 @@ public abstract class Ili2dbImportSchema extends Ili2dbAbstractTask {
      */
     @InputFile
     @Optional
-    public abstract Property<Object> getDropscript();
+    public abstract Property<File> getDropscript();
 
     /**
      * Entspricht der ili2db-Option `--createscript`.
      */
     @InputFile
     @Optional
-    public abstract Property<Object> getCreatescript();
+    public abstract Property<File> getCreatescript();
     
     /**
      * Entspricht der ili2db-Option `--metaConfig`.

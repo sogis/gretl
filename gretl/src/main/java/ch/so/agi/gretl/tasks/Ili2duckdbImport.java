@@ -30,46 +30,29 @@ public abstract class Ili2duckdbImport extends Ili2dbImport {
             return;
         }
         
-        // Liste mit saemtlichen Dateipfaeden oder ilidata-Ids.
+        // Liste mit saemtlichen Dateipfaeden oder ilidata-Id.
         List<String> files = new ArrayList<>();
 
-        FileCollection dataFilesCollection;
         Object dataFile = getDataFile().get();
         if(dataFile instanceof FileCollection) {
-            dataFilesCollection = (FileCollection) dataFile;
+            FileCollection dataFilesCollection = (FileCollection) dataFile;
             if (dataFilesCollection.isEmpty()) {
                 return;
             }
-            
             for (File fileObj : dataFilesCollection) {
                 String fileName = fileObj.getPath();
                 files.add(fileName);
             }
-        } else if(dataFile instanceof File) {
-            File file = (File) dataFile;
-            files.add(file.getAbsolutePath());
-        } else if(dataFile instanceof String) {
-            String fileName = (String) dataFile;
-            if (fileName.startsWith("ilidata")) {
-                files.add(fileName);
-            } else {
-                File file = this.getProject().file(fileName);
-                files.add(file.getAbsolutePath());
+        } else if (dataFile instanceof List) {
+            List<String> dataFiles = (List) dataFile;
+            for (String file : dataFiles) {
+                if (!file.startsWith("ilidata")) {
+                    throw new GradleException("dataFile: must start with ilidata");
+                }
+                files.add(file);
             }
         } else {            
-            List<String> dataFileList = (ArrayList) dataFile;
-            for (String fileName : dataFileList) {
-                
-                if (fileName.startsWith("ilidata")) {
-                    files.add(fileName);
-                } else {
-                    File file = this.getProject().file(fileName);
-                    files.add(file.getAbsolutePath());
-                }
-            }    
-            if (files.size() == 0) {
-                return;
-            }
+            throw new GradleException("dataFile: illegal data type <"+dataFile.getClass()+">");
         }
 
         List<String> datasetNames = null;
@@ -95,7 +78,7 @@ public abstract class Ili2duckdbImport extends Ili2dbImport {
                         datasetNames.add(datasetFile.getName().replaceFirst("[.][^.]+$", ""));
                     }
                 }
-            } else {
+            } else if (dataset instanceof List) {
                 datasetNames=new ArrayList<>();
                 if (getDatasetSubstring().isPresent()) {
                     List<String> fileNames = (List)dataset;
@@ -112,6 +95,8 @@ public abstract class Ili2duckdbImport extends Ili2dbImport {
                 } else {
                     datasetNames=(List)dataset;
                 }
+            } else {
+                throw new GradleException("dataset: illegal data type");
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");

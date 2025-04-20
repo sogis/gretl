@@ -1,10 +1,10 @@
 Parameter | Datentyp | Beschreibung | Optional
 ----------|----------|-------------|-------------
 baskets | `Property<String>` | Entspricht der ili2db-Option `--baskets`. | ja
-dataFile | `Property<Object>` | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `String`. | nein
-dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. | ja
+dataFile | `Property<Object>` | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `List`. | nein
+dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. Darf `FileCollection`, `String` oder `List` sein. | ja
 datasetSubstring | `ListProperty<Integer>` | null | ja
-dbfile | `Property<File>` | Datenbank-Datei in die importiert werden soll. | nein
+dbfile | `Property<File>` | Datenbank-Datei in die importiert oder exportiert werden soll. | nein
 dbschema | `Property<String>` | Entspricht der ili2db-Option `--dbschema`. | ja
 deleteData | `Property<Boolean>` | Entspricht der ili2db-Option `--deleteData`. | ja
 disableAreaValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--disableAreaValidation`. | ja
@@ -16,7 +16,7 @@ forceTypeValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--forc
 iligml20 | `Property<Boolean>` | Entspricht der ili2db-Option `--iligml20`. | ja
 importBid | `Property<Boolean>` | Entspricht der ili2db-Option `--importBid`. | ja
 importTid | `Property<Boolean>` | Entspricht der ili2db-Option `--importTid`. | ja
-logFile | `Property<Object>` | Entspricht der ili2db-Option `--logFile`. | ja
+logFile | `Property<File>` | Entspricht der ili2db-Option `--logFile`. | ja
 modeldir | `Property<String>` | Entspricht der ili2db-Option `--modeldir`. | ja
 models | `Property<String>` | Entspricht der ili2db-Option `--models`. | ja
 postScript | `Property<File>` | Entspricht der ili2db-Option `--postScript`. | ja

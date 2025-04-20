@@ -6,7 +6,7 @@ import org.gradle.api.tasks.InputFiles;
 public abstract class Ili2dbImport extends Ili2dbAbstractTask {
     
     /**
-     * Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `String`.
+     * Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `List`.
      */
     @InputFiles
     public abstract Property<Object> getDataFile();

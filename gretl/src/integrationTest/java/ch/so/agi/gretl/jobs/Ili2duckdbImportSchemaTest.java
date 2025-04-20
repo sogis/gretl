@@ -25,14 +25,13 @@ public class Ili2duckdbImportSchemaTest {
     public void importOk() throws Exception {
         // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2duckdbImportSchema");
-        Files.deleteIfExists(Paths.get(projectDirectory + "/my_gb2av.duckdb"));
+        Files.deleteIfExists(Paths.get(projectDirectory.getAbsolutePath(), "my_gb2av.duckdb"));
 
         // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory);
 
         // Check results
-        String url = "jdbc:duckdb:" +
-                new File(projectDirectory + "/my_gb2av.duckdb").getAbsolutePath();
+        String url = "jdbc:duckdb:" + Paths.get(projectDirectory.getAbsolutePath() + "/my_gb2av.duckdb");
 
         try (Connection con = DriverManager.getConnection(url); Statement stmt = con.createStatement()) {
             try (ResultSet rs = stmt.executeQuery("SELECT content FROM gb2av.t_ili2db_model")) {

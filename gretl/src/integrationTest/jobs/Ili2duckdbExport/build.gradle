@@ -18,6 +18,6 @@ tasks.register("ili2duckdbexport", Ili2duckdbExport) {
     dependsOn 'workaround'
     models = "GB2AV"
     dbschema = "gb2av"
-    dataFile = file("VOLLZUG_SO0200002401_1531_20180105113131.xml")
+    dataFile = files("VOLLZUG_SO0200002401_1531_20180105113131.xml")
     dbfile = file("my_gb2av.duckdb")
 }

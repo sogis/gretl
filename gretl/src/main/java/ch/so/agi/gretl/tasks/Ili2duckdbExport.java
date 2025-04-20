@@ -27,30 +27,22 @@ public abstract class Ili2duckdbExport extends Ili2dbExport {
         if (getExportModels().isPresent()) {
             settings.setExportModels(getExportModels().get());
         }
-        FileCollection dataFilesCollection;
-        Object dataFile = getDataFile().get();
-        if (dataFile instanceof FileCollection) {
-            dataFilesCollection = (FileCollection)dataFile;
-        } else {
-            dataFilesCollection = getProject().files(dataFile);
-        }
-        if (dataFilesCollection.isEmpty()) {
+        
+        FileCollection dataFilesCollection = (FileCollection)getDataFile().get();
+        if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
         }
+
         List<String> files = new ArrayList<>();
         for (File fileObj : dataFilesCollection) {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }
+        
         List<String> datasetNames = null;
         if (getDataset().isPresent()) {
             Object dataset = getDataset().get();
-            if (dataset instanceof String) {
-                datasetNames=new ArrayList<>();
-                datasetNames.add((String)dataset);
-            }else {
-                datasetNames=(List)dataset;
-            }
+            datasetNames=(List)dataset;
             if (files.size() != datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");
             }

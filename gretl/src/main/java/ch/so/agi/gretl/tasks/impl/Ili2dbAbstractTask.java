@@ -3,6 +3,7 @@ package ch.so.agi.gretl.tasks.impl;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -32,7 +33,7 @@ public abstract class Ili2dbAbstractTask extends DefaultTask {
 //    public abstract ListProperty<String> getDatabase();
 
     /**
-     * Datenbank-Datei in die importiert werden soll.
+     * Datenbank-Datei in die importiert oder exportiert werden soll.
      */
     @OutputFile
     public abstract Property<File> getDbfile();
@@ -73,7 +74,7 @@ public abstract class Ili2dbAbstractTask extends DefaultTask {
     public abstract Property<String> getModels();
 
     /**
-     * Entspricht der ili2db-Option `--dataset`.
+     * Entspricht der ili2db-Option `--dataset`. Darf `FileCollection` oder `List` sein.
      */
     @Input
     @Optional
@@ -140,7 +141,7 @@ public abstract class Ili2dbAbstractTask extends DefaultTask {
      */
     @OutputFile
     @Optional
-    public abstract Property<Object> getLogFile();
+    public abstract Property<File> getLogFile();
 
     /**
      * Entspricht der ili2db-Option `--trace`.

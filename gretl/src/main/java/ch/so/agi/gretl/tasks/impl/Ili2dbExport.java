@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.tasks.impl;
 
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
@@ -22,8 +23,8 @@ public abstract class Ili2dbExport extends Ili2dbAbstractTask {
     public abstract Property<String> getExportModels();
 
     /**
-     * Name der XTF-/ITF-/GML-Datei, die erstellt werden soll. `FileCollection` oder `String`.
+     * Name der XTF-/ITF-/GML-Datei, die erstellt werden soll.
      */
     @OutputFiles
-    public abstract Property<Object> getDataFile();
+    public abstract Property<FileCollection> getDataFile();
 }

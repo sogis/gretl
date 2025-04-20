@@ -27,10 +27,10 @@ createTidCol | `Property<Boolean>` | Entspricht der ili2db-Option `--createTidCo
 createTypeConstraint | `Property<Boolean>` | Entspricht der ili2db-Option `--createTypeConstraint`. | ja
 createTypeDiscriminator | `Property<Boolean>` | Entspricht der ili2db-Option `--createTypeDescriminator`. | ja
 createUnique | `Property<Boolean>` | Entspricht der ili2db-Option `--createUnique`. | ja
-createscript | `Property<Object>` | Entspricht der ili2db-Option `--createscript`. | ja
-dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. | ja
+createscript | `Property<File>` | Entspricht der ili2db-Option `--createscript`. | ja
+dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. Darf `FileCollection`, `String` oder `List` sein. | ja
 datasetSubstring | `ListProperty<Integer>` | null | ja
-dbfile | `Property<File>` | Datenbank-Datei in die importiert werden soll. | nein
+dbfile | `Property<File>` | Datenbank-Datei in die importiert oder exportiert werden soll. | nein
 dbschema | `Property<String>` | Entspricht der ili2db-Option `--dbschema`. | ja
 defaultSrsAuth | `Property<String>` | Entspricht der ili2db-Option `--defaultSrsAuth`. | ja
 defaultSrsCode | `Property<String>` | Entspricht der ili2db-Option `--defaultSrsCode`. | ja
@@ -39,20 +39,20 @@ disableAreaValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--di
 disableNameOptimization | `Property<Boolean>` | Entspricht der ili2db-Option `--disableNameOptimization`. | ja
 disableRounding | `Property<Boolean>` | Entspricht der ili2db-Option `--disableRounding`. | ja
 disableValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--disableValidation`. | ja
-dropscript | `Property<Object>` | Entspricht der ili2db-Option `--dropscript`. | ja
+dropscript | `Property<File>` | Entspricht der ili2db-Option `--dropscript`. | ja
 expandMultilingual | `Property<Boolean>` | Entspricht der ili2db-Option `--expandMultilingual`. | ja
 exportTid | `Property<Boolean>` | Entspricht der ili2db-Option `--exportTid`. | ja
 failOnException | `Property<Boolean>` | Entspricht der ili2db-Option `--failOnException`. | ja
 forceTypeValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--forceTypeValidation`. | ja
 idSeqMax | `Property<Long>` | Entspricht der ili2db-Option `--idSeqMax`. | ja
 idSeqMin | `Property<Long>` | Entspricht der ili2db-Option `--idSeqMin`. | ja
-iliFile | `Property<Object>` | Name der ili-Datei, die gelesen werden soll. | ja
-iliMetaAttrs | `Property<Object>` | Entspricht der ili2db-Option `--iliMetaAttrs`. | ja
+iliFile | `Property<File>` | Name der ili-Datei, die gelesen werden soll. | ja
+iliMetaAttrs | `Property<File>` | Entspricht der ili2db-Option `--iliMetaAttrs`. | ja
 iligml20 | `Property<Boolean>` | Entspricht der ili2db-Option `--iligml20`. | ja
 importBid | `Property<Boolean>` | Entspricht der ili2db-Option `--importBid`. | ja
 importTid | `Property<Boolean>` | Entspricht der ili2db-Option `--importTid`. | ja
 keepAreaRef | `Property<Boolean>` | Entspricht der ili2db-Option `--keepAreaRef`. | ja
-logFile | `Property<Object>` | Entspricht der ili2db-Option `--logFile`. | ja
+logFile | `Property<File>` | Entspricht der ili2db-Option `--logFile`. | ja
 maxNameLength | `Property<Integer>` | Entspricht der ili2db-Option `--maxNameLength`. | ja
 metaConfig | `Property<String>` | Entspricht der ili2db-Option `--metaConfig`. | ja
 modeldir | `Property<String>` | Entspricht der ili2db-Option `--modeldir`. | ja

@@ -749,7 +749,7 @@ Beispiel:
 tasks.register("ili2duckdbexport", Ili2duckdbExport) {
     models = "GB2AV"
     dbschema = "gb2av"
-    dataFile = file("VOLLZUG_SO0200002401_1531_20180105113131.xml")
+    dataFile = files("VOLLZUG_SO0200002401_1531_20180105113131.xml")
     dbfile = file("my_gb2av.duckdb")
 }
 ```
@@ -763,10 +763,8 @@ Importiert Daten aus einer INTERLIS-Transferdatei in die DuckDB-Datenbank.
 
 Das Property `dataFile` kann mehreren Datentypen entsprechen:
 
-- `File`: Es wird eine einzelne Datei importiert.
-- `List`: Es werden mehrere Dateien gleichzeitig importiert. Die Namen der Dateien sind bereits vor Start des Jobs klar.
-- `FileCollection`: Es werden mehrere Dateien gleichzeitig importiert. Die Namen der Dateien sind erst zur Laufzeit bekannt (z.B. nach Download von FTP-Server o.ä.).
-- `String`: Es wird eine einzelne Datei aus einem ilidata-Repository automatisch heruntergeladen und importiert. 
+- `FileCollection`: Es werden mehrere Dateien gleichzeitig importiert.
+- `List`: Es werden mehrere Dateien aus einem ilidata-Repository gleichzeitig importiert. 
 
 Beispiel:
 
@@ -774,7 +772,7 @@ Beispiel:
 tasks.register("ili2duckdbimport", Ili2duckdbImport) {
     models = "GB2AV"
     dbschema = "gb2av"
-    dataFile = file("VOLLZUG_SO0200002401_1531_20180105113131.xml")
+    dataFile = files("VOLLZUG_SO0200002401_1531_20180105113131.xml")
     dbfile = file("my_gb2av.duckdb")
 }
 ```
