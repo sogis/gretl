@@ -56,6 +56,7 @@ public class GpkgExportTest {
             con.commit();
         }
 
+        // Execute
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check results
@@ -75,6 +76,7 @@ public class GpkgExportTest {
     
     @Test
     public void exportTablesOk() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/GpkgExportTables");
         Files.deleteIfExists(Paths.get( projectDirectory + "/data.gpkg"));
 
@@ -96,6 +98,7 @@ public class GpkgExportTest {
             IntegrationTestUtilSql.closeCon(con);
         }
 
+        // Execute
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check results

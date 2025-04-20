@@ -17,8 +17,6 @@ public class Gpkg2Shp extends DefaultTask {
     private GretlLogger log;
     
     private File dataFile = null;
-    // @OutputDirectory should create directory if it does not exist. Does
-    // not seem to work here!?
     private File outputDir = null;
 
     /**

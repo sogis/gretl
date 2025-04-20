@@ -13,6 +13,6 @@ tasks.register('gpkgexport', GpkgExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "gpkgexport"
     srcTableName = ["exportdata1", "exportdata2"]
-    dataFile = "data.gpkg"
+    dataFile = file("data.gpkg")
     dstTableName = ["exportdata1", "exportdata2"]
 }
