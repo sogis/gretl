@@ -7,6 +7,7 @@ import ch.interlis.iox_j.logging.FileLogger;
 import ch.so.agi.gretl.tasks.impl.Ili2gpkgAbstractTask;
 import ch.so.agi.gretl.tasks.impl.Ili2pgAbstractTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
     private Boolean createGeomIdx = false;
 
     /**
-     * Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `File`
+     * Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `List`
      */
     @InputFiles
     public Object getDataFile(){
@@ -122,26 +123,35 @@ public class Ili2gpkgImport extends Ili2gpkgAbstractTask {
         if (dataFile == null) {
             return;
         }
-        FileCollection dataFilesCollection=null;
+        List<String> files = new ArrayList<String>();
         if (dataFile instanceof FileCollection) {
-            dataFilesCollection = (FileCollection)dataFile;
-        } else {
-            dataFilesCollection = getProject().files(dataFile);
+            FileCollection dataFilesCollection = (FileCollection)dataFile;
+            for (File fileObj : dataFilesCollection) {
+                String fileName = fileObj.getPath();
+                files.add(fileName);
+            }
+        } else if (dataFile instanceof List) {
+            List<String> dataFiles = (List) dataFile;
+            for (String file : dataFiles) {
+                if (!file.startsWith("ilidata")) {
+                    throw new GradleException("dataFile: must start with ilidata");
+                }
+                files.add(file);
+            }
+        } else {            
+            throw new GradleException("dataFile: illegal data type <"+dataFile.getClass()+">");
         }
-        if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
+        
+        if (files == null || files.isEmpty()) {
             return;
         }
-        List<String> files = new ArrayList<String>();
-        for (java.io.File fileObj : dataFilesCollection) {
-            String fileName = fileObj.getPath();
-            files.add(fileName);
-        }
-        List<String> datasetNames=null;
+
+        List<String> datasetNames = null;
         if (getDataset() != null) {
             if(getDataset() instanceof String) {
                 datasetNames=new ArrayList<String>();
                 datasetNames.add((String)getDataset());
-            }else {
+            } else {
                 datasetNames=(List)getDataset();
             }
             if(files.size()!=datasetNames.size()) {

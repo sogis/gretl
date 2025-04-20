@@ -96,7 +96,7 @@ public abstract class Ili2duckdbImport extends Ili2dbImport {
                     datasetNames=(List)dataset;
                 }
             } else {
-                throw new GradleException("dataset: illegal data type");
+                throw new GradleException("dataset: illegal data type <"+dataset.getClass()+">");
             }
             if(files.size()!=datasetNames.size()) {
                 throw new GradleException("number of dataset names ("+datasetNames.size()+") doesn't match number of files ("+files.size()+")");

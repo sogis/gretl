@@ -817,14 +817,14 @@ Beispiel:
 ```groovy
 tasks.register('importData', Ili2gpkgImport) {
     models = "SO_AGI_AV_GB_Administrative_Einteilungen_20180613"
-    dataFile = file("data.xtf");
+    dataFile = files("data.xtf");
     dbfile = file("data.gpkg")    
 }
 ```
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2gpkgImport.md >}}
 
-Für die Beschreibung der einzenen ili2gpkg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+Für die Beschreibung der einzelnen ili2gpkg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
 ### Ili2pgDelete
 

@@ -30,7 +30,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
     private File preScript = null;
     private File postScript = null;
     private Boolean deleteData = false;
-    private Object logFile = null;
+    private File logFile = null;
     private Boolean trace = false;
     private File validConfigFile = null;
     private Boolean disableValidation = false;
@@ -86,7 +86,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
     }
     
     /**
-     * Entspricht der ili2gpkg-Option `--dataset`
+     * Entspricht der ili2gpkg-Option `--dataset`. `List` oder `String`.
      */
     @Input
     @Optional
@@ -153,7 +153,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
      */
     @OutputFile
     @Optional
-    public Object getLogFile() {
+    public File getLogFile() {
         return logFile;
     }
 
@@ -286,7 +286,7 @@ public abstract class Ili2gpkgAbstractTask extends DefaultTask {
         this.deleteData = deleteData;
     }
 
-    public void setLogFile(Object logFile) {
+    public void setLogFile(File logFile) {
         this.logFile = logFile;
     }
 

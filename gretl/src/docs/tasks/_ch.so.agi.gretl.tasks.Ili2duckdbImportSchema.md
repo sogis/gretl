@@ -28,7 +28,7 @@ createTypeConstraint | `Property<Boolean>` | Entspricht der ili2db-Option `--cre
 createTypeDiscriminator | `Property<Boolean>` | Entspricht der ili2db-Option `--createTypeDescriminator`. | ja
 createUnique | `Property<Boolean>` | Entspricht der ili2db-Option `--createUnique`. | ja
 createscript | `Property<File>` | Entspricht der ili2db-Option `--createscript`. | ja
-dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. Darf `FileCollection`, `String` oder `List` sein. | ja
+dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. Darf `FileCollection` oder `List` sein. | ja
 datasetSubstring | `ListProperty<Integer>` | null | ja
 dbfile | `Property<File>` | Datenbank-Datei in die importiert oder exportiert werden soll. | nein
 dbschema | `Property<String>` | Entspricht der ili2db-Option `--dbschema`. | ja

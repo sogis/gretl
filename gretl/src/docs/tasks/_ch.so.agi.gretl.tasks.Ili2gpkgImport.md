@@ -1,8 +1,8 @@
 Parameter | Datentyp | Beschreibung | Optional
 ----------|----------|-------------|-------------
 baskets | `String` | Entspricht der ili2gpkg-Option `--baskets` | ja
-dataFile | `Object` | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `File` | nein
-dataset | `Object` | Entspricht der ili2gpkg-Option `--dataset` | ja
+dataFile | `Object` | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `List` | nein
+dataset | `Object` | Entspricht der ili2gpkg-Option `--dataset`. `List` oder `String`. | ja
 dbfile | `File` | GeoPackage-Datei in die importiert werden soll. | nein
 defaultSrsCode | `String` | Entspricht der ili2gpkg-Option `--defaultSrsCode` | ja
 isCoalesceJson | `Boolean` | Entspricht der ili2gpkg-Option `--coalesceJson` | ja
@@ -20,7 +20,7 @@ isSkipGeometryErrors | `Boolean` | Entspricht der ili2gpkg-Option `--skipGeometr
 isSkipPolygonBuilding | `Boolean` | Entspricht der ili2gpkg-Option `--skipPolygonBuilding` | ja
 isStrokeArcs | `Boolean` | Entspricht der ili2gpkg-Option `--strokeArcs` | ja
 isTrace | `Boolean` | Entspricht der ili2gpkg-Option `--trace` | ja
-logFile | `Object` | Entspricht der ili2gpkg-Option `--logFile` | ja
+logFile | `File` | Entspricht der ili2gpkg-Option `--logFile` | ja
 modeldir | `String` | Entspricht der ili2gpkg-Option `--modeldir` | ja
 models | `String` | Entspricht der ili2gpkg-Option `--models` | ja
 postScript | `File` | Entspricht der ili2gpkg-Option `--postScript` | ja

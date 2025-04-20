@@ -2,7 +2,7 @@ Parameter | Datentyp | Beschreibung | Optional
 ----------|----------|-------------|-------------
 baskets | `Property<String>` | Entspricht der ili2db-Option `--baskets`. | ja
 dataFile | `Property<Object>` | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `List`. | nein
-dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. Darf `FileCollection`, `String` oder `List` sein. | ja
+dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. Darf `FileCollection` oder `List` sein. | ja
 datasetSubstring | `ListProperty<Integer>` | null | ja
 dbfile | `Property<File>` | Datenbank-Datei in die importiert oder exportiert werden soll. | nein
 dbschema | `Property<String>` | Entspricht der ili2db-Option `--dbschema`. | ja
