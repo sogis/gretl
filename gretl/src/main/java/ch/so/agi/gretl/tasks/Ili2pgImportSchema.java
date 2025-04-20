@@ -20,14 +20,14 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
      */
     @InputFile
     @Optional
-    public abstract Property<Object> getIliFile();
+    public abstract Property<File> getIliFile();
 
     /**
      * Entspricht der ili2pg-Option `--iliMetaAttrs`.
      */    
     @InputFile
     @Optional
-    public abstract Property<Object> getIliMetaAttrs();
+    public abstract Property<File> getIliMetaAttrs();
 
     /**
      * Entspricht der ili2pg-Option `--oneGeomPerTable`.
@@ -48,14 +48,14 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
      */
     @InputFile
     @Optional
-    public abstract Property<Object> getDropscript();
+    public abstract Property<File> getDropscript();
 
     /**
      * Entspricht der ili2pg-Option `--createscript`.
      */
     @InputFile
     @Optional
-    public abstract Property<Object> getCreatescript();
+    public abstract Property<File> getCreatescript();
     
     /**
      * Entspricht der ili2pg-Option `--metaConfig`.
@@ -371,16 +371,9 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
         int function = Config.FC_SCHEMAIMPORT;
         String iliFilename = null;
         if (getIliFile().isPresent()) {
-            Object iliFile = getIliFile().get();
-            if (iliFile instanceof String
-                    && ch.ehi.basics.view.GenericFileFilter.getFileExtension((String) iliFile) == null) {
-                iliFilename = (String) iliFile;
-            } else {
-                iliFilename = this.getProject().file(iliFile).getPath();
-            }
-        }
-        settings.setXtffile(iliFilename);
-        
+            File iliFile = getIliFile().get();
+            iliFilename = this.getProject().file(iliFile).getPath();
+        }        
         if (getIliMetaAttrs().isPresent()) {
             String iliMetaAttrsFilename = this.getProject().file(getIliMetaAttrs().get()).getPath();
             settings.setIliMetaAttrsFile(iliMetaAttrsFilename);
