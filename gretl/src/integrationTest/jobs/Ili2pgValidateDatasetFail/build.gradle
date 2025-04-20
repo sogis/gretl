@@ -33,7 +33,7 @@ tasks.register('importdatasets', Ili2pgImport) {
     models = "SO_AFU_Schutzbauten_20231212"
     modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = db_schema
-    dataFile = files("ch.so.agi.testeinzelobjekt_valid.xtf","ch.so.agi.testeinzelobjekt_valid.xtf") 
+    dataFile = files("ch.so.agi.testeinzelobjekt_valid1.xtf","ch.so.agi.testeinzelobjekt_valid2.xtf") 
     dataset = ["agi.testeinzelobjekt1","agi.testeinzelobjekt2"]
 }
 
