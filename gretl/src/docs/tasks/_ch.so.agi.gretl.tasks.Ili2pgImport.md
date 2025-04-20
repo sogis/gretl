@@ -1,7 +1,7 @@
 Parameter | Datentyp | Beschreibung | Optional
 ----------|----------|-------------|-------------
 baskets | `Property<String>` | Entspricht der ili2pg-Option `--baskets`. | ja
-dataFile | `Property<Object>` | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `String`. | nein
+dataFile | `Property<Object>` | Name der XTF-/ITF-Datei, die gelesen werden soll. Es können auch mehrere Dateien sein. `FileCollection` oder `List`. | nein
 database | `ListProperty<String>` | Datenbank aus der exportiert werden soll. | nein
 dataset | `Property<Object>` | Entspricht der ili2pg-Option `--dataset`. `List` oder `String`. | ja
 datasetSubstring | `ListProperty<Integer>` | null | ja

@@ -918,10 +918,8 @@ Datenbank noch nicht vorhanden sein.
 
 Das Property `dataFile` kann mehreren Datentypen entsprechen:
 
-- `File`: Es wird eine einzelne Datei importiert.
-- `List`: Es werden mehrere Dateien gleichzeitig importiert. Die Namen der Dateien sind bereits vor Start des Jobs klar.
-- `FileCollection`: Es werden mehrere Dateien gleichzeitig importiert. Die Namen der Dateien sind erst zur Laufzeit bekannt (z.B. nach Download von FTP-Server o.ä.).
-- `String`: Es wird eine einzelne Datei aus einem ilidata-Repository automatisch heruntergeladen und importiert. 
+- `List`: Es werden mehrere Dateien aus einem ilidata-Repository gleichzeitig importiert. 
+- `FileCollection`: Es werden mehrere Dateien gleichzeitig importiert. 
 
 Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2pgReplace verwendet werden.
 
@@ -934,8 +932,8 @@ def db_pass = "dmluser"
 
 tasks.register('importData', Ili2pgImport) {
     database = [db_uri, db_user, db_pass]
-    dataFile = "lv03_254900.itf"
-    logFile = "ili2pg.log"
+    dataFile = files("lv03_254900.itf")
+    logFile = file("ili2pg.log")
 }
 ```
 
@@ -953,7 +951,7 @@ tasks.register('importData', Ili2pgImport) {
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
     dataset = dataFile
     datasetSubstring = (0..4).toList()
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 
