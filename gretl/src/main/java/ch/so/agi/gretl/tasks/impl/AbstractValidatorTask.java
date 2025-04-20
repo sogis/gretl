@@ -83,7 +83,7 @@ public class AbstractValidatorTask extends DefaultTask {
     }
 
     /**
-     * Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
+     * Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: `false`
      */
     @Input
     @Optional
