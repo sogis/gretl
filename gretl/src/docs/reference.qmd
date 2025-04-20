@@ -880,9 +880,9 @@ def db_pass = "dmluser"
 
 tasks.register('exportData', Ili2pgExport) {
     database = [db_uri, db_user, db_pass]
-    dataFile = "lv03_254900-out.itf"
+    dataFile = files("lv03_254900-out.itf")
     dataset = "254900"
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 
@@ -896,9 +896,9 @@ def db_pass = "dmluser"
 
 tasks.register('exportData', Ili2pgExport) {
     database = [db_uri, db_user, db_pass]
-    dataFile = ["lv03_254900-out.itf","lv03_255000-out.itf"]
+    dataFile = files("lv03_254900-out.itf","lv03_255000-out.itf")
     dataset = ["254900","255000"]
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 

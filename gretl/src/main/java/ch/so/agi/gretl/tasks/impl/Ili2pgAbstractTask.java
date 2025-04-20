@@ -66,7 +66,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     public abstract Property<String> getModels();
 
     /**
-     * Entspricht der ili2pg-Option `--dataset`.
+     * Entspricht der ili2pg-Option `--dataset`. `List` oder `String`.
      */
     @Input
     @Optional
@@ -133,7 +133,7 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
      */
     @OutputFile
     @Optional
-    public abstract Property<Object> getLogFile();
+    public abstract Property<File> getLogFile();
 
     /**
      * Entspricht der ili2pg-Option `--trace`.

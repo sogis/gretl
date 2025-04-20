@@ -23,14 +23,14 @@ tasks.register("ili2pgimport", Ili2pgImport) {
     dependsOn 'ili2pgschemaimport'
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
-    dataFile = [ 'Beispiel2a.xtf', 'Beispiel2b.xtf']
-    dataset = [ 'DatasetA', 'DatasetB']
+    dataFile = ['Beispiel2a.xtf', 'Beispiel2b.xtf']
+    dataset = ['DatasetA', 'DatasetB']
 }
 
 tasks.register("ili2pgexport", Ili2pgExport) {
     dependsOn 'ili2pgimport'
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
-    dataFile = [ 'DatasetA-out.xtf', 'DatasetB-out.xtf']
-    dataset = [ 'DatasetA', 'DatasetB']
+    dataFile = files('DatasetA-out.xtf', 'DatasetB-out.xtf')
+    dataset = ['DatasetA', 'DatasetB']
 }

@@ -29,7 +29,7 @@ createTypeDiscriminator | `Property<Boolean>` | Entspricht der ili2pg-Option `--
 createUnique | `Property<Boolean>` | Entspricht der ili2pg-Option `--createUnique`. | ja
 createscript | `Property<Object>` | Entspricht der ili2pg-Option `--createscript`. | ja
 database | `ListProperty<String>` | Datenbank aus der exportiert werden soll. | nein
-dataset | `Property<Object>` | Entspricht der ili2pg-Option `--dataset`. | ja
+dataset | `Property<Object>` | Entspricht der ili2pg-Option `--dataset`. `List` oder `String`. | ja
 datasetSubstring | `ListProperty<Integer>` | null | ja
 dbschema | `Property<String>` | Entspricht der ili2pg-Option `--dbschema`. | ja
 defaultSrsAuth | `Property<String>` | Entspricht der ili2pg-Option `--defaultSrsAuth`. | ja
@@ -52,7 +52,7 @@ iligml20 | `Property<Boolean>` | Entspricht der ili2pg-Option `--iligml20`. | j
 importBid | `Property<Boolean>` | Entspricht der ili2pg-Option `--importBid`. | ja
 importTid | `Property<Boolean>` | Entspricht der ili2pg-Option `--importTid`. | ja
 keepAreaRef | `Property<Boolean>` | Entspricht der ili2pg-Option `--keepAreaRef`. | ja
-logFile | `Property<Object>` | Entspricht der ili2pg-Option `--logFile`. | ja
+logFile | `Property<File>` | Entspricht der ili2pg-Option `--logFile`. | ja
 maxNameLength | `Property<Integer>` | Entspricht der ili2pg-Option `--maxNameLength`. | ja
 metaConfig | `Property<String>` | Entspricht der ili2pg-Option `--metaConfig`. | ja
 modeldir | `Property<String>` | Entspricht der ili2pg-Option `--modeldir`. | ja
