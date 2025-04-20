@@ -39,7 +39,7 @@ public abstract class Ili2pgImport extends Ili2pgAbstractTask {
         // Liste mit saemtlichen Dateipfaeden oder ilidata-Ids.
         List<String> files = new ArrayList<>();
         Object dataFile = getDataFile().get();
-        if (dataFile instanceof FileCollection) {
+        if (dataFile instanceof FileCollection) {            
             FileCollection dataFilesCollection = (FileCollection) dataFile;
             if (dataFilesCollection.isEmpty()) {
                 return;

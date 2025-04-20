@@ -25,7 +25,7 @@ tasks.register('importdata', Ili2pgImport) {
     modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
     dbschema = "agi_av_gb_admin_einteilungen_ok"
     disableValidation = true
-    dataFile = file("ch.so.agi.av_gb_admin_einteilung_edit_ok.xtf")
+    dataFile = files("ch.so.agi.av_gb_admin_einteilung_edit_ok.xtf")
 }
 
 tasks.register('validate', Ili2pgValidate) {

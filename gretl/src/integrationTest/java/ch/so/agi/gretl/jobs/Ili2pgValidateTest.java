@@ -32,21 +32,28 @@ public class Ili2pgValidateTest {
 
     @Test
     public void validateData_Ok() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidate");
+        
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
+        // Check result
         String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidate/fubar.log")));
         assertTrue(logFileContent.contains("Info: ...validate done"));        
     }
     
     @Test
     public void validateData_Fail() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgValidateFail");
 
+        // Execute test
         assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
         });
 
+        // Check result
         String logFileContent = new String(Files.readAllBytes(Paths.get("src/integrationTest/jobs/Ili2pgValidateFail/fubar.log")));
         assertTrue(logFileContent.contains("Error: ...validate failed"));        
     }
