@@ -37,6 +37,7 @@ public class JsonImportTest {
 
     @Test
     public void importJsonObject_Ok() throws Exception {
+        // Prepare
         String schemaName = "jsonimport";
         String tableName = "jsonobject";
         String columnName = "json_text_col";
@@ -52,9 +53,11 @@ public class JsonImportTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportObject");
+        
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
-        // Reconnect to check results
+        // Check results
         try (
                 Connection con = IntegrationTestUtilSql.connectPG(postgres);
                 Statement stmt = con.createStatement()
@@ -88,6 +91,7 @@ public class JsonImportTest {
     
     @Test
     public void importJsonArray_Ok() throws Exception {
+        // Prepare
         String schemaName = "jsonimport";
         String tableName = "jsonarray";
         String columnName = "json_text_col";
@@ -104,9 +108,11 @@ public class JsonImportTest {
         }
 
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/JsonImportArray");
+       
+        // Check result
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
-        // Reconnect to check results
+        // Check results
         try (
             Connection con = IntegrationTestUtilSql.connectPG(postgres);
             Statement stmt = con.createStatement()

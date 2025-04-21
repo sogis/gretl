@@ -1192,8 +1192,8 @@ Beispiel:
 ```groovy
 tasks.register('exportTiff', PostgisRasterExport) {
     database = [db_uri, db_user, db_pass]
-    sqlFile = "raster.sql"
-    dataFile = "export.tif"
+    sqlFile = file("raster.sql")
+    dataFile = file("export.tif")
 }
 ```
 
@@ -1247,7 +1247,7 @@ tasks.register('downloadFile', S3Download) {
 
 Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch. 
 
-Mit dem passenden Content-Typ kann man das Verhalten des Browsers steuern. Default ist 'application/octect-stream', was dazu führt, dass die Datei immer heruntergeladen wird. Soll z.B. ein PDF oder ein Bild im Browser direkt angezeigt werden, muss der korrekte Content-Typ gewählt werden.
+Mit dem passenden Content-Typ kann man das Verhalten des Browsers steuern. Default ist `application/octect-stream`, was dazu führt, dass die Datei immer heruntergeladen wird. Soll z.B. ein PDF oder ein Bild im Browser direkt angezeigt werden, muss der korrekte Content-Typ gewählt werden.
 
 Beispiel: 
 

@@ -11,6 +11,6 @@ defaultTasks 'exportGeotiff'
 
 tasks.register('exportGeotiff', PostgisRasterExport) {
     database = [db_uri, db_user, db_pass]
-    sqlFile = "raster.sql"
-    dataFile = "export.tif"
+    sqlFile = file("raster.sql")
+    dataFile = file("export.tif")
 }

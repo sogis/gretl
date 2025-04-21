@@ -66,11 +66,12 @@ public class S3UploadTest {
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.txt").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
-        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadDirectory");
+
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
-        // Check result.
+        // Check result
         ListObjectsRequest listObjects = ListObjectsRequest
                 .builder()
                 .bucket(s3BucketName)
@@ -99,8 +100,9 @@ public class S3UploadTest {
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("foo.csv").build());
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.csv").build());
 
-        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFileTree");
+
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
         // Check result
@@ -132,11 +134,12 @@ public class S3UploadTest {
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
         s3Client.deleteObject(DeleteObjectRequest.builder().bucket(s3BucketName).key("bar.txt").build());
 
-        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3UploadFile");
+
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
-        // Check result.
+        // Check result
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(s3BucketName)
                 .key("bar.txt")
@@ -164,7 +167,7 @@ public class S3UploadTest {
                 GradleVariable.newGradleProperty("s3Endpoint", s3Endpoint.toString())
         };
 
-        // Execute
+        // Execute test
         assertThrows(Throwable.class, () -> {
             IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
         });

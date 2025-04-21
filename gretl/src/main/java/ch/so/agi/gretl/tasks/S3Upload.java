@@ -11,6 +11,8 @@ import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
@@ -24,8 +26,8 @@ public class S3Upload extends DefaultTask {
 
     private String accessKey;
     private String secretKey;
-    private Object sourceDir;
-    private Object sourceFile;
+    private File sourceDir;
+    private File sourceFile;
     private FileCollection sourceFiles;
     private String bucketName;
     private String endPoint = "https://s3.eu-central-1.amazonaws.com";
@@ -55,25 +57,25 @@ public class S3Upload extends DefaultTask {
      */
     @InputDirectory
     @Optional
-    public Object getSourceDir() {
+    public File getSourceDir() {
         return sourceDir;
     }
     
     /**
      * Datei, die hochgeladen werden soll.
      */
-    @Input
+    @InputFile
     @Optional
-    public Object getSourceFile() {
+    public File getSourceFile() {
         return sourceFile;
     }
 
     /**
      * `FileCollection` mit den Dateien, die hochgeladen werden sollen, z.B. `fileTree("/path/to/directoy/") { include "*.itf" }`
      */
-    @Input
+    @InputFiles
     @Optional
-    public Object getSourceFiles() {
+    public FileCollection getSourceFiles() {
         return sourceFiles;
     }
 
@@ -136,11 +138,11 @@ public class S3Upload extends DefaultTask {
         this.secretKey = secretKey;
     }
 
-    public void setSourceDir(Object sourceDir) {
+    public void setSourceDir(File sourceDir) {
         this.sourceDir = sourceDir;
     }
 
-    public void setSourceFile(Object sourceFile) {
+    public void setSourceFile(File sourceFile) {
         this.sourceFile = sourceFile;
     }
 

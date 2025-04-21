@@ -70,11 +70,12 @@ public class S3DownloadTest {
         File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadFile/upload/download.txt");
         s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");
 
-        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadFile");
+
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
-        // Check result.
+        // Check result
         S3Client s3client = s3TestHelper.getS3Client();
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()

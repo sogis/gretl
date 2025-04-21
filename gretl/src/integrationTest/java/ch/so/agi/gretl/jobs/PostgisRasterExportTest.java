@@ -30,16 +30,18 @@ public class PostgisRasterExportTest {
 
     @Test
     public void exportTiff() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PostgisRasterTiffExport");
         String exportFileName = "export.tif";
         String targetFileName = "target.tif";
         
-        // Delete existing file from previous test runs.
         File file = new File(projectDirectory, exportFileName);
         Files.deleteIfExists(file.toPath());
 
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
+        // Check result
         long targetFileSize = new File(projectDirectory, targetFileName).length();
         long exportFileSize = new File(projectDirectory, exportFileName).length();
 
@@ -49,16 +51,18 @@ public class PostgisRasterExportTest {
     // At the moment this tests if GDAL drivers are enabled in PostGIS.
     @Test
     public void exportGeoTiff() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PostgisRasterGeotiffExport");
         String exportFileName = "export.tif";
         String targetFileName = "target.tif";
 
-        // Delete existing file from previous test runs.
         File file = new File(projectDirectory, exportFileName);
         Files.deleteIfExists(file.toPath());
 
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
+        // Check result
         long targetFileSize = new File(projectDirectory, targetFileName).length();
         long exportFileSize = new File(projectDirectory, exportFileName).length();
 
