@@ -1403,7 +1403,7 @@ Beispiele:
 ```groovy
 tasks.register('transform', XslTransformer) {
     xslFile = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
-    xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
+    xmlFile = files("MeldungAnGeometer_G-0111102_20221103_145001.xml")
     outDirectory = file(".")
 }
 ```
@@ -1411,7 +1411,7 @@ tasks.register('transform', XslTransformer) {
 ```groovy
 tasks.register('transform', XslTransformer) {
     xslFile = file("path/to/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl")
-    xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
+    xmlFile = files("MeldungAnGeometer_G-0111102_20221103_145001.xml")
     outDirectory = file(".")
 }
 ```

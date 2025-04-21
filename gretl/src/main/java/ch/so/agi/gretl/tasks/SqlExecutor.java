@@ -19,10 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * This class represents the task which executes the SQLExecutorStep. Only
- * this class should execute the SQLExecutorStep.
- */
 public abstract class SqlExecutor extends DefaultTask {
     private static GretlLogger log;
 

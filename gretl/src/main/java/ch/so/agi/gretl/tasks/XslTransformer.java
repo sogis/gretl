@@ -8,6 +8,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -21,12 +22,12 @@ public class XslTransformer extends DefaultTask {
     protected GretlLogger log;
 
     private Object xslFile;
-    private Object xmlFile;
+    private FileCollection xmlFile;
     private File outDirectory;
     private String fileExtension = "xtf";
 
     /**
-     * Name der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss oder File-Objekt (beliebiger Pfad).
+     * Name (`String`) der XSLT-Datei, die im `src/main/resources/xslt`-Verzeichnis liegen muss oder `File`-Objekt (beliebiger Pfad).
      */
     @Input
     public Object getXslFile() {
@@ -34,10 +35,10 @@ public class XslTransformer extends DefaultTask {
     }
     
     /**
-     * Datei oder FileTree, die/der transformiert werden soll.
+     * XML-Dateien, die transformiert werden sollen.
      */
-    @Input
-    public Object getXmlFile() {
+    @InputFiles
+    public FileCollection getXmlFile() {
         return xmlFile;
     }
     
@@ -62,7 +63,7 @@ public class XslTransformer extends DefaultTask {
         this.xslFile = xslFile;
     }
 
-    public void setXmlFile(Object xmlFile) {
+    public void setXmlFile(FileCollection xmlFile) {
         this.xmlFile = xmlFile;
     }
 
@@ -88,12 +89,8 @@ public class XslTransformer extends DefaultTask {
             throw new IllegalArgumentException("outDirectory must not be null");
         }
 
-        FileCollection xmlFilesCollection = null;
-        if(xmlFile instanceof FileCollection) {
-            xmlFilesCollection = (FileCollection)xmlFile;
-        } else {
-            xmlFilesCollection = getProject().files(xmlFile);
-        }
+        FileCollection xmlFilesCollection = (FileCollection) xmlFile;
+
         if (xmlFilesCollection == null || xmlFilesCollection.isEmpty()) {
             // TODO: passt das? Job geht weiter.
             return;
@@ -105,12 +102,14 @@ public class XslTransformer extends DefaultTask {
         }
         
         try {
-            for(String dataFile : files) {
+            for (String dataFile : files) {
                 XslTransformerStep xslTransformerStep = new XslTransformerStep();
                 if (xslFile instanceof String) {
                     xslTransformerStep.execute((String) xslFile, new File(dataFile), outDirectory, fileExtension);
-                } else {
+                } else if (xslFile instanceof File) {
                     xslTransformerStep.execute((File) xslFile, new File(dataFile), outDirectory, fileExtension);
+                } else {
+                    throw new GradleException("xslFile: illegal data type <"+xslFile.getClass()+">");
                 }
             }
         } catch (Exception e) {

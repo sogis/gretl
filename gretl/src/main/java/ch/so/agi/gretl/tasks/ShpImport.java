@@ -20,7 +20,7 @@ public class ShpImport extends DefaultTask {
     protected GretlLogger log;
     
     private Connector database;
-    private Object dataFile = null;
+    private File dataFile = null;
     private String tableName = null;
     private String schemaName = null;
     private String encoding = null;
@@ -30,7 +30,7 @@ public class ShpImport extends DefaultTask {
      * Name der SHP-Datei, die gelesen werden soll.
      */
     @InputFile
-    public Object getDataFile() {
+    public File getDataFile() {
         return dataFile;
     }
 
@@ -77,7 +77,7 @@ public class ShpImport extends DefaultTask {
         return database;
     }
     
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
     }
 
