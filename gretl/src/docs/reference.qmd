@@ -1103,7 +1103,7 @@ Beispiel:
 ```groovy
 tasks.register('importJson', JsonImport) {
     database = [db_uri, db_user, db_pass]
-    jsonFile = "data.json"
+    jsonFile = file("data.json")
     qualifiedTableName = "jsonimport.jsonarray"
     columnName = "json_text_col"
 }

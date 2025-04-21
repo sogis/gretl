@@ -7,6 +7,7 @@ import ch.so.agi.gretl.steps.JsonImportStep;
 import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
@@ -18,7 +19,7 @@ public class JsonImport extends DefaultTask {
     
     private Connector database;
     private String qualifiedTableName = null;
-    private String jsonFile = null;
+    private File jsonFile = null;
     private String columnName = null;
     private Boolean deleteAllRows = false;
 
@@ -33,8 +34,8 @@ public class JsonImport extends DefaultTask {
     /**
      * JSON-Datei, die importiert werden soll.
      */
-    @Input
-    public String getJsonFile() {
+    @InputFile
+    public File getJsonFile() {
         return jsonFile;
     }
 
@@ -71,7 +72,7 @@ public class JsonImport extends DefaultTask {
         this.qualifiedTableName = qualifiedTableName;
     }
 
-    public void setJsonFile(String jsonFile) {
+    public void setJsonFile(File jsonFile) {
         this.jsonFile = jsonFile;
     }
 

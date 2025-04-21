@@ -7,7 +7,7 @@ disableAreaValidation | `Boolean` | Schaltet die AREA-Topologieprüfung aus. Def
 encoding | `String` | Zeichencodierung der CSV-Datei, z.B. `UTF-8`. Default: Systemeinstellung | ja
 failOnError | `Boolean` | Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true | ja
 firstLineIsHeader | `Boolean` | Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: `true` | ja
-forceTypeValidation | `Boolean` | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false | ja
+forceTypeValidation | `Boolean` | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: `false` | ja
 logFile | `File` | Schreibt die log-Meldungen der Validierung in eine Text-Datei. | ja
 metaConfigFile | `Object` | Konfiguriert den Validator mit Hilfe einer ini-Datei. Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration. `File`, falls eine lokale Datei verwendet wird. `String`, falls eine Datei aus einem Daten-Repository verwendet wird. | ja
 modeldir | `String` | INTERLIS-Modellrepository. `String`, separiert mit Semikolon (analog ili2db, ilivalidator). | ja

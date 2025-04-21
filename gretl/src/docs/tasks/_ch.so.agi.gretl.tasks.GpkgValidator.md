@@ -5,7 +5,7 @@ configFile | `Object` | Konfiguriert die Datenprüfung mit Hilfe einer ini-Datei
 dataFiles | `FileCollection` | Liste der Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler. | ja
 disableAreaValidation | `Boolean` | Schaltet die AREA-Topologieprüfung aus. Default: false | ja
 failOnError | `Boolean` | Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true | ja
-forceTypeValidation | `Boolean` | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false | ja
+forceTypeValidation | `Boolean` | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: `false` | ja
 logFile | `File` | Schreibt die log-Meldungen der Validierung in eine Text-Datei. | ja
 metaConfigFile | `Object` | Konfiguriert den Validator mit Hilfe einer ini-Datei. Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration. `File`, falls eine lokale Datei verwendet wird. `String`, falls eine Datei aus einem Daten-Repository verwendet wird. | ja
 modeldir | `String` | INTERLIS-Modellrepository. `String`, separiert mit Semikolon (analog ili2db, ilivalidator). | ja
