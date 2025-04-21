@@ -27,20 +27,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 public class ShpExportTest {
+    private static final String dbusr = "ddluser";
+    private static final String dbpwd = "ddluser";
+    private static final String dbdatabase = "gretl";
 
     @Container
     public static PostgreSQLContainer<?> postgres =
-            (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
-                    .withDatabaseName("gretl")
-                    .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
-                    .withInitScript("init_postgresql.sql")
-                    .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
+        (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
+            .withDatabaseName(dbdatabase)
+            .withUsername(dbusr)
+            .withPassword(dbpwd)
+            .withInitScript("init_postgresql.sql")
+            .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
 
     @Test
     public void exportOk() throws Exception {
+        // Prepare
         String schemaName = "shpexport".toLowerCase();
         Connection con = null;
-        try{
+        try {
             con = IntegrationTestUtilSql.connectPG(postgres);
             IntegrationTestUtilSql.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
@@ -55,11 +60,11 @@ public class ShpExportTest {
 
             File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpExport");
 
+            // Execute test
             GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-
             IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
-            //check results
+            //Check results
             {
                 System.out.println("cwd "+new File(".").getAbsolutePath());
                 //Open the file for reading
