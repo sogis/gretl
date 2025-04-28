@@ -71,8 +71,7 @@ public class FtpDownload extends AbstractFtpTask {
     }
 
     @TaskAction
-    void download()
-    {
+    public void download() {
         log = LogEnvironment.getLogger(FtpDownload.class);
         
         FTPClient ftp = null;
