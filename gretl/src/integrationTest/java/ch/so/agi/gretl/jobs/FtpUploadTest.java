@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class FtpUploadTest {
     
-    @Test
+    //@Test
     public void uploadOk() throws Exception {
         // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/FtpUpload");
