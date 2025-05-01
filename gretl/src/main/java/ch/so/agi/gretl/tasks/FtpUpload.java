@@ -100,5 +100,4 @@ public class FtpUpload extends AbstractFtpTask {
             }
         }
     }
-
 }
