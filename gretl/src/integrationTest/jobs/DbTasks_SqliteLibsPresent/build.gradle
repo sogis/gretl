@@ -10,5 +10,5 @@ def db_pass = ""
 
 tasks.register('querySqliteMaster', SqlExecutor){
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['querySqliteMaster.sql']
+    sqlFiles = files('querySqliteMaster.sql')
 }

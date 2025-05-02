@@ -11,7 +11,7 @@ def db_pass = ""
 
 tasks.register("workaround", SqlExecutor) {
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['init.sql']
+    sqlFiles = files('init.sql')
 }
 
 tasks.register("ili2duckdbexport", Ili2duckdbExport) {
