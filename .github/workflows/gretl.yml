@@ -88,6 +88,8 @@ jobs:
         run: |
             quarto render gretl/src/docs/  --to gfm --output-dir ../../../docs/user
             ls -la docs/user
+            cp docs/user/reference.md /docs/user/reference-$(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}').md
+            ls -la docs/user
 
       # - name: Commit/push documentation to repository
       #   uses: stefanzweifel/git-auto-commit-action@v5
