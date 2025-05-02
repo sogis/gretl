@@ -9,6 +9,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.interlis2.validator.Validator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public class IliValidator extends AbstractValidatorTask {
             return;
         }
         List<String> files = new ArrayList<String>();
-        for (java.io.File fileObj : dataFilesCollection) {
+        for (File fileObj : dataFilesCollection) {
             String fileName = fileObj.getPath();
             files.add(fileName);
         }

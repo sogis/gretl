@@ -11,18 +11,18 @@ defaultTasks 'importParquet'
 
 tasks.register('initDuckDb', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['init.sql']
+    sqlFiles = files('init.sql')
 }
 
 tasks.register('createTable', SqlExecutor) {
     dependsOn 'initDuckDb'
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['create_insert.sql']
+    sqlFiles = files('create_insert.sql')
 }
 
 tasks.register('importParquet', SqlExecutor) {
     dependsOn 'createTable'
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['import_parquet.sql']
+    sqlFiles = files('import_parquet.sql')
     sqlParameters = [pwd: "'"+pwd+"'"]
 }

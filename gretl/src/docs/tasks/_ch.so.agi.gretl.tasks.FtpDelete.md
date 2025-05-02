@@ -1,7 +1,7 @@
 Parameter | Datentyp | Beschreibung | Optional
 ----------|----------|-------------|-------------
 controlKeepAliveTimeout | `Long` | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default: 300s (=5 Minuten) | ja
-fileSeparator | `String` | Default: `/`. (Falls systemType Windows ist, ist der Default `\`. | ja
+fileSeparator | `String` | Default: `/`. Falls systemType Windows ist, ist der Default `\`. | ja
 passiveMode | `Boolean` | Aktiv- oder Passiv-Verbindungsmodus. Default: Passiv (true) | ja
 password | `String` | Passwort für den Zugriff auf dem Server. | nein
 remoteDir | `String` | Verzeichnis auf dem Server. | nein

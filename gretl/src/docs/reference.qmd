@@ -1421,7 +1421,8 @@ innerhalb der .sql-Datei Paramater zu verwenden und diesen Parametern beim Task 
 konkreten Wert zuzuweisen. Innerhalb der .sql-Datei werden Paramter mit folgender Syntax
 verwendet: `${paramName}`.
 
-Unterstützte Datenbanken: PostgreSQL, SQLite, Oracle, Derby und DuckDB.
+Unterstützte Datenbanken: PostgreSQL, SQLite, Oracle, Derby und DuckDB. Für weitere Datenbanken 
+muss der JDBC-Treiber als Abhängigkeit defininiert werden.
 
 Beispiele:
 
@@ -1433,7 +1434,7 @@ def db_pass = "dmluser"
 tasks.register('executeSomeSql', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
     sqlParameters = [dataset:'Olten']
-    sqlFiles = ['demo.sql']
+    sqlFiles = files('demo.sql')
 }
 ```
 
@@ -1448,7 +1449,7 @@ def db_pass = "dmluser"
 tasks.register('executeSomeSql', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
     sqlParameters = [[dataset:'Olten'],[dataset:'Grenchen']]
-    sqlFiles = ['demo.sql']
+    sqlFiles = files('demo.sql')
 }
 ```
 

@@ -1,7 +1,7 @@
 Parameter | Datentyp | Beschreibung | Optional
 ----------|----------|-------------|-------------
 controlKeepAliveTimeout | `Long` | Timeout bis ein NOOP über den Kontroll-Kanal versendet wird. Default: 300s (=5 Minuten) | ja
-fileSeparator | `String` | Default: `/`. (Falls systemType Windows ist, ist der Default `\`. | ja
+fileSeparator | `String` | Default: `/`. Falls systemType Windows ist, ist der Default `\`. | ja
 fileType | `String` | `ASCII` oder `BINARY`. Default: `ASCII`. | ja
 localFile | `File` | Lokale Datei, die auf den FTP-Server hochgeladen werden soll. | nein
 passiveMode | `Boolean` | Aktiv- oder Passiv-Verbindungsmodus. Default: Passiv (true) | ja
