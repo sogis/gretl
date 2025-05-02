@@ -9,14 +9,13 @@ def s3Endpoint = findProperty("s3Endpoint") ?: "https://s3.eu-central-1.amazonaw
 def s3Region = findProperty("s3Region") ?: "eu-central-1"
 def s3Acl = findProperty("s3Acl") ?: "public-read"
 
-defaultTasks 'downloadFile'
+defaultTasks 'downloadDirectory'
 
-tasks.register('downloadFile', S3Download) {
+tasks.register('downloadDirectory', S3Download) {
     accessKey = s3AccessKey
     secretKey = s3SecretKey
     endPoint = s3Endpoint
     region = s3Region
     bucketName = s3BucketName
-    key = "download.txt"
     downloadDir = file(".")
 }

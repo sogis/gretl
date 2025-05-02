@@ -72,8 +72,13 @@ public class S3DownloadDirectoryStepTest {
         s3DownloadDirectoryStep.execute(s3AccessKey, s3SecretKey, s3BucketName, s3Endpoint.toString(), s3Region, downloadDir.toFile());
 
         // Check result.
-//        String content = new String(Files.readAllBytes(Paths.get(downloadDir.toAbsolutePath().toString(), key)));
-//        log.debug(content);
-//        assertEquals("foo", content.substring(0, 3));
+        {
+            String content = Files.readString(Paths.get(downloadDir.toAbsolutePath().toString(), "foo.txt"));
+            assertEquals("foo", content.substring(0, 3));            
+        }
+        {
+            String content = Files.readString(Paths.get(downloadDir.toAbsolutePath().toString(), "bar.txt"));
+            assertEquals("bar", content.substring(0, 3));            
+        }
     }
 }

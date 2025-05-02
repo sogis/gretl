@@ -52,7 +52,7 @@ public class AbstractFtpTask extends DefaultTask {
     }
 
     /**
-     * Default: `/`. (Falls systemType Windows ist, ist der Default `\`.
+     * Default: `/`. Falls systemType Windows ist, ist der Default `\`.
      */
     @Input
     @Optional

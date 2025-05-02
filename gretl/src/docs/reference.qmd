@@ -609,6 +609,26 @@ tasks.register('ftplist', FtpList) {
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.FtpList.md >}}
 
+### FtpUpload
+
+Lädt eine Datei auf einen FTP-Server hoch.
+
+Beispiel:
+
+```groovy
+tasks.register('upload', FtpUpload) {
+    server = 'ftp.dm01server.ch'
+    user = 'foo'
+    password = 'bar'
+    systemType = "WINDOWS"
+    fileType = "BINARY"
+    localFile = file('254900.zip')
+    remoteDir = "\\DM01AVSO24LV95_2\\itf"
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.FtpUpload.md >}}
+
 ### Gpkg2Dxf 
 
 Exportiert alle Tabellen einer GeoPackage-Datei in DXF-Dateien. Als Input wird eine von _ili2gpkg_ erzeugte GeoPackage-Datei benötigt.
@@ -1223,11 +1243,40 @@ tasks.register('copyFiles', S3Bucket2Bucket) {
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.S3Bucket2Bucket.md >}}
 
+### S3Delete
+
+Löscht eine Datei in einem S3-Bucket oder den ganzen Inhalt des S3-Buckets.
+
+Beispiele:
+
+```groovy
+tasks.register('deleteFile', S3Delete) {
+    accessKey = s3AccessKey
+    secretKey = s3SecretKey
+    endPoint = s3Endpoint
+    region = s3Region
+    bucketName = s3BucketName
+    key = "foo.txt"
+}
+```
+
+```groovy
+tasks.register('deleteDirectory', S3Delete) {
+    accessKey = s3AccessKey
+    secretKey = s3SecretKey
+    endPoint = s3Endpoint
+    region = s3Region
+    bucketName = s3BucketName
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.S3Delete.md >}}
+
 ### S3Download
 
-Lädt eine Datei aus einem S3-Bucket herunter.
+Lädt eine Datei aus einem S3-Bucket oder den ganzen Inhalt des S3-Buckets herunter.
 
-Beispiel:
+Beispiele:
 
 ```groovy
 tasks.register('downloadFile', S3Download) {
@@ -1236,6 +1285,17 @@ tasks.register('downloadFile', S3Download) {
     downloadDir = file("./path/to/dir/")
     bucketName = "ch.so.ada.denkmalschutz"
     key = "foo.pdf"
+    endPoint = "https://s3.eu-central-1.amazonaws.com" 
+    region = "eu-central-1"
+}
+```
+
+```groovy
+tasks.register('downloadDirectory', S3Download) {
+    accessKey = 'abcdefg'
+    secretKey = 'hijklmnopqrstuvwxy'
+    downloadDir = file("./path/to/dir/")
+    bucketName = "ch.so.ada.denkmalschutz"
     endPoint = "https://s3.eu-central-1.amazonaws.com" 
     region = "eu-central-1"
 }

@@ -11,18 +11,18 @@ import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.steps.S3DeleteStep;
 import ch.so.agi.gretl.steps.S3DownloadDirectoryStep;
 import ch.so.agi.gretl.steps.S3DownloadStep;
 import ch.so.agi.gretl.util.TaskUtil;
 
-public class S3Download extends DefaultTask {
+public class S3Delete extends DefaultTask {
     protected GretlLogger log;
 
     private String accessKey;
     private String secretKey;
     private String bucketName;
     private String key;
-    private File downloadDir;
     private String endPoint = "https://s3.eu-central-1.amazonaws.com";
     private String region = "eu-central-1";
     
@@ -43,7 +43,7 @@ public class S3Download extends DefaultTask {
     }
     
     /**
-     * Name des Buckets, in dem die Datei gespeichert ist.
+     * Name des Buckets, in die Datei oder sämtliche Dateie gelöscht werden sollen.
      */
     @Input
     public String getBucketName() {
@@ -51,22 +51,14 @@ public class S3Download extends DefaultTask {
     }
     
     /**
-     * Name der Datei. Wird kein Key definiert, wird der Inhalt des gesamten Buckets heruntergeladen.
+     * Name der Datei, die gelöscht werden soll. Wird kein Key definiert, wird der Inhalt des gesamten Buckets gelöscht.
      */
     @Input
     @Optional
     public String getKey() {
         return key;
     }
-    
-    /**
-     * Verzeichnis, in das die Datei heruntergeladen werden soll.
-     */
-    @OutputDirectory
-    public File getDownloadDir() {
-        return downloadDir;
-    }
-    
+        
     /**
      * S3-Endpunkt. Default: `https://s3.eu-central-1.amazonaws.com/`
      */
@@ -101,10 +93,6 @@ public class S3Download extends DefaultTask {
         this.key = key;
     }
 
-    public void setDownloadDir(File downloadDir) {
-        this.downloadDir = downloadDir;
-    }
-
     public void setEndPoint(String endPoint) {
         this.endPoint = endPoint;
     }
@@ -115,16 +103,13 @@ public class S3Download extends DefaultTask {
 
     @TaskAction
     public void upload() {
-        log = LogEnvironment.getLogger(S3Download.class);
+        log = LogEnvironment.getLogger(S3Delete.class);
 
         if (accessKey == null) {
             throw new IllegalArgumentException("accessKey must not be null");
         }
         if (secretKey == null) {
             throw new IllegalArgumentException("secretKey must not be null");
-        }
-        if (downloadDir == null) {
-            throw new IllegalArgumentException("downloadDir must not be null");
         }
         if (bucketName == null) {
             throw new IllegalArgumentException("bucketName must not be null");
@@ -134,15 +119,10 @@ public class S3Download extends DefaultTask {
         }        
                 
         try {
-            if (key == null) {
-                S3DownloadDirectoryStep s3DownloadDirectoryStep = new S3DownloadDirectoryStep();
-                s3DownloadDirectoryStep.execute(accessKey, secretKey, bucketName, endPoint, region, downloadDir);
-            } else {
-                S3DownloadStep s3DownloadStep = new S3DownloadStep();
-                s3DownloadStep.execute(accessKey, secretKey, bucketName, key, endPoint, region, downloadDir);                
-            }
+            S3DeleteStep s3DeleteStep = new S3DeleteStep();
+            s3DeleteStep.execute(accessKey, secretKey, bucketName, key, endPoint, region);
         } catch (Exception e) {
-            log.error("Exception in S3Download task.", e);
+            log.error("Exception in S3Delete task.", e);
             GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         }

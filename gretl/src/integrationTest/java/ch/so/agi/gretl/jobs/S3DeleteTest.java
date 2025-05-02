@@ -17,6 +17,8 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 @Testcontainers
-public class S3DownloadTest {
+public class S3DeleteTest {
     @Container
     public static LocalStackContainer localStackContainer = new LocalStackContainer(S3TestHelper.getLocalstackImage())
             .withServices(S3);
@@ -65,65 +67,51 @@ public class S3DownloadTest {
 
     @Test
     @Tag(TestTags.S3_TEST)
-    void downloadFile_Ok() throws Exception {
+    void deleteFile_Ok() throws Exception {
         // Prepare
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
-        File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadFile/upload/download.txt");
+        File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DeleteFile/upload/foo.txt");
         s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");
 
-        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadFile");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DeleteFile");
 
         // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
-        // Check result
-        S3Client s3client = s3TestHelper.getS3Client();
-
-        // TODO Warum wird nicht einfach das lokale upload/download.txt verwendet?
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+        // Check result       
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
                 .bucket(s3BucketName)
-                .key("download.txt")
                 .build();
 
-        ResponseInputStream<GetObjectResponse> is = s3client.getObject(getObjectRequest);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        assertTrue(reader.readLine().equalsIgnoreCase("fubar"));
-
-        // Remove downloaded file
-        Files.delete(Paths.get("src/integrationTest/jobs/S3DownloadFile/download.txt"));
+        ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+        assertEquals(0, listResponse.contents().size());
     }
     
     @Test
     @Tag(TestTags.S3_TEST)
-    void downloadDirectory_Ok() throws Exception {
+    void deleteDirectory_Ok() throws Exception {
         // Prepare
         s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
         {
-            File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory/upload/foo.txt");
+            File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DeleteDirectory/upload/foo.txt");
             s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");            
         }
         {
-            File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory/upload/bar.txt");
+            File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DeleteDirectory/upload/bar.txt");
             s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");                        
         }
 
-        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DeleteDirectory");
 
         // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
-        // Check result
-        {
-            String content = Files.readString(new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory/foo.txt").toPath());
-            assertEquals("foo", content.substring(0, 3));            
-        }
-        {
-            String content = Files.readString(new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory/bar.txt").toPath());
-            assertEquals("bar", content.substring(0, 3));            
-        }
+        // Check result       
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(s3BucketName)
+                .build();
 
-        // Remove downloaded file
-        Files.delete(Paths.get("src/integrationTest/jobs/S3DownloadDirectory/foo.txt"));
-        Files.delete(Paths.get("src/integrationTest/jobs/S3DownloadDirectory/bar.txt"));
+        ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+        assertEquals(0, listResponse.contents().size());
     }
 }
