@@ -2,6 +2,9 @@
 title: "Publisher"
 order: 2
 search: false
+format: 
+  html:
+    self-contained: true
 ---
 
 GRETL-Task, welcher für Vektordaten die aktuellen Geodaten-Dateien 

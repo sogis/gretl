@@ -1,6 +1,9 @@
 ---
 title: "Referenzdokumentation"
 order: 1
+format: 
+  html:
+    self-contained: true
 ---
 
 Das Datenmanagement-Tool _GRETL_ ist ein Werkzeug, das für Datenimports, Datenumbauten
