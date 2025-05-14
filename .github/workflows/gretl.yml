@@ -114,9 +114,9 @@ jobs:
         run: |
           aws s3 ls --region ch-dk-2
 
-
-      # - name: Commit/push documentation to repository
-      #   uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Publish to S3
+        run: |
+          aws s3 cp gretl/src/docs/*.html s3://foo1/ --acl public-read --region ch-dk-2
 
       # - name: Login to Docker Container Registry
       #   #if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
