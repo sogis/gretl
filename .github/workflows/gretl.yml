@@ -90,8 +90,8 @@ jobs:
             ls -la docs/user
             VERSION=$(./gradlew properties --no-daemon --console=plain -q | grep '^version:' | awk '{print $2}')
             sed -i "s/publisher\.md/publisher-${VERSION}.html/g" docs/user/reference.html
-            mv docs/user/reference.md docs/user/reference-${VERSION}.html
-            mv docs/user/publisher.md docs/user/publisher-${VERSION}.html
+            mv docs/user/reference.html docs/user/reference-${VERSION}.html
+            mv docs/user/publisher.html docs/user/publisher-${VERSION}.html
             ls -la docs/user
 
       - name: Create s3 config and credentials file
