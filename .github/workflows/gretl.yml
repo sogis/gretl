@@ -88,10 +88,32 @@ jobs:
         run: |
             quarto render gretl/src/docs/ --to html --output-dir ../../../docs/user
             ls -la docs/user
-            sed -i "s/publisher\.md/publisher-$(./gradlew properties --no-daemon --console=plain -q | grep '^version:' | awk '{printf \$2}').html/g" reference.html
-            mv docs/user/reference.md docs/user/reference-$(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}').html
-            mv docs/user/publisher.md docs/user/publisher-$(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}').html
+            VERSION=$(./gradlew properties --no-daemon --console=plain -q | grep '^version:' | awk '{print $2}')
+            sed -i "s/publisher\.md/publisher-${VERSION}.html/g" reference.html
+            mv docs/user/reference.md docs/user/reference-${VERSION}.html
+            mv docs/user/publisher.md docs/user/publisher-${VERSION}.html
             ls -la docs/user
+
+      # - name: Create s3 config and credentials file
+      #   run: |
+      #     mkdir ~/.aws/
+      #     touch ~/.aws/config
+      #     touch ~/.aws/credentials
+      #     echo "[default]" > ~/.aws/config
+      #     echo "endpoint_url = ${{secrets.EXO_S3_ENDPOINT_URL}}" >> ~/.aws/config
+      #     echo "[default]" > ~/.aws/credentials
+      #     echo "aws_access_key_id = ${{secrets.EXO_S3_KEY_ID}}" >> ~/.aws/credentials
+      #     echo "aws_secret_access_key = ${{secrets.EXO_S3_SECRET_ACCESS_KEY}}" >> ~/.aws/credentials
+
+      # - name: Debug
+      #   run: |
+      #     cat ~/.aws/config
+      #     cat ~/.aws/credentials
+
+      # - name: Debug
+      #   run: |
+      #     aws s3 ls --region fsn1
+
 
       # - name: Commit/push documentation to repository
       #   uses: stefanzweifel/git-auto-commit-action@v5
