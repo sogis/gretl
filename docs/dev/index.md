@@ -114,11 +114,13 @@ Gradle-Daemons können mit dem Dockerimage nicht persistiert werden (weil der JV
 
 ## Dokumentation
 
-Ich bin nicht wirklich 100% zufrieden mit der momentanen Lösung: In diesem Repository sind im Ordner _src/docs/_ Quarto-Markdown-Dateien (.qmd) für die Referenzdokumentation. Es sind zwei Dateienm, da der Publisher-Task in einer separaten Datei beschrieben ist. Die jeweiligen Parameter der Tasks werden aus dem Code mit einem speziellen Doclet erzeugt. Pro Task gibt es eine Markdown-Datei. Der Inhalt der Datei ist eine Tabelle. Diese Dateien werden auch in das Repository eingecheckt (_src/docs/tasks/_). Die Quarto-Markdown-Dateien referenzieren diese Markdown-Dateien ("include ..."). Die Folge ist, dass nun eine lesbare und vollständige Markdown- oder HTML-Datei der Dokumentation mit Quarto gerendert werden muss. Dies geschieht erst im [https://github.com/sogis/gretl-docs](gretl.app-Repository). Somit verweist das README.md dieses Repos auf https://gretl.app.
+Ich bin noch nicht wirklich 100% zufrieden mit der momentanen Lösung: 
+
+In diesem Repository sind im Ordner _src/docs/_ Quarto-Markdown-Dateien (.qmd) für die Referenzdokumentation. Es sind zwei Dateien, da der Publisher-Task in einer separaten Datei beschrieben ist. Die jeweiligen Parameter der Tasks werden aus dem Code mit einem speziellen Doclet erzeugt. Pro Task gibt es eine Markdown-Datei. Der Inhalt der Datei ist eine Tabelle. Diese Dateien werden auch in das Repository eingecheckt (_src/docs/tasks/_). Die Quarto-Markdown-Dateien referenzieren diese Markdown-Dateien ("include ..."). Die Folge ist, dass nun eine lesbare und vollständige Markdown- oder HTML-Datei der Dokumentation mit Quarto gerendert werden muss. Dies geschieht erst im [https://github.com/sogis/gretl-docs](gretl.app-Repository). Somit verweist das README.md dieses Repos auf https://gretl.app.
 
 Ich hätte eigentlich gerne die Referenzdokumentation auch lesbar in diesem Repo. Ausprobiert habe ich, dass der Rendering-Prozess durch GH-Action auch in diesem Repo gemacht. Dann muss jedoch die GH-Action das Resultat wieder in das Repo einchecken, was ich wiederum auch nicht gut fand.
 
-Zudem fände ich eine Versionierung seitens gretl.app toll. Scheint aber mit Quarto noch nicht wirklich zu gehen.
+Die beiden Dateien der Referenzdokumentation (eigentliche Referenz plus Publisher) werden als versionierte HTML-Dateien in dem Exoscale S3-Bucket `ch.so.agi.gretl-docs` gespeichert. So stehen sämtliche Versionen der Dokumentation als einfache HTML-Seite zur Verfügung, z.B. https://sos-xx-yy-z.exo.io/ch.so.agi.gretl-docs/reference-3.1.848.html, wobei `xx-yy-z` = `ch-dk-2`.
 
 ## Varia
 
