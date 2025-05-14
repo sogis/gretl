@@ -116,7 +116,7 @@ jobs:
 
       - name: Publish to S3
         run: |
-          aws s3 cp docs/user s3://foo1 --recursive --exclude "*" --include "*.html" --acl public-read --region ch-dk-2
+          aws s3 cp docs/user s3://ch.so.agi.gretl-docs --recursive --exclude "*" --include "*.html" --acl public-read --region ch-dk-2
 
       # - name: Login to Docker Container Registry
       #   #if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
