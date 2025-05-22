@@ -36,9 +36,13 @@ public class Ili2pgReplaceFileTest {
 
     @Test
     public void importLocalFile_Ok() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgReplaceFile");
+        
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
+        // Check result
         try (
             Connection con = IntegrationTestUtilSql.connectPG(postgres);
             Statement stmt = con.createStatement();
@@ -66,9 +70,13 @@ public class Ili2pgReplaceFileTest {
     // heruntergeladen. Dieser Schritt entfaellt beim lokalen ilidata.xml
     @Test
     public void importIlidataFile_Ok() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgReplaceIlidataFile");
+        
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
+        // Check result
         try (
                 Connection con = IntegrationTestUtilSql.connectPG(postgres);
                 Statement stmt = con.createStatement();

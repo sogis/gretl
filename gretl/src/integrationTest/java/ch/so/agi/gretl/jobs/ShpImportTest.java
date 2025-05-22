@@ -32,6 +32,7 @@ public class ShpImportTest {
                     .waitingFor(Wait.forLogMessage(TestUtil.WAIT_PATTERN, 2));
     @Test
     public void importOk() throws Exception {
+        // Prepare
         String schemaName = "shpimport".toLowerCase();
         Connection con = null;
         try{
@@ -47,11 +48,11 @@ public class ShpImportTest {
 
             File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/ShpImportBatchSize");
 
+            // Execute test
             GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
-
             IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
-            //reconnect to check results
+            // Check results
             con = IntegrationTestUtilSql.connectPG(postgres);
 
             Statement s2 = con.createStatement();

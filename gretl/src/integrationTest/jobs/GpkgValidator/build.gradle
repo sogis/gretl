@@ -6,6 +6,6 @@ defaultTasks 'validate'
 
 task validate(type: GpkgValidator){
 	models = "GpkgModel"
-    dataFiles = ["attributes.gpkg"]
+    dataFiles = files("attributes.gpkg")
     tableName = "Attributes"
 }

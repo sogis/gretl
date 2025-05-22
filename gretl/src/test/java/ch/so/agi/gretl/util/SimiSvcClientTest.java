@@ -115,7 +115,7 @@ public class SimiSvcClientTest {
         assertEquals(DOC_LEAFLET, leaflet);
         assertEquals(expected_dataIdent, servlet.doc_dataident);
         assertEquals(expected_published, servlet.doc_published);
-        assertEquals("text/html", servlet.doc_contentType);
+        //assertEquals("text/html", servlet.doc_contentType); Bei GET-Request gibt es kein content type mehr.
         assertEquals("Bearer " + OAUTH_TOKEN, servlet.doc_authHeaderValue);
     }
     @Test

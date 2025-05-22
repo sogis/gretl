@@ -12,12 +12,12 @@ defaultTasks 'insertInto'
 
 tasks.register('fillSrcTable', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['statementChain_fillSrcTable.sql']
+    sqlFiles = files('statementChain_fillSrcTable.sql')
 }
 
 tasks.register('insertInto', SqlExecutor) {
     dependsOn 'fillSrcTable'
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['statementChain_insertIntoDestTable.sql']
+    sqlFiles = files('statementChain_insertIntoDestTable.sql')
     sqlParameters = [srcTable:'albums_src']
 }

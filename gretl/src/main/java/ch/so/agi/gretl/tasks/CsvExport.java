@@ -20,10 +20,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CsvExport extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
     
     private Connector database;
-    private Object dataFile = null;
+    private File dataFile = null;
     private String tableName = null;
     private Boolean firstLineIsHeader = true;
     private Character valueDelimiter = null;
@@ -33,10 +33,10 @@ public class CsvExport extends DefaultTask {
     private String encoding = null;
 
     /**
-     * Name der CSV-Datei, die erstellt werden soll.
+     * CSV-Datei, die erstellt werden soll.
      */
     @OutputFile
-    public Object getDataFile() {
+    public File getDataFile() {
         return dataFile;
     }
 
@@ -49,7 +49,7 @@ public class CsvExport extends DefaultTask {
     }
 
     /**
-     * Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
+     * Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: `true`
      */
     @Input
     @Optional
@@ -58,7 +58,7 @@ public class CsvExport extends DefaultTask {
     }
 
     /**
-     * Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default `"`
+     * Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default: `"`
      */
     @Input
     @Optional
@@ -94,7 +94,7 @@ public class CsvExport extends DefaultTask {
     }
 
     /**
-     * Zeichencodierung der CSV-Datei, z.B. "UTF-8". Default: Systemeinstellung
+     * Zeichencodierung der CSV-Datei, z.B. `UTF-8`. Default: Systemeinstellung
      */
     @Input
     @Optional
@@ -114,7 +114,7 @@ public class CsvExport extends DefaultTask {
         this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
     }
 

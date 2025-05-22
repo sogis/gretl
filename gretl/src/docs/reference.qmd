@@ -1,6 +1,9 @@
 ---
 title: "Referenzdokumentation"
 order: 1
+format: 
+  html:
+    self-contained: true
 ---
 
 Das Datenmanagement-Tool _GRETL_ ist ein Werkzeug, das für Datenimports, Datenumbauten
@@ -147,7 +150,7 @@ Aufgrund der sehr vielen Logging-Messages einer verwendeten Bibliothek, wird der
 
 ```groovy
 tasks.register('transform', Av2ch) {
-    inputFile = file("254900.itf")
+    inputFile = files("254900.itf")
     outputDirectory = file("output")
 }
 ```
@@ -157,7 +160,7 @@ Es können auch mehrere Dateien gleichzeitig transformiert werden:
 ``` groovy
 tasks.register('transform', Av2ch) {
     inputFile = fileTree(".").matching {
-            include"*.itf"
+            include "*.itf"
         }
     outputDirectory = file("output")
 }
@@ -178,8 +181,8 @@ Der Datenumbau ist nicht konfigurierbar.
 
 ```groovy
 tasks.register('av2geobau', Av2geobau) {
-    itfFiles = "ch_254900.itf"
-    dxfDirectory = "./out/"
+    itfFiles = files("ch_254900.itf")
+    dxfDirectory = file("./out/")
 }
 ```
 
@@ -190,14 +193,14 @@ tasks.register('av2geobau', Av2geobau) {
     itfFiles = fileTree(".").matching {
         include"*.itf"
     }
-    dxfDirectory = "./out/"
+    dxfDirectory = file("./out/")
 }
 ```
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Av2geobau.md >}}
 
 ### Csv2Excel (incubating)
-Konvertiert eine CSV-Datei in eine Excel-Datei (*.xlsx). Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert. Die Daten werden vollständig im Speicher vorgehalten. Falls grosse Dateien geschrieben werden müssen, kann das zu Problemen führen. Dann müsste die Apache POI SXSSF Implementierung (Streaming) verwendet werden.
+Konvertiert eine CSV-Datei in eine Excel-Datei (*.xlsx). Datentypen werden anhand eines INTERLIS-Modelles eruiert. Fehlt das Modell, wird alles als Text gespeichert. Die Daten werden vollständig im Speicher vorgehalten. Falls grosse Dateien geschrieben werden müssen, kann das zu Problemen führen. Dann müsste die Apache POI SXSSF Implementierung (Streaming) verwendet werden. Existiert die Datei (`outputFile`) bereits, wird ein neues Sheet erstellt, d.h. die Datei wird nicht überschrieben. Der Sheet-Name ist immer der normaliserte Name der CSV-Datei. Es wird ein Fehler gemeldet, falls der Sheet-Name bereits existiert.
 
 Beispiel:
 
@@ -209,7 +212,7 @@ tasks.register('convertData', Csv2Excel) {
     valueSeparator = ";"
     encoding = "ISO-8859-1";
     models = "SO_HBA_Gebaeude_20230111";
-    outputDir = file(".");
+    outputFile = file(".");
 }
 ```
 
@@ -231,7 +234,7 @@ tasks.register('csvexport', CsvExport) {
     tableName = "exportdata"
     firstLineIsHeader = true
     attributes = [ "t_id","Aint"]
-    dataFile = "data.csv"
+    dataFile = file("data.csv")
 }
 ```
 
@@ -259,11 +262,11 @@ tasks.register('csvimport',  CsvImport) {
     schemaName = "csvimport"
     tableName = "importdata"
     firstLineIsHeader = true
-    dataFile = "data1.csv"
+    dataFile = file("data1.csv")
 }
 ```
 
-{{< include ./tasks/_ch.so.agi.gretl.tasks.CsvExport.md >}}
+{{< include ./tasks/_ch.so.agi.gretl.tasks.CsvImport.md >}}
 
 ### CsvValidator
 
@@ -275,17 +278,16 @@ Beispiele:
 tasks.register('validate', CsvValidator) {
     models = "CsvModel"
     firstLineIsHeader = true
-    dataFiles = ["data1.csv"]
+    dataFiles = files("data1.csv")
 }
 ```
 
 ```groovy
 tasks.register('validateFahrzeugbestandCsv', CsvValidator) {
-    description = "Validiert die CSV-Datei der Fahrzeugbestände"
     models = "SO_MFK_Fahrzeugbestand_20250201"
     modeldir = "../models/"
     firstLineIsHeader = true
-    dataFiles = ["../data/ch.so.mfk.fahrzeugbestand.csv"]
+    dataFiles = files("../data/ch.so.mfk.fahrzeugbestand.csv")
     valueSeparator = ';'
     valueDelimiter = null
 }
@@ -547,9 +549,9 @@ Um heruntergeladene Daten zu löschen:
 
 ```groovy
 tasks.register('ftpdelete', FtpDelete) {
-    server= "ftp.server.org"
-    user= "Hans"
-    password= "dummy"
+    server = "ftp.server.org"
+    user = "Hans"
+    password = "dummy"
     remoteDir = "\\dm01avso24lv95\\itf"
     remoteFile = fileTree(pathToDownloadFolder) { include '*.zip' } 
 }
@@ -566,11 +568,11 @@ Beispiel:
 
 ```groovy
 tasks.register('ftpdownload', FtpDownload) {
-    server= "ftp.server.org"
-    user= "Hans"
-    password= "dummy"
-    localDir= "downloads"
-    remoteDir= ""
+    server = "ftp.server.org"
+    user = "Hans"
+    password = "dummy"
+    localDir = file("downloads")
+    remoteDir = ""
 }
 ```
 
@@ -578,13 +580,13 @@ Um eine bestimmte Datei herunterzuladen:
 
 ```groovy
 tasks.register('ftpdownload', FtpDownload) {
-    server="ftp.infogrips.ch"
-    user= "Hans"
-    password= "dummy"
-    systemType="WINDOWS"
-    localDir= "downloads"
-    remoteDir="\\dm01avso24lv95\\itf"
-    remoteFile="240100.zip"
+    server ="ftp.infogrips.ch"
+    user = "Hans"
+    password = "dummy"
+    systemType = "WINDOWS"
+    localDir = file("downloads")
+    remoteDir ="\\dm01avso24lv95\\itf"
+    remoteFile ="240100.zip"
 }
 ```
 
@@ -609,6 +611,26 @@ tasks.register('ftplist', FtpList) {
 ```
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.FtpList.md >}}
+
+### FtpUpload
+
+Lädt eine Datei auf einen FTP-Server hoch.
+
+Beispiel:
+
+```groovy
+tasks.register('upload', FtpUpload) {
+    server = 'ftp.dm01server.ch'
+    user = 'foo'
+    password = 'bar'
+    systemType = "WINDOWS"
+    fileType = "BINARY"
+    localFile = file('254900.zip')
+    remoteDir = "\\DM01AVSO24LV95_2\\itf"
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.FtpUpload.md >}}
 
 ### Gpkg2Dxf 
 
@@ -662,9 +684,9 @@ def db_pass = "dmluser"
 tasks.register('gpkgexport', GpkgExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "gpkgexport"
-    srcTableName = "exportdata"
-    dataFile = "data.gpkg"
-    dstTableName = "exportdata"
+    srcTableName = ["exportdata"]
+    dataFile = file("data.gpkg")
+    dstTableName = ["exportdata"]
 }
 ```
 
@@ -677,7 +699,7 @@ tasks.register('gpkgexport', GpkgExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "gpkgexport"
     srcTableName = ["exportTable1", "exportTable2"]
-    dataFile = "data.gpkg"
+    dataFile = file("data.gpkg")
     dstTableName = ["exportTable1", "exportTable2"]
 }
 ```
@@ -705,7 +727,7 @@ tasks.register('gpkgimport', GpkgImport) {
     schemaName = "gpkgimport"
     srcTableName = "Point"
     dstTableName = "importdata"
-    dataFile = "point.gpkg"
+    dataFile = file("point.gpkg")
 }
 ```
 
@@ -719,7 +741,7 @@ Beispiel:
 ```groovy
 tasks.register('validate', GpkgValidator) {
     models = "GpkgModel"
-    dataFiles = ["attributes.gpkg"]
+    dataFiles = files("attributes.gpkg")
     tableName = "Attributes"
 }
 ```
@@ -740,6 +762,65 @@ tasks.register('compressFile', Gzip) {
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Gzip.md >}}
 
+### Ili2duckdbExport
+
+Exportiert Daten aus der DuckDB-Datenbank in eine INTERLIS-Transferdatei.
+
+Beispiel:
+
+```groovy
+tasks.register("ili2duckdbexport", Ili2duckdbExport) {
+    models = "GB2AV"
+    dbschema = "gb2av"
+    dataFile = files("VOLLZUG_SO0200002401_1531_20180105113131.xml")
+    dbfile = file("my_gb2av.duckdb")
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2duckdbExport.md >}}
+
+
+### Ili2duckdbImport
+
+Importiert Daten aus einer INTERLIS-Transferdatei in die DuckDB-Datenbank.
+
+Das Property `dataFile` kann mehreren Datentypen entsprechen:
+
+- `FileCollection`: Es werden mehrere Dateien gleichzeitig importiert.
+- `List`: Es werden mehrere Dateien aus einem ilidata-Repository gleichzeitig importiert. 
+
+Beispiel:
+
+```groovy
+tasks.register("ili2duckdbimport", Ili2duckdbImport) {
+    models = "GB2AV"
+    dbschema = "gb2av"
+    dataFile = files("VOLLZUG_SO0200002401_1531_20180105113131.xml")
+    dbfile = file("my_gb2av.duckdb")
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2duckdbImport.md >}}
+
+### Ili2duckdbImportSchema
+
+Erstellt die Tabellenstruktur in der DuckDB-Datenbank anhand eines INTERLIS-Modells. Fremdschlüssel werden nicht unterstützt (weil `ADD CONSTRAINT`-Syntax nicht unterstützt wird). Es muss `--strokeArcs` verwendet werden. Räumlicher Index von DuckDB ist noch rudimentär umgesetzt.
+
+Beispiel:
+
+```groovy
+tasks.register("ili2duckdbschemaimport", Ili2duckdbImportSchema) {
+    dbfile = file("my_gb2av.duckdb")
+    models = "GB2AV"
+    modeldir = rootProject.projectDir.toString() + ";http://models.interlis.ch"
+    dbschema = "gb2av"
+    coalesceJson = true
+    createBasketCol = true
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2duckdbImportSchema.md >}}
+
 ### Ili2gpkgImport
 
 Importiert Daten aus einer INTERLIS-Transferdatei in eine GeoPackage-Datei.
@@ -759,14 +840,14 @@ Beispiel:
 ```groovy
 tasks.register('importData', Ili2gpkgImport) {
     models = "SO_AGI_AV_GB_Administrative_Einteilungen_20180613"
-    dataFile = file("data.xtf");
+    dataFile = files("data.xtf");
     dbfile = file("data.gpkg")    
 }
 ```
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2gpkgImport.md >}}
 
-Für die Beschreibung der einzenen ili2gpkg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+Für die Beschreibung der einzelnen ili2gpkg-Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
 
 ### Ili2pgDelete
 
@@ -822,9 +903,9 @@ def db_pass = "dmluser"
 
 tasks.register('exportData', Ili2pgExport) {
     database = [db_uri, db_user, db_pass]
-    dataFile = "lv03_254900-out.itf"
+    dataFile = files("lv03_254900-out.itf")
     dataset = "254900"
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 
@@ -838,9 +919,9 @@ def db_pass = "dmluser"
 
 tasks.register('exportData', Ili2pgExport) {
     database = [db_uri, db_user, db_pass]
-    dataFile = ["lv03_254900-out.itf","lv03_255000-out.itf"]
+    dataFile = files("lv03_254900-out.itf","lv03_255000-out.itf")
     dataset = ["254900","255000"]
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 
@@ -852,13 +933,16 @@ Für die Beschreibung der einzenen ili2pg-Optionen: https://github.com/claeis/il
 
 Importiert Daten aus einer INTERLIS-Transferdatei in die PostgreSQL-Datenbank.
 
-Die Tabellen werden implizit auch angelegt, falls sie noch nicht vorhanden sind. Falls die Tabellen in der Datenbank 
+Falls die Tabellen in der Datenbank 
 schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. bfsnr, datum etc.), welche beim Import leer bleiben.
 
 Falls beim Import ein Datensatz-Identifikator (dataset) definiert wird, darf dieser Datensatz-Identifikator in der 
 Datenbank noch nicht vorhanden sein. 
 
-Falls man mehrere Dateien importieren will, diese jedoch erst zur Laufzeit eruiert werden können, muss der Parameter `dataFile` eine Gradle `FileCollection` resp. eine implementierende Klasse (z.B. `FileTree`) sein. Gleiches gilt für den `dataset`-Parameter. Als einzelner Wert für das Dataset wird in diesem Fall der Name der Datei _ohne_ Extension und _ohne_ Pfad verwendet. Leider kann nicht bereits in der Task-Definition aus dem Filetree eine Liste gemacht werden, z.B. `fileTree(pathToUnzipFolder) { include '*.itf' }.files.name`. Diese Liste ist leer.
+Das Property `dataFile` kann mehreren Datentypen entsprechen:
+
+- `List`: Es werden mehrere Dateien aus einem ilidata-Repository gleichzeitig importiert. 
+- `FileCollection`: Es werden mehrere Dateien gleichzeitig importiert. 
 
 Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2pgReplace verwendet werden.
 
@@ -871,8 +955,8 @@ def db_pass = "dmluser"
 
 tasks.register('importData', Ili2pgImport) {
     database = [db_uri, db_user, db_pass]
-    dataFile = "lv03_254900.itf"
-    logFile = "ili2pg.log"
+    dataFile = files("lv03_254900.itf")
+    logFile = file("ili2pg.log")
 }
 ```
 
@@ -890,7 +974,7 @@ tasks.register('importData', Ili2pgImport) {
     dataFile = fileTree(pathToUnzipFolder) { include '*.itf' }
     dataset = dataFile
     datasetSubstring = (0..4).toList()
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 
@@ -915,7 +999,7 @@ tasks.register('importSchema', Ili2pgImportSchema) {
     database = [db_uri, db_user, db_pass]
     models = "DM01AVSO24"
     dbschema = "gretldemo"
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 
@@ -938,7 +1022,7 @@ def db_pass = "dmluser"
 
 tasks.register('replaceData', Ili2pgReplace) {
     database = [db_uri, db_user, db_pass]
-    dataFile = "lv03_254900.itf"
+    dataFile = files("lv03_254900.itf")
     dataset = "254900"
     logFile = "ili2pg.log"
 }
@@ -955,7 +1039,7 @@ tasks.register('importData', Ili2pgReplace) {
     dbschema = 'agi_dm01avso24'
     dataFile = fileTree(dir: dm01SoDir, include: '*.itf')
     dataset = dataFile
-    datasetSubstring = 0..4
+    datasetSubstring = (0..4).toList()
 ```
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Ili2pgReplace.md >}}
@@ -980,9 +1064,9 @@ def db_pass = "dmluser"
 
 tasks.register('updateData', Ili2pgUpdate) {
     database = [db_uri, db_user, db_pass]
-    dataFile = "lv03_254900.itf"
+    dataFile = files("lv03_254900.itf")
     dataset = "254900"
-    logFile = "ili2pg.log"
+    logFile = file("ili2pg.log")
 }
 ```
 
@@ -1024,8 +1108,8 @@ Beispiel:
 
 ```groovy
 tasks.register('validate', IliValidator) {
-    dataFiles = ["Beispiel2a.xtf"]
-    logFile = "ilivalidator.log"
+    dataFiles = files("Beispiel2a.xtf")
+    logFile = file("ilivalidator.log")
 }
 ```
 
@@ -1042,13 +1126,79 @@ Beispiel:
 ```groovy
 tasks.register('importJson', JsonImport) {
     database = [db_uri, db_user, db_pass]
-    jsonFile = "data.json"
+    jsonFile = file("data.json")
     qualifiedTableName = "jsonimport.jsonarray"
     columnName = "json_text_col"
 }
 ```
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.JsonImport.md >}}
+
+
+### JsonValidator
+
+Prüft eine Json-Datei gegenüber einem INTERLIS-Modell. Basiert auf _ilivalidator_. Der verwendete JsonReader (IoxReader-Implementierung) ist sehr elaboriert und unterstützt viele Sprachfeatures von INTERLIS. So werden zwingend verschiedene Attribute verlangt (`@type`, `@bid`, `@id`, `@topic`). Diese sind allesamt notwendig, um korrekt Daten transferieren zu können. Für unseren Anwendungfalls reicht (momentan) jedoch die Information des Typs. Aus diesem Grund müssen die anderen Attribute nicht vorhanden sein und werden vor der Validierung automatisch hinzugefügt. Ebenso müsste das Toplevel-Objekt ein Array sein. Auch dies ist nicht zwingend und wird bei Bedarf hinzugefügt.
+
+TODO: Strict mode einführen, um das Originalverhalten des JsonReaders widerzuspiegeln.
+
+Beispiel:
+
+```groovy
+task validate(type: JsonValidator) {
+    models = "Test2"
+    dataFiles = files("structAttr.json")
+}
+```
+
+```json
+{
+    "@type": "Test2.Topic2.ClassA",
+    "attrText" : "line0",
+    "attrStruct": {
+        "@type": "Test2.Topic2.StructA",
+        "attrText": "lineA"
+    },
+    "attrBag": [
+        {
+            "@type": "Test2.Topic2.StructA",
+            "attrText": "li"
+        },
+        {
+            "@type": "Test2.Topic2.StructA",
+            "attrText": "lineC"
+        }
+    ],
+    "attrTextList": ["lineDXXXX", "lineE"],
+    "attrSurface" : "POLYGON ((2460000 1045000, 2460001 1045000, 2460001 1045001, 2460000 1045001, 2460000 1045000))"
+}
+```
+
+```python
+INTERLIS 2.4;
+
+MODEL Test2 (de) AT "mailto:ceis@localhost" VERSION "20170703" =
+    
+    TOPIC Topic2 =
+    
+        STRUCTURE StructA =
+            attrText : TEXT*3;
+            attrInt : -1000 .. 1000;
+        END StructA;
+
+        CLASS ClassA =
+            attrText : TEXT*60;
+            attrStruct : StructA;
+            attrBag : BAG OF StructA;
+            attrTextList : LIST {0..*} OF TEXT*5;
+            attrSurface : AREA WITH (STRAIGHTS, ARCS) VERTEX Coord2 WITHOUT OVERLAPS > 0.001;
+        END ClassA;
+    
+    END Topic2;
+    
+END Test2.
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.JsonValidator.md >}}
 
 ### PostgisRasterExport
 
@@ -1065,8 +1215,8 @@ Beispiel:
 ```groovy
 tasks.register('exportTiff', PostgisRasterExport) {
     database = [db_uri, db_user, db_pass]
-    sqlFile = "raster.sql"
-    dataFile = "export.tif"
+    sqlFile = file("raster.sql")
+    dataFile = file("export.tif")
 }
 ```
 
@@ -1096,11 +1246,40 @@ tasks.register('copyFiles', S3Bucket2Bucket) {
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.S3Bucket2Bucket.md >}}
 
+### S3Delete
+
+Löscht eine Datei in einem S3-Bucket oder den ganzen Inhalt des S3-Buckets.
+
+Beispiele:
+
+```groovy
+tasks.register('deleteFile', S3Delete) {
+    accessKey = s3AccessKey
+    secretKey = s3SecretKey
+    endPoint = s3Endpoint
+    region = s3Region
+    bucketName = s3BucketName
+    key = "foo.txt"
+}
+```
+
+```groovy
+tasks.register('deleteDirectory', S3Delete) {
+    accessKey = s3AccessKey
+    secretKey = s3SecretKey
+    endPoint = s3Endpoint
+    region = s3Region
+    bucketName = s3BucketName
+}
+```
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.S3Delete.md >}}
+
 ### S3Download
 
-Lädt eine Datei aus einem S3-Bucket herunter.
+Lädt eine Datei aus einem S3-Bucket oder den ganzen Inhalt des S3-Buckets herunter.
 
-Beispiel:
+Beispiele:
 
 ```groovy
 tasks.register('downloadFile', S3Download) {
@@ -1114,13 +1293,24 @@ tasks.register('downloadFile', S3Download) {
 }
 ```
 
+```groovy
+tasks.register('downloadDirectory', S3Download) {
+    accessKey = 'abcdefg'
+    secretKey = 'hijklmnopqrstuvwxy'
+    downloadDir = file("./path/to/dir/")
+    bucketName = "ch.so.ada.denkmalschutz"
+    endPoint = "https://s3.eu-central-1.amazonaws.com" 
+    region = "eu-central-1"
+}
+```
+
 {{< include ./tasks/_ch.so.agi.gretl.tasks.S3Download.md >}}
 
 ### S3Upload
 
 Lädt ein Dokument (`sourceFile`) oder alle Dokumente in einem Verzeichnis (`sourceDir`) in einen S3-Bucket (`bucketName`) hoch. 
 
-Mit dem passenden Content-Typ kann man das Verhalten des Browsers steuern. Default ist 'application/octect-stream', was dazu führt, dass die Datei immer heruntergeladen wird. Soll z.B. ein PDF oder ein Bild im Browser direkt angezeigt werden, muss der korrekte Content-Typ gewählt werden.
+Mit dem passenden Content-Typ kann man das Verhalten des Browsers steuern. Default ist `application/octect-stream`, was dazu führt, dass die Datei immer heruntergeladen wird. Soll z.B. ein PDF oder ein Bild im Browser direkt angezeigt werden, muss der korrekte Content-Typ gewählt werden.
 
 Beispiel: 
 
@@ -1153,7 +1343,7 @@ tasks.register('shpexport', ShpExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "shpexport"
     tableName = "exportdata"
-    dataFile = "data.shp"
+    dataFile = file("data.shp")
 }
 ```
 
@@ -1181,7 +1371,7 @@ tasks.register('shpimport', ShpImport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "shpimport"
     tableName = "importdata"
-    dataFile = "data.shp"
+    dataFile = file("data.shp")
 }
 ```
 
@@ -1202,7 +1392,7 @@ Beispiel:
 ```groovy
 tasks.register('validate', ShpValidator) {
     models = "ShpModel"
-    dataFiles = ["data.shp"]
+    dataFiles = files("data.shp")
 }
 ```
 
@@ -1234,7 +1424,8 @@ innerhalb der .sql-Datei Paramater zu verwenden und diesen Parametern beim Task 
 konkreten Wert zuzuweisen. Innerhalb der .sql-Datei werden Paramter mit folgender Syntax
 verwendet: `${paramName}`.
 
-Unterstützte Datenbanken: PostgreSQL, SQLite, Oracle, Derby und DuckDB.
+Unterstützte Datenbanken: PostgreSQL, SQLite, Oracle, Derby und DuckDB. Für weitere Datenbanken 
+muss der JDBC-Treiber als Abhängigkeit defininiert werden.
 
 Beispiele:
 
@@ -1246,7 +1437,7 @@ def db_pass = "dmluser"
 tasks.register('executeSomeSql', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
     sqlParameters = [dataset:'Olten']
-    sqlFiles = ['demo.sql']
+    sqlFiles = files('demo.sql')
 }
 ```
 
@@ -1261,7 +1452,7 @@ def db_pass = "dmluser"
 tasks.register('executeSomeSql', SqlExecutor) {
     database = [db_uri, db_user, db_pass]
     sqlParameters = [[dataset:'Olten'],[dataset:'Grenchen']]
-    sqlFiles = ['demo.sql']
+    sqlFiles = files('demo.sql')
 }
 ```
 
@@ -1276,7 +1467,7 @@ Beispiele:
 ```groovy
 tasks.register('transform', XslTransformer) {
     xslFile = "eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl"
-    xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
+    xmlFile = files("MeldungAnGeometer_G-0111102_20221103_145001.xml")
     outDirectory = file(".")
 }
 ```
@@ -1284,7 +1475,7 @@ tasks.register('transform', XslTransformer) {
 ```groovy
 tasks.register('transform', XslTransformer) {
     xslFile = file("path/to/eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl")
-    xmlFile = file("MeldungAnGeometer_G-0111102_20221103_145001.xml")
+    xmlFile = files("MeldungAnGeometer_G-0111102_20221103_145001.xml")
     outDirectory = file(".")
 }
 ```

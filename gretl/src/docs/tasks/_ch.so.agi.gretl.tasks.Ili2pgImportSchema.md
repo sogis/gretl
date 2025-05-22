@@ -27,10 +27,10 @@ createTidCol | `Property<Boolean>` | Entspricht der ili2pg-Option `--createTidCo
 createTypeConstraint | `Property<Boolean>` | Entspricht der ili2pg-Option `--createTypeConstraint`. | ja
 createTypeDiscriminator | `Property<Boolean>` | Entspricht der ili2pg-Option `--createTypeDescriminator`. | ja
 createUnique | `Property<Boolean>` | Entspricht der ili2pg-Option `--createUnique`. | ja
-createscript | `Property<Object>` | Entspricht der ili2pg-Option `--createscript`. | ja
+createscript | `Property<File>` | Entspricht der ili2pg-Option `--createscript`. | ja
 database | `ListProperty<String>` | Datenbank aus der exportiert werden soll. | nein
-dataset | `Property<Object>` | Entspricht der ili2pg-Option `--dataset`. | ja
-datasetSubstring | `ListProperty<Integer>` | Entspricht der ili2pg-Option `--datasetSubstring`. | ja
+dataset | `Property<Object>` | Entspricht der ili2pg-Option `--dataset`. `List` oder `String`. | ja
+datasetSubstring | `ListProperty<Integer>` | null | ja
 dbschema | `Property<String>` | Entspricht der ili2pg-Option `--dbschema`. | ja
 defaultSrsAuth | `Property<String>` | Entspricht der ili2pg-Option `--defaultSrsAuth`. | ja
 defaultSrsCode | `Property<String>` | Entspricht der ili2pg-Option `--defaultSrsCode`. | ja
@@ -39,20 +39,20 @@ disableAreaValidation | `Property<Boolean>` | Entspricht der ili2pg-Option `--di
 disableNameOptimization | `Property<Boolean>` | Entspricht der ili2pg-Option `--disableNameOptimization`. | ja
 disableRounding | `Property<Boolean>` | Entspricht der ili2pg-Option `--disableRounding`. | ja
 disableValidation | `Property<Boolean>` | Entspricht der ili2pg-Option `--disableValidation`. | ja
-dropscript | `Property<Object>` | Entspricht der ili2pg-Option `--dropscript`. | ja
+dropscript | `Property<File>` | Entspricht der ili2pg-Option `--dropscript`. | ja
 expandMultilingual | `Property<Boolean>` | Entspricht der ili2pg-Option `--expandMultilingual`. | ja
 exportTid | `Property<Boolean>` | Entspricht der ili2pg-Option `--exportTid`. | ja
 failOnException | `Property<Boolean>` | Entspricht der ili2pg-Option `--failOnException`. | ja
 forceTypeValidation | `Property<Boolean>` | Entspricht der ili2pg-Option `--forceTypeValidation`. | ja
 idSeqMax | `Property<Long>` | Entspricht der ili2pg-Option `--idSeqMax`. | ja
 idSeqMin | `Property<Long>` | Entspricht der ili2pg-Option `--idSeqMin`. | ja
-iliFile | `Property<Object>` | Name der ili-Datei, die gelesen werden soll. | ja
-iliMetaAttrs | `Property<Object>` | Entspricht der ili2pg-Option `--iliMetaAttrs`. | ja
+iliFile | `Property<File>` | Name der ili-Datei, die gelesen werden soll. | ja
+iliMetaAttrs | `Property<File>` | Entspricht der ili2pg-Option `--iliMetaAttrs`. | ja
 iligml20 | `Property<Boolean>` | Entspricht der ili2pg-Option `--iligml20`. | ja
 importBid | `Property<Boolean>` | Entspricht der ili2pg-Option `--importBid`. | ja
 importTid | `Property<Boolean>` | Entspricht der ili2pg-Option `--importTid`. | ja
 keepAreaRef | `Property<Boolean>` | Entspricht der ili2pg-Option `--keepAreaRef`. | ja
-logFile | `Property<Object>` | Entspricht der ili2pg-Option `--logFile`. | ja
+logFile | `Property<File>` | Entspricht der ili2pg-Option `--logFile`. | ja
 maxNameLength | `Property<Integer>` | Entspricht der ili2pg-Option `--maxNameLength`. | ja
 metaConfig | `Property<String>` | Entspricht der ili2pg-Option `--metaConfig`. | ja
 modeldir | `Property<String>` | Entspricht der ili2pg-Option `--modeldir`. | ja

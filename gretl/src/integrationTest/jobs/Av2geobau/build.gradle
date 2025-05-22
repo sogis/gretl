@@ -5,6 +5,6 @@ apply plugin: 'ch.so.agi.gretl'
 defaultTasks 'av2geobau'
 
 task av2geobau(type: Av2geobau){
-    itfFiles = "empty.itf"
-    dxfDirectory = "."
+    itfFiles = files("empty.itf")
+    dxfDirectory = file(".")
 }

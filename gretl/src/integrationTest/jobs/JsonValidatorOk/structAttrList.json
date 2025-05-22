@@ -1,0 +1,20 @@
+[
+    {
+      "@type": "Test2.Topic2.ClassA",
+      "attrStruct": {
+        "@type": "Test2.Topic2.StructA",
+        "attrText": "lin"
+      },
+      "attrBag": [
+        {
+          "@type": "Test2.Topic2.StructA",
+          "attrText": "li"
+        },
+        {
+          "@type": "Test2.Topic2.StructA",
+          "attrText": "lin"
+        }
+      ],
+      "attrTextList": ["foo", "bar"]
+    }
+]

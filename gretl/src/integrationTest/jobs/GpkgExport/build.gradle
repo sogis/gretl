@@ -12,9 +12,9 @@ defaultTasks 'gpkgexport'
 tasks.register('gpkgexport', GpkgExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "gpkgexport"
-    srcTableName = "exportdata"
-    dataFile = "data.gpkg"
-    dstTableName = "exportdata"
+    srcTableName = ["exportdata"]
+    dataFile = file("data.gpkg")
+    dstTableName = ["exportdata"]
     batchSize = 200
     fetchSize = 200
 }

@@ -20,7 +20,7 @@ public class ShpExport extends DefaultTask {
     protected GretlLogger log;
     
     private Connector database;
-    private Object dataFile = null;
+    private File dataFile = null;
     private String tableName = null;
     private String schemaName = null;
     private String encoding = null;
@@ -29,7 +29,7 @@ public class ShpExport extends DefaultTask {
      * Name der SHP-Datei, die erstellt werden soll.
      */
     @OutputFile
-    public Object getDataFile() {
+    public File getDataFile() {
         return dataFile;
     }
 
@@ -71,7 +71,7 @@ public class ShpExport extends DefaultTask {
         this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
     }
 

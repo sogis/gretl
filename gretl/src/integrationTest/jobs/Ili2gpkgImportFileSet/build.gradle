@@ -9,9 +9,9 @@ tasks.register("ili2gpkgimport", Ili2gpkgImport) {
     models = "Beispiel2"
     defaultSrsCode = "2056"
     dataFile = fileTree(".").matching {
-        include"*.xtf"
-    }.files.toList()
-    dataset = [ 'DatasetA', 'DatasetB']
+        include "*.xtf"
+    }
+    dataset = ['DatasetA', 'DatasetB']
     dbfile = file("Beispiel2.gpkg")
 }
 

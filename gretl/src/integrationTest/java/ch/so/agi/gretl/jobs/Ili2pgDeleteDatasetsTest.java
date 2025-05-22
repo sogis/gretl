@@ -36,12 +36,14 @@ public class Ili2pgDeleteDatasetsTest {
 
     @Test
     public void deleteOk() throws Exception {
+        // Prepare
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Ili2pgDeleteDatasets");
-
         GradleVariable[] variables = {GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI, postgres.getJdbcUrl())};
 
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, variables);
 
+        // Check result
         try (
             Connection con = IntegrationTestUtilSql.connectPG(postgres);
             Statement stmt = con.createStatement()

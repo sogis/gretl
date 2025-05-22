@@ -1,4 +1,5 @@
 package ch.so.agi.gretl.tasks;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,16 +15,16 @@ import ch.so.agi.gretl.tasks.impl.AbstractFtpTask;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class FtpDownload extends AbstractFtpTask {
-    private String localDir;
+    private File localDir;
     private String remoteDir;
-    private Object remoteFile=null;
+    private Object remoteFile = null;
     private String fileType="ASCII";
 
     /**
      * Lokales Verzeichnis, in dem die Dateien gespeichert werden.
      */
     @OutputDirectory
-    public String getLocalDir() {
+    public File getLocalDir() {
         return localDir;
     }
     
@@ -53,7 +54,7 @@ public class FtpDownload extends AbstractFtpTask {
         return fileType;
     }
 
-    public void setLocalDir(String localDir) {
+    public void setLocalDir(File localDir) {
         this.localDir = localDir;
     }
 
@@ -70,8 +71,7 @@ public class FtpDownload extends AbstractFtpTask {
     }
 
     @TaskAction
-    void download()
-    {
+    public void download() {
         log = LogEnvironment.getLogger(FtpDownload.class);
         
         FTPClient ftp = null;
@@ -137,10 +137,10 @@ public class FtpDownload extends AbstractFtpTask {
     }
     private void downloadFile(FTPClient ftp, String remoteFileName)
             throws FileNotFoundException, IOException, Exception {
-        String remotePath=remoteDir+getFileSeparator()+remoteFileName;
-        String localFileName=remoteFileName;
-        java.io.File localFolder=this.getProject().file(localDir);
-        java.io.File localFile = new java.io.File(localFolder, localFileName);
+        String remotePath = remoteDir+getFileSeparator()+remoteFileName;
+        String localFileName = remoteFileName;
+        File localFolder = this.getProject().file(localDir);
+        File localFile = new File(localFolder, localFileName);
         FileOutputStream fos=null;
         try {
             fos = new FileOutputStream(localFile);
@@ -150,7 +150,7 @@ public class FtpDownload extends AbstractFtpTask {
                 throw new Exception("Could not retrieve file: " + remotePath);
             }
             log.info("File downloaded: " + localFile.getAbsolutePath());
-        }finally {
+        } finally {
             if(fos!=null) {
                 fos.close();
             }

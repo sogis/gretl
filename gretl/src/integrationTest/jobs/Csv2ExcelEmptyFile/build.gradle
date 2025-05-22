@@ -9,5 +9,5 @@ task convertData(type: Csv2Excel) {
     firstLineIsHeader = true
     valueDelimiter = null
     valueSeparator = ";"
-    outputDir = file("./superflous_publication_formats.xlsx")    
+    outputFile = file("./superflous_publication_formats.xlsx")    
 }

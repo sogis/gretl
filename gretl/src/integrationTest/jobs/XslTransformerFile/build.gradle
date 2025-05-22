@@ -6,6 +6,6 @@ defaultTasks 'transform'
 
 task transform(type: XslTransformer) {
     xslFile = file("eCH0132_to_SO_AGI_SGV_Meldungen_20221109.xsl")
-    xmlFile = file("MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml")
+    xmlFile = files("MeldungAnGeometer_G-0098981_20230214_104054_Koordinaten.xml")
     outDirectory = file(".")
 }

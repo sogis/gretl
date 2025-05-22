@@ -14,7 +14,7 @@ defaultTasks 'directoryupload'
 tasks.register('directoryupload', S3Upload) {
     accessKey = s3AccessKey
     secretKey = s3SecretKey
-    sourceFile = file("./docs/")
+    sourceDir = file("./docs/")
     endPoint = s3Endpoint
     region = s3Region
     bucketName = s3BucketName

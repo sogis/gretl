@@ -12,6 +12,6 @@ defaultTasks 'shpimport'
 tasks.register('shpimport', ShpImport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "shpimport"
-    tableName = "importdata"
+    tableName = file("importdata")
     dataFile = "data.shp"
 }

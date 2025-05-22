@@ -7,6 +7,7 @@ import ch.so.agi.gretl.steps.PostgisRasterExportStep;
 import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -19,15 +20,15 @@ public class PostgisRasterExport extends DefaultTask {
     private GretlLogger log;
 
     private Connector database;
-    private String sqlFile;
+    private File sqlFile;
     private Map<String, String> sqlParameters = null;
-    private Object dataFile = null;
+    private File dataFile = null;
 
     /**
      * Name der SQL-Datei aus der das SQL-Statement gelesen und ausgeführt wird.
      */
-    @Input
-    public String getSqlFile() {
+    @InputFile
+    public File getSqlFile() {
         return sqlFile;
     }
 
@@ -44,7 +45,7 @@ public class PostgisRasterExport extends DefaultTask {
      * Name der Rasterdatei, die erstellt werden soll.
      */
     @OutputFile
-    public Object getDataFile() {
+    public File getDataFile() {
         return dataFile;
     }
 
@@ -60,7 +61,7 @@ public class PostgisRasterExport extends DefaultTask {
         this.database = TaskUtil.getDatabaseConnectorObject(databaseDetails);
     }
 
-    public void setSqlFile(String sqlFile) {
+    public void setSqlFile(File sqlFile) {
         this.sqlFile = sqlFile;
     }
 
@@ -68,7 +69,7 @@ public class PostgisRasterExport extends DefaultTask {
         this.sqlParameters = sqlParameters;
     }
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
     }
 

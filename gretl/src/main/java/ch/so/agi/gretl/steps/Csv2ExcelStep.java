@@ -54,7 +54,7 @@ public class Csv2ExcelStep {
         String csvBaseName = FilenameUtils.getBaseName(csvPath.getFileName().toString());
         ExcelWriter writer = null;
         try {
-            writer = new ExcelWriter(outputFile.toFile());
+            writer = new ExcelWriter(outputFile.toFile(), config); // config wegen sheet name
         } catch (IoxException e) {
             throw new IOException(e.getMessage());
         }

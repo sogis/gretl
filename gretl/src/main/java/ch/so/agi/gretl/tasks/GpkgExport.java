@@ -22,9 +22,9 @@ public class GpkgExport extends DefaultTask {
     private GretlLogger log;
     
     private Connector database;
-    private Object dataFile;
-    private Object dstTableName;
-    private Object srcTableName;
+    private File dataFile;
+    private List dstTableName;
+    private List srcTableName;
     private String schemaName;
     private Integer batchSize;
     private Integer fetchSize;
@@ -33,7 +33,7 @@ public class GpkgExport extends DefaultTask {
      * Name der GeoPackage-Datei, die erstellt werden soll.
      */
     @OutputFile
-    public Object getDataFile() {
+    public File getDataFile() {
         return dataFile;
     }
 
@@ -41,7 +41,7 @@ public class GpkgExport extends DefaultTask {
      * Name der Tabelle(n) in der GeoPackage-Datei. `String` oder `List`.
      */
     @Input
-    public Object getDstTableName() {
+    public List getDstTableName() {
         return dstTableName;
     }
 
@@ -49,7 +49,7 @@ public class GpkgExport extends DefaultTask {
      * Name der DB-Tabelle(n), die exportiert werden soll(en). `String` oder `List`.
      */
     @Input
-    public Object getSrcTableName() {
+    public List getSrcTableName() {
         return srcTableName;
     }
 
@@ -93,15 +93,15 @@ public class GpkgExport extends DefaultTask {
     }
 
 
-    public void setDataFile(Object dataFile) {
+    public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
     }
 
-    public void setDstTableName(Object dstTableName) {
+    public void setDstTableName(List dstTableName) {
         this.dstTableName = dstTableName;
     }
 
-    public void setSrcTableName(Object srcTableName) {
+    public void setSrcTableName(List srcTableName) {
         this.srcTableName = srcTableName;
     }
 
@@ -134,21 +134,9 @@ public class GpkgExport extends DefaultTask {
             return;
         }
 
-        List<String> srcTableNames = null;
-        if (srcTableName instanceof String) {
-            srcTableNames =  new ArrayList<String>();
-            srcTableNames.add((String)srcTableName);
-        } else {
-            srcTableNames = (List)srcTableName;
-        }
-        
-        List<String> dstTableNames = null;
-        if (dstTableName instanceof String) {
-            dstTableNames =  new ArrayList<String>();
-            dstTableNames.add((String)dstTableName);
-        } else {
-            dstTableNames = (List)dstTableName;
-        }
+        List<String> srcTableNames = srcTableName;
+
+        List<String> dstTableNames = dstTableName;
 
         if (srcTableNames.size() != dstTableNames.size()) {
             throw new GradleException("number of source table names ("+srcTableNames.size()+") doesn't match number of destination table names ("+dstTableNames.size()+")");

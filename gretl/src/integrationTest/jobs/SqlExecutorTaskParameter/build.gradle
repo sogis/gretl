@@ -12,6 +12,6 @@ defaultTasks 'insertInto'
 
 tasks.register('insertInto', SqlExecutor){
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['insert.sql']
+    sqlFiles = files('insert.sql')
     sqlParameters = [title:'\'ele1\'']
 }

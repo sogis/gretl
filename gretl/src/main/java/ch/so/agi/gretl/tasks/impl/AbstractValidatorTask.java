@@ -4,8 +4,10 @@ import ch.ehi.basics.settings.Settings;
 import ch.so.agi.gretl.logging.GretlLogger;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
@@ -17,7 +19,7 @@ import java.io.File;
 public class AbstractValidatorTask extends DefaultTask {
     protected GretlLogger log;
 
-    private Object dataFiles;
+    private FileCollection dataFiles;
     private String models = null;
     private String modeldir = null;
     private Object configFile = null;
@@ -27,19 +29,20 @@ public class AbstractValidatorTask extends DefaultTask {
     private Boolean multiplicityOff = false;
     private Boolean allObjectsAccessible = false;
     private Boolean skipPolygonBuilding = false;
-    private Object logFile = null;
-    private Object xtflogFile = null;
-    private Object pluginFolder = null;
+    private File logFile = null;
+    private File xtflogFile = null;
+    private File pluginFolder = null;
     private String proxy = null;
     private Integer proxyPort = null;
     private Boolean failOnError = true;
     protected boolean validationOk = true;
     
     /**
-     * Liste der Dateien, die validiert werden sollen. `FileCollection` oder `List`. Eine leere Liste ist kein Fehler.
+     * Liste der Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
      */
     @InputFiles
-    public Object getDataFiles() {
+    @Optional
+    public FileCollection getDataFiles() {
         return dataFiles;
     }
 
@@ -53,7 +56,7 @@ public class AbstractValidatorTask extends DefaultTask {
     }
 
     /**
-     * INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator).
+     * INTERLIS-Modellrepository. `String`, separiert mit Semikolon (analog ili2db, ilivalidator).
      */
     @Input
     @Optional
@@ -62,7 +65,7 @@ public class AbstractValidatorTask extends DefaultTask {
     }
 
     /**
-     * Konfiguriert die Datenprüfung mit Hilfe einer ini-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration 
+     * Konfiguriert die Datenprüfung mit Hilfe einer ini-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration. `File`, falls eine lokale Datei verwendet wird. `String`, falls eine Datei aus einem Daten-Repository verwendet wird.
      */
     @Input
     @Optional
@@ -71,7 +74,7 @@ public class AbstractValidatorTask extends DefaultTask {
     }
 
     /**
-     * Konfiguriert den Validator mit Hilfe einer ini-Datei. Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration 
+     * Konfiguriert den Validator mit Hilfe einer ini-Datei. Siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration. `File`, falls eine lokale Datei verwendet wird. `String`, falls eine Datei aus einem Daten-Repository verwendet wird.  
      */
     @Input
     @Optional
@@ -80,7 +83,7 @@ public class AbstractValidatorTask extends DefaultTask {
     }
 
     /**
-     * Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
+     * Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: `false`
      */
     @Input
     @Optional
@@ -129,7 +132,7 @@ public class AbstractValidatorTask extends DefaultTask {
      */
     @OutputFile
     @Optional
-    public Object getLogFile() {
+    public File getLogFile() {
         return logFile;
     }
 
@@ -138,7 +141,7 @@ public class AbstractValidatorTask extends DefaultTask {
      */
     @OutputFile
     @Optional
-    public Object getXtflogFile() {
+    public File getXtflogFile() {
         return xtflogFile;
     }
 
@@ -147,7 +150,7 @@ public class AbstractValidatorTask extends DefaultTask {
      */
     @InputDirectory
     @Optional
-    public Object getPluginFolder() {
+    public File getPluginFolder() {
         return pluginFolder;
     }
 
@@ -187,7 +190,7 @@ public class AbstractValidatorTask extends DefaultTask {
         return validationOk;    
     }
     
-    public void setDataFiles(Object dataFiles) {
+    public void setDataFiles(FileCollection dataFiles) {
         this.dataFiles = dataFiles;
     }
 
@@ -227,15 +230,15 @@ public class AbstractValidatorTask extends DefaultTask {
         this.skipPolygonBuilding = skipPolygonBuilding;
     }
 
-    public void setLogFile(Object logFile) {
+    public void setLogFile(File logFile) {
         this.logFile = logFile;
     }
 
-    public void setXtflogFile(Object xtflogFile) {
+    public void setXtflogFile(File xtflogFile) {
         this.xtflogFile = xtflogFile;
     }
 
-    public void setPluginFolder(Object pluginFolder) {
+    public void setPluginFolder(File pluginFolder) {
         this.pluginFolder = pluginFolder;
     }
 
@@ -265,12 +268,21 @@ public class AbstractValidatorTask extends DefaultTask {
         }
         if (configFile != null) {
             settings.setValue(Validator.SETTING_CONFIGFILE, this.getProject().file(configFile).getPath());
+            if (configFile instanceof File) {
+
+            } else if (configFile instanceof String && configFile.toString().startsWith("ilidata:")) {
+                
+            } else {
+                throw new IllegalArgumentException("configFile must be either a file or a string starting with 'ilidata:'");
+            }
         }
         if (metaConfigFile != null) {
             if (metaConfigFile instanceof File) {
                 settings.setValue(Validator.SETTING_META_CONFIGFILE, this.getProject().file(metaConfigFile).getPath());                
-            } else {
+            } else if (metaConfigFile instanceof String && metaConfigFile.toString().startsWith("ilidata:"))  {
                 settings.setValue(Validator.SETTING_META_CONFIGFILE, metaConfigFile.toString());                                
+            } else {
+                throw new IllegalArgumentException("metaConfigFile must be either a file or a string starting with 'ilidata:'");
             }
         }
         if (forceTypeValidation) {

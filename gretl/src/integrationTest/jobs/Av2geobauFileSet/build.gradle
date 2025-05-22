@@ -6,7 +6,7 @@ defaultTasks 'av2geobau'
 
 task av2geobau(type: Av2geobau){
     itfFiles = fileTree(".").matching {
-    	include"*.itf"
+    	include "*.itf"
     }
-    dxfDirectory = "."
+    dxfDirectory = file(".")
 }

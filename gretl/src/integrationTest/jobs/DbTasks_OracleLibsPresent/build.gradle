@@ -15,5 +15,5 @@ tasks.register('queryOracleVersion', SqlExecutor){
         println db_uri
     }
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['queryOracleVersion.sql']
+    sqlFiles = files('queryOracleVersion.sql')
 }

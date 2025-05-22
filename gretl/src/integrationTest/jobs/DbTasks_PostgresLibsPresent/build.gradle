@@ -11,6 +11,6 @@ defaultTasks 'queryPostgresVersion'
 
 tasks.register('queryPostgresVersion', SqlExecutor){
     database = [db_uri, db_user, db_pass]
-    sqlFiles = ['queryPostgresVersion.sql']
+    sqlFiles = files('queryPostgresVersion.sql')
 }
 

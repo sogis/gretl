@@ -31,6 +31,7 @@ configurations.all {
         force libs.ili2c.tool
         force libs.ili2gpkg
         force libs.iox.ili
+        force libs.duckdb
     }
 }
 
@@ -70,6 +71,9 @@ dependencies {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
     api (libs.ili2gpkg) {
+        exclude group: 'ch.ehi', module: 'ehisqlgen'
+    }
+    api (libs.ili2duckdb) {
         exclude group: 'ch.ehi', module: 'ehisqlgen'
     }
     api (libs.iox.wkf) {

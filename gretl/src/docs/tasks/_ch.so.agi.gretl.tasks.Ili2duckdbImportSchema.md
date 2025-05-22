@@ -1,0 +1,81 @@
+Parameter | Datentyp | Beschreibung | Optional
+----------|----------|-------------|-------------
+baskets | `Property<String>` | Entspricht der ili2db-Option `--baskets`. | ja
+beautifyEnumDispName | `Property<Boolean>` | Entspricht der ili2db-Option `--beautifyEnumDispName`. | ja
+coalesceArray | `Property<Boolean>` | Entspricht der ili2db-Option `--coalesceArray`. | ja
+coalesceCatalogueRef | `Property<Boolean>` | Entspricht der ili2db-Option `--coalesceCatalogueRef`. | ja
+coalesceJson | `Property<Boolean>` | Entspricht der ili2db-Option `--coalesceJson`. | ja
+coalesceMultiLine | `Property<Boolean>` | Entspricht der ili2db-Option `--coalesceMultiline`. | ja
+coalesceMultiSurface | `Property<Boolean>` | Entspricht der ili2db-Option `--coalesceMultiSurface`. | ja
+createBasketCol | `Property<Boolean>` | Entspricht der ili2db-Option `--createBasketCol`. | ja
+createDatasetCol | `Property<Boolean>` | Entspricht der ili2db-Option `--createDatasetCol`. | ja
+createDateTimeChecks | `Property<Boolean>` | Entspricht der ili2db-Option `--createDateTimeChecks`. | ja
+createEnumColAsItfCode | `Property<Boolean>` | Entspricht der ili2db-Option `--createEnumColAsItfCode`. | ja
+createEnumTabs | `Property<Boolean>` | Entspricht der ili2db-Option `--createEnumTabs`. | ja
+createEnumTabsWithId | `Property<Boolean>` | Entspricht der ili2db-Option `--createEnumTabsWithId`. | ja
+createEnumTxtCol | `Property<Boolean>` | Entspricht der ili2db-Option `--createEnumTxtCol`. | ja
+createFk | `Property<Boolean>` | Entspricht der ili2db-Option `--createFk`. | ja
+createFkIdx | `Property<Boolean>` | Entspricht der ili2db-Option `--createFkIdx`. | ja
+createGeomIdx | `Property<Boolean>` | Entspricht der ili2db-Option `--createGeomIdx`. | ja
+createImportTabs | `Property<Boolean>` | Entspricht der ili2db-Option `--createImportTabs`. | ja
+createMetaInfo | `Property<Boolean>` | Entspricht der ili2db-Option `--createMetaInfo`. | ja
+createNumChecks | `Property<Boolean>` | Entspricht der ili2db-Option `--createNumChecks`. | ja
+createSingleEnumTab | `Property<Boolean>` | Entspricht der ili2db-Option `--createSingleEnumTab`. | ja
+createStdCols | `Property<Boolean>` | Entspricht der ili2db-Option `--createStdCols`. | ja
+createTextChecks | `Property<Boolean>` | Entspricht der ili2db-Option `--createTextChecks`. | ja
+createTidCol | `Property<Boolean>` | Entspricht der ili2db-Option `--createTidCol`. | ja
+createTypeConstraint | `Property<Boolean>` | Entspricht der ili2db-Option `--createTypeConstraint`. | ja
+createTypeDiscriminator | `Property<Boolean>` | Entspricht der ili2db-Option `--createTypeDescriminator`. | ja
+createUnique | `Property<Boolean>` | Entspricht der ili2db-Option `--createUnique`. | ja
+createscript | `Property<File>` | Entspricht der ili2db-Option `--createscript`. | ja
+dataset | `Property<Object>` | Entspricht der ili2db-Option `--dataset`. Darf `FileCollection` oder `List` sein. | ja
+datasetSubstring | `ListProperty<Integer>` | null | ja
+dbfile | `Property<File>` | Datenbank-Datei in die importiert oder exportiert werden soll. | nein
+dbschema | `Property<String>` | Entspricht der ili2db-Option `--dbschema`. | ja
+defaultSrsAuth | `Property<String>` | Entspricht der ili2db-Option `--defaultSrsAuth`. | ja
+defaultSrsCode | `Property<String>` | Entspricht der ili2db-Option `--defaultSrsCode`. | ja
+deleteData | `Property<Boolean>` | Entspricht der ili2db-Option `--deleteData`. | ja
+disableAreaValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--disableAreaValidation`. | ja
+disableNameOptimization | `Property<Boolean>` | Entspricht der ili2db-Option `--disableNameOptimization`. | ja
+disableRounding | `Property<Boolean>` | Entspricht der ili2db-Option `--disableRounding`. | ja
+disableValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--disableValidation`. | ja
+dropscript | `Property<File>` | Entspricht der ili2db-Option `--dropscript`. | ja
+expandMultilingual | `Property<Boolean>` | Entspricht der ili2db-Option `--expandMultilingual`. | ja
+exportTid | `Property<Boolean>` | Entspricht der ili2db-Option `--exportTid`. | ja
+failOnException | `Property<Boolean>` | Entspricht der ili2db-Option `--failOnException`. | ja
+forceTypeValidation | `Property<Boolean>` | Entspricht der ili2db-Option `--forceTypeValidation`. | ja
+idSeqMax | `Property<Long>` | Entspricht der ili2db-Option `--idSeqMax`. | ja
+idSeqMin | `Property<Long>` | Entspricht der ili2db-Option `--idSeqMin`. | ja
+iliFile | `Property<File>` | Name der ili-Datei, die gelesen werden soll. | ja
+iliMetaAttrs | `Property<File>` | Entspricht der ili2db-Option `--iliMetaAttrs`. | ja
+iligml20 | `Property<Boolean>` | Entspricht der ili2db-Option `--iligml20`. | ja
+importBid | `Property<Boolean>` | Entspricht der ili2db-Option `--importBid`. | ja
+importTid | `Property<Boolean>` | Entspricht der ili2db-Option `--importTid`. | ja
+keepAreaRef | `Property<Boolean>` | Entspricht der ili2db-Option `--keepAreaRef`. | ja
+logFile | `Property<File>` | Entspricht der ili2db-Option `--logFile`. | ja
+maxNameLength | `Property<Integer>` | Entspricht der ili2db-Option `--maxNameLength`. | ja
+metaConfig | `Property<String>` | Entspricht der ili2db-Option `--metaConfig`. | ja
+modeldir | `Property<String>` | Entspricht der ili2db-Option `--modeldir`. | ja
+models | `Property<String>` | Entspricht der ili2db-Option `--models`. | ja
+nameByTopic | `Property<Boolean>` | Entspricht der ili2db-Option `--nameByTopic`. | ja
+noSmartMapping | `Property<Boolean>` | Entspricht der ili2db-Option `--noSmartMapping`. | ja
+oneGeomPerTable | `Property<Boolean>` | Entspricht der ili2db-Option `--oneGeomPerTable`. | ja
+postScript | `Property<File>` | Entspricht der ili2db-Option `--postScript`. | ja
+preScript | `Property<File>` | Entspricht der ili2db-Option `--preScript`. | ja
+proxy | `Property<String>` | Entspricht der ili2db-Option `--proxy`. | ja
+proxyPort | `Property<Integer>` | Entspricht der ili2db-Option `--proxyPort`. | ja
+setupPgExt | `Property<Boolean>` | Entspricht der ili2db-Option `--setupPgExt`. | ja
+skipGeometryErrors | `Property<Boolean>` | Entspricht der ili2db-Option `--skipGeometryErrors`. | ja
+skipPolygonBuilding | `Property<Boolean>` | Entspricht der ili2db-Option `--skipPolygonBuilding`. | ja
+smart1Inheritance | `Property<Boolean>` | Entspricht der ili2db-Option `--smart1Inheritance`. | ja
+smart2Inheritance | `Property<Boolean>` | Entspricht der ili2db-Option `--smart2Inheritance`. | ja
+sqlColsAsText | `Property<Boolean>` | Entspricht der ili2db-Option `--sqlColsAsText`. | ja
+sqlEnableNull | `Property<Boolean>` | Entspricht der ili2db-Option `--sqlEnableNull`. | ja
+sqlExtRefCols | `Property<Boolean>` | Entspricht der ili2db-Option `--sqlExtRefCols`. | ja
+strokeArcs | `Property<Boolean>` | Entspricht der ili2db-Option `--strokeArcs`. | ja
+t_id_Name | `Property<String>` | Entspricht der ili2db-Option `--t_id_Name`. | ja
+topics | `Property<String>` | Entspricht der ili2db-Option `--topics`. | ja
+trace | `Property<Boolean>` | Entspricht der ili2db-Option `--trace`. | ja
+translation | `Property<String>` | Entspricht der ili2db-Option `--translation`. | ja
+validConfigFile | `Property<File>` | Entspricht der ili2db-Option `--validConfigFile`. | ja
+: {tbl-colwidths="[20,20,50,10]"}

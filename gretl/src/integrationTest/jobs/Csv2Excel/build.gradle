@@ -11,5 +11,5 @@ task convertData(type: Csv2Excel) {
     valueSeparator = ";"
     encoding = "ISO-8859-1";
     models = "SO_HBA_Gebaeude_20230111"
-    outputDir = file("./20230124_sap_Gebaeude.xlsx")
+    outputFile = file("./20230124_sap_Gebaeude.xlsx")
 }

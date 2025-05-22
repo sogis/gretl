@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
@@ -70,13 +71,15 @@ public class S3DownloadTest {
         File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadFile/upload/download.txt");
         s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");
 
-        // Execute
         File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadFile");
+
+        // Execute test
         IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
 
-        // Check result.
+        // Check result
         S3Client s3client = s3TestHelper.getS3Client();
 
+        // TODO Warum wird nicht einfach das lokale upload/download.txt verwendet?
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(s3BucketName)
                 .key("download.txt")
@@ -86,7 +89,41 @@ public class S3DownloadTest {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         assertTrue(reader.readLine().equalsIgnoreCase("fubar"));
 
-        // Remove downloaded file.
+        // Remove downloaded file
         Files.delete(Paths.get("src/integrationTest/jobs/S3DownloadFile/download.txt"));
+    }
+    
+    @Test
+    @Tag(TestTags.S3_TEST)
+    void downloadDirectory_Ok() throws Exception {
+        // Prepare
+        s3TestHelper.createBucketIfNotExists(s3Client, s3BucketName);
+        {
+            File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory/upload/foo.txt");
+            s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");            
+        }
+        {
+            File sourceObject = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory/upload/bar.txt");
+            s3TestHelper.upload(sourceObject, new HashMap<>(), s3BucketName, "public-read");                        
+        }
+
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory");
+
+        // Execute test
+        IntegrationTestUtil.executeTestRunner(projectDirectory, gradleVariables);
+
+        // Check result
+        {
+            String content = Files.readString(new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory/foo.txt").toPath());
+            assertEquals("foo", content.substring(0, 3));            
+        }
+        {
+            String content = Files.readString(new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/S3DownloadDirectory/bar.txt").toPath());
+            assertEquals("bar", content.substring(0, 3));            
+        }
+
+        // Remove downloaded file
+        Files.delete(Paths.get("src/integrationTest/jobs/S3DownloadDirectory/foo.txt"));
+        Files.delete(Paths.get("src/integrationTest/jobs/S3DownloadDirectory/bar.txt"));
     }
 }

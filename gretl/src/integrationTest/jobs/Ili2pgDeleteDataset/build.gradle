@@ -25,7 +25,7 @@ tasks.register("ili2pgreplace", Ili2pgReplace) {
     dbschema = "dm01"
     disableValidation = true
     dataset = "kammersrohr"
-    dataFile = file("254900.itf")
+    dataFile = files("254900.itf")
 }
 
 tasks.register('ili2pgdelete', Ili2pgDelete) {

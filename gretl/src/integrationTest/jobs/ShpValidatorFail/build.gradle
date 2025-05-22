@@ -6,5 +6,6 @@ defaultTasks 'validate'
 
 task validate(type: ShpValidator){
 	models = "ShpModel"
-    dataFiles = ["data.shp"]
+    dataFiles = files("data.shp")
+    logFile = file("shpvalidator.log")
 }

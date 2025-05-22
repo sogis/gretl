@@ -24,6 +24,6 @@ tasks.register("ili2pgimport", Ili2pgReplace) {
     dependsOn 'ili2pgschemaimport'
     database = [db_uri, db_user, db_pass]
     dbschema = "Beispiel2"
-    dataFile = ['Beispiel2a.xtf']
+    dataFile = files('Beispiel2a.xtf')
     dataset = ['A_Dataset']
 }

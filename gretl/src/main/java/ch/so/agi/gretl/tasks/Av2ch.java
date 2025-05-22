@@ -13,6 +13,7 @@ import java.util.zip.ZipOutputStream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -22,32 +23,32 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
 
 public class Av2ch extends DefaultTask {
-    protected GretlLogger log;
+    private GretlLogger log;
     
-    private Object inputFile = null;
-    private Object outputDirectory = null;
+    private FileCollection inputFile = null;
+    private File outputDirectory = null;
     private String modeldir = null;
     private String language = "de";
     private Boolean zip = false;
 
     /**
-     * Zu transformierende ITF-Datei(en). File- oder FileCollection-Objekt.
+     * Zu transformierende ITF-Datei(en).
      */
-    @Input
-    public Object getInputFile() {
+    @InputFiles
+    public FileCollection getInputFile() {
         return inputFile;
     };
 
     /**
-     * Name des Verzeichnisses in das die zu erstellende Datei geschrieben wird.
+     * Verzeichnis, in das die zu erstellende Datei geschrieben wird.
      */
     @OutputDirectory
-    public Object getOutputDirectory() {
+    public File getOutputDirectory() {
         return outputDirectory;
     }
     
     /**
-     * INTERLIS-Modellrepository. String separiert mit Semikolon (analog ili2db, ilivalidator).
+     * INTERLIS-Modellrepository. `String`, separiert mit Semikolon (analog ili2db, ilivalidator).
      */
     @Input
     @Optional
@@ -56,7 +57,7 @@ public class Av2ch extends DefaultTask {
     }
     
     /**
-     * Sprache des Modelles / der Datei (de, it). Default: de
+     * Sprache des Modelles / der Datei (de, it). Default: `de`
      */
     @Input
     @Optional
@@ -65,7 +66,7 @@ public class Av2ch extends DefaultTask {
     }
 
     /**
-     * Die zu erstellende Datei wird gezippt. Default: false
+     * Die zu erstellende Datei wird gezippt. Default: `false`
      */
     @Input
     @Optional
@@ -73,11 +74,11 @@ public class Av2ch extends DefaultTask {
         return zip;
     }
 
-    public void setInputFile(Object inputFile) {
+    public void setInputFile(FileCollection inputFile) {
         this.inputFile = inputFile;
     }
 
-    public void setOutputDirectory(Object outputDirectory) {
+    public void setOutputDirectory(File outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
 
@@ -108,18 +109,9 @@ public class Av2ch extends DefaultTask {
             throw new IllegalArgumentException("language '" + language + "' is not supported.");
         }
         
-        if (outputDirectory instanceof File) {
-            ((File) outputDirectory).mkdirs();
-        } else {
-            new File((String) outputDirectory).mkdirs();
-        }
-        
-        FileCollection dataFilesCollection = null;
-        if (inputFile instanceof FileCollection) {
-            dataFilesCollection = (FileCollection)inputFile;
-        } else {
-            dataFilesCollection = this.getProject().files(inputFile);
-        }
+        outputDirectory.mkdirs();
+
+        FileCollection dataFilesCollection = (FileCollection) inputFile;
         if (dataFilesCollection == null || dataFilesCollection.isEmpty()) {
             return;
         }

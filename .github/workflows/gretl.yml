@@ -41,7 +41,7 @@ jobs:
         run: |
           ./gradlew gretl:build gretl:javadoc gretl:publishPluginMavenPublicationToMavenLocal -x test
 
-      - name: Debug1
+      - name: Debug
         run: |
           ls -la ~/.m2/repository/ch/so/agi/gretl
 
@@ -79,28 +79,54 @@ jobs:
       #     name: reports-image
       #     path: gretl/build/reports/tests/
 
-      # - name: Setup Quarto
-      #   uses: quarto-dev/quarto-actions/setup@v2
-      #   with:
-      #     version: 1.6.40
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.6.40
 
-      # - name: Render documentation with Quarto
-      #   run: |
-      #       quarto render gretl/src/docs/  --to gfm --output-dir ../../../docs/user
-      #       ls -la docs/user
+      - name: Render documentation with Quarto
+        run: |
+            quarto render gretl/src/docs/ --to html --output-dir ../../../docs/user
+            ls -la docs/user
+            VERSION=$(./gradlew properties --no-daemon --console=plain -q | grep '^version:' | awk '{print $2}')
+            sed -i "s/publisher\.md/publisher-${VERSION}.html/g" docs/user/reference.html
+            mv docs/user/reference.html docs/user/reference-${VERSION}.html
+            mv docs/user/publisher.html docs/user/publisher-${VERSION}.html
+            ls -la docs/user
 
-      # - name: Commit/push documentation to repository
-      #   uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Create s3 config and credentials file
+        run: |
+          mkdir ~/.aws/
+          touch ~/.aws/config
+          touch ~/.aws/credentials
+          echo "[default]" > ~/.aws/config
+          echo "endpoint_url = ${{secrets.EXO_S3_ENDPOINT_URL}}" >> ~/.aws/config
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id = ${{secrets.EXO_S3_KEY_ID}}" >> ~/.aws/credentials
+          echo "aws_secret_access_key = ${{secrets.EXO_S3_SECRET_ACCESS_KEY}}" >> ~/.aws/credentials
+
+      - name: Debug
+        run: |
+          cat ~/.aws/config
+          cat ~/.aws/credentials
+
+      - name: Debug
+        run: |
+          aws s3 ls --region ch-dk-2
+
+      - name: Publish to S3
+        run: |
+          aws s3 cp docs/user s3://ch.so.agi.gretl-docs --recursive --exclude "*" --include "*.html" --acl public-read --region ch-dk-2
 
       - name: Login to Docker Container Registry
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+        #if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
         uses: docker/login-action@v2
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
 
       - name: Login to GitHub Container Registry
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+        #if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -108,7 +134,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+        #if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
         uses: docker/setup-buildx-action@v2
 
       - name: Publish plugin
@@ -119,6 +145,6 @@ jobs:
           gradlePublishSecret: ${{ secrets.GRADLEPUBLISHSECRET }}
 
       - name: Build final multi-arch Docker image and push to registry 
-        if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
+        #if: ${{ (github.ref == 'refs/heads/main') && (github.event_name != 'pull_request') && !env.ACT }}
         run: |
           ./gradlew runtimeImage:buildAndPushMultiArchImage

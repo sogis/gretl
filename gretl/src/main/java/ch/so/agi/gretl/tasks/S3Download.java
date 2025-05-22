@@ -11,6 +11,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.steps.S3DownloadDirectoryStep;
 import ch.so.agi.gretl.steps.S3DownloadStep;
 import ch.so.agi.gretl.util.TaskUtil;
 
@@ -50,9 +51,10 @@ public class S3Download extends DefaultTask {
     }
     
     /**
-     * Name der Datei.
+     * Name der Datei. Wird kein Key definiert, wird der Inhalt des gesamten Buckets heruntergeladen.
      */
     @Input
+    @Optional
     public String getKey() {
         return key;
     }
@@ -127,16 +129,18 @@ public class S3Download extends DefaultTask {
         if (bucketName == null) {
             throw new IllegalArgumentException("bucketName must not be null");
         }
-        if (key == null) {
-            throw new IllegalArgumentException("key must not be null");
-        }
         if (region == null) {
             throw new IllegalArgumentException("region must not be null");
         }        
                 
         try {
-            S3DownloadStep s3DownloadStep = new S3DownloadStep();
-            s3DownloadStep.execute(accessKey, secretKey, bucketName, key, endPoint, region, downloadDir);
+            if (key == null) {
+                S3DownloadDirectoryStep s3DownloadDirectoryStep = new S3DownloadDirectoryStep();
+                s3DownloadDirectoryStep.execute(accessKey, secretKey, bucketName, endPoint, region, downloadDir);
+            } else {
+                S3DownloadStep s3DownloadStep = new S3DownloadStep();
+                s3DownloadStep.execute(accessKey, secretKey, bucketName, key, endPoint, region, downloadDir);                
+            }
         } catch (Exception e) {
             log.error("Exception in S3Download task.", e);
             GradleException ge = TaskUtil.toGradleException(e);

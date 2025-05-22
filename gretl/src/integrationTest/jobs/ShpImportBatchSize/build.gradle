@@ -13,6 +13,6 @@ tasks.register('shpimport', ShpImport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "shpimport"
     tableName = "importdata_batchsize"
-    dataFile = "data.shp"
+    dataFile = file("data.shp")
     batchSize = 10
 }

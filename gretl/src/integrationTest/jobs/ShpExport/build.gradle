@@ -13,5 +13,5 @@ tasks.register('shpexport', ShpExport) {
     database = [db_uri, db_user, db_pass]
     schemaName = "shpexport"
     tableName = "exportdata"
-    dataFile = "data.shp"
+    dataFile = file("data.shp")
 }
