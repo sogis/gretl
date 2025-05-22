@@ -35,26 +35,26 @@ jobs:
         run: ./gradlew clean gretl:classes 
 
       - name: Unit tests and publish plugin to local maven repo
-        # run: |
-        #   TZ="Europe/Zurich" ./gradlew gretl:test gretl:dbTest gretl:s3Test
-        #   ./gradlew gretl:build gretl:javadoc gretl:publishPluginMavenPublicationToMavenLocal -x test
         run: |
+          TZ="Europe/Zurich" ./gradlew gretl:test gretl:dbTest gretl:s3Test
           ./gradlew gretl:build gretl:javadoc gretl:publishPluginMavenPublicationToMavenLocal -x test
+        # run: |
+        #   ./gradlew gretl:build gretl:javadoc gretl:publishPluginMavenPublicationToMavenLocal -x test
 
       - name: Debug
         run: |
           ls -la ~/.m2/repository/ch/so/agi/gretl
 
-      # - name: Integration tests (Plugin)
-      #   id: jarTest
-      #   run: |
-      #     TZ="Europe/Zurich" ./gradlew gretl:jarTest gretl:jarS3Test
+      - name: Integration tests (Plugin)
+        id: jarTest
+        run: |
+          TZ="Europe/Zurich" ./gradlew gretl:jarTest gretl:jarS3Test
 
-      # - uses: actions/upload-artifact@v4
-      #   if: always() && (steps.jarTest.outcome == 'failure')
-      #   with:
-      #     name: reports-jar
-      #     path: gretl/build/reports/tests/
+      - uses: actions/upload-artifact@v4
+        if: always() && (steps.jarTest.outcome == 'failure')
+        with:
+          name: reports-jar
+          path: gretl/build/reports/tests/
 
       - name: Build Docker image for integration tests
         run: |
@@ -64,20 +64,20 @@ jobs:
         run: |
           docker images
 
-      # - name: Integration tests (Docker image)
-      #   id: imageTest
-      #   run: |
-      #     mkdir -p "$HOME"/gradlecache
-      #     chmod 777 -R "$HOME"/gradlecache
-      #     TZ="Europe/Zurich" ./gradlew gretl:imageTest gretl:imageS3Test
-      #   # run: |
-      #   #   TZ="Europe/Zurich" ./gradlew gretl:imageTest --tests ch.so.agi.gretl.jobs.XslTransformerTest
+      - name: Integration tests (Docker image)
+        id: imageTest
+        run: |
+          mkdir -p "$HOME"/gradlecache
+          chmod 777 -R "$HOME"/gradlecache
+          TZ="Europe/Zurich" ./gradlew gretl:imageTest gretl:imageS3Test
+        # run: |
+        #   TZ="Europe/Zurich" ./gradlew gretl:imageTest --tests ch.so.agi.gretl.jobs.XslTransformerTest
 
-      # - uses: actions/upload-artifact@v4
-      #   if: always() && (steps.imageTest.outcome == 'failure')
-      #   with:
-      #     name: reports-image
-      #     path: gretl/build/reports/tests/
+      - uses: actions/upload-artifact@v4
+        if: always() && (steps.imageTest.outcome == 'failure')
+        with:
+          name: reports-image
+          path: gretl/build/reports/tests/
 
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
