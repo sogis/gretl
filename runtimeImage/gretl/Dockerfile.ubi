@@ -4,7 +4,7 @@ COPY stage-duckdb-extensions.gradle /tmp/build.gradle
 RUN gradle -p /tmp/
 RUN ls -la /root/.duckdb/extensions
 
-FROM eclipse-temurin:11.0.25_9-jre-ubi9-minimal
+FROM eclipse-temurin:11.0.30_7-jre-ubi10-minimal
 
 CMD ["gretl"]
 
@@ -15,7 +15,12 @@ RUN adduser -d $HOME -s /sbin/nologin -G root -u $UID -M appuser
 WORKDIR $HOME
 RUN chgrp root . && chmod g+w .
 
-RUN microdnf update -y && microdnf install -y bash ca-certificates unzip findutils 
+RUN mkdir -p /tmp/dnf-cache \
+ && microdnf --setopt=cachedir=/tmp/dnf-cache \
+             --setopt=install_weak_deps=0 \
+             install -y bash ca-certificates unzip findutils \
+ && microdnf clean all \
+ && rm -rf /tmp/dnf-cache /var/cache/yum
 
 ENV JAVA_TOOL_OPTIONS=-Duser.home=${HOME}
 ENV GRADLE_HOME /opt/gradle
