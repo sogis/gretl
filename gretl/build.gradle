@@ -114,6 +114,7 @@ dependencies {
     runtimeOnly libs.derby
     runtimeOnly libs.duckdb
     runtimeOnly libs.oracle
+    runtimeOnly libs.sqlserver
 
     testImplementation libs.junit
     testImplementation libs.junitTestContainers

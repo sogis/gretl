@@ -29,6 +29,7 @@ sqliteJdbcVersion = "3.43.0.0"
 derbyVersion = "10.13.1.1"
 oracleVersion = "19.3.0.0"
 duckdbVersion = "1.2.2.0"
+sqlserverVersion = "13.2.1.jre11"
 junitVersion = "5.10.3"
 junitTestContainersVersion = "1.19.8"
 mockFtpServerVersion = "2.7.1"
@@ -76,6 +77,7 @@ sqlite-jdbc = {group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite
 derby = {group = "org.apache.derby", name = "derby", version.ref = "derbyVersion"}
 oracle = { group = "com.oracle.ojdbc", name = "ojdbc8", version.ref = "oracleVersion"}
 duckdb = { group = "org.duckdb", name = "duckdb_jdbc", version.ref = "duckdbVersion"}
+sqlserver = { group = "com.microsoft.sqlserver", name = "mssql-jdbc", version.ref = "sqlserverVersion"}
 junit = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitVersion" }
 junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitVersion" }
 junitTestContainers = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "junitTestContainersVersion" }
