@@ -6,7 +6,7 @@
 
 Die Version für _GRETL_ wird in der Gradle-Datei _versioning.gradle_ definiert. Es wird nur die Major- und Minor-Version gesetzt. Die Patch-Version soll durch die Pipeline gesetzt werden. Falls lokal gebuildet wird, ist die Patch-Version "LOCALBUILD".
 
-Ein Minorupdate erfolgte bisher, wenn wir Majorupdates der ilitools durchführten. Oder ausnahmsweisen, wenn Minorupdates der ilitools nicht in jedem Fall rückwärtskompatibel sind.
+Ein Minorupdate erfolgte bisher, wenn wir Majorupdates der ilitools durchführten. Oder ausnahmsweise, wenn Minorupdates der ilitools nicht in jedem Fall rückwärtskompatibel sind.
 
 ### Projektstruktur
 
