@@ -4,7 +4,7 @@ COPY stage-duckdb-extensions.gradle /tmp/build.gradle
 RUN gradle -p /tmp/
 RUN ls -la /root/.duckdb/extensions
 
-FROM eclipse-temurin:11.0.30_7-jre-ubi10-minimal
+FROM eclipse-temurin:11.0.25_9-jre-ubi9-minimal
 
 CMD ["gretl"]
 
