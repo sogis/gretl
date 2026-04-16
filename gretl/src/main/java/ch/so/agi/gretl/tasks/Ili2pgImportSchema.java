@@ -177,6 +177,13 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
     public abstract Property<Boolean> getExpandMultilingual();
 
     /**
+     * Entspricht der ili2pg-Option `--expandStruct`.
+     */
+    @Input
+    @Optional
+    public abstract Property<Boolean> getExpandStruct();
+        
+    /**
      * Entspricht der ili2pg-Option `--coalesceJson`.
      */
     @Input
@@ -457,6 +464,9 @@ public abstract class Ili2pgImportSchema extends Ili2pgAbstractTask {
         }
         if (getExpandMultilingual().getOrElse(false)) {
             settings.setMultilingualTrafo(settings.MULTILINGUAL_TRAFO_EXPAND);
+        }
+        if (getExpandStruct().getOrElse(false)) {
+            settings.setStructTrafo(settings.STRUCT_TRAFO_EXPAND);
         }
         if (getCoalesceJson().getOrElse(false)) {
             settings.setJsonTrafo(settings.JSON_TRAFO_COALESCE);
