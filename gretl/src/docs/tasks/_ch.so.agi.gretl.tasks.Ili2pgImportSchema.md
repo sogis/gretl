@@ -41,6 +41,7 @@ disableRounding | `Property<Boolean>` | Entspricht der ili2pg-Option `--disableR
 disableValidation | `Property<Boolean>` | Entspricht der ili2pg-Option `--disableValidation`. | ja
 dropscript | `Property<File>` | Entspricht der ili2pg-Option `--dropscript`. | ja
 expandMultilingual | `Property<Boolean>` | Entspricht der ili2pg-Option `--expandMultilingual`. | ja
+expandStruct | `Property<Boolean>` | Entspricht der ili2pg-Option `--expandStruct`. | ja
 exportTid | `Property<Boolean>` | Entspricht der ili2pg-Option `--exportTid`. | ja
 failOnException | `Property<Boolean>` | Entspricht der ili2pg-Option `--failOnException`. | ja
 forceTypeValidation | `Property<Boolean>` | Entspricht der ili2pg-Option `--forceTypeValidation`. | ja
