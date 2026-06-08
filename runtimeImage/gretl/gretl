@@ -7,5 +7,4 @@ if [ -f /home/gradle/build.info ]; then
 fi
 
 gradle $run_parameter \
-       --init-script /home/gradle/init.gradle \
-       -s
+       --init-script /home/gradle/init.gradle
