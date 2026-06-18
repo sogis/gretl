@@ -5,7 +5,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import ch.so.agi.gretl.steps.PublisherStep;
+import ch.so.agi.gretl.steps.PublisherStepOld;
 import ch.so.agi.gretl.util.publisher.PublicationLog;
 import ch.so.agi.gretl.util.publisher.PublishedRegion;
 
@@ -47,7 +47,7 @@ public class SimiSvcClientMock implements SimiSvcApi {
             throws IOException {
         notifiedDataIdent=pub.getDataIdent();
         try {
-            notifiedPublishDate=PublisherStep.parsePublicationTimestamp(pub.getPublished());
+            notifiedPublishDate= PublisherStepOld.parsePublicationTimestamp(pub.getPublished());
         } catch (ParseException e) {
             throw new IOException(e);
         }

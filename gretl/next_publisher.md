@@ -25,10 +25,12 @@ In der folgenden Tabelle ist abgebildet, welche Informationen sowohl in der Publ
 
 * Publisher
   * Erstellt oder aktualisiert den Publikationsstand auf S3 zu der entsprechenden Themenbereitstellung, separiert pro Umgebung (Lokal, Test, Review, Prod)
-    * Publikationsstand ist eine Lite mit Records. Jeder Record hat die folgenden Eigenschaften:
-      * part: Kennung des Teils, welcher publiziert wurde (dataset, ...)
+    * Publikationsstand ist eine Liste mit Records. Jeder Record hat die folgenden Eigenschaften:
+      * dataset_ident: Kennung der Themenbereitstellung
+      * part_ident: Kennung des Teils, welcher publiziert wurde (dataset, ...)
+        * Default ist "allparts" für nicht aufgeteilte (kantonsweite) Daten.
+      * modelname: Name des Modells, in welchem die bereitgestellten Daten vorliegen
       * published: Zeitstempel der jüngsten Publikation
-      * modelname: Name des Publikationsmodells
       * formats: Liste der Formate, welche publiziert wurden
 * Netl
   * Joint den Publikationsstand auf die entsprechende Themenintegration
@@ -39,7 +41,67 @@ Nachteil: Publikationsdatum wird nur aktualisiert, wenn Netl laufengelassen wird
 
 ### Gruppierung und Umbenennung der verwandten Publisher Eigenschaften
 
-Todo
+#### Quelle Datenbank
+
+Alle mit dem Lesen aus einer Datenbank-Tabelle verbundenen Eigenschaften erhalten den Prefix "db"
+
+|Neu|Alt|
+|---|---|
+|dbDatabase|database|
+|dbSchema|dbSchema|
+|dbPublishModel|modelsToPublish|
+|dbDataset|dataset|
+|dbDatasetRegex|region|
+|dbDatasetList|regions|
+
+
+#### Quelle Transferdatei
+
+Alle mit dem Lesen aus einer Transferdatei verbundenen Eigenschaften erhalten den Prefix "xtf"
+
+|Neu|Alt|
+|---|---|
+|xtfFilePath|sourcePath|
+|xtfFilenameRegex|region|
+|xtfFilenameList|regions|
+
+#### Ziel Eigenschaften
+
+Alle mit der Ablage im Zielverzeichnis verbundenen Eigenschaften erhalten den Prefix "out".
+
+|Neu|Alt|
+|---|---|
+|outBasePath|target|
+|outDataIdent|dataIdent|
+|outWriteUserFormats|isUserFormats|
+|outGroomingConf|grooming|
+|outValidationConfig|validationConfig| 
+|outPublishedRegions|publishedRegions| 
+
+#### Globale Eigenschaften
+
+Alle globalen Eigenschaften erhalten den Präfix "glob" für global.
+
+|Neu|Alt|
+|---|---|
+|globModeldir|modeldir|
+|globProxy|proxy|
+|globProxyPort|proxyPort|
+
+#### Deprecated Eigenschaften
+
+Dies werden noch "mitgezogen", gelten aber als deprecated.
+
+|Neu|Alt|
+|---|---|
+|depExportModels|exportModels|
+|depVersion|version|
+
+## Fragen
+
+* Transparenz bei lokaler Entwicklung mittels?
+  * Immer zuerst in das build-Verzeichnis schreiben zwecks transparenz
+  * Lokaler sft server
 
 ### Reduktion der Redundanzen
 

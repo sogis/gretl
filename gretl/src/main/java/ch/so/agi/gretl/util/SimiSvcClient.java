@@ -7,14 +7,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.PublisherStep;
+import ch.so.agi.gretl.steps.PublisherStepOld;
 import ch.so.agi.gretl.util.publisher.PublicationLog;
 
 public class SimiSvcClient implements SimiSvcApi {
@@ -97,7 +95,7 @@ public class SimiSvcClient implements SimiSvcApi {
         if(usr!=null && token==null) {
             token=getAccessToken();
         }
-        String request=PublisherStep.publicationToString(pub);
+        String request= PublisherStepOld.publicationToString(pub);
         StringBuilder response=new StringBuilder();
         int status=doHttpRequest(response,"PUT",endpoint+"/pubsignal",request,"application/json",null,null);
         if(status!=HttpURLConnection.HTTP_OK) {
