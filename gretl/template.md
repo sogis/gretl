@@ -3,35 +3,18 @@
 This file is the shared briefing document for AI agents working in the Folder
 gretl/ of this repository.
 
+- `ch.so.agi.gretl.steps.PublisherStepOld`
+
 ## 1. Task Context
 
-The goal is to modularize the code of the publisher step 
-
-Modules (sub-packages under ch.so.agi.gretl.steps.publisher) after refactoring. New modules are marked with (NEW), 
-deprecated Modules with (DEP):
-
-* in.db.copy (NEW): Copies selected tables in a source schema to n target schemas with 
-  identically named tables but less columns. Filters rows with an optional whereclause.
-* in.db.dbToCache: 
-  * Reads 1-n matching datasets from the specified database schema.
-  * Writes
-    * The 1-n xtf files corresponding to the read datasets to a configurable temp dir path
-    * The information on the written datasets to a java data class (in memory)
-* in.xtfToCache:
-  * Reads 1-n matching xtf files from the specified folder.
-  * Writes
-    * The 1-n xtf to a configurable temp dir path
-    * The information on the written datasets to a java data class (in memory)
-* cache.append.data: Appends missing 
-* cache.append.meta: Appends metainformation files to the written data files in the temp dir
-* cache.metainfo: Adds metainformation files to the written data files in the temp dir
-* out.repoupdate: Updates the data repo with the new files
-* out.metainfo.table (NEW): Writes the Information on the published new data parts to the meta table
-* out.metainfo.simi (DEP): Communicates with SIMI over a REST-API and writes the data description file
+Expected content: describe the current goal in concrete terms, including the
+user-visible behavior that should change, the main constraints, and any open
+questions. Link or name the task brief when one exists.
 
 For the current Publisher work, start with:
 
-- `ch.so.agi.gretl.steps.PublisherStepOld`
+- `next_publisher.md`
+- `src/docs/publisher.qmd`
 
 ## 2. Repository Orientation
 
@@ -153,7 +136,6 @@ Suggested next step:
 ```
 
 ## 11. Open Questions And Decisions
-
 Expected content: record unresolved design questions, decisions already made,
 and the rationale for each decision. Keep this section concise and update it
 instead of scattering decisions through chat transcripts.

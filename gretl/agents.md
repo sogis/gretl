@@ -5,14 +5,33 @@ rules change.
 
 ## 1. Task Context
 
-Expected content: describe the current goal in concrete terms, including the
-user-visible behavior that should change, the main constraints, and any open
-questions. Link or name the task brief when one exists.
+The goal is to modularize the code of the publisher step
+
+Modules (sub-packages under ch.so.agi.gretl.steps.publisher) after refactoring. New modules are marked with (NEW),
+deprecated Modules with (DEP):
+
+* in.db.copy (NEW): Copies selected tables in a source schema to n target schemas with
+  identically named tables but less columns. Filters rows with an optional whereclause.
+* in.db.dbToCache:
+  * Reads 1-n matching datasets from the specified database schema.
+  * Writes
+    * The 1-n xtf files corresponding to the read datasets to a configurable temp dir path
+    * The information on the written datasets to a java data class (in memory)
+* in.xtfToCache:
+  * Reads 1-n matching xtf files from the specified folder.
+  * Writes
+    * The 1-n xtf to a configurable temp dir path
+    * The information on the written datasets to a java data class (in memory)
+* cache.append.data: Appends missing
+* cache.append.meta: Appends metainformation files to the written data files in the temp dir
+* cache.metainfo: Adds metainformation files to the written data files in the temp dir
+* out.repoupdate: Updates the data repo with the new files
+* out.metainfo.table (NEW): Writes the Information on the published new data parts to the meta table
+* out.metainfo.simi (DEP): Communicates with SIMI over a REST-API and writes the data description file
 
 For the current Publisher work, start with:
 
-- `next_publisher.md`
-- `src/docs/publisher.qmd`
+- `ch.so.agi.gretl.steps.PublisherStepOld`
 
 ## 2. Repository Orientation
 
