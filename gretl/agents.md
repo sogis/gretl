@@ -5,29 +5,31 @@ rules change.
 
 ## 1. Task Context
 
-The goal is to modularize the code of the publisher step
+The goal is to modularize the code of the publisher step.
 
-Modules (sub-packages under ch.so.agi.gretl.steps.publisher) after refactoring. New modules are marked with (NEW),
-deprecated Modules with (DEP):
+The scaffolded modules live under `ch.so.agi.gretl.steps.publisher`. Detailed
+responsibilities are documented in each package's `package-info.java` and in the
+class-level Javadocs. Use this package map as the canonical module boundary:
 
-* in.db.copy (NEW): Copies selected tables in a source schema to n target schemas with
-  identically named tables but less columns. Filters rows with an optional whereclause.
-* in.db.dbToCache:
-  * Reads 1-n matching datasets from the specified database schema.
-  * Writes
-    * The 1-n xtf files corresponding to the read datasets to a configurable temp dir path
-    * The information on the written datasets to a java data class (in memory)
-* in.xtfToCache:
-  * Reads 1-n matching xtf files from the specified folder.
-  * Writes
-    * The 1-n xtf to a configurable temp dir path
-    * The information on the written datasets to a java data class (in memory)
-* cache.append.data: Appends missing
-* cache.append.meta: Appends metainformation files to the written data files in the temp dir
-* cache.metainfo: Adds metainformation files to the written data files in the temp dir
-* out.repoupdate: Updates the data repo with the new files
-* out.metainfo.table (NEW): Writes the Information on the published new data parts to the meta table
-* out.metainfo.simi (DEP): Communicates with SIMI over a REST-API and writes the data description file
+- `publisher`: workflow coordination and shared DTOs.
+- `publisher.in.db.copy` (NEW): database table-copy preparation.
+- `publisher.in.db.tocache`: database dataset selection and XTF/ITF cache export.
+- `publisher.in.xtf.tocache`: transfer-file selection and cache import.
+- `publisher.cache.validation`: INTERLIS validation and validation-result data.
+- `publisher.cache.append.data`: publication archive creation and partial-update data append.
+- `publisher.cache.format`: optional user-format generation, including DM01 Geobau DXF.
+- `publisher.cache.append.meta`: archive-local metadata append.
+- `publisher.cache.metainfo`: top-level cache metainformation such as publish date and ILI files.
+- `publisher.out.repoupdate`: data repository update, current/history promotion, and grooming.
+- `publisher.out.metainfo.table` (NEW): publication-status table output.
+- `publisher.out.metainfo.simi` (DEP): deprecated SIMI REST metadata integration.
+
+Renamed package drafts:
+
+- `in.db.dbToCache` is now `publisher.in.db.tocache`.
+- `in.xtfToCache` is now `publisher.in.xtf.tocache`.
+- Validation and user-format behavior are explicit modules:
+  `publisher.cache.validation` and `publisher.cache.format`.
 
 For the current Publisher work, start with:
 
@@ -88,9 +90,10 @@ Current baseline:
 
 ## 6. Coordination Model
 
-The integrator agent works on tasks spanning mor than one submodule (as described above)
-Submodule agents work on subpackages only. They are allowed as exception to create 
-the POJO DTO Objects in the parent package src/main/java/ch/so/agi/gretl/steps/publisher.
+The integrator agent works on tasks spanning more than one publisher submodule
+from the package map in section 1. Submodule agents work on their assigned
+subpackage only. As an exception, they may create shared POJO/DTO objects in the
+parent package `src/main/java/ch/so/agi/gretl/steps/publisher`.
 
 ## 7. Change Boundaries
 
@@ -126,5 +129,3 @@ Suggested next step:
 ```
 
 ## 11. Open Questions And Decisions
-
-
