@@ -45,14 +45,18 @@ Nachteil: Publikationsdatum wird nur aktualisiert, wenn Netl laufengelassen wird
 
 Alle mit dem Lesen aus einer Datenbank-Tabelle verbundenen Eigenschaften erhalten den Prefix "db"
 
-|Neu|Alt|
-|---|---|
-|dbDatabase|database|
-|dbSchema|dbSchema|
-|dbPublishModel|modelsToPublish|
-|dbDataset|dataset|
-|dbDatasetRegex|region|
-|dbDatasetList|regions|
+|Neu|Alt|Bemerkung|
+|---|---|---|
+|dbDatabase|database||
+|dbSchema|dbSchema||
+|dbIliIdent_Type|-|Neu: Typ der ILI-Kennung, welche für den Export verwendet wird (model, topic, basket, dataset)|
+|dbIliIdent_Values|-|Neu: Werte der ILI-Kennung (Konvenience-Eigenschaft, damit bei genauen Werten nicht mit RegEx gearbeitet werden muss.)|
+|dbIliIdent_RegEx|-|Neu: Reguläre Expression auf die entsprechenden Kennungs-Typen im dbSchema.|
+|dbMergeToSingleXtf||Neu: Boolean, ob alle Objekte in ein einziges XTF exportiert werden sollen.|
+|-|modelsToPublish|Ersetzt durch dbIliIdent_Type und dbIliIdent_Values|
+|-|dataset|Ersetzt durch dbIliIdent_Type und dbIliIdent_Values|
+|-|region|Ersetzt durch dbIliIdent_Type und dbIliIdent_RegEx|
+|-|regions|Ersetzt durch dbIliIdent_Type und dbIliIdent_Values|
 
 
 #### Quelle Transferdatei
