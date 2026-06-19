@@ -51,7 +51,7 @@ Alle mit dem Lesen aus einer Datenbank-Tabelle verbundenen Eigenschaften erhalte
 |dbSchema|dbSchema||
 |dbIliIdent_Type|-|Neu: Typ der ILI-Kennung, welche für den Export verwendet wird (model, topic, basket, dataset)|
 |dbIliIdent_Values|-|Neu: Werte der ILI-Kennung (Konvenience-Eigenschaft, damit bei genauen Werten nicht mit RegEx gearbeitet werden muss.)|
-|dbIliIdent_RegEx|-|Neu: Reguläre Expression auf die entsprechenden Kennungs-Typen im dbSchema.|
+|dbIliIdent_RegEx|-|Neu: Reguläre Expression auf die entsprechenden Kennungs-Typen im dbSchema.|""
 |dbMergeToSingleXtf||Neu: Boolean, ob alle Objekte in ein einziges XTF exportiert werden sollen.|
 |-|modelsToPublish|Ersetzt durch dbIliIdent_Type und dbIliIdent_Values|
 |-|dataset|Ersetzt durch dbIliIdent_Type und dbIliIdent_Values|

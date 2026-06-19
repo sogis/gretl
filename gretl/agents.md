@@ -136,3 +136,4 @@ Suggested next step:
   * Use existing functionality "deeper" in ili2db/ioxili to transfer
 
 Time: Do 4:40 - 6:45, 7:15 - 11:50, 12:40 - 18:10
+Time: Fr: 5:40 - 6.50 8-9
