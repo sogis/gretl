@@ -8,19 +8,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.AbstractPublisherStepTest;
-import ch.so.agi.gretl.steps.PublisherStep;
+import ch.so.agi.gretl.steps.AbstractPublisherStepOldTest;
+import ch.so.agi.gretl.steps.PublisherStepOld;
 
 import static org.gradle.internal.impldep.org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GroomingTest {
-    final public static String SRC_TEST_DATA = AbstractPublisherStepTest.SRC_TEST_DATA;
+    final public static String SRC_TEST_DATA = AbstractPublisherStepOldTest.SRC_TEST_DATA;
 
     protected GretlLogger log;
     private java.text.DateFormat dateParser = Grooming.getDateFormat();
@@ -56,7 +55,7 @@ public class GroomingTest {
 
     @Test
     public void readsimpleFile() throws Exception {
-        Grooming grooming=PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("simpleGrooming.json"));
+        Grooming grooming= PublisherStepOld.readGrooming(Paths.get(SRC_TEST_DATA).resolve("simpleGrooming.json"));
         assertEquals((Integer)0, grooming.getDaily().getFrom());
         assertEquals((Integer)1, grooming.getDaily().getTo());
         assertEquals((Integer)1, grooming.getWeekly().getFrom());
@@ -70,7 +69,7 @@ public class GroomingTest {
     @Test
     public void readMissingFile() throws Exception {
         try {
-            Grooming grooming = PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("missingGrooming.json"));
+            Grooming grooming = PublisherStepOld.readGrooming(Paths.get(SRC_TEST_DATA).resolve("missingGrooming.json"));
             fail("exception expected");
         }catch(IOException ex) {
             ; // ok
@@ -81,7 +80,7 @@ public class GroomingTest {
     @Test
     public void readWrongFile() throws Exception {
         try {
-            Grooming grooming = PublisherStep.readGrooming(Paths.get(SRC_TEST_DATA).resolve("wrongGrooming.json"));
+            Grooming grooming = PublisherStepOld.readGrooming(Paths.get(SRC_TEST_DATA).resolve("wrongGrooming.json"));
             fail("exception expected");
         }catch(IOException ex) {
             ; // ok

@@ -12,11 +12,10 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import ch.so.agi.gretl.steps.PublisherStep;
+import ch.so.agi.gretl.steps.PublisherStepOld;
 import ch.so.agi.gretl.util.publisher.PublicationLog;
 import ch.so.agi.gretl.util.publisher.PublishedRegion;
 
@@ -144,7 +143,7 @@ public class SimiSvcClientTest {
         svc.notifyPublication(data);
         assertEquals("application/json", servlet.pubsignal_contentType);
         assertNull(servlet.pubsignal_authHeaderValue);
-        assertEquals(PublisherStep.publicationToString(data),servlet.pubsignal_content);
+        assertEquals(PublisherStepOld.publicationToString(data),servlet.pubsignal_content);
     }
     @Test
     public void notifyPublicationOAuth() throws Exception {
@@ -159,7 +158,7 @@ public class SimiSvcClientTest {
         svc.notifyPublication(data);
         assertEquals("application/json", servlet.pubsignal_contentType);
         assertEquals("Bearer " + OAUTH_TOKEN, servlet.pubsignal_authHeaderValue);
-        assertEquals(PublisherStep.publicationToString(data),servlet.pubsignal_content);
+        assertEquals(PublisherStepOld.publicationToString(data),servlet.pubsignal_content);
     }
     @Test
     public void notifyPublicationRegions() throws Exception {
@@ -176,6 +175,6 @@ public class SimiSvcClientTest {
         svc.notifyPublication(pub);
         assertEquals("application/json", servlet.pubsignal_contentType);
         assertEquals("Bearer " + OAUTH_TOKEN, servlet.pubsignal_authHeaderValue);
-        assertEquals(PublisherStep.publicationToString(pub),servlet.pubsignal_content);
+        assertEquals(PublisherStepOld.publicationToString(pub),servlet.pubsignal_content);
     }
 }
