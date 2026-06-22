@@ -5,21 +5,18 @@ rules change.
 
 ## 1. Task Context
 
-The goal is to modularize the code of the publisher step.
+Pending tasks:
+* Modify the operation interface to allow nullable input and output paths
+* Adapt all packages to the operation interface
+* Implement in.xtf.tostage: transfer-file selection and import to stage.
+* Implement stage.mergestages which merges all stage subdirectories into the new staged publication
+* Design stage.appendremote which appends parts from the sftp to the local stage to reach full data coverage even with partial publications
+* Design stage.pushtoremote which publishes a new publication
+* Design stage metainfo.m2m which publishes the publication info as digest of out.metainfo.table
+* Design the ili model for out.metainfo.table
 
-The scaffolded modules live under `ch.so.agi.gretl.steps.publisher`. Detailed
-responsibilities are documented in each package's `package-info.java` and in the
+Responsibilities are documented in each package's `package-info.java` and in the
 class-level Javadocs. Use this package map as the canonical module boundary:
-
-- `publisher`: workflow coordination and shared DTOs.
-- `publisher.in.db.copy` (NEW): database table-copy preparation.
-- `publisher.in.db.tocache`: database dataset selection and XTF/ITF cache export.
-- `publisher.in.xtf.tocache`: transfer-file selection and cache import.
-- `publisher.cache.validation`: INTERLIS validation and validation-result data.
-- `publisher.cache.format`: optional user-format generation, including DM01 Geobau DXF.
-- `publisher.out.repoupdate`: data repository update, current/history promotion, and grooming.
-- `publisher.out.metainfo.table` (NEW): publication-status table output.
-- `publisher.out.metainfo.simi` (DEP): deprecated SIMI REST metadata integration.
 
 Renamed package drafts:
 
