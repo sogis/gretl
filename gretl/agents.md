@@ -5,9 +5,13 @@ rules change.
 
 ## 1. Task Context
 
+Codex todos:
+* Reduce the asking
+  * Providing an implementation plan (what to include / exclude, to test)
+
 Pending tasks:
-* Modify the operation interface to allow nullable input and output paths
-* Adapt all packages to the operation interface
+* Modify the operation interface to allow nullable input and output paths $Coordinator
+* Adapt all packages to the operation interface $Coordinator
 * Implement in.xtf.tostage: transfer-file selection and import to stage.
 * Implement stage.mergestages which merges all stage subdirectories into the new staged publication
 * Design stage.appendremote which appends parts from the sftp to the local stage to reach full data coverage even with partial publications

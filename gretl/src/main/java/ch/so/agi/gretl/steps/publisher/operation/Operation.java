@@ -1,13 +1,12 @@
 package ch.so.agi.gretl.steps.publisher.operation;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 /**
  * Common contract for publisher operations.
- *
- * @param <T> operation-specific configuration type
  */
-public interface Operation<T extends OperationSpecificInformation> {
+public interface Operation<P extends OperationParameters> {
     default String getFullyQualifiedClassName() {
         return getClass().getName();
     }
@@ -16,5 +15,7 @@ public interface Operation<T extends OperationSpecificInformation> {
         return getClass().getSimpleName();
     }
 
-    void execute(Path inputDir, Path outputDir, T stepSpecificInformation) throws Exception;
+    P resolveParameters(Path inputDir, Path outputDir, int executionOrder) throws IOException;
+
+    void execute(P operationParameters) throws Exception;
 }
