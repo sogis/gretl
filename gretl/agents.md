@@ -12,9 +12,9 @@ Codex todos:
 Pending tasks:
 * Modify the operation interface to allow nullable input and output paths $Coordinator
 * Adapt all packages to the operation interface $Coordinator
-* Implement in.xtf.tostage: transfer-file selection and import to stage.
-* Implement stage.mergestages which merges all stage subdirectories into the new staged publication
-* Design stage.appendremote which appends parts from the sftp to the local stage to reach full data coverage even with partial publications
+* OK Implement in.xtf.tostage: transfer-file selection and import to stage.
+* OK Implement stage.mergestages which merges all stage subdirectories into the new staged publication
+* no Design stage.appendremote which appends parts from the sftp to the local stage to reach full data coverage even with partial publications
 * Design stage.pushtoremote which publishes a new publication
 * Design stage metainfo.m2m which publishes the publication info as digest of out.metainfo.table
 * Design the ili model for out.metainfo.table
