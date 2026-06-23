@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.publisher.in.db.schemacopy;
+package ch.so.agi.gretl.steps.schemacopy;
 
 public class TableCopySpecification {
     private final String tableName;

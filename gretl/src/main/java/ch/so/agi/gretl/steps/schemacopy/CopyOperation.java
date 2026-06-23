@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.publisher.in.db.schemacopy;
+package ch.so.agi.gretl.steps.schemacopy;
 
 import ch.ehi.ili2db.base.DbNames;
 import ch.so.agi.gretl.logging.GretlLogger;

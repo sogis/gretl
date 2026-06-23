@@ -6,4 +6,4 @@
  * If all copied data tables in source and target contain ili2db basket references, the copy
  * also replaces target ili2db dataset and basket metadata rows from the source schema.
  */
-package ch.so.agi.gretl.steps.publisher.in.db.schemacopy;
+package ch.so.agi.gretl.steps.schemacopy;

@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.publisher.in.db.schemacopy;
+package ch.so.agi.gretl.steps.schemacopy;
 
 import java.util.ArrayList;
 import java.util.Collections;
