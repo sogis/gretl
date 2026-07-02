@@ -28,7 +28,7 @@ class MergeStagesTest {
                 file("deep/inside/b.txt", "deep-b"));
         Path outputDir = tempDir.resolve("output");
 
-        new MergeStages().merge(List.of(sourceOne, sourceTwo), outputDir);
+        new MergeStages().execute(MergeStagesParameters.of(List.of(sourceOne, sourceTwo), outputDir));
 
         assertTrue(Files.isRegularFile(outputDir.resolve("alpha.txt")));
         assertTrue(Files.isRegularFile(outputDir.resolve("nested").resolve("a.txt")));
@@ -44,7 +44,7 @@ class MergeStagesTest {
         Path sourceTwo = createSourceTree("source-two", file("nested/b.txt", "two-b"));
         Path outputDir = Files.createDirectories(tempDir.resolve("output").resolve("nested"));
 
-        new MergeStages().merge(List.of(sourceOne, sourceTwo), outputDir.getParent());
+        new MergeStages().execute(MergeStagesParameters.of(List.of(sourceOne, sourceTwo), outputDir.getParent()));
 
         assertTrue(Files.isDirectory(outputDir));
         assertTrue(Files.isRegularFile(outputDir.resolve("a.txt")));
@@ -58,7 +58,7 @@ class MergeStagesTest {
         Path outputDir = tempDir.resolve("output");
 
         assertThrows(FileAlreadyExistsException.class,
-                () -> new MergeStages().merge(List.of(sourceOne, sourceTwo), outputDir));
+                () -> new MergeStages().execute(MergeStagesParameters.of(List.of(sourceOne, sourceTwo), outputDir)));
         assertTrue(Files.isRegularFile(outputDir.resolve("shared.txt")));
         assertEquals("alpha", Files.readString(outputDir.resolve("shared.txt")));
     }
@@ -71,7 +71,7 @@ class MergeStagesTest {
         Files.writeString(outputDir.resolve("nested").resolve("a.txt"), "stale", StandardCharsets.UTF_8);
 
         assertThrows(FileAlreadyExistsException.class,
-                () -> new MergeStages().merge(List.of(sourceOne), outputDir));
+                () -> new MergeStages().execute(MergeStagesParameters.of(List.of(sourceOne), outputDir)));
         assertEquals("stale", Files.readString(outputDir.resolve("nested").resolve("a.txt")));
     }
 
@@ -80,7 +80,7 @@ class MergeStagesTest {
         Path outputDir = tempDir.resolve("output");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new MergeStages().merge(List.of(tempDir.resolve("missing")), outputDir));
+                () -> new MergeStages().execute(MergeStagesParameters.of(List.of(tempDir.resolve("missing")), outputDir)));
 
         assertTrue(exception.getMessage().contains("does not exist"));
     }
@@ -90,7 +90,7 @@ class MergeStagesTest {
         Path inputFile = Files.writeString(tempDir.resolve("input.txt"), "content", StandardCharsets.UTF_8);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new MergeStages().merge(List.of(inputFile), tempDir.resolve("output")));
+                () -> new MergeStages().execute(MergeStagesParameters.of(List.of(inputFile), tempDir.resolve("output"))));
 
         assertTrue(exception.getMessage().contains("must be a directory"));
     }

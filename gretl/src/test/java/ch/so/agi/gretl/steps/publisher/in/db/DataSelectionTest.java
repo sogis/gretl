@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.publisher.in.db.tostage;
+package ch.so.agi.gretl.steps.publisher.in.db;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;

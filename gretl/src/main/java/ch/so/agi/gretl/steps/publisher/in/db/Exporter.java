@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.publisher.in.db.tostage;
+package ch.so.agi.gretl.steps.publisher.in.db;
 
 import java.sql.Connection;
 import java.nio.file.Files;
@@ -19,67 +19,64 @@ import ch.interlis.iox.IoxEvent;
 import ch.interlis.iox.IoxReader;
 import ch.interlis.iox.ObjectEvent;
 import ch.interlis.ilirepository.IliFiles;
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
 
 /**
  * Responsibility: encapsulate ili2db export configuration and execution when a
  * database publication part is exported as an XTF or ITF transfer file
  * and exported to the cache.
  */
-public class Exporter {
-    private final DataSelection selectionToExport;
-    private final Connection conn;
-    private final String dbSchema;
-    private final boolean mergeToSingleXtf;
-
-    public Exporter(DataSelection selectionToExport, Connection conn, String dbSchema, boolean mergeToSingleXtf) {
-        this.selectionToExport = selectionToExport;
-        this.conn = conn;
-        this.dbSchema = dbSchema;
-        this.mergeToSingleXtf = mergeToSingleXtf;
+public class Exporter implements Operation<ExporterParameters> {
+    @Override
+    public void execute(ExporterParameters operationParameters) throws Exception {
+        export(operationParameters);
     }
 
     /**
      * Exports to the given directory returning the number of the exported objects.
      */
-    public int export(Path exportDirectory) throws Exception {
-        validateExportInputs(exportDirectory);
+    int export(ExporterParameters operationParameters) throws Exception {
+        validateExportInputs(operationParameters);
 
-        boolean itfTransferFile = isItfTransferFile();
-        if (mergeToSingleXtf) {
-            Path exportFile = exportDirectory.resolve("export" + getTransferFileExtension(itfTransferFile));
-            return exportSelection(selectionToExport.getKeyValues(), exportFile, itfTransferFile);
+        boolean itfTransferFile = isItfTransferFile(operationParameters);
+        if (operationParameters.isMergeToSingleXtf()) {
+            Path exportFile = operationParameters.getExportDirectory().resolve("export" + getTransferFileExtension(itfTransferFile));
+            return exportSelection(operationParameters, operationParameters.getSelectionToExport().getKeyValues(), exportFile,
+                    itfTransferFile);
         }
 
         int objectCount = 0;
         Set<Path> exportFiles = new HashSet<Path>();
-        for (String keyValue : selectionToExport.getKeyValues()) {
-            Path exportFile = exportDirectory
+        for (String keyValue : operationParameters.getSelectionToExport().getKeyValues()) {
+            Path exportFile = operationParameters.getExportDirectory()
                     .resolve(sanitizeFileName(keyValue) + getTransferFileExtension(itfTransferFile));
             if (!exportFiles.add(exportFile)) {
                 throw new IllegalArgumentException("duplicate export file <" + exportFile + ">");
             }
-            objectCount += exportSelection(Collections.singletonList(keyValue), exportFile, itfTransferFile);
+            objectCount += exportSelection(operationParameters, Collections.singletonList(keyValue), exportFile,
+                    itfTransferFile);
         }
         return objectCount;
     }
 
-    private int exportSelection(List<String> keyValues, Path exportFile, boolean itfTransferFile) throws Exception {
-        Config config = createConfig();
+    private int exportSelection(ExporterParameters operationParameters, List<String> keyValues, Path exportFile,
+            boolean itfTransferFile) throws Exception {
+        Config config = createConfig(operationParameters);
         config.setXtffile(exportFile.toString());
         config.setModeldir(Ili2db.ILI_FROM_DB);
         config.setFunction(Config.FC_EXPORT);
         config.setValidation(false);
         config.setItfTransferfile(itfTransferFile);
-        applySelection(config, keyValues);
-        readSettingsFromDb(config);
-        validateConfig(config);
+        applySelection(operationParameters, config, keyValues);
+        readSettingsFromDb(operationParameters, config);
+        validateConfig(operationParameters, config);
         runIli2db(config);
         return countExportedObjects(exportFile, itfTransferFile);
     }
 
-    private void applySelection(Config config, List<String> keyValues) {
+    private void applySelection(ExporterParameters operationParameters, Config config, List<String> keyValues) {
         String joinedKeyValues = joinKeyValues(keyValues);
-        switch (selectionToExport.getKeyType()) {
+        switch (operationParameters.getSelectionToExport().getKeyType()) {
         case dataset:
             config.setDatasetName(joinedKeyValues);
             break;
@@ -93,7 +90,8 @@ public class Exporter {
             config.setBaskets(joinedKeyValues);
             break;
         default:
-            throw new IllegalArgumentException("unsupported keyType <" + selectionToExport.getKeyType() + ">");
+            throw new IllegalArgumentException(
+                    "unsupported keyType <" + operationParameters.getSelectionToExport().getKeyType() + ">");
         }
     }
 
@@ -101,21 +99,16 @@ public class Exporter {
         return String.join(String.valueOf(ch.interlis.ili2c.Main.MODELS_SEPARATOR), keyValues);
     }
 
-    private void validateExportInputs(Path exportDirectory) {
-        if (selectionToExport == null) {
-            throw new IllegalArgumentException("selectionToExport must be set");
-        }
-        selectionToExport.validateResolved();
-        if (exportDirectory == null) {
-            throw new IllegalArgumentException("exportDirectory must be set");
-        }
-        if (!Files.isDirectory(exportDirectory)) {
-            throw new IllegalArgumentException("exportDirectory <" + exportDirectory + "> must be an existing directory");
+    private void validateExportInputs(ExporterParameters operationParameters) {
+        operationParameters.getSelectionToExport().validateResolved();
+        if (!Files.isDirectory(operationParameters.getExportDirectory())) {
+            throw new IllegalArgumentException(
+                    "exportDirectory <" + operationParameters.getExportDirectory() + "> must be an existing directory");
         }
     }
 
-    private void validateConfig(Config config) {
-        if (DataSelection.KeyType.model.equals(selectionToExport.getKeyType())
+    private void validateConfig(ExporterParameters operationParameters, Config config) {
+        if (DataSelection.KeyType.model.equals(operationParameters.getSelectionToExport().getKeyType())
                 && Config.BASKET_HANDLING_READWRITE.equals(config.getBasketHandling())) {
             throw new IllegalArgumentException("models can only be used with simple models");
         }
@@ -129,23 +122,24 @@ public class Exporter {
         return fileName.replaceAll("[^A-Za-z0-9._-]", "_");
     }
 
-    Config createConfig() {
+    Config createConfig(ExporterParameters operationParameters) {
         Config config = new Config();
         new PgMain().initConfig(config);
-        config.setDbschema(dbSchema);
-        config.setJdbcConnection(conn);
+        config.setDbschema(operationParameters.getDbSchema());
+        config.setJdbcConnection(operationParameters.getConnection());
         return config;
     }
 
-    boolean isItfTransferFile() throws Exception {
-        Config config = createConfig();
-        IliFiles iliFiles = TransferFromIli.readIliFiles(conn, config.getDbschema(), new PgCustomStrategy(),
+    boolean isItfTransferFile(ExporterParameters operationParameters) throws Exception {
+        Config config = createConfig(operationParameters);
+        IliFiles iliFiles = TransferFromIli.readIliFiles(operationParameters.getConnection(), config.getDbschema(),
+                new PgCustomStrategy(),
                 config.isVer3_export());
         ch.interlis.ili2c.modelscan.IliFile iliFile = iliFiles.iteratorFile().next();
         return iliFile.getIliVersion() < 2.0;
     }
 
-    void readSettingsFromDb(Config config) throws Exception {
+    void readSettingsFromDb(ExporterParameters operationParameters, Config config) throws Exception {
         Ili2db.readSettingsFromDb(config);
     }
 

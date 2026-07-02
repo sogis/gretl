@@ -10,24 +10,28 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Objects;
 
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
+
 /**
  * Merges multiple stage directories into one output directory.
  *
  * <p>The merge is recursive, preserves relative paths, creates missing target
  * directories, and refuses to overwrite existing target files.</p>
  */
-public final class MergeStages {
-    public void merge(List<Path> inputDirs, Path outputDir) throws IOException {
-        Objects.requireNonNull(inputDirs, "inputDirs must not be null");
-        Objects.requireNonNull(outputDir, "outputDir must not be null");
-        if (inputDirs.isEmpty()) {
-            throw new IllegalArgumentException("inputDirs must not be empty");
-        }
+public final class MergeStages implements Operation<MergeStagesParameters> {
+    @Override
+    public void execute(MergeStagesParameters operationParameters) throws IOException {
+        merge(operationParameters);
+    }
+
+    void merge(MergeStagesParameters operationParameters) throws IOException {
+        Objects.requireNonNull(operationParameters, "operationParameters must not be null");
+        Path outputDir = operationParameters.getOutputDir();
 
         validateOutputDir(outputDir);
         Files.createDirectories(outputDir);
 
-        for (Path inputDir : inputDirs) {
+        for (Path inputDir : operationParameters.getInputDirs()) {
             mergeOne(inputDir, outputDir);
         }
     }

@@ -29,7 +29,7 @@ class PackerTest {
         Files.write(tempDir.resolve("validation.log"), "validation-log".getBytes(StandardCharsets.UTF_8));
         Files.write(tempDir.resolve("validation.ini"), "validation-ini".getBytes(StandardCharsets.UTF_8));
 
-        new Packer(tempDir, "ch.so.agi.demo").pack();
+        new Packer().execute(PackerParameters.of(tempDir, "ch.so.agi.demo"));
 
         Path zip = tempDir.resolve("ch.so.agi.demo.xtf.zip");
         assertTrue(Files.exists(zip));
@@ -46,7 +46,7 @@ class PackerTest {
         Files.write(sourceDir.resolve("parcel.dbf"), "dbf".getBytes(StandardCharsets.UTF_8));
         Files.write(tempDir.resolve("validation.log"), "validation-log".getBytes(StandardCharsets.UTF_8));
 
-        new Packer(tempDir, "ch.so.agi.demo").pack();
+        new Packer().execute(PackerParameters.of(tempDir, "ch.so.agi.demo"));
 
         Path zip = tempDir.resolve("ch.so.agi.demo.shp.zip");
         assertTrue(Files.exists(zip));

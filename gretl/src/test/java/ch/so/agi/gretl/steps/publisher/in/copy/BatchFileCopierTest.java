@@ -11,7 +11,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.List;
 
-import ch.so.agi.gretl.steps.publisher.util.copy.BatchFileCopier;
+import ch.so.agi.gretl.steps.publisher.util.BatchFileCopier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

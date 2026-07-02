@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.publisher.in.db.tostage;
+package ch.so.agi.gretl.steps.publisher.in.db;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

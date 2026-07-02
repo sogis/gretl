@@ -12,36 +12,37 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
+
 /**
  * Responsibility: orchestrate packaging of one cache publication part by
  * discovering archive sources once and then delegating to the renamer and the
  * zipper in sequence.
  */
-public final class Packer {
+public final class Packer implements Operation<PackerParameters> {
     private static final String STAGING_DIR = ".pack";
     private static final String META_DIR = "meta";
     private static final String VALIDATION_LOG = "validation.log";
     private static final String VALIDATION_INI = "validation.ini";
 
-    private final Path cacheDir;
-    private final String dataIdent;
-    private final Renamer renamer;
-    private final Zipper zipper;
-
-    public Packer(Path cacheDir, String dataIdent) {
-        this.cacheDir = Objects.requireNonNull(cacheDir, "cacheDir");
-        this.dataIdent = requireText(dataIdent, "dataIdent");
-        this.renamer = new Renamer(cacheDir, dataIdent);
-        this.zipper = new Zipper(cacheDir, dataIdent);
+    @Override
+    public void execute(PackerParameters operationParameters) {
+        pack(operationParameters);
     }
 
-    public void pack() {
+    void pack(PackerParameters operationParameters) {
+        Objects.requireNonNull(operationParameters, "operationParameters must not be null");
+        Path cacheDir = operationParameters.getCacheDir();
+        String dataIdent = operationParameters.getDataIdent();
+        Renamer renamer = new Renamer(cacheDir, dataIdent);
+        Zipper zipper = new Zipper(cacheDir, dataIdent);
+
         try {
             Files.createDirectories(cacheDir);
             Path stagingDir = cacheDir.resolve(STAGING_DIR).resolve(dataIdent);
             Files.createDirectories(stagingDir);
 
-            for (Path source : discoverSources()) {
+            for (Path source : discoverSources(cacheDir)) {
                 Path stagingZip = zipper.zip(source, stagingDir.resolve(source.getFileName().toString() + ".zip"));
                 renamer.moveArchive(stagingZip, source);
             }
@@ -52,7 +53,7 @@ public final class Packer {
         }
     }
 
-    private List<Path> discoverSources() throws IOException {
+    private List<Path> discoverSources(Path cacheDir) throws IOException {
         List<Path> sources = new ArrayList<>();
         try (Stream<Path> stream = Files.list(cacheDir)) {
             stream.filter(this::isPackableSource)
@@ -100,13 +101,4 @@ public final class Packer {
         });
     }
 
-    private static String requireText(String value, String name) {
-        if (value == null) {
-            throw new NullPointerException(name);
-        }
-        if (value.trim().isEmpty()) {
-            throw new IllegalArgumentException(name + " must not be blank");
-        }
-        return value;
-    }
 }

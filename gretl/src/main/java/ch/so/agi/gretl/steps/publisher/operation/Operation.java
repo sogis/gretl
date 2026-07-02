@@ -1,8 +1,5 @@
 package ch.so.agi.gretl.steps.publisher.operation;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
 /**
  * Common contract for publisher operations.
  */
@@ -15,7 +12,9 @@ public interface Operation<P extends OperationParameters> {
         return getClass().getSimpleName();
     }
 
-    P resolveParameters(Path inputDir, Path outputDir, int executionOrder) throws IOException;
+    default String getSuccessLogMessage() {
+        return getHumanReadableName() + " completed successfully";
+    }
 
     void execute(P operationParameters) throws Exception;
 }

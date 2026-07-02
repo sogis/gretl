@@ -7,13 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 
+import ch.so.agi.gretl.util.Grooming;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 class LatestRotatorTest {
+    private static final String DATE_TAG = "2026-06-23";
+
     @TempDir
     Path tempDir;
 
@@ -42,7 +44,7 @@ class LatestRotatorTest {
 
         new LatestRotator().rotate(dataRoot, tempStageRoot, date());
 
-        Path historyRoot = dataRoot.resolve("hist").resolve("2026-06-23");
+        Path historyRoot = dataRoot.resolve("hist").resolve(DATE_TAG);
         assertTrue(Files.isRegularFile(historyRoot.resolve("old.xtf.zip")));
         assertFalse(Files.exists(historyRoot.resolve("old.dxf.zip")));
         assertFalse(Files.exists(historyRoot.resolve("old.gpkg.zip")));
@@ -55,7 +57,7 @@ class LatestRotatorTest {
         Path dataRoot = Files.createDirectories(tempDir.resolve("data"));
         Path currentRoot = Files.createDirectories(dataRoot.resolve("aktuell"));
         Files.writeString(currentRoot.resolve("stale.xtf.zip"), "stale", StandardCharsets.UTF_8);
-        Path historyTarget = Files.createDirectories(dataRoot.resolve("hist").resolve("2026-06-23"));
+        Path historyTarget = Files.createDirectories(dataRoot.resolve("hist").resolve(DATE_TAG));
         Files.writeString(historyTarget.resolve("kept.xtf.zip"), "kept", StandardCharsets.UTF_8);
         Path tempStageRoot = Files.createDirectories(tempDir.resolve("stage"));
         Files.writeString(tempStageRoot.resolve("new.xtf.zip"), "new", StandardCharsets.UTF_8);
@@ -67,7 +69,7 @@ class LatestRotatorTest {
         assertEquals("new", Files.readString(dataRoot.resolve("aktuell").resolve("new.xtf.zip")));
     }
 
-    private static java.util.Date date() {
-        return new GregorianCalendar(2026, Calendar.JUNE, 23).getTime();
+    private static Date date() throws Exception {
+        return Grooming.getDateFormat().parse(DATE_TAG);
     }
 }

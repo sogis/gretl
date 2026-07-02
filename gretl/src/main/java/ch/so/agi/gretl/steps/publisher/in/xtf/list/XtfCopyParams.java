@@ -1,11 +1,14 @@
 package ch.so.agi.gretl.steps.publisher.in.xtf.list;
 
+import java.nio.file.Path;
 import java.util.Objects;
+
+import ch.so.agi.gretl.steps.publisher.operation.AbstractSingleInputSingleOutputParameters;
 
 /**
  * Parameters for copying explicitly selected XTF or ITF files.
  */
-public final class XtfCopyParams {
+public final class XtfCopyParams extends AbstractSingleInputSingleOutputParameters {
     public enum TransferFileType {
         XTF(".xtf"),
         ITF(".itf");
@@ -24,7 +27,9 @@ public final class XtfCopyParams {
     private final TransferFileType transferFileType;
     private final TransferFileList transferFileList;
 
-    private XtfCopyParams(TransferFileType transferFileType, TransferFileList transferFileList) {
+    private XtfCopyParams(Path sourceDir, Path targetDir, TransferFileType transferFileType,
+            TransferFileList transferFileList) {
+        super(sourceDir, targetDir);
         this.transferFileType = Objects.requireNonNull(transferFileType, "transferFileType must not be null");
         this.transferFileList = Objects.requireNonNull(transferFileList, "transferFileList must not be null");
         if (transferFileList.size() == 0) {
@@ -32,8 +37,9 @@ public final class XtfCopyParams {
         }
     }
 
-    public static XtfCopyParams of(TransferFileType transferFileType, TransferFileList transferFileList) {
-        return new XtfCopyParams(transferFileType, transferFileList);
+    public static XtfCopyParams of(Path sourceDir, Path targetDir, TransferFileType transferFileType,
+            TransferFileList transferFileList) {
+        return new XtfCopyParams(sourceDir, targetDir, transferFileType, transferFileList);
     }
 
     public TransferFileType getTransferFileType() {
@@ -42,5 +48,13 @@ public final class XtfCopyParams {
 
     public TransferFileList getTransferFileList() {
         return transferFileList;
+    }
+
+    public Path getSourceDir() {
+        return getInputDir();
+    }
+
+    public Path getTargetDir() {
+        return getOutputDir();
     }
 }

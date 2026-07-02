@@ -6,13 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 
+import ch.so.agi.gretl.util.Grooming;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 class RemoteUpdaterTest {
+    private static final String DATE_TAG = "2026-06-23";
+
     @TempDir
     Path tempDir;
 
@@ -29,13 +31,17 @@ class RemoteUpdaterTest {
         Files.writeString(Files.createDirectories(localStageRoot.resolve("meta")).resolve("publishdate.json"), "{}",
                 StandardCharsets.UTF_8);
 
-        new RemoteUpdater().update(remoteTargetRoot, "ch.so.agi.demo",
-                new GregorianCalendar(2026, Calendar.JUNE, 23).getTime(), localStageRoot);
+        new RemoteUpdater().execute(
+                RemoteUpdaterParameters.of(localStageRoot, remoteTargetRoot, "ch.so.agi.demo", date()));
 
         Path newCurrentRoot = dataRoot.resolve("aktuell");
         assertEquals("kept", Files.readString(newCurrentRoot.resolve("kept.xtf.zip")));
         assertEquals("new", Files.readString(newCurrentRoot.resolve("replaced.xtf.zip")));
         assertTrue(Files.isRegularFile(newCurrentRoot.resolve("meta").resolve("publishdate.json")));
-        assertTrue(Files.isRegularFile(dataRoot.resolve("hist").resolve("2026-06-23").resolve("kept.xtf.zip")));
+        assertTrue(Files.isRegularFile(dataRoot.resolve("hist").resolve(DATE_TAG).resolve("kept.xtf.zip")));
+    }
+
+    private static Date date() throws Exception {
+        return Grooming.getDateFormat().parse(DATE_TAG);
     }
 }

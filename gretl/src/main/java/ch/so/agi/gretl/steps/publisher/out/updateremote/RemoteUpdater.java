@@ -6,6 +6,7 @@ import ch.so.agi.gretl.steps.publisher.out.updateremote.seed.StageSeeder;
 import ch.so.agi.gretl.steps.publisher.out.updateremote.stage.RemoteStagePaths;
 import ch.so.agi.gretl.steps.publisher.out.updateremote.stage.StagePreparer;
 import ch.so.agi.gretl.steps.publisher.out.updateremote.target.TargetResolver;
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
 
 import java.nio.file.Path;
 import java.nio.file.FileVisitResult;
@@ -19,7 +20,7 @@ import java.util.Objects;
  * Coordinates the remote update flow while keeping filesystem details in the
  * responsibility-specific packages.
  */
-public final class RemoteUpdater {
+public final class RemoteUpdater implements Operation<RemoteUpdaterParameters> {
     private final TargetResolver targetResolver;
     private final StagePreparer stagePreparer;
     private final StageSeeder stageSeeder;
@@ -39,11 +40,17 @@ public final class RemoteUpdater {
         this.latestRotator = Objects.requireNonNull(latestRotator, "latestRotator");
     }
 
-    public void update(Path remoteTargetRoot, String dataIdent, Date publishDate, Path localStageRoot) throws Exception {
-        Path resolvedTargetRoot = targetResolver.resolve(Objects.requireNonNull(remoteTargetRoot, "remoteTargetRoot"));
-        String checkedDataIdent = requireText(dataIdent, "dataIdent");
-        Date checkedPublishDate = Objects.requireNonNull(publishDate, "publishDate");
-        Path checkedLocalStageRoot = Objects.requireNonNull(localStageRoot, "localStageRoot");
+    @Override
+    public void execute(RemoteUpdaterParameters operationParameters) throws Exception {
+        update(operationParameters);
+    }
+
+    void update(RemoteUpdaterParameters operationParameters) throws Exception {
+        Objects.requireNonNull(operationParameters, "operationParameters");
+        Path resolvedTargetRoot = targetResolver.resolve(operationParameters.getRemoteTargetRoot());
+        String checkedDataIdent = requireText(operationParameters.getDataIdent(), "dataIdent");
+        Date checkedPublishDate = operationParameters.getPublishDate();
+        Path checkedLocalStageRoot = operationParameters.getLocalStageRoot();
 
         RemoteStagePaths remoteStagePaths = stagePreparer.prepare(resolvedTargetRoot, checkedDataIdent, checkedPublishDate);
         try {

@@ -30,9 +30,9 @@ public class CacheValidatorTest {
         copyFixture("SimpleCoord23a.xtf", cacheRoot.resolve("SimpleCoord23a.xtf"));
         writeValidationConfig(cacheRoot, "SimpleCoord23");
 
-        CacheValidator validator = new CacheValidator(cacheRoot, true, true);
+        CacheValidator validator = new CacheValidator();
 
-        assertDoesNotThrow(validator::validate);
+        assertDoesNotThrow(() -> validator.execute(CacheValidatorParameters.of(cacheRoot, true, true)));
         assertTrue(Files.exists(cacheRoot.resolve("SimpleCoord23a.log")));
         assertTrue(Files.size(cacheRoot.resolve("SimpleCoord23a.log")) > 0);
     }
@@ -46,9 +46,9 @@ public class CacheValidatorTest {
         copyFixture("SimpleCoord23b.xtf", nested.resolve("SimpleCoord23b.xtf"));
         writeValidationConfig(cacheRoot, "SimpleCoord23");
 
-        CacheValidator validator = new CacheValidator(cacheRoot, true, true);
+        CacheValidator validator = new CacheValidator();
 
-        assertDoesNotThrow(validator::validate);
+        assertDoesNotThrow(() -> validator.execute(CacheValidatorParameters.of(cacheRoot, true, true)));
         assertTrue(Files.exists(cacheRoot.resolve("SimpleCoord23a.log")));
         assertTrue(Files.exists(nested.resolve("SimpleCoord23b.log")));
         assertTrue(Files.size(cacheRoot.resolve("SimpleCoord23a.log")) > 0);
@@ -64,9 +64,10 @@ public class CacheValidatorTest {
         Path logFile = logFileFor(transferFile);
         Files.writeString(logFile, "sentinel", StandardCharsets.UTF_8);
 
-        CacheValidator validator = new CacheValidator(cacheRoot, true, false);
+        CacheValidator validator = new CacheValidator();
 
-        assertThrows(IllegalStateException.class, validator::validate);
+        assertThrows(IllegalStateException.class,
+                () -> validator.execute(CacheValidatorParameters.of(cacheRoot, true, false)));
         assertTrue(Files.exists(logFile));
         assertEquals("sentinel", Files.readString(logFile, StandardCharsets.UTF_8));
     }
@@ -80,9 +81,9 @@ public class CacheValidatorTest {
         Path logFile = logFileFor(transferFile);
         Files.writeString(logFile, "sentinel", StandardCharsets.UTF_8);
 
-        CacheValidator validator = new CacheValidator(cacheRoot, true, true);
+        CacheValidator validator = new CacheValidator();
 
-        assertDoesNotThrow(validator::validate);
+        assertDoesNotThrow(() -> validator.execute(CacheValidatorParameters.of(cacheRoot, true, true)));
         assertTrue(Files.exists(logFile));
         assertFalse(Files.readString(logFile, StandardCharsets.UTF_8).equals("sentinel"));
     }
@@ -97,14 +98,15 @@ public class CacheValidatorTest {
         Files.writeString(invalidTransfer, invalidContent, StandardCharsets.UTF_8);
         writeValidationConfig(cacheRoot, "SimpleCoord23");
 
-        CacheValidator suppressingValidator = new CacheValidator(cacheRoot, false, true);
-        CacheValidator failingValidator = new CacheValidator(cacheRoot, true, true);
+        CacheValidator suppressingValidator = new CacheValidator();
+        CacheValidator failingValidator = new CacheValidator();
 
-        assertDoesNotThrow(suppressingValidator::validate);
+        assertDoesNotThrow(() -> suppressingValidator.execute(CacheValidatorParameters.of(cacheRoot, false, true)));
         assertTrue(Files.exists(cacheRoot.resolve("SimpleCoord23a.log")));
         assertTrue(Files.size(cacheRoot.resolve("SimpleCoord23a.log")) > 0);
 
-        assertThrows(IllegalStateException.class, failingValidator::validate);
+        assertThrows(IllegalStateException.class,
+                () -> failingValidator.execute(CacheValidatorParameters.of(cacheRoot, true, true)));
     }
 
     private Path copyFixture(String fixtureName, Path target) throws IOException {

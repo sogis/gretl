@@ -19,8 +19,8 @@ class DerivatorTest {
         copyJobInput(nested1);
         copyJobInput(nested2);
 
-        Derivator derivator = new Derivator(List.of(DerivedFormat.GPKG), cacheDir);
-        derivator.deriveAllTransferFiles();
+        Derivator derivator = new Derivator();
+        derivator.execute(DerivatorParameters.of(cacheDir, List.of(DerivedFormat.GPKG)));
 
         assertTrue(Files.isRegularFile(nested1.resolve("gpkg").resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")));
         assertTrue(Files.isRegularFile(nested2.resolve("gpkg").resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")));
@@ -34,8 +34,8 @@ class DerivatorTest {
         Path nested = Files.createDirectories(cacheDir.resolve("single").resolve("source"));
         copyJobInput(nested);
 
-        Derivator derivator = new Derivator(List.of(DerivedFormat.SHP), cacheDir);
-        derivator.deriveAllTransferFiles();
+        Derivator derivator = new Derivator();
+        derivator.execute(DerivatorParameters.of(cacheDir, List.of(DerivedFormat.SHP)));
 
         assertTrue(Files.isRegularFile(nested.resolve("shp").resolve("gemeinde.shp")));
         assertTrue(Files.isRegularFile(nested.resolve("shp").resolve("grundbuchkreis.shp")));

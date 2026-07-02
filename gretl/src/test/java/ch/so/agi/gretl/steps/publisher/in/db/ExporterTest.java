@@ -1,10 +1,11 @@
-package ch.so.agi.gretl.steps.publisher.in.db.tostage;
+package ch.so.agi.gretl.steps.publisher.in.db;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,9 +26,10 @@ class ExporterTest {
         selection.setKeyType(DataSelection.KeyType.dataset);
         selection.setKeyValues(Collections.singletonList("2501"));
         selection.setKeyRegEx("25.*");
+        ExporterParameters params = ExporterParameters.of(selection, connection(), "schema", true, tempDir);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new TestExporter(selection, true).export(tempDir));
+                () -> new TestExporter().export(params));
 
         assertEquals("resolved keyRegEx must be null", exception.getMessage());
     }
@@ -35,18 +37,22 @@ class ExporterTest {
     @Test
     void rejectsNonDirectoryExportPath() throws Exception {
         Path exportFile = Files.createFile(tempDir.resolve("export.xtf"));
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.dataset, "2501"), connection(),
+                "schema", true, exportFile);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new TestExporter(selection(DataSelection.KeyType.dataset, "2501"), true).export(exportFile));
+                () -> new TestExporter().export(params));
 
         assertEquals("exportDirectory <" + exportFile + "> must be an existing directory", exception.getMessage());
     }
 
     @Test
     void exportsMergedSelectionToGenericXtfFile() throws Exception {
-        TestExporter exporter = new TestExporter(selection(DataSelection.KeyType.dataset, "2501", "2502"), true);
+        TestExporter exporter = new TestExporter();
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.dataset, "2501", "2502"),
+                connection(), "schema", true, tempDir);
 
-        int objectCount = exporter.export(tempDir);
+        int objectCount = exporter.export(params);
 
         assertEquals(6, objectCount);
         assertEquals(Collections.singletonList(tempDir.resolve("export.xtf")), exporter.exportFiles);
@@ -55,19 +61,23 @@ class ExporterTest {
 
     @Test
     void exportsMergedSelectionToGenericItfFile() throws Exception {
-        TestExporter exporter = new TestExporter(selection(DataSelection.KeyType.dataset, "2501"), true);
+        TestExporter exporter = new TestExporter();
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.dataset, "2501"), connection(),
+                "schema", true, tempDir);
         exporter.itfTransferFile = true;
 
-        exporter.export(tempDir);
+        exporter.execute(params);
 
         assertEquals(Collections.singletonList(tempDir.resolve("export.itf")), exporter.exportFiles);
     }
 
     @Test
     void exportsSplitSelectionToOneFilePerKeyValue() throws Exception {
-        TestExporter exporter = new TestExporter(selection(DataSelection.KeyType.dataset, "2501", "2502"), false);
+        TestExporter exporter = new TestExporter();
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.dataset, "2501", "2502"),
+                connection(), "schema", false, tempDir);
 
-        int objectCount = exporter.export(tempDir);
+        int objectCount = exporter.export(params);
 
         assertEquals(12, objectCount);
         assertEquals(Arrays.asList(tempDir.resolve("2501.xtf"), tempDir.resolve("2502.xtf")), exporter.exportFiles);
@@ -77,47 +87,57 @@ class ExporterTest {
 
     @Test
     void sanitizesSplitExportFileNames() throws Exception {
-        TestExporter exporter = new TestExporter(selection(DataSelection.KeyType.topic, "ModelA.Topic A"), false);
+        TestExporter exporter = new TestExporter();
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.topic, "ModelA.Topic A"),
+                connection(), "schema", false, tempDir);
 
-        exporter.export(tempDir);
+        exporter.execute(params);
 
         assertEquals(Collections.singletonList(tempDir.resolve("ModelA.Topic_A.xtf")), exporter.exportFiles);
     }
 
     @Test
     void appliesModelSelectionToModelsConfig() throws Exception {
-        TestExporter exporter = new TestExporter(selection(DataSelection.KeyType.model, "ModelA", "ModelB"), true);
+        TestExporter exporter = new TestExporter();
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.model, "ModelA", "ModelB"),
+                connection(), "schema", true, tempDir);
 
-        exporter.export(tempDir);
+        exporter.execute(params);
 
         assertEquals("ModelA;ModelB", exporter.configs.get(0).getModels());
     }
 
     @Test
     void appliesTopicSelectionToTopicsConfig() throws Exception {
-        TestExporter exporter = new TestExporter(selection(DataSelection.KeyType.topic, "ModelA.TopicA"), true);
+        TestExporter exporter = new TestExporter();
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.topic, "ModelA.TopicA"),
+                connection(), "schema", true, tempDir);
 
-        exporter.export(tempDir);
+        exporter.execute(params);
 
         assertEquals("ModelA.TopicA", exporter.configs.get(0).getTopics());
     }
 
     @Test
     void appliesBasketSelectionToBasketsConfig() throws Exception {
-        TestExporter exporter = new TestExporter(selection(DataSelection.KeyType.basket, "basket-a"), true);
+        TestExporter exporter = new TestExporter();
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.basket, "basket-a"),
+                connection(), "schema", true, tempDir);
 
-        exporter.export(tempDir);
+        exporter.execute(params);
 
         assertEquals("basket-a", exporter.configs.get(0).getBaskets());
     }
 
     @Test
     void rejectsModelSelectionForBasketAwareSchema() {
-        TestExporter exporter = new TestExporter(selection(DataSelection.KeyType.model, "ModelA"), true);
+        TestExporter exporter = new TestExporter();
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.model, "ModelA"), connection(),
+                "schema", true, tempDir);
         exporter.basketHandling = Config.BASKET_HANDLING_READWRITE;
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> exporter.export(tempDir));
+                () -> exporter.export(params));
 
         assertEquals("models can only be used with simple models", exception.getMessage());
         assertEquals(0, exporter.runCount);
@@ -130,6 +150,14 @@ class ExporterTest {
         return selection;
     }
 
+    private Connection connection() {
+        try {
+            return java.sql.DriverManager.getConnection("jdbc:derby:memory:publisher-exporter-test;create=true");
+        } catch (java.sql.SQLException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     private static final class TestExporter extends Exporter {
         private final List<Config> configs = new ArrayList<Config>();
         private final List<Path> exportFiles = new ArrayList<Path>();
@@ -137,12 +165,8 @@ class ExporterTest {
         private String basketHandling;
         private int runCount;
 
-        TestExporter(DataSelection selectionToExport, boolean mergeToSingleXtf) {
-            super(selectionToExport, null, "schema", mergeToSingleXtf);
-        }
-
         @Override
-        Config createConfig() {
+        Config createConfig(ExporterParameters operationParameters) {
             Config config = new Config();
             config.setDbschema("schema");
             configs.add(config);
@@ -150,12 +174,12 @@ class ExporterTest {
         }
 
         @Override
-        boolean isItfTransferFile() {
+        boolean isItfTransferFile(ExporterParameters operationParameters) {
             return itfTransferFile;
         }
 
         @Override
-        void readSettingsFromDb(Config config) {
+        void readSettingsFromDb(ExporterParameters operationParameters, Config config) {
             config.setBasketHandling(basketHandling);
         }
 

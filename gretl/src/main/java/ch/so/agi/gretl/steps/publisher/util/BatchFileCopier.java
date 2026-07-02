@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.publisher.util.copy;
+package ch.so.agi.gretl.steps.publisher.util;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;

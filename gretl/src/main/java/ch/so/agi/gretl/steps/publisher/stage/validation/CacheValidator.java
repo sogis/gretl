@@ -14,26 +14,25 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
+
 /**
  *  Walks the cache directory tree and validates each transfer file that it finds.
  *  The optional validation configuration is expected at the cache root as validation.ini.
  *  Each transfer file writes its validation log into the same folder as the transfer file itself.
  */
-public class CacheValidator {
+public class CacheValidator implements Operation<CacheValidatorParameters> {
     public static final String VALIDATION_CONFIG_FILENAME = "validation.ini";
     public static final String VALIDATION_LOG_EXTENSION = "log";
 
-    private final Path cachePath;
-    private final boolean throwOnValidationError;
-    private final boolean overwriteExistingLog;
-
-    public CacheValidator(Path cache, boolean throwOnValidationError, boolean overwriteExistingLog) {
-        this.cachePath = Objects.requireNonNull(cache, "cache must not be null");
-        this.throwOnValidationError = throwOnValidationError;
-        this.overwriteExistingLog = overwriteExistingLog;
+    @Override
+    public void execute(CacheValidatorParameters operationParameters) {
+        validate(operationParameters);
     }
 
-    public void validate() {
+    void validate(CacheValidatorParameters operationParameters) {
+        Objects.requireNonNull(operationParameters, "operationParameters must not be null");
+        Path cachePath = operationParameters.getCachePath();
         if (!Files.exists(cachePath)) {
             throw new IllegalArgumentException("cache path does not exist: " + cachePath);
         }
@@ -63,13 +62,14 @@ public class CacheValidator {
 
         transferFiles.sort(Comparator.naturalOrder());
         for (Path transferFile : transferFiles) {
-            validateTransferFile(transferFile, validationConfig);
+            validateTransferFile(operationParameters, transferFile, validationConfig);
         }
     }
 
-    private void validateTransferFile(Path transferFile, Path validationConfig) {
+    private void validateTransferFile(CacheValidatorParameters operationParameters, Path transferFile,
+            Path validationConfig) {
         Path logFile = logFileFor(transferFile);
-        if (Files.exists(logFile) && !overwriteExistingLog) {
+        if (Files.exists(logFile) && !operationParameters.isOverwriteExistingLog()) {
             throw new IllegalStateException("validation log already exists: " + logFile);
         }
 
@@ -87,7 +87,7 @@ public class CacheValidator {
         }
 
         boolean validationOk = new Validator().validate(new String[] {transferFile.toAbsolutePath().toString()}, settings);
-        if (!validationOk && throwOnValidationError) {
+        if (!validationOk && operationParameters.isThrowOnValidationError()) {
             throw new IllegalStateException("validation failed for " + transferFile);
         }
     }

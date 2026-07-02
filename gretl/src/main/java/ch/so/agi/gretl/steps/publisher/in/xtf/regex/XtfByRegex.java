@@ -9,13 +9,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import ch.so.agi.gretl.steps.publisher.util.copy.BatchFileCopier;
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
+import ch.so.agi.gretl.steps.publisher.util.BatchFileCopier;
 
 /**
  * Selects direct-child transfer files from a source directory by regular
  * expression and copies the matches to a target directory.
  */
-public final class XtfByRegex {
+public final class XtfByRegex implements Operation<XtfByRegexParams> {
     private final BatchFileCopier batchFileCopier;
 
     public XtfByRegex() {
@@ -26,18 +27,24 @@ public final class XtfByRegex {
         this.batchFileCopier = Objects.requireNonNull(batchFileCopier, "batchFileCopier must not be null");
     }
 
-    public List<Path> execute(Path sourceDir, Path targetDir, XtfByRegexParams params) throws IOException {
-        Objects.requireNonNull(sourceDir, "sourceDir must not be null");
-        Objects.requireNonNull(targetDir, "targetDir must not be null");
-        Objects.requireNonNull(params, "params must not be null");
+    @Override
+    public void execute(XtfByRegexParams operationParameters) throws IOException {
+        copyFiles(operationParameters);
+    }
+
+    List<Path> copyFiles(XtfByRegexParams operationParameters) throws IOException {
+        Objects.requireNonNull(operationParameters, "operationParameters must not be null");
+        Path sourceDir = operationParameters.getSourceDir();
+        Path targetDir = operationParameters.getTargetDir();
 
         if (!Files.isDirectory(sourceDir)) {
             throw new IllegalArgumentException("sourceDir <" + sourceDir + "> must be an existing directory");
         }
 
-        List<Path> matchingFiles = findMatchingFiles(sourceDir, params);
+        List<Path> matchingFiles = findMatchingFiles(sourceDir, operationParameters);
         if (matchingFiles.isEmpty()) {
-            throw new IllegalArgumentException("regex <" + params.getFileNameRegex() + "> did not match any files");
+            throw new IllegalArgumentException(
+                    "regex <" + operationParameters.getFileNameRegex() + "> did not match any files");
         }
 
         return batchFileCopier.copyFiles(matchingFiles, targetDir);

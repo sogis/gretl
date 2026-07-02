@@ -10,24 +10,22 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class Derivator {
-    private final List<DerivedFormat> requestedFormats;
-    private final Path cacheDir;
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
 
-    public Derivator(List<DerivedFormat> requestedFormats, Path cacheDir) {
-        Objects.requireNonNull(requestedFormats, "requestedFormats must not be null");
-        Objects.requireNonNull(cacheDir, "cacheDir must not be null");
-        this.requestedFormats = new ArrayList<>(requestedFormats);
-        this.cacheDir = cacheDir.toAbsolutePath().normalize();
+public final class Derivator implements Operation<DerivatorParameters> {
+    @Override
+    public void execute(DerivatorParameters operationParameters) {
+        deriveAllTransferFiles(operationParameters);
     }
 
-    public void deriveAllTransferFiles() {
-        for (Path transferFile : findTransferFiles()) {
-            new SingleTransferDerivator(transferFile, requestedFormats).derive();
+    void deriveAllTransferFiles(DerivatorParameters operationParameters) {
+        for (Path transferFile : findTransferFiles(operationParameters)) {
+            new SingleTransferDerivator(transferFile, operationParameters.getRequestedFormats()).derive();
         }
     }
 
-    private List<Path> findTransferFiles() {
+    private List<Path> findTransferFiles(DerivatorParameters operationParameters) {
+        Path cacheDir = operationParameters.getCacheDir().toAbsolutePath().normalize();
         try (Stream<Path> stream = Files.walk(cacheDir)) {
             return stream
                     .filter(Files::isRegularFile)

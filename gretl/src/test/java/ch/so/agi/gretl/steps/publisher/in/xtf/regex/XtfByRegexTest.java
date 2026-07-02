@@ -19,31 +19,32 @@ class XtfByRegexTest {
     @Test
     void copiesMatchingXtfAndItfFilesInDeterministicOrder() throws Exception {
         Path sourceDir = Files.createDirectory(tempDir.resolve("source"));
+        Path targetDir = tempDir.resolve("target");
         Files.writeString(sourceDir.resolve("b.xtf"), "b", StandardCharsets.UTF_8);
         Files.writeString(sourceDir.resolve("a.itf"), "a", StandardCharsets.UTF_8);
         Files.writeString(sourceDir.resolve("ignore.txt"), "ignore", StandardCharsets.UTF_8);
         Files.createDirectory(sourceDir.resolve("nested"));
 
-        List<Path> copiedFiles = new XtfByRegex().execute(sourceDir, tempDir.resolve("target"),
-                XtfByRegexParams.of(".*\\.(xtf|itf)$"));
+        List<Path> copiedFiles = new XtfByRegex().copyFiles(
+                XtfByRegexParams.of(sourceDir, targetDir, ".*\\.(xtf|itf)$"));
 
-        assertEquals(List.of(tempDir.resolve("target").resolve("a.itf"), tempDir.resolve("target").resolve("b.xtf")),
+        assertEquals(List.of(targetDir.resolve("a.itf"), targetDir.resolve("b.xtf")),
                 copiedFiles);
-        assertTrue(Files.exists(tempDir.resolve("target").resolve("a.itf")));
-        assertTrue(Files.exists(tempDir.resolve("target").resolve("b.xtf")));
-        assertEquals("a", Files.readString(tempDir.resolve("target").resolve("a.itf")));
-        assertEquals("b", Files.readString(tempDir.resolve("target").resolve("b.xtf")));
+        assertTrue(Files.exists(targetDir.resolve("a.itf")));
+        assertTrue(Files.exists(targetDir.resolve("b.xtf")));
+        assertEquals("a", Files.readString(targetDir.resolve("a.itf")));
+        assertEquals("b", Files.readString(targetDir.resolve("b.xtf")));
     }
 
     @Test
     void createsTargetDirectoryTree() throws Exception {
         Path sourceDir = Files.createDirectory(tempDir.resolve("source"));
+        Path targetDir = tempDir.resolve("nested").resolve("target");
         Files.writeString(sourceDir.resolve("only.xtf"), "content", StandardCharsets.UTF_8);
 
-        new XtfByRegex().execute(sourceDir, tempDir.resolve("nested").resolve("target"),
-                XtfByRegexParams.of(".*\\.xtf$"));
+        new XtfByRegex().execute(XtfByRegexParams.of(sourceDir, targetDir, ".*\\.xtf$"));
 
-        assertTrue(Files.exists(tempDir.resolve("nested").resolve("target").resolve("only.xtf")));
+        assertTrue(Files.exists(targetDir.resolve("only.xtf")));
     }
 
     @Test
@@ -51,7 +52,8 @@ class XtfByRegexTest {
         Path sourceFile = Files.writeString(tempDir.resolve("source.xtf"), "content", StandardCharsets.UTF_8);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new XtfByRegex().execute(sourceFile, tempDir.resolve("target"), XtfByRegexParams.of(".*")));
+                () -> new XtfByRegex().execute(
+                        XtfByRegexParams.of(sourceFile, tempDir.resolve("target"), ".*")));
 
         assertTrue(exception.getMessage().contains("must be an existing directory"));
     }
@@ -62,8 +64,8 @@ class XtfByRegexTest {
         Files.writeString(sourceDir.resolve("a.xtf"), "content", StandardCharsets.UTF_8);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> new XtfByRegex().execute(sourceDir, tempDir.resolve("target"),
-                        XtfByRegexParams.of(".*\\.itf$")));
+                () -> new XtfByRegex().execute(
+                        XtfByRegexParams.of(sourceDir, tempDir.resolve("target"), ".*\\.itf$")));
 
         assertTrue(exception.getMessage().contains("did not match any files"));
     }
