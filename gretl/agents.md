@@ -132,6 +132,3 @@ Suggested next step:
   * If the ref's exist on both sides, make the copy "basket-aware" by mapping the bid from source to target?
   * List as known issue and map dirty using the basket tid?
   * Use existing functionality "deeper" in ili2db/ioxili to transfer
-
-Time: Do 4:40 - 6:45, 7:15 - 11:50, 12:40 - 18:10
-Time: Fr: 5:40 - 6.50 8-9

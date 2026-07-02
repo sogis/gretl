@@ -13,7 +13,7 @@ import ch.so.agi.gretl.api.Endpoint;
 class PublisherStepConstructionTest {
     @Test
     void rejectsNullParameters() {
-        assertThrows(NullPointerException.class, () -> new PublisherStep(null));
+        assertThrows(NullPointerException.class, () -> new RawPublisherArgs(null));
     }
 
     @Test
@@ -25,7 +25,7 @@ class PublisherStepConstructionTest {
                 .dbIliIdentValues(List.of("ch.so.agi.alpha"))
                 .build();
 
-        PublisherStep step = new PublisherStep(parameters);
+        RawPublisherArgs step = new RawPublisherArgs(parameters);
 
         assertSame(parameters, step.getParameters());
     }
@@ -36,7 +36,7 @@ class PublisherStepConstructionTest {
                 .xtfFilePath("data.xtf")
                 .build();
 
-        PublisherStep step = new PublisherStep(parameters);
+        RawPublisherArgs step = new RawPublisherArgs(parameters);
 
         assertSame(parameters, step.getParameters());
     }
