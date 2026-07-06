@@ -14,7 +14,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 @Tag(TestTags.SFTP_TEST)
-public class PublisherStepFile2RemoteTest extends AbstractPublisherStepTest {
+public class PublisherStepOldFile2RemoteTest extends AbstractPublisherStepOldTest {
     private static final String FTP_URL = System.getProperty("ftpurl");
     private static final String FTP_USER = System.getProperty("ftpusr");
     private static final String FTP_PASSWORD = System.getProperty("ftppwd");

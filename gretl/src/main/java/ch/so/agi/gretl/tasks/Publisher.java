@@ -5,7 +5,7 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.api.Endpoint;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.PublisherStep;
+import ch.so.agi.gretl.steps.PublisherStepOld;
 import ch.so.agi.gretl.util.SimiSvcApi;
 import ch.so.agi.gretl.util.SimiSvcClient;
 import ch.so.agi.gretl.util.TaskUtil;
@@ -307,7 +307,7 @@ public class Publisher extends DefaultTask {
     public void publishAll() {
         log = LogEnvironment.getLogger(Publisher.class);
         
-        PublisherStep step = new PublisherStep();
+        PublisherStepOld step = new PublisherStepOld();
         Path sourceFile = null;
 
         if (sourcePath != null && database != null) {

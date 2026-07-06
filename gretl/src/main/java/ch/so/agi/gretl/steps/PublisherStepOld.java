@@ -1,9 +1,5 @@
 package ch.so.agi.gretl.steps;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
@@ -20,7 +16,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -28,12 +23,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.interlis2.validator.Validator;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import ch.ehi.basics.settings.Settings;
 import ch.ehi.basics.view.GenericFileFilter;
@@ -43,12 +34,10 @@ import ch.ehi.ili2db.fromili.TransferFromIli;
 import ch.ehi.ili2db.gui.Config;
 import ch.ehi.ili2pg.PgCustomStrategy;
 import ch.interlis.ili2c.metamodel.Model;
-import ch.interlis.ili2c.metamodel.TransferDescription;
 import ch.interlis.iox.IoxException;
 import ch.interlis.iox_j.statistics.BasketStat;
 import ch.interlis.iox_j.statistics.IoxStatistics;
 import ch.interlis.models.DM01AVCH24LV95D_;
-import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.Grooming;
@@ -57,7 +46,7 @@ import ch.so.agi.gretl.util.publisher.PublicationLog;
 import ch.so.agi.gretl.util.publisher.PublishedBasket;
 import ch.so.agi.gretl.util.publisher.PublishedRegion;
 
-public class PublisherStep {
+public class PublisherStepOld {
     public static final String FILE_EXT_ZIP = "zip";
     public static final String FILE_EXT_LOG = "log";
     public static final String FILE_EXT_INI = "ini";
@@ -76,13 +65,13 @@ public class PublisherStep {
     private GretlLogger log;
     private String taskName;
 
-    public PublisherStep() {
+    public PublisherStepOld() {
         this(null);
     }
     
-    public PublisherStep(String taskName) {
+    public PublisherStepOld(String taskName) {
         if (taskName == null) {
-            this.taskName = PublisherStep.class.getSimpleName();
+            this.taskName = PublisherStepOld.class.getSimpleName();
         } else {
             this.taskName = taskName;
         }
