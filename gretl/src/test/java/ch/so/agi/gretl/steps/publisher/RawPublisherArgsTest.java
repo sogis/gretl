@@ -4,10 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import ch.so.agi.gretl.api.Endpoint;
+import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
 
 class RawPublisherArgsTest {
     @Test
@@ -21,12 +26,17 @@ class RawPublisherArgsTest {
                 true,
                 null,
                 null,
+                null,
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
                 null);
 
         assertEquals("edit", args.getDbDatabase());
         assertEquals("live", args.getDbSchema());
         assertEquals(RawPublisherArgs.IliIdentType.dataset, args.getDbIliIdentType());
-        assertEquals(list("ch.so.agi.alpha", "ch.so.agi.beta"), args.getDbIliIdent_Values());
+        assertEquals(List.of("ch.so.agi.alpha", "ch.so.agi.beta"), args.getDbIliIdent_Values());
         assertEquals(RawPublisherArgs.PublishMode.dbIdentvaluesList, args.getPublishMode());
         assertEquals(Boolean.TRUE, args.getDbMergeToSingleXtf());
     }
@@ -40,6 +50,11 @@ class RawPublisherArgsTest {
                 null,
                 "ch\\.so\\.agi\\..*",
                 false,
+                null,
+                null,
+                null,
+                target(),
+                "ch.so.agi.demo",
                 null,
                 null,
                 null);
@@ -61,10 +76,15 @@ class RawPublisherArgsTest {
                 null,
                 "/data/incoming",
                 null,
-                list("2401.xtf", "2402.xtf"));
+                list("2401.xtf", "2402.xtf"),
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
+                null);
 
         assertEquals("/data/incoming", args.getXtfFile_FolderPath());
-        assertEquals(list("2401.xtf", "2402.xtf"), args.getXtfFilename_List());
+        assertEquals(List.of("2401.xtf", "2402.xtf"), args.getXtfFilename_List());
         assertEquals(RawPublisherArgs.PublishMode.xtfFilesList, args.getPublishMode());
     }
 
@@ -79,10 +99,84 @@ class RawPublisherArgsTest {
                 null,
                 "/data/incoming",
                 ".*\\.xtf$",
+                null,
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
                 null);
 
         assertEquals(".*\\.xtf$", args.getXtfFilename_Regex());
         assertEquals(RawPublisherArgs.PublishMode.xtfFilesRegex, args.getPublishMode());
+    }
+
+    @Test
+    void storesDistinctDerivedFormats() {
+        RawPublisherArgs args = new RawPublisherArgs(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "/data/incoming",
+                ".*\\.xtf$",
+                null,
+                target(),
+                "ch.so.agi.demo",
+                null,
+                List.of(DerivedFormat.GPKG, DerivedFormat.SHP, DerivedFormat.GPKG),
+                null);
+
+        assertEquals(List.of(DerivedFormat.GPKG, DerivedFormat.SHP), args.getOutDerivedFormats());
+    }
+
+    @Test
+    void defaultsAndDefensivelyCopiesDate() {
+        Date version = new Date(1000L);
+        RawPublisherArgs args = new RawPublisherArgs(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "/data/incoming",
+                ".*\\.xtf$",
+                null,
+                target(),
+                "ch.so.agi.demo",
+                Path.of("validation.ini"),
+                null,
+                version);
+
+        version.setTime(2000L);
+        Date returned = args.getDepVersion();
+        returned.setTime(3000L);
+
+        assertEquals(1000L, args.getDepVersion().getTime());
+    }
+
+    @Test
+    void rejectsMissingOutputArguments() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new RawPublisherArgs(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "/data/incoming",
+                ".*\\.xtf$",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null));
+
+        assertContains(exception, "outBasePath");
+        assertContains(exception, "outDataIdent");
     }
 
     @Test
@@ -96,9 +190,13 @@ class RawPublisherArgsTest {
                 null,
                 null,
                 null,
+                null,
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
                 null));
 
-        assertContains(exception, "Missing mandatory arguments:");
         assertContains(exception, "dbDatabase");
         assertContains(exception, "dbSchema");
         assertContains(exception, "dbMergeToSingleXtf");
@@ -114,6 +212,11 @@ class RawPublisherArgsTest {
                 null,
                 null,
                 false,
+                null,
+                null,
+                null,
+                target(),
+                "ch.so.agi.demo",
                 null,
                 null,
                 null));
@@ -132,6 +235,11 @@ class RawPublisherArgsTest {
                 false,
                 null,
                 null,
+                null,
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
                 null));
 
         assertContains(exception, "Setting both dbIliIdent_RegEx and dbIliIdent_Values is invalid");
@@ -146,6 +254,11 @@ class RawPublisherArgsTest {
                 list("ch.so.agi.alpha"),
                 null,
                 false,
+                null,
+                null,
+                null,
+                target(),
+                "ch.so.agi.demo",
                 null,
                 null,
                 null));
@@ -164,6 +277,11 @@ class RawPublisherArgsTest {
                 false,
                 null,
                 ".*\\.xtf$",
+                null,
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
                 null));
 
         assertContains(exception, "Publisher is in db mode. These xtf arguments must be null");
@@ -181,6 +299,11 @@ class RawPublisherArgsTest {
                 null,
                 "/data/incoming",
                 null,
+                null,
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
                 null));
 
         assertContains(exception, "Either xtfFilename_Regex or xtfFilename_List must be set");
@@ -197,7 +320,12 @@ class RawPublisherArgsTest {
                 null,
                 "/data/incoming",
                 ".*\\.xtf$",
-                list("2401.xtf")));
+                list("2401.xtf"),
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
+                null));
 
         assertContains(exception, "Setting both xtfFilename_Regex and xtfFilename_List is invalid");
     }
@@ -213,6 +341,11 @@ class RawPublisherArgsTest {
                 false,
                 "/data/incoming",
                 ".*\\.xtf$",
+                null,
+                target(),
+                "ch.so.agi.demo",
+                null,
+                null,
                 null));
 
         assertContains(exception, "Publisher is in file mode. These db arguments must be null");
@@ -225,6 +358,10 @@ class RawPublisherArgsTest {
 
     private static ArrayList<String> list(String... values) {
         return new ArrayList<>(List.of(values));
+    }
+
+    private static Endpoint target() {
+        return new Endpoint("/tmp/publisher-target");
     }
 
     private static void assertContains(Exception exception, String expected) {
