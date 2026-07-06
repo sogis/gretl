@@ -16,20 +16,33 @@ class RawPublisherArgs {
     private ArrayList<String> dbIliIdent_Values;
     private String dbIliIdent_RegEx;
     private Boolean dbMergeToSingleXtf;
-    private IliIdentType dbIliIdentType;
-
     private String xtfFile_FolderPath;
     private String xtfFilename_Regex;
     private ArrayList<String> xtfFilename_List;
 
     private PublishMode publishMode;
+    private IliIdentType dbIliIdent_TypeEnum;
+
+    enum PublishMode{
+        dbIdentvaluesList,
+        dbIdentvaluesRegex,
+        xtfFilesList,
+        xtfFilesRegex
+    }
+
+    enum IliIdentType{
+        model,
+        topic,
+        basket,
+        dataset
+    }
 
     RawPublisherArgs(String dbDatabase,
                             String dbSchema,
                             String dbIliIdent_Type,
                             ArrayList<String> dbIliIdent_Values,
                             String dbIliIdent_RegEx,
-                            boolean dbMergeToSingleXtf,
+                            Boolean dbMergeToSingleXtf,
                             String xtfFile_FolderPath,
                             String xtfFilename_Regex,
                             ArrayList<String> xtfFilename_List) {
@@ -65,13 +78,13 @@ class RawPublisherArgs {
 
     private void assignPublisherMode(boolean sourceIsXtf) {
         if(sourceIsXtf){
-            if(xtfFilename_List.isEmpty())
+            if(xtfFilename_List == null || xtfFilename_List.isEmpty())
                 this.publishMode = PublishMode.xtfFilesRegex;
             else
                 this.publishMode = PublishMode.xtfFilesList;
         }
         else{
-            if(dbIliIdent_Values.isEmpty())
+            if(dbIliIdent_Values == null || dbIliIdent_Values.isEmpty())
                 this.publishMode = PublishMode.dbIdentvaluesRegex;
             else
                 this.publishMode = PublishMode.dbIdentvaluesList;
@@ -115,7 +128,7 @@ class RawPublisherArgs {
 
             throw new IllegalArgumentException("dbIliIdent_Type must be one of " + allowedValues);
         }
-        this.dbIliIdentType = identType;
+        this.dbIliIdent_TypeEnum = identType;
     }
 
     private void assertDbEitherOr() {
@@ -202,21 +215,67 @@ class RawPublisherArgs {
         }
     }
 
-    enum PublishMode{
-        dbIdentvaluesList,
-        dbIdentvaluesRegex,
-        xtfFilesList,
-        xtfFilesRegex
+    public String getDbDatabase() {
+        return dbDatabase;
     }
 
-    enum IliIdentType{
-        model,
-        topic,
-        basket,
-        dataset
+    public String getDbSchema() {
+        return dbSchema;
     }
+
+    public String getDbIliIdent_Type() {
+        return dbIliIdent_Type;
+    }
+
+    public ArrayList<String> getDbIliIdent_Values() {
+        return dbIliIdent_Values;
+    }
+
+    public String getDbIliIdent_RegEx() {
+        return dbIliIdent_RegEx;
+    }
+
+    public Boolean getDbMergeToSingleXtf() {
+        return dbMergeToSingleXtf;
+    }
+
+    public IliIdentType getDbIliIdentType() {
+        return dbIliIdent_TypeEnum;
+    }
+
+    public String getXtfFile_FolderPath() {
+        return xtfFile_FolderPath;
+    }
+
+    public String getXtfFilename_Regex() {
+        return xtfFilename_Regex;
+    }
+
+    public ArrayList<String> getXtfFilename_List() {
+        return xtfFilename_List;
+    }
+
+    public PublishMode getPublishMode() {
+        return publishMode;
+    }
+
+    /*
+    Am 6.7 hier weiter Implementieren.
+
+    Anschlussarbeiten:
+    - Aus RawPublisherArgs die jeweils relevanten Argumente abhängig von Modus und IliIdent-Setting herausziehen
+    - Die Abfolge der Operationen bilden (OpSequenceBuilder)
+    - Die Abfolge der Operationen ausführen (OpSequenceRunner)
+
+    Siehe auch Chatverlauf auf ChatGPT
+
+    Irgendwo dazwischen ggf. vertiefte Validierung
+    - Regex syntax korrekt
+    - Ordner (und Dateien) vorhanden
+    - Schema vorhanden?
 
     public PublishCommand deferCommand(){
 
     }
+    */
 }
