@@ -34,8 +34,10 @@ public class Writer implements Operation<WriterParameters> {
     }
 
     void write(WriterParameters operationParameters) throws SQLException {
+        /*
         Mapper.PublicationTree publicationTree = mapper.map(operationParameters.getPublicationIdent(),
                 operationParameters.getCachedTransferFiles());
         repository.write(operationParameters.getConnection(), publicationTree);
+        */
     }
 }
