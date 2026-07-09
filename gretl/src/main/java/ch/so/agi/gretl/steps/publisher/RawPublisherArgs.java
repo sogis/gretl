@@ -13,7 +13,7 @@ import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
 /**
  * DTO representing the flat publisher inputs exactly as provided.
  */
-class RawPublisherArgs {
+public class RawPublisherArgs {
     private final String dbDatabase;
     private final String dbSchema;
     private final String dbIliIdent_Type;
@@ -25,7 +25,11 @@ class RawPublisherArgs {
     private final List<String> xtfFilename_List;
     private final Endpoint outBasePath;
     private final String outDataIdent;
-    private final Object outValidationConfig;
+    private final Boolean outIsolatedMode;
+    private final String outWriteToThisLocalFolderOnly;
+    private final String outCustomGroomingConfFilePath;
+    private final String outValidationConfigFilePath;
+    private final String customModelDir;
     private final List<DerivedFormat> outDerivedFormats;
     private final Date depVersion;
 
@@ -46,40 +50,58 @@ class RawPublisherArgs {
         dataset
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     RawPublisherArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
             ArrayList<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
             String xtfFile_FolderPath, String xtfFilename_Regex, ArrayList<String> xtfFilename_List) {
-        this(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx, dbMergeToSingleXtf,
-                xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, null, null, null, null, null);
+        this(canonicalArgs(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx,
+                dbMergeToSingleXtf, xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, null, null, null, null,
+                null, null, null, null, null));
     }
 
     RawPublisherArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
             ArrayList<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
             String xtfFile_FolderPath, String xtfFilename_Regex, ArrayList<String> xtfFilename_List,
             List<DerivedFormat> outDerivedFormats) {
-        this(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx, dbMergeToSingleXtf,
-                xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, null, null, null, outDerivedFormats, null);
+        this(canonicalArgs(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx,
+                dbMergeToSingleXtf, xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, null, null, null, null,
+                null, null, null, outDerivedFormats, null));
     }
 
     RawPublisherArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
             ArrayList<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
             String xtfFile_FolderPath, String xtfFilename_Regex, ArrayList<String> xtfFilename_List,
-            Endpoint outBasePath, String outDataIdent, Object outValidationConfig,
+            Endpoint outBasePath, String outDataIdent, Boolean outIsolatedMode, String outWriteToThisLocalFolderOnly,
+            String outCustomGroomingConfFilePath, String outValidationConfigFilePath, String customModelDir,
             List<DerivedFormat> outDerivedFormats, Date depVersion) {
-        this.dbDatabase = normalize(dbDatabase);
-        this.dbSchema = normalize(dbSchema);
-        this.dbIliIdent_Type = normalize(dbIliIdent_Type);
-        this.dbIliIdent_Values = copyNormalized(dbIliIdent_Values);
-        this.dbIliIdent_RegEx = normalize(dbIliIdent_RegEx);
-        this.dbMergeToSingleXtf = dbMergeToSingleXtf;
-        this.xtfFile_FolderPath = normalize(xtfFile_FolderPath);
-        this.xtfFilename_Regex = normalize(xtfFilename_Regex);
-        this.xtfFilename_List = copyNormalized(xtfFilename_List);
-        this.outBasePath = outBasePath;
-        this.outDataIdent = normalize(outDataIdent);
-        this.outValidationConfig = outValidationConfig;
-        this.outDerivedFormats = normalizeDerivedFormats(outDerivedFormats);
-        this.depVersion = depVersion != null ? new Date(depVersion.getTime()) : new Date();
+        this(canonicalArgs(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx,
+                dbMergeToSingleXtf, xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, outBasePath,
+                outDataIdent, outIsolatedMode, outWriteToThisLocalFolderOnly, outCustomGroomingConfFilePath,
+                outValidationConfigFilePath, customModelDir, outDerivedFormats, depVersion));
+    }
+
+    private RawPublisherArgs(CanonicalArgs args) {
+        this.dbDatabase = normalize(args.dbDatabase);
+        this.dbSchema = normalize(args.dbSchema);
+        this.dbIliIdent_Type = normalize(args.dbIliIdent_Type);
+        this.dbIliIdent_Values = copyNormalized(args.dbIliIdent_Values);
+        this.dbIliIdent_RegEx = normalize(args.dbIliIdent_RegEx);
+        this.dbMergeToSingleXtf = args.dbMergeToSingleXtf;
+        this.xtfFile_FolderPath = normalize(args.xtfFile_FolderPath);
+        this.xtfFilename_Regex = normalize(args.xtfFilename_Regex);
+        this.xtfFilename_List = copyNormalized(args.xtfFilename_List);
+        this.outBasePath = args.outBasePath;
+        this.outDataIdent = normalize(args.outDataIdent);
+        this.outIsolatedMode = args.outIsolatedMode;
+        this.outWriteToThisLocalFolderOnly = normalize(args.outWriteToThisLocalFolderOnly);
+        this.outCustomGroomingConfFilePath = normalize(args.outCustomGroomingConfFilePath);
+        this.outValidationConfigFilePath = normalize(args.outValidationConfigFilePath);
+        this.customModelDir = normalize(args.customModelDir);
+        this.outDerivedFormats = normalizeDerivedFormats(args.outDerivedFormats);
+        this.depVersion = args.depVersion != null ? new Date(args.depVersion.getTime()) : new Date();
 
         validateArgumentCombination();
     }
@@ -272,8 +294,24 @@ class RawPublisherArgs {
         return outDataIdent;
     }
 
-    public Object getOutValidationConfig() {
-        return outValidationConfig;
+    public Boolean getOutIsolatedMode() {
+        return outIsolatedMode;
+    }
+
+    public String getOutWriteToThisLocalFolderOnly() {
+        return outWriteToThisLocalFolderOnly;
+    }
+
+    public String getOutCustomGroomingConfFilePath() {
+        return outCustomGroomingConfFilePath;
+    }
+
+    public String getOutValidationConfigFilePath() {
+        return outValidationConfigFilePath;
+    }
+
+    public String getCustomModelDir() {
+        return customModelDir;
     }
 
     public List<DerivedFormat> getOutDerivedFormats() {
@@ -324,5 +362,158 @@ class RawPublisherArgs {
             }
         }
         return Collections.unmodifiableList(normalized);
+    }
+
+    private static CanonicalArgs canonicalArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
+            List<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
+            String xtfFile_FolderPath, String xtfFilename_Regex, List<String> xtfFilename_List, Endpoint outBasePath,
+            String outDataIdent, Boolean outIsolatedMode, String outWriteToThisLocalFolderOnly,
+            String outCustomGroomingConfFilePath, String outValidationConfigFilePath, String customModelDir,
+            List<DerivedFormat> outDerivedFormats, Date depVersion) {
+        CanonicalArgs args = new CanonicalArgs();
+        args.dbDatabase = dbDatabase;
+        args.dbSchema = dbSchema;
+        args.dbIliIdent_Type = dbIliIdent_Type;
+        args.dbIliIdent_Values = dbIliIdent_Values;
+        args.dbIliIdent_RegEx = dbIliIdent_RegEx;
+        args.dbMergeToSingleXtf = dbMergeToSingleXtf;
+        args.xtfFile_FolderPath = xtfFile_FolderPath;
+        args.xtfFilename_Regex = xtfFilename_Regex;
+        args.xtfFilename_List = xtfFilename_List;
+        args.outBasePath = outBasePath;
+        args.outDataIdent = outDataIdent;
+        args.outIsolatedMode = outIsolatedMode;
+        args.outWriteToThisLocalFolderOnly = outWriteToThisLocalFolderOnly;
+        args.outCustomGroomingConfFilePath = outCustomGroomingConfFilePath;
+        args.outValidationConfigFilePath = outValidationConfigFilePath;
+        args.customModelDir = customModelDir;
+        args.outDerivedFormats = outDerivedFormats;
+        args.depVersion = depVersion;
+        return args;
+    }
+
+    private static final class CanonicalArgs {
+        private String dbDatabase;
+        private String dbSchema;
+        private String dbIliIdent_Type;
+        private List<String> dbIliIdent_Values;
+        private String dbIliIdent_RegEx;
+        private Boolean dbMergeToSingleXtf;
+        private String xtfFile_FolderPath;
+        private String xtfFilename_Regex;
+        private List<String> xtfFilename_List;
+        private Endpoint outBasePath;
+        private String outDataIdent;
+        private Boolean outIsolatedMode;
+        private String outWriteToThisLocalFolderOnly;
+        private String outCustomGroomingConfFilePath;
+        private String outValidationConfigFilePath;
+        private String customModelDir;
+        private List<DerivedFormat> outDerivedFormats;
+        private Date depVersion;
+    }
+
+    public static final class Builder {
+        private final CanonicalArgs args = new CanonicalArgs();
+
+        public Builder dbValuesSource(String dbDatabase, String dbSchema, IliIdentType dbIliIdentType,
+                Boolean dbMergeToSingleXtf, List<String> dbIliIdentValues) {
+            clearXtfSource();
+            args.dbDatabase = dbDatabase;
+            args.dbSchema = dbSchema;
+            args.dbIliIdent_Type = dbIliIdentType != null ? dbIliIdentType.name() : null;
+            args.dbIliIdent_Values = dbIliIdentValues;
+            args.dbIliIdent_RegEx = null;
+            args.dbMergeToSingleXtf = dbMergeToSingleXtf;
+            return this;
+        }
+
+        public Builder dbRegexSource(String dbDatabase, String dbSchema, IliIdentType dbIliIdentType,
+                Boolean dbMergeToSingleXtf, String dbIliIdentRegEx) {
+            clearXtfSource();
+            args.dbDatabase = dbDatabase;
+            args.dbSchema = dbSchema;
+            args.dbIliIdent_Type = dbIliIdentType != null ? dbIliIdentType.name() : null;
+            args.dbIliIdent_Values = null;
+            args.dbIliIdent_RegEx = dbIliIdentRegEx;
+            args.dbMergeToSingleXtf = dbMergeToSingleXtf;
+            return this;
+        }
+
+        public Builder xtfListSource(String xtfFileFolderPath, List<String> xtfFilenameList) {
+            clearDbSource();
+            args.xtfFile_FolderPath = xtfFileFolderPath;
+            args.xtfFilename_Regex = null;
+            args.xtfFilename_List = xtfFilenameList;
+            return this;
+        }
+
+        public Builder xtfRegexSource(String xtfFileFolderPath, String xtfFilenameRegex) {
+            clearDbSource();
+            args.xtfFile_FolderPath = xtfFileFolderPath;
+            args.xtfFilename_Regex = xtfFilenameRegex;
+            args.xtfFilename_List = null;
+            return this;
+        }
+
+        public Builder output(Endpoint outBasePath, String outDataIdent) {
+            args.outBasePath = outBasePath;
+            args.outDataIdent = outDataIdent;
+            return this;
+        }
+
+        public Builder isolatedMode(Boolean outIsolatedMode) {
+            args.outIsolatedMode = outIsolatedMode;
+            return this;
+        }
+
+        public Builder localFolderOnly(String outWriteToThisLocalFolderOnly) {
+            args.outWriteToThisLocalFolderOnly = outWriteToThisLocalFolderOnly;
+            return this;
+        }
+
+        public Builder groomingConfig(String outCustomGroomingConfFilePath) {
+            args.outCustomGroomingConfFilePath = outCustomGroomingConfFilePath;
+            return this;
+        }
+
+        public Builder validationConfig(String outValidationConfigFilePath) {
+            args.outValidationConfigFilePath = outValidationConfigFilePath;
+            return this;
+        }
+
+        public Builder customModelDir(String customModelDir) {
+            args.customModelDir = customModelDir;
+            return this;
+        }
+
+        public Builder derivedFormats(List<DerivedFormat> outDerivedFormats) {
+            args.outDerivedFormats = outDerivedFormats;
+            return this;
+        }
+
+        public Builder depVersion(Date depVersion) {
+            args.depVersion = depVersion;
+            return this;
+        }
+
+        public RawPublisherArgs build() {
+            return new RawPublisherArgs(args);
+        }
+
+        private void clearDbSource() {
+            args.dbDatabase = null;
+            args.dbSchema = null;
+            args.dbIliIdent_Type = null;
+            args.dbIliIdent_Values = null;
+            args.dbIliIdent_RegEx = null;
+            args.dbMergeToSingleXtf = null;
+        }
+
+        private void clearXtfSource() {
+            args.xtfFile_FolderPath = null;
+            args.xtfFilename_Regex = null;
+            args.xtfFilename_List = null;
+        }
     }
 }

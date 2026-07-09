@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.steps.publisher;
 
+import static ch.so.agi.gretl.steps.publisher.RawPublisherArgsFixtures.list;
+import static ch.so.agi.gretl.steps.publisher.RawPublisherArgsFixtures.publisherArgs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -40,21 +42,11 @@ class OpSequenceBuilderTest {
         Path validationConfig = Files.writeString(tempDir.resolve("validation.ini"), "models=ModelA",
                 StandardCharsets.UTF_8);
 
-        List<OpSequenceStep> steps = builder.buildSequence(new RawPublisherArgs(
-                "edit",
-                "live",
-                "dataset",
-                null,
-                "24.*",
-                false,
-                null,
-                null,
-                null,
-                target(),
-                "ch.so.agi.demo",
-                validationConfig,
-                List.of(DerivedFormat.GPKG),
-                null), connection, cacheRoot);
+        List<OpSequenceStep> steps = builder.buildSequence(publisherArgs()
+                .dbRegexSource("edit", "live", RawPublisherArgs.IliIdentType.dataset, false, "24.*")
+                .validationConfig(validationConfig.toString())
+                .derivedFormats(List.of(DerivedFormat.GPKG))
+                .build(), connection, cacheRoot);
 
         assertEquals(List.of(
                 "Exporter",
@@ -82,21 +74,9 @@ class OpSequenceBuilderTest {
     @Test
     void buildsSingleStageXtfRegexSequenceWithoutMerge() throws Exception {
         Path cacheRoot = tempDir.resolve("cache");
-        List<OpSequenceStep> steps = new OpSequenceBuilder().buildSequence(new RawPublisherArgs(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                tempDir.resolve("incoming").toString(),
-                ".*\\.xtf$",
-                null,
-                target(),
-                "ch.so.agi.demo",
-                null,
-                null,
-                null), fakeConnection(), cacheRoot);
+        List<OpSequenceStep> steps = new OpSequenceBuilder().buildSequence(publisherArgs()
+                .xtfRegexSource(tempDir.resolve("incoming").toString(), ".*\\.xtf$")
+                .build(), fakeConnection(), cacheRoot);
 
         assertEquals(List.of("XtfByRegex", "Packer", "Writer", "RemoteUpdater"), operationNames(steps));
         assertTrue(steps.get(0).getOperation() instanceof XtfByRegex);
@@ -106,21 +86,9 @@ class OpSequenceBuilderTest {
     @Test
     void buildsMergedXtfListSequenceAndNormalizesSuffixes() throws Exception {
         Path cacheRoot = tempDir.resolve("cache");
-        List<OpSequenceStep> steps = new OpSequenceBuilder().buildSequence(new RawPublisherArgs(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                tempDir.resolve("incoming").toString(),
-                null,
-                list("north.xtf", "south.xtf"),
-                target(),
-                "ch.so.agi.demo",
-                null,
-                null,
-                null), fakeConnection(), cacheRoot);
+        List<OpSequenceStep> steps = new OpSequenceBuilder().buildSequence(publisherArgs()
+                .xtfListSource(tempDir.resolve("incoming").toString(), list("north.xtf", "south.xtf"))
+                .build(), fakeConnection(), cacheRoot);
 
         assertEquals(List.of("XtfCopy", "XtfCopy", "MergeStages", "Packer", "Writer", "RemoteUpdater"),
                 operationNames(steps));
@@ -133,21 +101,9 @@ class OpSequenceBuilderTest {
 
     @Test
     void rejectsMixedTransferFileSuffixesInExplicitList() {
-        RawPublisherArgs rawPublisherArgs = new RawPublisherArgs(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                tempDir.resolve("incoming").toString(),
-                null,
-                list("north.xtf", "south.itf"),
-                target(),
-                "ch.so.agi.demo",
-                null,
-                null,
-                null);
+        RawPublisherArgs rawPublisherArgs = publisherArgs()
+                .xtfListSource(tempDir.resolve("incoming").toString(), list("north.xtf", "south.itf"))
+                .build();
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new OpSequenceBuilder().buildSequence(rawPublisherArgs, fakeConnection(), tempDir.resolve("cache")));
@@ -158,21 +114,9 @@ class OpSequenceBuilderTest {
     @Test
     void resolvesWriterParametersLazilyFromPackedArtifacts() throws Exception {
         Path cacheRoot = Files.createDirectories(tempDir.resolve("cache"));
-        OpSequenceStep writerStep = new OpSequenceBuilder().buildSequence(new RawPublisherArgs(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                tempDir.resolve("incoming").toString(),
-                ".*\\.xtf$",
-                null,
-                target(),
-                "ch.so.agi.demo",
-                null,
-                null,
-                null), fakeConnection(), cacheRoot).stream()
+        OpSequenceStep writerStep = new OpSequenceBuilder().buildSequence(publisherArgs()
+                .xtfRegexSource(tempDir.resolve("incoming").toString(), ".*\\.xtf$")
+                .build(), fakeConnection(), cacheRoot).stream()
                 .filter(step -> "Writer".equals(step.getOperation().getHumanReadableName()))
                 .findFirst()
                 .orElseThrow();
@@ -201,10 +145,6 @@ class OpSequenceBuilderTest {
         return selection;
     }
 
-    private static ArrayList<String> list(String... values) {
-        return new ArrayList<>(List.of(values));
-    }
-
     private static Connection fakeConnection() {
         return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class<?>[] {Connection.class},
                 (proxy, method, args) -> {
@@ -218,10 +158,6 @@ class OpSequenceBuilderTest {
                     }
                     return null;
                 });
-    }
-
-    private static Endpoint target() {
-        return new Endpoint("/tmp/publisher-target");
     }
 
     private static final class RecordingResolver implements OpSequenceBuilder.DbSelectionResolver {

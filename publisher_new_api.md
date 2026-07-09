@@ -23,7 +23,7 @@ Gegliedert in die beiden Hauptmodi "Quelle DB" und "Quelle XTF" zwecks besserem 
 
 |Name|Zwingend?|Beschreibung|Bemerkungen|
 |---|---|---|---|
-|dbConnection|ja|DB-URI/Benutzername/Passwort der Datenbank, aus welcher ausgelesen wird|Ehemals "database". $jek pending args anpassen|
+|dbConnection|ja|DB-URI/Benutzername/Passwort der Datenbank, aus welcher ausgelesen wird|Ehemals "database".|
 |dbSchema|ja|Schema, aus welchem ausgelesen wird||
 |dbIliIdent_Type|ja|Typ der ILI-Kennung (model, topic, basket, dataset), welcher für die Unterauswahl der Daten aus dem Schema verwendet wird||
 |dbIliIdent_Values|nein|Liste der zu exportierenden Kennungen (Modelle, datasets, ...) gemäss dbIliIdent_Type|Ersetzt modelsToPublish, dataset, regions.|
@@ -47,13 +47,13 @@ Zusätzliche Regeln:
 #### Quellenunabhängige Parameter
 
 |Name|Zwingend?|Beschreibung|Bemerkungen|
-|---|---|---|---|
-|dataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.|$jek pending args anpassen|
-|isolatedMode|nein|Bestimmt, ob die Publikationsdatums-Metadaten und das Datenblatt geschrieben werden. Default: false|$jek pending args anpassen|
-|pubFolder_LocalPath|nein|Schreibt den output in den hier konfigurierten Ordner, und nicht in den Ordner gemäss der env PUPFOLDER_PATH|$jek pending args anpassen|
-|modelDir|nein|Von den Defaults abweichende Modeldir-Definition|$jek pending args anpassen|
-|publishedIdentifier|/|Liste der von einem Publisher-Task effektiv publizierten Kennungen|$jek klären: Braucht es das noch?|
-|validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei|$jek pending args|
+|---|---|---|-|
+|dataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.||
+|isolatedMode|nein|Bestimmt, ob die Publikationsdatums-Metadaten und das Datenblatt geschrieben werden. Default: false||
+|pubFolder_LocalPath|nein|Schreibt den output in den hier konfigurierten Ordner, und nicht in den Ordner gemäss der env PUPFOLDER_PATH|$jek outWriteToThisFolderOnly |
+|modelDir|nein|Von den Defaults abweichende Modeldir-Definition||
+|publishedIdentifier|/|Liste der von einem Publisher-Task effektiv publizierten Kennungen| $jek klären: Braucht es das noch?|
+|validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei||
 
 ### Env-Variablen (Muss einmalig für die lokale Umgebung konfiguriert werden)
 
