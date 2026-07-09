@@ -1,6 +1,5 @@
 package ch.so.agi.gretl.steps.publisher;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -70,7 +69,8 @@ public class OpSequenceBuilder {
                     constant(MergeStagesParameters.of(sourcePlan.getStageDirs(), normalizedCacheRoot))));
         }
 
-        Path validationConfig = coerceOptionalPath(rawPublisherArgs.getOutValidationConfig());
+        Path validationConfig = coerceOptionalPath(rawPublisherArgs.getOutValidationConfigFilePath(),
+                "outValidationConfigFilePath");
         if (validationConfig != null) {
             steps.add(OpSequenceStep.of(new ValidationConfigSeeder(),
                     constant(ValidationConfigSeederParameters.of(validationConfig, normalizedCacheRoot))));
@@ -254,22 +254,12 @@ public class OpSequenceBuilder {
         return parent.resolve(fileName + STAGE_ROOT_SUFFIX).toAbsolutePath().normalize();
     }
 
-    private static Path coerceOptionalPath(Object value) {
-        return value == null ? null : coercePath(value, "path");
+    private static Path coerceOptionalPath(String value, String fieldName) {
+        return value == null ? null : coercePath(value, fieldName);
     }
 
-    private static Path coercePath(Object value, String fieldName) {
-        Objects.requireNonNull(value, fieldName + " must not be null");
-        if (value instanceof Path) {
-            return normalizePath((Path) value, fieldName);
-        }
-        if (value instanceof File) {
-            return normalizePath(((File) value).toPath(), fieldName);
-        }
-        if (value instanceof String) {
-            return normalizePath(Path.of(requireText((String) value, fieldName)), fieldName);
-        }
-        throw new IllegalArgumentException(fieldName + " must be a Path, File, or String");
+    private static Path coercePath(String value, String fieldName) {
+        return normalizePath(Path.of(requireText(value, fieldName)), fieldName);
     }
 
     private static Path normalizePath(Path path, String fieldName) {
