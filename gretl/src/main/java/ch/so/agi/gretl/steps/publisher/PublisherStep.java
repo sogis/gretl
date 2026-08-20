@@ -2,7 +2,6 @@ package ch.so.agi.gretl.steps.publisher;
 
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -85,25 +84,7 @@ public class PublisherStep {
             effectiveModelDir = publisherEnv.getModeldir();
         }
 
-        return new RawPublisherArgs(
-                rawPublisherArgs.getDbDatabase(),
-                rawPublisherArgs.getDbSchema(),
-                rawPublisherArgs.getDbIliIdent_Type(),
-                toArrayList(rawPublisherArgs.getDbIliIdent_Values()),
-                rawPublisherArgs.getDbIliIdent_RegEx(),
-                rawPublisherArgs.getDbMergeToSingleXtf(),
-                rawPublisherArgs.getXtfFile_FolderPath(),
-                rawPublisherArgs.getXtfFilename_Regex(),
-                toArrayList(rawPublisherArgs.getXtfFilename_List()),
-                effectiveOutput,
-                rawPublisherArgs.getOutDataIdent(),
-                rawPublisherArgs.getOutIsolatedMode(),
-                rawPublisherArgs.getOutWriteToThisLocalFolderOnly(),
-                effectiveGrooming,
-                rawPublisherArgs.getOutValidationConfigFilePath(),
-                effectiveModelDir,
-                rawPublisherArgs.getOutDerivedFormats(),
-                effectiveDate);
+        return rawPublisherArgs.withEffectiveOutput(effectiveOutput, effectiveGrooming, effectiveModelDir, effectiveDate);
     }
 
     private Endpoint resolveOutputEndpoint(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv) {
@@ -179,7 +160,4 @@ public class PublisherStep {
         }
     }
 
-    private static ArrayList<String> toArrayList(List<String> values) {
-        return values == null ? null : new ArrayList<>(values);
-    }
 }

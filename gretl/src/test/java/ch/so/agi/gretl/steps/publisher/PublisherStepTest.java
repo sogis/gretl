@@ -21,6 +21,7 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.steps.publisher.util.env.PubFolderEnv;
 import ch.so.agi.gretl.steps.publisher.util.env.PublisherEnv;
 import ch.so.agi.gretl.steps.publisher.util.env.PupDateEnv;
+import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 
 class PublisherStepTest {
     @TempDir
@@ -34,6 +35,7 @@ class PublisherStepTest {
         PublisherStep step = new PublisherStep("publishDemo", logger, builder, runner);
         RawPublisherArgs rawArgs = publisherArgs()
                 .xtfRegexSource(tempDir.resolve("incoming").toString(), ".*\\.xtf$")
+                .outFormats(List.of(OutputFormat.SHP))
                 .build();
         PublisherEnv publisherEnv = publisherEnv();
         Connection sourceConnection = fakeConnection();
@@ -50,6 +52,7 @@ class PublisherStepTest {
         assertEquals("sftp://host/data", builder.capturedArgs.getOutBasePath().getUrl());
         assertEquals("/env/grooming.json", builder.capturedArgs.getOutCustomGroomingConfFilePath());
         assertEquals("/env/models", builder.capturedArgs.getCustomModelDir());
+        assertEquals(List.of(OutputFormat.SHP), builder.capturedArgs.getOutFormats());
         assertSame(sourceConnection, builder.capturedSourceConnection);
         assertSame(publicationConnection, builder.capturedPublicationConnection);
         assertEquals(cacheRoot, builder.capturedCacheRoot);

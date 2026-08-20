@@ -10,7 +10,7 @@ import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 
-import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
+import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 
 class PublisherTest {
     @Test
@@ -26,12 +26,12 @@ class PublisherTest {
         task.setOutBasePath(List.of("/publication-root"));
         task.setOutDataIdent("ch.so.agi.demo");
         task.setOutWriteToThisLocalFolderOnly(new File("build/local-publication"));
-        task.setOutDerivedFormats(List.of("gpkg", DerivedFormat.SHP));
+        task.setOutFormats(List.of("xtf", OutputFormat.SHP));
 
         assertEquals("jdbc:postgresql://source/db", task.getDbDatabase().getDbUri());
         assertEquals(List.of("2401", "2402"), task.getDbIliIdent_Values().get());
         assertEquals("/publication-root", task.getOutBasePath().getUrl());
-        assertEquals(List.of(DerivedFormat.GPKG, DerivedFormat.SHP), task.getOutDerivedFormats().get());
+        assertEquals(List.of(OutputFormat.XTF, OutputFormat.SHP), task.getOutFormats().get());
         assertEquals(project.file("build/local-publication").toPath().toAbsolutePath().normalize().toString(),
                 task.getOutWriteToThisLocalFolderOnly());
     }

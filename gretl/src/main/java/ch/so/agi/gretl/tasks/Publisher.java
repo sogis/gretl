@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.ListProperty;
@@ -20,7 +19,7 @@ import ch.so.agi.gretl.api.Endpoint;
 import ch.so.agi.gretl.steps.publisher.PublisherStep;
 import ch.so.agi.gretl.steps.publisher.RawPublisherArgs;
 import ch.so.agi.gretl.steps.publisher.RawPublisherArgs.IliIdentType;
-import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
+import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 import ch.so.agi.gretl.steps.publisher.util.env.PublisherEnv;
 import ch.so.agi.gretl.tasks.impl.publisher.PropertiesReader;
 import ch.so.agi.gretl.util.TaskUtil;
@@ -50,8 +49,7 @@ public class Publisher extends DefaultTask {
     private String outCustomGroomingConfFilePath;
     private String outValidationConfigFilePath;
     private String customModelDir;
-    private final ListProperty<DerivedFormat> outDerivedFormats = getProject().getObjects()
-            .listProperty(DerivedFormat.class);
+    private final ListProperty<OutputFormat> outFormats = getProject().getObjects().listProperty(OutputFormat.class);
     private Date depVersion;
 
     @Input @Optional public Connector getDbDatabase() { return dbDatabase; }
@@ -70,7 +68,7 @@ public class Publisher extends DefaultTask {
     @Input @Optional public String getOutCustomGroomingConfFilePath() { return outCustomGroomingConfFilePath; }
     @Input @Optional public String getOutValidationConfigFilePath() { return outValidationConfigFilePath; }
     @Input @Optional public String getCustomModelDir() { return customModelDir; }
-    @Input @Optional public ListProperty<DerivedFormat> getOutDerivedFormats() { return outDerivedFormats; }
+    @Input public ListProperty<OutputFormat> getOutFormats() { return outFormats; }
     @Input @Optional public Date getDepVersion() { return depVersion; }
 
     public void setDbDatabase(List<?> details) { dbDatabase = connector(details, "dbDatabase"); }
@@ -91,7 +89,7 @@ public class Publisher extends DefaultTask {
     public void setOutCustomGroomingConfFilePath(Object value) { outCustomGroomingConfFilePath = path(value); }
     public void setOutValidationConfigFilePath(Object value) { outValidationConfigFilePath = path(value); }
     public void setCustomModelDir(String value) { customModelDir = value; }
-    public void setOutDerivedFormats(List<?> values) { outDerivedFormats.set(parseFormats(values)); }
+    public void setOutFormats(List<?> values) { outFormats.set(parseFormats(values)); }
     public void setDepVersion(Date value) { depVersion = value == null ? null : new Date(value.getTime()); }
 
     @TaskAction
@@ -146,7 +144,7 @@ public class Publisher extends DefaultTask {
                 .groomingConfig(outCustomGroomingConfFilePath)
                 .validationConfig(outValidationConfigFilePath)
                 .customModelDir(customModelDir)
-                .derivedFormats(outDerivedFormats.getOrElse(List.of()))
+                .outFormats(outFormats.getOrElse(List.of()))
                 .depVersion(depVersion);
 
         if (dbDatabase != null) {
@@ -188,14 +186,10 @@ public class Publisher extends DefaultTask {
         return new Endpoint(url, user, password);
     }
 
-    private static List<DerivedFormat> parseFormats(List<?> values) {
-        List<DerivedFormat> formats = new ArrayList<>();
+    private static List<OutputFormat> parseFormats(List<?> values) {
+        List<OutputFormat> formats = new ArrayList<>();
         for (Object value : values == null ? List.of() : values) {
-            if (value instanceof DerivedFormat) {
-                formats.add((DerivedFormat) value);
-            } else {
-                formats.add(DerivedFormat.valueOf(String.valueOf(value).trim().toUpperCase(Locale.ROOT)));
-            }
+            formats.add(OutputFormat.parse(value));
         }
         return formats;
     }

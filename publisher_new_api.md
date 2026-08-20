@@ -46,6 +46,7 @@ Zusätzliche Regeln:
 
 |Name|Zwingend?|Beschreibung|Bemerkungen|
 |---|---|---|-|
+<<<<<<< HEAD
 out|dataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.||
 out|writeMetadata|nein|Bestimmt, ob die Publikationsdatums-Metadaten und das Datenblatt geschrieben werden. Default: true|obsolet|
 out|pubFolder_LocalPath|nein|Schreibt den output in den hier konfigurierten Ordner, und nicht in den Ordner gemäss der env PUPFOLDER_PATH|$jek outWriteToThisFolderOnly |
@@ -54,6 +55,15 @@ dep|publishedPartIdentifiers|/|Liste der von einem Publisher-Task effektiv publi
 in/out?|validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei||
 out|formats|ja|Liste der zu exportierenden Dateiformate. Formate: xtf, gpkg, shp, ...||
 outGroomingConfFilePath
+=======
+|dataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.||
+|writeMetadata|nein|Bestimmt, ob die Publikationsdatums-Metadaten und das Datenblatt geschrieben werden. Default: true||
+|pubFolder_LocalPath|nein|Schreibt den output in den hier konfigurierten Ordner, und nicht in den Ordner gemäss der env PUPFOLDER_PATH|$jek outWriteToThisFolderOnly |
+|modelDir|nein|Von den Defaults abweichende Modeldir-Definition||
+|publishedPartIdentifiers|/|Liste der von einem Publisher-Task effektiv publizierten Kennungen| $jek klären: Braucht es das noch?|
+|validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei||
+|outFormats|ja|Liste der zu exportierenden Dateiformate. Formate: xtf, itf, gpkg, shp, dxf, dxf_geobau. Nur diese Formate werden publiziert.||
+>>>>>>> pbl-formats
 
 ### Env-Variablen (Muss einmalig für die lokale Umgebung in gretljobs.properties konfiguriert werden)
 
@@ -271,7 +281,7 @@ neu:
 
     tasks.register('publishUserFormats', Publisher) {
         ...
-        formats = ["xtf","gpkg","shp","dxf"]
+        outFormats = ["xtf","gpkg","shp","dxf"]
     }
 
 ### KGDI-Service

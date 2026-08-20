@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.so.agi.gretl.api.Endpoint;
+import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 
 final class RawPublisherArgsFixtures {
     private static final Endpoint TARGET = new Endpoint("/tmp/publisher-target");
@@ -13,7 +14,7 @@ final class RawPublisherArgsFixtures {
     }
 
     static RawPublisherArgs.Builder publisherArgs() {
-        return RawPublisherArgs.builder().output(TARGET, DATA_IDENT);
+        return RawPublisherArgs.builder().output(TARGET, DATA_IDENT).outFormats(List.of(OutputFormat.XTF));
     }
 
     static ArrayList<String> list(String... values) {
