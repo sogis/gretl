@@ -9,9 +9,7 @@ Der Publisher ist sehr mächtig, was ihn in der Verwendung nicht gerade einfach 
 * Wo in der Referenzdokumentation die alte Task-Konfigurationsweise verwendet wird, wurde dies übernommen. Meist verwendet die Referenzdokumentation die neue Task-Konfigurationsweise (tasks.register(...))
 * Zu Nachführung der Pendenzenliste sind in dieser Doku mit $jek beginnende breadcrumbs enthalten. Diese bitte überlesen.
 * Bitte die Besprechungsresultate gleich "inline" ins markdown einpflegen und commiten. Beispielsweise mittels Prefix "$rev" für Review.
-* Die API berücksichtigt bereits eine gedankliche Weiterentwicklung bzgl. dem Generieren des Datenblatts mit der folgenden Aufgabenteilung:
-    * Generieren: Aufgabe von data.geo.so.ch
-    * Persistieren als Datei datenbeschreibung.html: Aufgabe des Publishers
+* Der Publisher legt im Ordner `meta/` die für die Transferdateien aufgelösten, nicht vordefinierten `.ili`-Modelle sowie `metainfo.json` ab. Bei `outWriteToThisLocalFolderOnly` werden nur die `.ili`-Modelle geschrieben.
 
 ## Übersicht der Parameter der neuen API
 
@@ -48,13 +46,14 @@ Zusätzliche Regeln:
 
 |Name|Zwingend?|Beschreibung|Bemerkungen|
 |---|---|---|-|
-|dataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.||
-|writeMetadata|nein|Bestimmt, ob die Publikationsdatums-Metadaten und das Datenblatt geschrieben werden. Default: true||
-|pubFolder_LocalPath|nein|Schreibt den output in den hier konfigurierten Ordner, und nicht in den Ordner gemäss der env PUPFOLDER_PATH|$jek outWriteToThisFolderOnly |
-|modelDir|nein|Von den Defaults abweichende Modeldir-Definition||
-|publishedPartIdentifiers|/|Liste der von einem Publisher-Task effektiv publizierten Kennungen| $jek klären: Braucht es das noch?|
-|validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei||
-|formats|ja|Liste der zu exportierenden Dateiformate. Formate: xtf, gpkg, shp, ...||
+out|dataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.||
+out|writeMetadata|nein|Bestimmt, ob die Publikationsdatums-Metadaten und das Datenblatt geschrieben werden. Default: true|obsolet|
+out|pubFolder_LocalPath|nein|Schreibt den output in den hier konfigurierten Ordner, und nicht in den Ordner gemäss der env PUPFOLDER_PATH|$jek outWriteToThisFolderOnly |
+glb|modelDir|nein|Von den Defaults abweichende Modeldir-Definition||
+dep|publishedPartIdentifiers|/|Liste der von einem Publisher-Task effektiv publizierten Kennungen| $jek klären: Braucht es das noch?|
+in/out?|validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei||
+out|formats|ja|Liste der zu exportierenden Dateiformate. Formate: xtf, gpkg, shp, ...||
+outGroomingConfFilePath
 
 ### Env-Variablen (Muss einmalig für die lokale Umgebung in gretljobs.properties konfiguriert werden)
 
@@ -67,7 +66,9 @@ Zusätzliche Regeln:
 |PUPFOLDER_PATH|ja|Basispfad des (sftp) Publikationsordners, in den exportiert wird.||
 |PUPFOLDER_USER|ja|Benutzername, mit welchem in den Publikationsordner geschrieben wird.||
 |PUPFOLDER_PASS|ja|Passwort, mit welchem in den Publikationsordner geschrieben wird.||
-|DATASHEET_URL|ja|Basis-URL, aus welcher das Objektblatt mittels http(s) abgerufen wird.||
+JSONMETA_ADDRESS|jsonmetaAddress|ja|Basis-URL der JSON-Metadatenquelle.||
+JSONMETA_BUCKET|jsonmetaBucket|ja|Bucket der JSON-Metadatenquelle.||
+JSONMETA_FILENAME|jsonmetaFileName|ja|Dateiname der JSON-Metadatenquelle.||
 |MODELDIR|nein|Von Publisher zu verwendendes modeldir. Default: Ili2pg Default||
 |GROOMING_CONFIG_FILE_PATH|ja|Pfad zur Default Grooming Konfig.||
 
