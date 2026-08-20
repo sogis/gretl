@@ -1,8 +1,10 @@
 package ch.so.agi.gretl.steps.publisher.out.metainfo.table;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,18 @@ import org.junit.jupiter.api.io.TempDir;
 public class MapperTest {
     @TempDir
     Path tempDir;
+
+    @Test
+    public void mapsResolvedPublicationStateWithoutArchiveNameInference() {
+        Mapper.PublicationTree publicationTree = new Mapper().map("ch.so.agi.demo", LocalDate.of(2026, 6, 23),
+                List.of("north", "south", "north"), List.of("xtf", "dxf_geobau", "xtf"));
+
+        assertEquals(LocalDate.of(2026, 6, 23), publicationTree.getPublicationDate());
+        assertEquals(List.of("north", "south"), publicationTree.getParts().stream()
+                .map(Mapper.PartRow::getPartIdent).collect(java.util.stream.Collectors.toList()));
+        assertEquals(List.of("xtf", "dxf_geobau"), publicationTree.getArtifactTypes());
+        assertTrue(publicationTree.getFiles().isEmpty());
+    }
 
     @Test
     public void map_globalPublication_usesAllParts() {

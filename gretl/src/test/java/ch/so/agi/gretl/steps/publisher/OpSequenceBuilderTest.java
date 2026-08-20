@@ -35,7 +35,8 @@ class OpSequenceBuilderTest {
 
     @Test
     void buildsMergedDbSequenceWithValidationAndDerivedFormats() throws Exception {
-        Connection connection = fakeConnection();
+        Connection sourceConnection = fakeConnection();
+        Connection publicationConnection = fakeConnection();
         RecordingResolver resolver = new RecordingResolver(resolvedSelection(DataSelection.KeyType.dataset, "2401", "2402"));
         OpSequenceBuilder builder = new OpSequenceBuilder(resolver);
         Path cacheRoot = tempDir.resolve("cache");
@@ -46,7 +47,7 @@ class OpSequenceBuilderTest {
                 .dbRegexSource("edit", "live", RawPublisherArgs.IliIdentType.dataset, false, "24.*")
                 .validationConfig(validationConfig.toString())
                 .derivedFormats(List.of(DerivedFormat.GPKG))
-                .build(), connection, cacheRoot);
+                .build(), sourceConnection, publicationConnection, cacheRoot);
 
         assertEquals(List.of(
                 "Exporter",
@@ -56,29 +57,40 @@ class OpSequenceBuilderTest {
                 "CacheValidator",
                 "Derivator",
                 "Packer",
-                "Writer",
-                "RemoteUpdater"), operationNames(steps));
-        assertSame(connection, resolver.connection);
+                "RemoteUpdater",
+                "Writer"), operationNames(steps));
+        assertSame(sourceConnection, resolver.connection);
         assertEquals("live", resolver.dbSchema);
         assertEquals("24.*", resolver.requestedSelection.getKeyRegEx());
 
         ExporterParameters firstExporter = assertInstanceOf(ExporterParameters.class, steps.get(0).resolveParameters());
         assertEquals(List.of("2401"), firstExporter.getSelectionToExport().getKeyValues());
         assertTrue(firstExporter.getExportDirectory().toString().contains(".source-stages"));
+        assertSame(sourceConnection, firstExporter.getConnection());
 
         MergeStagesParameters mergeParameters = assertInstanceOf(MergeStagesParameters.class, steps.get(2).resolveParameters());
         assertEquals(2, mergeParameters.getInputDirs().size());
         assertEquals(cacheRoot.toAbsolutePath().normalize(), mergeParameters.getOutputDir());
+
+        OpSequenceStep writerStep = steps.stream()
+                .filter(step -> "Writer".equals(step.getOperation().getHumanReadableName()))
+                .findFirst().orElseThrow();
+        Files.createDirectories(cacheRoot);
+        Files.writeString(cacheRoot.resolve("2401.xtf.zip"), "zip", StandardCharsets.UTF_8);
+        WriterParameters writerParameters = assertInstanceOf(WriterParameters.class, writerStep.resolveParameters());
+        assertSame(publicationConnection, writerParameters.getConnection());
     }
 
     @Test
     void buildsSingleStageXtfRegexSequenceWithoutMerge() throws Exception {
         Path cacheRoot = tempDir.resolve("cache");
+        Path incoming = Files.createDirectories(tempDir.resolve("incoming"));
+        Files.writeString(incoming.resolve("north.xtf"), "transfer", StandardCharsets.UTF_8);
         List<OpSequenceStep> steps = new OpSequenceBuilder().buildSequence(publisherArgs()
-                .xtfRegexSource(tempDir.resolve("incoming").toString(), ".*\\.xtf$")
+                .xtfRegexSource(incoming.toString(), ".*\\.xtf$")
                 .build(), fakeConnection(), cacheRoot);
 
-        assertEquals(List.of("XtfByRegex", "Packer", "Writer", "RemoteUpdater"), operationNames(steps));
+        assertEquals(List.of("XtfByRegex", "Packer", "RemoteUpdater", "Writer"), operationNames(steps));
         assertTrue(steps.get(0).getOperation() instanceof XtfByRegex);
         assertTrue(operationNames(steps).stream().noneMatch("MergeStages"::equals));
     }
@@ -90,13 +102,24 @@ class OpSequenceBuilderTest {
                 .xtfListSource(tempDir.resolve("incoming").toString(), list("north.xtf", "south.xtf"))
                 .build(), fakeConnection(), cacheRoot);
 
-        assertEquals(List.of("XtfCopy", "XtfCopy", "MergeStages", "Packer", "Writer", "RemoteUpdater"),
+        assertEquals(List.of("XtfCopy", "XtfCopy", "MergeStages", "Packer", "RemoteUpdater", "Writer"),
                 operationNames(steps));
 
         XtfCopyParams firstCopy = assertInstanceOf(XtfCopyParams.class, steps.get(0).resolveParameters());
         assertEquals(List.of("north"), firstCopy.getTransferFileList().asList());
         assertEquals(XtfCopyParams.TransferFileType.XTF, firstCopy.getTransferFileType());
         assertTrue(steps.get(2).getOperation() instanceof MergeStages);
+    }
+
+    @Test
+    void omitsWriterForLocalOnlyPublication() throws Exception {
+        Path cacheRoot = tempDir.resolve("cache");
+        List<OpSequenceStep> steps = new OpSequenceBuilder().buildSequence(publisherArgs()
+                .xtfListSource(tempDir.resolve("incoming").toString(), list("north.xtf"))
+                .localFolderOnly(tempDir.resolve("local-publication").toString())
+                .build(), null, null, null, false, cacheRoot);
+
+        assertEquals(List.of("XtfCopy", "Packer", "RemoteUpdater"), operationNames(steps));
     }
 
     @Test
@@ -112,10 +135,13 @@ class OpSequenceBuilderTest {
     }
 
     @Test
-    void resolvesWriterParametersLazilyFromPackedArtifacts() throws Exception {
+    void resolvesWriterParametersFromPublishedArtifactsAndResolvedParts() throws Exception {
         Path cacheRoot = Files.createDirectories(tempDir.resolve("cache"));
+        Path incoming = Files.createDirectories(tempDir.resolve("incoming"));
+        Files.writeString(incoming.resolve("north.xtf"), "transfer", StandardCharsets.UTF_8);
+        Files.writeString(incoming.resolve("south.xtf"), "transfer", StandardCharsets.UTF_8);
         OpSequenceStep writerStep = new OpSequenceBuilder().buildSequence(publisherArgs()
-                .xtfRegexSource(tempDir.resolve("incoming").toString(), ".*\\.xtf$")
+                .xtfRegexSource(incoming.toString(), ".*\\.xtf$")
                 .build(), fakeConnection(), cacheRoot).stream()
                 .filter(step -> "Writer".equals(step.getOperation().getHumanReadableName()))
                 .findFirst()
@@ -125,9 +151,8 @@ class OpSequenceBuilderTest {
         Files.writeString(cacheRoot.resolve("south.ch.so.agi.demo.xtf.zip"), "zip", StandardCharsets.UTF_8);
 
         WriterParameters writerParameters = assertInstanceOf(WriterParameters.class, writerStep.resolveParameters());
-        assertEquals(List.of(
-                cacheRoot.resolve("north.ch.so.agi.demo.xtf.zip"),
-                cacheRoot.resolve("south.ch.so.agi.demo.xtf.zip")), writerParameters.getCachedTransferFiles());
+        assertEquals(List.of("north", "south"), writerParameters.getPartIdentifiers());
+        assertEquals(List.of("xtf"), writerParameters.getExportedFormats());
     }
 
     private static List<String> operationNames(List<OpSequenceStep> steps) {

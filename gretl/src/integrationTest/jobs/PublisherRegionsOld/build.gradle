@@ -9,7 +9,7 @@ defaultTasks 'printPublishedRegions'
     //resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 //}
 
-task publishFile0(type: Publisher){
+task publishFile0(type: PublisherOld){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [project.buildDir]
       sourcePath = file("av_test.itf")
@@ -17,7 +17,7 @@ task publishFile0(type: Publisher){
       region="[0-9][0-9][0-9][0-9]"
 }
 
-task publishFile1(type: Publisher){
+task publishFile1(type: PublisherOld){
       dataIdent = "ch.so.agi.vermessung.pub"
       target = [project.buildDir]
       sourcePath = file("av_test.itf")
@@ -31,5 +31,4 @@ task printPublishedRegions(dependsOn: [publishFile0,publishFile1]){
 		println publishFile1.publishedRegions.get()
 	}
 }
-
 

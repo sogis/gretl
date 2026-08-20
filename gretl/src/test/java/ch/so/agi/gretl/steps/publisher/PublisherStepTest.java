@@ -36,11 +36,12 @@ class PublisherStepTest {
                 .xtfRegexSource(tempDir.resolve("incoming").toString(), ".*\\.xtf$")
                 .build();
         PublisherEnv publisherEnv = publisherEnv();
-        Connection connection = fakeConnection();
+        Connection sourceConnection = fakeConnection();
+        Connection publicationConnection = fakeConnection();
         Path cacheRoot = tempDir.resolve("cache");
 
         long before = System.currentTimeMillis();
-        step.publish(null, rawArgs, publisherEnv, connection, cacheRoot);
+        step.publish(null, rawArgs, publisherEnv, sourceConnection, publicationConnection, cacheRoot);
         long after = System.currentTimeMillis();
 
         assertNotNull(builder.capturedArgs);
@@ -49,7 +50,8 @@ class PublisherStepTest {
         assertEquals("sftp://host/data", builder.capturedArgs.getOutBasePath().getUrl());
         assertEquals("/env/grooming.json", builder.capturedArgs.getOutCustomGroomingConfFilePath());
         assertEquals("/env/models", builder.capturedArgs.getCustomModelDir());
-        assertSame(connection, builder.capturedConnection);
+        assertSame(sourceConnection, builder.capturedSourceConnection);
+        assertSame(publicationConnection, builder.capturedPublicationConnection);
         assertEquals(cacheRoot, builder.capturedCacheRoot);
         assertSame(builder.stepsToReturn, runner.capturedSteps);
         assertEquals(List.of("publishDemo: Start PublisherStep", "publishDemo: End PublisherStep (successful)"),
@@ -76,7 +78,7 @@ class PublisherStepTest {
                 .depVersion(new Date(1L))
                 .build();
 
-        step.publish(version, rawArgs, publisherEnv(), fakeConnection(), tempDir.resolve("cache"));
+        step.publish(version, rawArgs, publisherEnv(), fakeConnection(), fakeConnection(), tempDir.resolve("cache"));
 
         assertEquals(tempDir.resolve("local-out").toString(), builder.capturedArgs.getOutBasePath().getUrl());
         assertEquals(tempDir.resolve("custom-grooming.json").toString(),
@@ -116,15 +118,17 @@ class PublisherStepTest {
 
     private static final class RecordingBuilder extends OpSequenceBuilder {
         private RawPublisherArgs capturedArgs;
-        private Connection capturedConnection;
+        private Connection capturedSourceConnection;
+        private Connection capturedPublicationConnection;
         private Path capturedCacheRoot;
         private final List<OpSequenceStep> stepsToReturn = new ArrayList<>();
 
         @Override
-        public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection publicationDbConnection,
-                Path cacheRoot) {
+        public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection,
+                Connection publicationDbConnection, String metadataSchema, boolean writeMetadata, Path cacheRoot) {
             this.capturedArgs = rawPublisherArgs;
-            this.capturedConnection = publicationDbConnection;
+            this.capturedSourceConnection = sourceDbConnection;
+            this.capturedPublicationConnection = publicationDbConnection;
             this.capturedCacheRoot = cacheRoot;
             return stepsToReturn;
         }

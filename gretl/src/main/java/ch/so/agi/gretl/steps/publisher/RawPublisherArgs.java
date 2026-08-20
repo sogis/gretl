@@ -36,14 +36,14 @@ public class RawPublisherArgs {
     private PublishMode publishMode;
     private IliIdentType dbIliIdent_TypeEnum;
 
-    enum PublishMode {
+    public enum PublishMode {
         dbIdentvaluesList,
         dbIdentvaluesRegex,
         xtfFilesList,
         xtfFilesRegex
     }
 
-    enum IliIdentType {
+    public enum IliIdentType {
         model,
         topic,
         basket,

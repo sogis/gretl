@@ -13,7 +13,7 @@ import java.nio.file.StandardCopyOption;
 public class PublisherTestOld {
     @Test
     public void simple() throws Exception {
-        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/Publisher");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PublisherOld");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "av_test.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "ili", "DM.01-AV-CH_LV95_24d_ili1.ili");
 
@@ -22,7 +22,7 @@ public class PublisherTestOld {
 
     @Test
     public void regions() throws Exception {
-        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PublisherRegions");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PublisherRegionsOld");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "av_test.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "2501.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "2502.itf");
@@ -32,8 +32,8 @@ public class PublisherTestOld {
     }
 
     private void copyFileFromResourcesToJob(String jobDirectory, String resourceSubDirectory, String filename) throws IOException {
-        String resourceDirectory = "src/test/resources/data/publisher/";
-        Path from = Paths.get(resourceDirectory, resourceSubDirectory, filename);
+        Path from = Paths.get(System.getProperty("GRETL_PROJECT_ABS_PATH"), "src", "test", "resources", "data",
+                "publisher", resourceSubDirectory, filename);
         Path to = Paths.get(jobDirectory, filename);
         Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
     }

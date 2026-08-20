@@ -20,6 +20,7 @@ sourceSets {
 }
 
 tasks.register("writePluginClassPath"){
+    dependsOn tasks.jar
     def buildDirectory = project.layout.buildDirectory.get()
     def outputDir = file("$buildDirectory/integrationTest/resources")
 

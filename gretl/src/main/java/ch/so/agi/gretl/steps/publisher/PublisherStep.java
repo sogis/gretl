@@ -35,9 +35,28 @@ public class PublisherStep {
 
     public void publish(Date date, RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
             Connection publicationDbConnection, Path cacheRoot) throws Exception {
+        publish(date, rawPublisherArgs, publisherEnv, publicationDbConnection, publicationDbConnection, cacheRoot);
+    }
+
+    /** Runs a publication with distinct source and publication-metadata connections. */
+    public void publish(Date date, RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
+            Connection sourceDbConnection, Connection publicationDbConnection, Path cacheRoot) throws Exception {
+        publish(date, rawPublisherArgs, publisherEnv, sourceDbConnection, publicationDbConnection, "public", true,
+                cacheRoot);
+    }
+
+    /** Runs a publication with optional post-promotion metadata persistence. */
+    public void publish(Date date, RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
+            Connection sourceDbConnection, Connection publicationDbConnection, String metadataSchema, boolean writeMetadata,
+            Path cacheRoot) throws Exception {
         Objects.requireNonNull(rawPublisherArgs, "rawPublisherArgs must not be null");
         Objects.requireNonNull(publisherEnv, "publisherEnv must not be null");
-        Objects.requireNonNull(publicationDbConnection, "publicationDbConnection must not be null");
+        if (writeMetadata) {
+            Objects.requireNonNull(publicationDbConnection, "publicationDbConnection must not be null when writing metadata");
+        }
+        if (rawPublisherArgs.getXtfFile_FolderPath() == null) {
+            Objects.requireNonNull(sourceDbConnection, "sourceDbConnection must not be null in db mode");
+        }
         Objects.requireNonNull(cacheRoot, "cacheRoot must not be null");
 
         Date effectiveDate = date != null ? new Date(date.getTime()) : new Date();
@@ -47,7 +66,8 @@ public class PublisherStep {
         logOverrideMessages(rawPublisherArgs, publisherEnv);
         logModeDetails(effectiveArgs);
 
-        List<OpSequenceStep> steps = opSequenceBuilder.buildSequence(effectiveArgs, publicationDbConnection, cacheRoot);
+        List<OpSequenceStep> steps = opSequenceBuilder.buildSequence(effectiveArgs, sourceDbConnection,
+                publicationDbConnection, metadataSchema, writeMetadata, cacheRoot);
         opSequenceRunner.run(steps);
 
         log.lifecycle(taskName + ": End PublisherStep (successful)");
