@@ -96,7 +96,7 @@ class PublisherStepTest {
         return new PublisherEnv(
                 new PupDateEnv("jdbc:postgresql://db/publisher", "pub_meta", "pub_user", "publisher_pass"),
                 new PubFolderEnv("sftp://host/data", "pub_user", "publisher_pass"),
-                java.net.URI.create("https://geo.so.ch/datasheet"),
+                "https://geo.so.ch/json", "publication", "metadata.json",
                 "/env/models",
                 Path.of("/env/grooming.json"));
     }
@@ -125,7 +125,8 @@ class PublisherStepTest {
 
         @Override
         public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection,
-                Connection publicationDbConnection, String metadataSchema, boolean writeMetadata, Path cacheRoot) {
+                Connection publicationDbConnection, String metadataSchema, boolean writeMetadata, String jsonmetaAddress,
+                String jsonmetaBucket, String jsonmetaFileName, Path cacheRoot) {
             this.capturedArgs = rawPublisherArgs;
             this.capturedSourceConnection = sourceDbConnection;
             this.capturedPublicationConnection = publicationDbConnection;

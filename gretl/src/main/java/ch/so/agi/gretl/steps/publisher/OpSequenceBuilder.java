@@ -28,6 +28,8 @@ import ch.so.agi.gretl.steps.publisher.in.xtf.regex.XtfByRegexParams;
 import ch.so.agi.gretl.steps.publisher.operation.OperationParameters;
 import ch.so.agi.gretl.steps.publisher.out.metainfo.table.Writer;
 import ch.so.agi.gretl.steps.publisher.out.metainfo.table.WriterParameters;
+import ch.so.agi.gretl.steps.publisher.out.metainfo.metafolder.MetafolderWriter;
+import ch.so.agi.gretl.steps.publisher.out.metainfo.metafolder.MetafolderWriterParameters;
 import ch.so.agi.gretl.steps.publisher.out.updateremote.RemoteUpdater;
 import ch.so.agi.gretl.steps.publisher.out.updateremote.RemoteUpdaterParameters;
 import ch.so.agi.gretl.steps.publisher.stage.derivedformats.Derivator;
@@ -74,6 +76,14 @@ public class OpSequenceBuilder {
     /** Builds a sequence that optionally writes metadata after remote promotion. */
     public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection,
             Connection publicationDbConnection, String metadataSchema, boolean writeMetadata, Path cacheRoot) throws Exception {
+        return buildSequence(rawPublisherArgs, sourceDbConnection, publicationDbConnection, metadataSchema, writeMetadata,
+                null, null, null, cacheRoot);
+    }
+
+    /** Builds a sequence with optional JSON metadata source configuration. */
+    public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection,
+            Connection publicationDbConnection, String metadataSchema, boolean writeMetadata, String jsonmetaAddress,
+            String jsonmetaBucket, String jsonmetaFileName, Path cacheRoot) throws Exception {
         Objects.requireNonNull(rawPublisherArgs, "rawPublisherArgs must not be null");
         if (writeMetadata) {
             Objects.requireNonNull(publicationDbConnection, "publicationDbConnection must not be null when writing metadata");
@@ -103,6 +113,10 @@ public class OpSequenceBuilder {
             steps.add(OpSequenceStep.of(new Derivator(),
                     constant(DerivatorParameters.of(normalizedCacheRoot, rawPublisherArgs.getOutDerivedFormats()))));
         }
+
+        steps.add(OpSequenceStep.of(new MetafolderWriter(), constant(MetafolderWriterParameters.of(normalizedCacheRoot,
+                rawPublisherArgs.getOutDataIdent(), rawPublisherArgs.getCustomModelDir(), validationConfig,
+                jsonmetaAddress, jsonmetaBucket, jsonmetaFileName))));
 
         steps.add(OpSequenceStep.of(new Packer(),
                 constant(PackerParameters.of(normalizedCacheRoot, rawPublisherArgs.getOutDataIdent()))));
@@ -162,6 +176,7 @@ public class OpSequenceBuilder {
             String keyValue = keyValues.get(i);
             Path stageDir = stageRoot.resolve(String.format(Locale.ROOT, "%02d-%s", Integer.valueOf(i),
                     sanitizeForPathSegment(keyValue)));
+            Files.createDirectories(stageDir);
             DataSelection singleSelection = new DataSelection();
             singleSelection.setKeyType(resolvedSelection.getKeyType());
             singleSelection.setKeyValues(Collections.singletonList(keyValue));

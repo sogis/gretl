@@ -1,0 +1,116 @@
+import ch.so.agi.gretl.tasks.Ili2pgImport
+import ch.so.agi.gretl.tasks.Ili2pgImportSchema
+import ch.so.agi.gretl.tasks.Publisher
+
+apply plugin: 'ch.so.agi.gretl'
+
+def dbUri = findProperty('gretltest_dburi_pg') ?: 'jdbc:postgresql://localhost:5432/gretl'
+def dbUser = 'ddluser'
+def dbPassword = 'ddluser'
+def sourceSchema = 'Beispiel2'
+def simpleSourceSchema = 'SimpleCoord23'
+
+tasks.register('setupSourceSchema', Ili2pgImportSchema) {
+    database = [dbUri, dbUser, dbPassword]
+    models = 'Beispiel2'
+    modeldir = file('.').absolutePath
+    defaultSrsCode = '2056'
+    dbschema = sourceSchema
+    createBasketCol = true
+    createTidCol = true
+    importTid = true
+}
+
+tasks.register('setupSourceData', Ili2pgImport) {
+    dependsOn 'setupSourceSchema'
+    database = [dbUri, dbUser, dbPassword]
+    dbschema = sourceSchema
+    dataFile = files('Beispiel2a.xtf', 'Beispiel2b.xtf')
+    dataset = ['DatasetA', 'DatasetB']
+}
+
+tasks.register('setupSimpleSourceSchema', Ili2pgImportSchema) {
+    database = [dbUri, dbUser, dbPassword]
+    models = 'SimpleCoord23'
+    modeldir = file('.').absolutePath
+    defaultSrsCode = '2056'
+    dbschema = simpleSourceSchema
+}
+
+tasks.register('setupSimpleSourceData', Ili2pgImport) {
+    dependsOn 'setupSimpleSourceSchema'
+    database = [dbUri, dbUser, dbPassword]
+    dbschema = simpleSourceSchema
+    dataFile = files('SimpleCoord23a.xtf')
+}
+
+def localPublisher = { String taskName, Closure source ->
+    tasks.register(taskName, Publisher) {
+        outDataIdent = "ch.so.agi.publisher.${taskName}"
+        outBasePath = [file("$buildDir/unused").absolutePath]
+        outWriteToThisLocalFolderOnly = file("$buildDir/local/$taskName")
+        customModelDir = file('.').absolutePath
+        source.delegate = delegate
+        source()
+    }
+}
+
+localPublisher('publishXtfList') {
+    xtfFile_FolderPath = file('.').absolutePath
+    xtfFilename_List = ['SimpleCoord23a.xtf']
+}
+
+localPublisher('publishXtfRegex') {
+    xtfFile_FolderPath = file('.').absolutePath
+    xtfFilename_Regex = 'SimpleCoord23[ab]\\.xtf'
+}
+
+def dbPublisher = { String taskName, String identifierType, Object selector ->
+    localPublisher(taskName) {
+        dependsOn 'setupSourceData'
+        dbDatabase = [dbUri, dbUser, dbPassword]
+        dbSchema = sourceSchema
+        dbIliIdent_Type = identifierType
+        dbMergeToSingleXtf = false
+        if (selector instanceof List) {
+            dbIliIdent_Values = selector
+        } else {
+            dbIliIdent_RegEx = selector
+        }
+    }
+}
+
+localPublisher('publishDbModel') {
+    dependsOn 'setupSimpleSourceData'
+    dbDatabase = [dbUri, dbUser, dbPassword]
+    dbSchema = simpleSourceSchema
+    dbIliIdent_Type = 'model'
+    dbMergeToSingleXtf = false
+    dbIliIdent_Values = ['SimpleCoord23']
+}
+dbPublisher('publishDbTopic', 'topic', ['Beispiel2.Bodenbedeckung'])
+localPublisher('publishDbBasket') {
+    dbDatabase = [dbUri, dbUser, dbPassword]
+    dbSchema = sourceSchema
+    dbIliIdent_Type = 'basket'
+    dbMergeToSingleXtf = false
+    dbIliIdent_Values = [findProperty('publisherBasket')]
+}
+dbPublisher('publishDbDataset', 'dataset', ['DatasetA'])
+dbPublisher('publishDbDatasetRegex', 'dataset', 'Dataset.*')
+
+tasks.register('publishXtfRegexRemote', Publisher) {
+    outDataIdent = 'ch.so.agi.publisher.remote'
+    outBasePath = [file("$buildDir/unused").absolutePath]
+    xtfFile_FolderPath = file('.').absolutePath
+    xtfFilename_Regex = 'SimpleCoord23[ab]\\.xtf'
+    customModelDir = file('.').absolutePath
+    outDerivedFormats = ['GPKG']
+    depVersion = new Date(0L)
+    doFirst {
+        copy {
+            from 'SimpleCoord23.ili'
+            into "$buildDir/publishXtfRegexRemote"
+        }
+    }
+}

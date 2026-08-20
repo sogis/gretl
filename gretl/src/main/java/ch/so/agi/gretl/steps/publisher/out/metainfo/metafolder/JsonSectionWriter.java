@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps.publisher.out.metainfo.json;
+package ch.so.agi.gretl.steps.publisher.out.metainfo.metafolder;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

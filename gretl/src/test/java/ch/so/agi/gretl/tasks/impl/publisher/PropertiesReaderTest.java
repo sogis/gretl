@@ -26,7 +26,9 @@ class PropertiesReaderTest {
         assertEquals("sftp://host/data", env.getPubFolderEnv().getPath());
         assertEquals("sftp_user", env.getPubFolderEnv().getUser());
         assertEquals("sftp_pass", env.getPubFolderEnv().getPassword());
-        assertEquals("https://geo.so.ch/datasheet", env.getDatasheetUri().toString());
+        assertEquals("https://geo.so.ch/json", env.getJsonmetaAddress());
+        assertEquals("publication", env.getJsonmetaBucket());
+        assertEquals("metadata.json", env.getJsonmetaFileName());
         assertEquals("/models;/more-models", env.getModeldir());
         assertEquals(Path.of("/tmp/grooming.json"), env.getGroomingConfigFilePath());
     }
@@ -72,27 +74,15 @@ class PropertiesReaderTest {
     }
 
     @Test
-    void rejectsRelativeDatasheetUrl() {
+    void rejectsMissingJsonMetadataProperty() {
         Project project = baseProject();
-        project.getExtensions().getExtraProperties().set("datasheetUrl", "/datasheet");
+        project.getExtensions().getExtraProperties().set("jsonmetaBucket", " ");
 
         PropertiesReader reader = new PropertiesReader(project);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, reader::readProperties);
 
-        assertTrue(exception.getMessage().contains("absolute URL"));
-    }
-
-    @Test
-    void rejectsNonHttpDatasheetUrl() {
-        Project project = baseProject();
-        project.getExtensions().getExtraProperties().set("datasheetUrl", "ftp://geo.so.ch/datasheet");
-
-        PropertiesReader reader = new PropertiesReader(project);
-
-        IllegalStateException exception = assertThrows(IllegalStateException.class, reader::readProperties);
-
-        assertTrue(exception.getMessage().contains("http or https"));
+        assertTrue(exception.getMessage().contains("jsonmetaBucket"));
     }
 
     @Test
@@ -116,7 +106,9 @@ class PropertiesReaderTest {
         project.getExtensions().getExtraProperties().set("pupFolderPath", "sftp://host/data");
         project.getExtensions().getExtraProperties().set("pupFolderUser", "sftp_user");
         project.getExtensions().getExtraProperties().set("pupFolderPass", "sftp_pass");
-        project.getExtensions().getExtraProperties().set("datasheetUrl", "https://geo.so.ch/datasheet");
+        project.getExtensions().getExtraProperties().set("jsonmetaAddress", "https://geo.so.ch/json");
+        project.getExtensions().getExtraProperties().set("jsonmetaBucket", "publication");
+        project.getExtensions().getExtraProperties().set("jsonmetaFileName", "metadata.json");
         project.getExtensions().getExtraProperties().set("modelDir", "/models;/more-models");
         project.getExtensions().getExtraProperties().set("groomingConfigFilePath", "/tmp/grooming.json");
         return project;

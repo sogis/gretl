@@ -99,7 +99,7 @@ public class Publisher extends DefaultTask {
         boolean writeMetadata = outWriteToThisLocalFolderOnly == null;
         PublisherEnv publisherEnv = writeMetadata
                 ? new PropertiesReader(getProject()).readProperties()
-                : new PublisherEnv(null, null, null, null, null);
+                : new PublisherEnv(null, null, null, null, null, null, null);
         RawPublisherArgs rawArgs = buildRawArgs();
         Connector publicationDatabase = writeMetadata
                 ? new Connector(publisherEnv.getPupDateEnv().getConnectionUrl(), publisherEnv.getPupDateEnv().getUser(),

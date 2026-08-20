@@ -67,7 +67,8 @@ public class PublisherStep {
         logModeDetails(effectiveArgs);
 
         List<OpSequenceStep> steps = opSequenceBuilder.buildSequence(effectiveArgs, sourceDbConnection,
-                publicationDbConnection, metadataSchema, writeMetadata, cacheRoot);
+                publicationDbConnection, metadataSchema, writeMetadata, publisherEnv.getJsonmetaAddress(),
+                publisherEnv.getJsonmetaBucket(), publisherEnv.getJsonmetaFileName(), cacheRoot);
         opSequenceRunner.run(steps);
 
         log.lifecycle(taskName + ": End PublisherStep (successful)");

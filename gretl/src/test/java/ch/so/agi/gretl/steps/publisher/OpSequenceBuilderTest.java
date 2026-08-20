@@ -56,6 +56,7 @@ class OpSequenceBuilderTest {
                 "ValidationConfigSeeder",
                 "CacheValidator",
                 "Derivator",
+                "MetafolderWriter",
                 "Packer",
                 "RemoteUpdater",
                 "Writer"), operationNames(steps));
@@ -90,7 +91,7 @@ class OpSequenceBuilderTest {
                 .xtfRegexSource(incoming.toString(), ".*\\.xtf$")
                 .build(), fakeConnection(), cacheRoot);
 
-        assertEquals(List.of("XtfByRegex", "Packer", "RemoteUpdater", "Writer"), operationNames(steps));
+        assertEquals(List.of("XtfByRegex", "MetafolderWriter", "Packer", "RemoteUpdater", "Writer"), operationNames(steps));
         assertTrue(steps.get(0).getOperation() instanceof XtfByRegex);
         assertTrue(operationNames(steps).stream().noneMatch("MergeStages"::equals));
     }
@@ -102,7 +103,7 @@ class OpSequenceBuilderTest {
                 .xtfListSource(tempDir.resolve("incoming").toString(), list("north.xtf", "south.xtf"))
                 .build(), fakeConnection(), cacheRoot);
 
-        assertEquals(List.of("XtfCopy", "XtfCopy", "MergeStages", "Packer", "RemoteUpdater", "Writer"),
+        assertEquals(List.of("XtfCopy", "XtfCopy", "MergeStages", "MetafolderWriter", "Packer", "RemoteUpdater", "Writer"),
                 operationNames(steps));
 
         XtfCopyParams firstCopy = assertInstanceOf(XtfCopyParams.class, steps.get(0).resolveParameters());
@@ -119,7 +120,7 @@ class OpSequenceBuilderTest {
                 .localFolderOnly(tempDir.resolve("local-publication").toString())
                 .build(), null, null, null, false, cacheRoot);
 
-        assertEquals(List.of("XtfCopy", "Packer", "RemoteUpdater"), operationNames(steps));
+        assertEquals(List.of("XtfCopy", "MetafolderWriter", "Packer", "RemoteUpdater"), operationNames(steps));
     }
 
     @Test

@@ -1,7 +1,5 @@
 package ch.so.agi.gretl.tasks.impl.publisher;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 import org.gradle.api.Project;
@@ -22,7 +20,9 @@ public class PropertiesReader {
     private static final String PUP_FOLDER_PATH = "pupFolderPath";
     private static final String PUP_FOLDER_USER = "pupFolderUser";
     private static final String PUP_FOLDER_PASS = "pupFolderPass";
-    private static final String DATASHEET_URL = "datasheetUrl";
+    private static final String JSONMETA_ADDRESS = "jsonmetaAddress";
+    private static final String JSONMETA_BUCKET = "jsonmetaBucket";
+    private static final String JSONMETA_FILE_NAME = "jsonmetaFileName";
     private static final String MODEL_DIR = "modelDir";
     private static final String GROOMING_CONFIG_FILE_PATH = "groomingConfigFilePath";
 
@@ -40,14 +40,17 @@ public class PropertiesReader {
         String pupFolderPath = readRequiredProperty(PUP_FOLDER_PATH);
         String pupFolderUser = readRequiredProperty(PUP_FOLDER_USER);
         String pupFolderPass = readRequiredProperty(PUP_FOLDER_PASS);
-        URI datasheetUri = parseDatasheetUri(readRequiredProperty(DATASHEET_URL));
+        String jsonmetaAddress = readRequiredProperty(JSONMETA_ADDRESS);
+        String jsonmetaBucket = readRequiredProperty(JSONMETA_BUCKET);
+        String jsonmetaFileName = readRequiredProperty(JSONMETA_FILE_NAME);
         String modelDir = readRequiredProperty(MODEL_DIR);
         Path groomingConfigFilePath = Path.of(readRequiredProperty(GROOMING_CONFIG_FILE_PATH)).normalize();
 
         PupDateEnv pupDateEnv = new PupDateEnv(pubDateDbUrl, pubDateDbSchema, pubDateDbUser, pubDateDbPass);
         PubFolderEnv pubFolderEnv = new PubFolderEnv(pupFolderPath, pupFolderUser, pupFolderPass);
 
-        return new PublisherEnv(pupDateEnv, pubFolderEnv, datasheetUri, modelDir, groomingConfigFilePath);
+        return new PublisherEnv(pupDateEnv, pubFolderEnv, jsonmetaAddress, jsonmetaBucket, jsonmetaFileName,
+                modelDir, groomingConfigFilePath);
     }
 
     private String readRequiredProperty(String propertyName) {
@@ -59,23 +62,4 @@ public class PropertiesReader {
         return trimmedValue;
     }
 
-    private URI parseDatasheetUri(String propertyValue) {
-        URI uri;
-        try {
-            uri = new URI(propertyValue);
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException("Invalid URI in Gradle property " + DATASHEET_URL, e);
-        }
-
-        if (!uri.isAbsolute()) {
-            throw new IllegalStateException("Gradle property " + DATASHEET_URL + " must be an absolute URL");
-        }
-
-        String scheme = uri.getScheme();
-        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
-            throw new IllegalStateException("Gradle property " + DATASHEET_URL + " must use http or https");
-        }
-
-        return uri;
-    }
 }
