@@ -17,6 +17,17 @@ import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
 
 class RawPublisherArgsTest {
     @Test
+    void rejectsMissingOutFormats() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> RawPublisherArgs.builder().output(target(), "ch.so.agi.demo")
+                        .xtfRegexSource("/data/incoming", ".*\\.xtf$")
+                        .outFormats(List.of())
+                        .build());
+
+        assertContains(exception, "outFormats");
+    }
+
+    @Test
     void acceptsDbSourceWithExplicitValues() {
         RawPublisherArgs args = publisherArgs()
                 .dbValuesSource("edit", "live", RawPublisherArgs.IliIdentType.dataset, true,

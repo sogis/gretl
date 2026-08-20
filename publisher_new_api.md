@@ -54,7 +54,7 @@ Zusätzliche Regeln:
 |modelDir|nein|Von den Defaults abweichende Modeldir-Definition||
 |publishedPartIdentifiers|/|Liste der von einem Publisher-Task effektiv publizierten Kennungen| $jek klären: Braucht es das noch?|
 |validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei||
-|formats|ja|Liste der zu exportierenden Dateiformate. Formate: xtf, gpkg, shp, ...||
+|outFormats|ja|Liste der zu exportierenden Dateiformate. Formate: xtf, itf, gpkg, shp, dxf, dxf_geobau. Nur diese Formate werden publiziert.||
 
 ### Env-Variablen (Muss einmalig für die lokale Umgebung in gretljobs.properties konfiguriert werden)
 
@@ -270,7 +270,7 @@ neu:
 
     tasks.register('publishUserFormats', Publisher) {
         ...
-        formats = ["xtf","gpkg","shp","dxf"]
+        outFormats = ["xtf","gpkg","shp","dxf"]
     }
 
 ### KGDI-Service

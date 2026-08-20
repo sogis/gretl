@@ -42,7 +42,9 @@ public final class Packer implements Operation<PackerParameters> {
             Path stagingDir = cacheDir.resolve(STAGING_DIR).resolve(dataIdent);
             Files.createDirectories(stagingDir);
 
-            for (Path source : discoverSources(cacheDir)) {
+            List<Path> sources = discoverSources(cacheDir, operationParameters.getOutputFormats());
+            assertRequestedTransferFormatExists(cacheDir, sources, operationParameters.getOutputFormats());
+            for (Path source : sources) {
                 Path stagingZip = zipper.zip(source, stagingDir.resolve(source.getFileName().toString() + ".zip"));
                 renamer.moveArchive(stagingZip, source);
             }
@@ -53,17 +55,17 @@ public final class Packer implements Operation<PackerParameters> {
         }
     }
 
-    private List<Path> discoverSources(Path cacheDir) throws IOException {
+    private List<Path> discoverSources(Path cacheDir, List<OutputFormat> outputFormats) throws IOException {
         List<Path> sources = new ArrayList<>();
         try (Stream<Path> stream = Files.list(cacheDir)) {
-            stream.filter(this::isPackableSource)
+            stream.filter(path -> isPackableSource(path, outputFormats))
                     .sorted(Comparator.comparing(path -> path.getFileName().toString()))
                     .forEach(sources::add);
         }
         return sources;
     }
 
-    private boolean isPackableSource(Path path) {
+    private boolean isPackableSource(Path path, List<OutputFormat> outputFormats) {
         if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
             return false;
         }
@@ -78,7 +80,28 @@ public final class Packer implements Operation<PackerParameters> {
         if (VALIDATION_LOG.equals(fileName) || VALIDATION_INI.equals(fileName)) {
             return false;
         }
-        return !fileName.endsWith(".zip");
+        if (fileName.endsWith(".zip")) {
+            return false;
+        }
+        return outputFormats.stream().anyMatch(format -> matches(path, format));
+    }
+
+    private boolean matches(Path path, OutputFormat format) {
+        String name = path.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
+        if (format.isTransferFormat()) {
+            return Files.isRegularFile(path) && name.endsWith("." + format.getIdentifier());
+        }
+        return Files.isDirectory(path) && format.getDerivedFormat().getDirectoryName().equals(name);
+    }
+
+    private void assertRequestedTransferFormatExists(Path cacheDir, List<Path> sources,
+            List<OutputFormat> outputFormats) {
+        for (OutputFormat format : outputFormats) {
+            if (format.isTransferFormat() && sources.stream().noneMatch(path -> matches(path, format))) {
+                throw new IllegalArgumentException("Requested transfer format " + format.getIdentifier()
+                        + " is not available in " + cacheDir);
+            }
+        }
     }
 
     private static void deleteTreeIfExists(Path path) throws IOException {

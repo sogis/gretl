@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import ch.so.agi.gretl.api.Endpoint;
 import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
+import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 
 /**
  * DTO representing the flat publisher inputs exactly as provided.
@@ -31,6 +32,7 @@ public class RawPublisherArgs {
     private final String outValidationConfigFilePath;
     private final String customModelDir;
     private final List<DerivedFormat> outDerivedFormats;
+    private final List<OutputFormat> outFormats;
     private final Date depVersion;
 
     private PublishMode publishMode;
@@ -100,7 +102,9 @@ public class RawPublisherArgs {
         this.outCustomGroomingConfFilePath = normalize(args.outCustomGroomingConfFilePath);
         this.outValidationConfigFilePath = normalize(args.outValidationConfigFilePath);
         this.customModelDir = normalize(args.customModelDir);
-        this.outDerivedFormats = normalizeDerivedFormats(args.outDerivedFormats);
+        List<DerivedFormat> legacyDerivedFormats = normalizeDerivedFormats(args.outDerivedFormats);
+        this.outFormats = normalizeOutputFormats(args.outFormats, legacyDerivedFormats);
+        this.outDerivedFormats = derivedFormatsFor(this.outFormats);
         this.depVersion = args.depVersion != null ? new Date(args.depVersion.getTime()) : new Date();
 
         validateArgumentCombination();
@@ -128,6 +132,9 @@ public class RawPublisherArgs {
         }
         if (outDataIdent == null) {
             missingArgs.add("outDataIdent");
+        }
+        if (outFormats.isEmpty()) {
+            missingArgs.add("outFormats");
         }
         if (!missingArgs.isEmpty()) {
             throw new IllegalArgumentException("Missing mandatory arguments: " + String.join(", ", missingArgs));
@@ -318,12 +325,24 @@ public class RawPublisherArgs {
         return outDerivedFormats;
     }
 
+    public List<OutputFormat> getOutFormats() { return outFormats; }
+
     public Date getDepVersion() {
         return new Date(depVersion.getTime());
     }
 
     public PublishMode getPublishMode() {
         return publishMode;
+    }
+
+    RawPublisherArgs withEffectiveOutput(Endpoint effectiveOutput, String effectiveGrooming, String effectiveModelDir,
+            Date effectiveDate) {
+        CanonicalArgs args = canonicalArgs(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx,
+                dbMergeToSingleXtf, xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, effectiveOutput,
+                outDataIdent, outIsolatedMode, outWriteToThisLocalFolderOnly, effectiveGrooming,
+                outValidationConfigFilePath, effectiveModelDir, outDerivedFormats, effectiveDate);
+        args.outFormats = outFormats;
+        return new RawPublisherArgs(args);
     }
 
     private static String normalize(String value) {
@@ -364,6 +383,51 @@ public class RawPublisherArgs {
         return Collections.unmodifiableList(normalized);
     }
 
+    private static List<OutputFormat> normalizeOutputFormats(List<OutputFormat> outputFormats,
+            List<DerivedFormat> legacyDerivedFormats) {
+        List<OutputFormat> values = outputFormats;
+        if (values == null && !legacyDerivedFormats.isEmpty()) {
+            values = new ArrayList<OutputFormat>();
+            values.add(OutputFormat.XTF);
+            for (DerivedFormat format : legacyDerivedFormats) {
+                values.add(outputFormatFor(format));
+            }
+        }
+        if (values == null || values.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<OutputFormat> normalized = new ArrayList<OutputFormat>();
+        for (OutputFormat format : values) {
+            if (format == null) {
+                throw new IllegalArgumentException("outFormats must not contain null values");
+            }
+            if (!normalized.contains(format)) {
+                normalized.add(format);
+            }
+        }
+        return Collections.unmodifiableList(normalized);
+    }
+
+    private static OutputFormat outputFormatFor(DerivedFormat format) {
+        for (OutputFormat outputFormat : OutputFormat.values()) {
+            if (format == outputFormat.getDerivedFormat()) {
+                return outputFormat;
+            }
+        }
+        throw new IllegalArgumentException("Unsupported derived format: " + format);
+    }
+
+    private static List<DerivedFormat> derivedFormatsFor(List<OutputFormat> outputFormats) {
+        List<DerivedFormat> result = new ArrayList<DerivedFormat>();
+        for (OutputFormat outputFormat : outputFormats) {
+            DerivedFormat derivedFormat = outputFormat.getDerivedFormat();
+            if (derivedFormat != null) {
+                result.add(derivedFormat);
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
     private static CanonicalArgs canonicalArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
             List<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
             String xtfFile_FolderPath, String xtfFilename_Regex, List<String> xtfFilename_List, Endpoint outBasePath,
@@ -388,6 +452,14 @@ public class RawPublisherArgs {
         args.outValidationConfigFilePath = outValidationConfigFilePath;
         args.customModelDir = customModelDir;
         args.outDerivedFormats = outDerivedFormats;
+        // These constructors predate outFormats; retain their historical transfer-file default.
+        args.outFormats = new ArrayList<OutputFormat>();
+        args.outFormats.add(OutputFormat.XTF);
+        if (outDerivedFormats != null) {
+            for (DerivedFormat format : outDerivedFormats) {
+                args.outFormats.add(outputFormatFor(format));
+            }
+        }
         args.depVersion = depVersion;
         return args;
     }
@@ -410,6 +482,7 @@ public class RawPublisherArgs {
         private String outValidationConfigFilePath;
         private String customModelDir;
         private List<DerivedFormat> outDerivedFormats;
+        private List<OutputFormat> outFormats;
         private Date depVersion;
     }
 
@@ -489,6 +562,19 @@ public class RawPublisherArgs {
 
         public Builder derivedFormats(List<DerivedFormat> outDerivedFormats) {
             args.outDerivedFormats = outDerivedFormats;
+            List<OutputFormat> formats = new ArrayList<OutputFormat>();
+            formats.add(OutputFormat.XTF);
+            if (outDerivedFormats != null) {
+                for (DerivedFormat format : outDerivedFormats) {
+                    formats.add(outputFormatFor(format));
+                }
+            }
+            args.outFormats = formats;
+            return this;
+        }
+
+        public Builder outFormats(List<OutputFormat> outFormats) {
+            args.outFormats = outFormats;
             return this;
         }
 

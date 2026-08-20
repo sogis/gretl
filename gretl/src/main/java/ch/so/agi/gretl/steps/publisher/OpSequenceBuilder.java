@@ -105,7 +105,8 @@ public class OpSequenceBuilder {
         }
 
         steps.add(OpSequenceStep.of(new Packer(),
-                constant(PackerParameters.of(normalizedCacheRoot, rawPublisherArgs.getOutDataIdent()))));
+                constant(PackerParameters.of(normalizedCacheRoot, rawPublisherArgs.getOutDataIdent(),
+                        rawPublisherArgs.getOutFormats()))));
         steps.add(OpSequenceStep.of(new RemoteUpdater(),
                 constant(RemoteUpdaterParameters.of(normalizedCacheRoot, endpointToPath(rawPublisherArgs.getOutBasePath()),
                         rawPublisherArgs.getOutDataIdent(), rawPublisherArgs.getDepVersion()))));

@@ -40,6 +40,24 @@ tasks.register('pubProduct', Publisher) {
 
 Bei Problemen mit der Datenqualität der Originaldaten schlägt der Task "pubEdit" fehl. Der Job bricht mit Fehler ab, bevor die Daten irgendwo landen.
 
+## Ausgabeformate
+
+Der neue `Publisher` publiziert nur die explizit mit `outFormats` angeforderten Formate. Die Angabe ist zwingend;
+die Transferdatei wird nicht automatisch beigepackt. Unterstützte Werte sind `xtf`, `itf`, `gpkg`, `shp`, `dxf`
+und `dxf_geobau`. `xtf` und `itf` müssen zur Erweiterung der Quelle passen.
+
+```groovy
+tasks.register('publishShapefile', Publisher) {
+    // ... source and output configuration ...
+    outFormats = ["shp"]
+}
+
+tasks.register('publishTransferAndGpkg', Publisher) {
+    // ... source and output configuration ...
+    outFormats = ["xtf", "gpkg"]
+}
+```
+
 ## Parameter
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Publisher.md >}}

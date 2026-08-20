@@ -29,7 +29,7 @@ class PackerTest {
         Files.write(tempDir.resolve("validation.log"), "validation-log".getBytes(StandardCharsets.UTF_8));
         Files.write(tempDir.resolve("validation.ini"), "validation-ini".getBytes(StandardCharsets.UTF_8));
 
-        new Packer().execute(PackerParameters.of(tempDir, "ch.so.agi.demo"));
+        new Packer().execute(PackerParameters.of(tempDir, "ch.so.agi.demo", List.of(OutputFormat.XTF)));
 
         Path zip = tempDir.resolve("ch.so.agi.demo.xtf.zip");
         assertTrue(Files.exists(zip));
@@ -40,17 +40,39 @@ class PackerTest {
 
     @Test
     void packsFolderContentsAndValidationLog() throws IOException {
-        Path sourceDir = tempDir.resolve("ch.so.agi.demo.shp");
+        Path sourceDir = tempDir.resolve("shp");
         Files.createDirectories(sourceDir);
         Files.write(sourceDir.resolve("parcel.shp"), "shp".getBytes(StandardCharsets.UTF_8));
         Files.write(sourceDir.resolve("parcel.dbf"), "dbf".getBytes(StandardCharsets.UTF_8));
         Files.write(tempDir.resolve("validation.log"), "validation-log".getBytes(StandardCharsets.UTF_8));
 
-        new Packer().execute(PackerParameters.of(tempDir, "ch.so.agi.demo"));
+        new Packer().execute(PackerParameters.of(tempDir, "ch.so.agi.demo", List.of(OutputFormat.SHP)));
 
-        Path zip = tempDir.resolve("ch.so.agi.demo.shp.zip");
+        Path zip = tempDir.resolve("shp.zip");
         assertTrue(Files.exists(zip));
         assertZipEntries(zip, "parcel.dbf", "parcel.shp", "validation.log");
+    }
+
+    @Test
+    void packsOnlyRequestedFormats() throws IOException {
+        Files.writeString(tempDir.resolve("ch.so.agi.demo.xtf"), "transfer");
+        Path shpDir = Files.createDirectories(tempDir.resolve("shp"));
+        Files.writeString(shpDir.resolve("parcel.shp"), "shp");
+
+        new Packer().execute(PackerParameters.of(tempDir, "ch.so.agi.demo", List.of(OutputFormat.SHP)));
+
+        assertFalse(Files.exists(tempDir.resolve("ch.so.agi.demo.xtf.zip")));
+        assertTrue(Files.exists(tempDir.resolve("shp.zip")));
+    }
+
+    @Test
+    void rejectsUnavailableRequestedTransferFormat() throws IOException {
+        Files.writeString(tempDir.resolve("ch.so.agi.demo.itf"), "transfer");
+
+        IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Packer().execute(PackerParameters.of(tempDir, "ch.so.agi.demo", List.of(OutputFormat.XTF))));
+
+        assertTrue(exception.getMessage().contains("Requested transfer format xtf"));
     }
 
     private static void assertZipEntries(Path zip, String... expectedEntries) throws IOException {
