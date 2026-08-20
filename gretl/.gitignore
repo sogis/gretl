@@ -186,6 +186,10 @@ gradle-app.setting
 
 # Maven 
 target/
+!src/main/java/ch/so/agi/gretl/steps/publisher/out/updateremote/target/
+!src/main/java/ch/so/agi/gretl/steps/publisher/out/updateremote/target/**
+!src/test/java/ch/so/agi/gretl/steps/publisher/out/updateremote/target/
+!src/test/java/ch/so/agi/gretl/steps/publisher/out/updateremote/target/**
 
 # IntelliJ project files 
 *.iml
