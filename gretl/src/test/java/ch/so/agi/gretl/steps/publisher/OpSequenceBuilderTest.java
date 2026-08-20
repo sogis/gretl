@@ -25,9 +25,13 @@ import ch.so.agi.gretl.steps.publisher.in.db.ExporterParameters;
 import ch.so.agi.gretl.steps.publisher.in.xtf.list.XtfCopyParams;
 import ch.so.agi.gretl.steps.publisher.in.xtf.regex.XtfByRegex;
 import ch.so.agi.gretl.steps.publisher.out.metainfo.table.WriterParameters;
+import ch.so.agi.gretl.steps.publisher.out.metainfo.metafolder.MetafolderWriterParameters;
 import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
+import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivatorParameters;
 import ch.so.agi.gretl.steps.publisher.stage.mergestages.MergeStages;
 import ch.so.agi.gretl.steps.publisher.stage.mergestages.MergeStagesParameters;
+import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
+import ch.so.agi.gretl.steps.publisher.stage.pack.PackerParameters;
 
 class OpSequenceBuilderTest {
     @TempDir
@@ -46,7 +50,7 @@ class OpSequenceBuilderTest {
         List<OpSequenceStep> steps = builder.buildSequence(publisherArgs()
                 .dbRegexSource("edit", "live", RawPublisherArgs.IliIdentType.dataset, false, "24.*")
                 .validationConfig(validationConfig.toString())
-                .derivedFormats(List.of(DerivedFormat.GPKG))
+                .outFormats(List.of(OutputFormat.XTF, OutputFormat.GPKG))
                 .build(), sourceConnection, publicationConnection, cacheRoot);
 
         assertEquals(List.of(
@@ -68,6 +72,13 @@ class OpSequenceBuilderTest {
         assertEquals(List.of("2401"), firstExporter.getSelectionToExport().getKeyValues());
         assertTrue(firstExporter.getExportDirectory().toString().contains(".source-stages"));
         assertSame(sourceConnection, firstExporter.getConnection());
+
+        DerivatorParameters derivatorParameters = assertInstanceOf(DerivatorParameters.class,
+                steps.get(5).resolveParameters());
+        assertEquals(List.of(DerivedFormat.GPKG), derivatorParameters.getRequestedFormats());
+        PackerParameters packerParameters = assertInstanceOf(PackerParameters.class,
+                steps.get(7).resolveParameters());
+        assertEquals(List.of(OutputFormat.XTF, OutputFormat.GPKG), packerParameters.getOutputFormats());
 
         MergeStagesParameters mergeParameters = assertInstanceOf(MergeStagesParameters.class, steps.get(2).resolveParameters());
         assertEquals(2, mergeParameters.getInputDirs().size());
@@ -117,10 +128,15 @@ class OpSequenceBuilderTest {
         Path cacheRoot = tempDir.resolve("cache");
         List<OpSequenceStep> steps = new OpSequenceBuilder().buildSequence(publisherArgs()
                 .xtfListSource(tempDir.resolve("incoming").toString(), list("north.xtf"))
-                .localFolderOnly(tempDir.resolve("local-publication").toString())
+                .output(new ch.so.agi.gretl.api.Endpoint(tempDir.resolve("local-publication").toString()),
+                        "ch.so.agi.demo")
+                .writeMetadata(false)
                 .build(), null, null, null, false, cacheRoot);
 
         assertEquals(List.of("XtfCopy", "MetafolderWriter", "Packer", "RemoteUpdater"), operationNames(steps));
+        MetafolderWriterParameters metafolderParameters = assertInstanceOf(MetafolderWriterParameters.class,
+                steps.get(1).resolveParameters());
+        assertTrue(!metafolderParameters.shouldWriteJson());
     }
 
     @Test

@@ -3,7 +3,6 @@ package ch.so.agi.gretl.tasks;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-import java.io.File;
 import java.util.List;
 
 import org.gradle.api.Project;
@@ -23,17 +22,28 @@ class PublisherTest {
         task.setDbIliIdent_Type("dataset");
         task.setDbIliIdent_Values(List.of("2401", "2402"));
         task.setDbMergeToSingleXtf(false);
-        task.setOutBasePath(List.of("/publication-root"));
+        task.setOutFolderPath(List.of("/publication-root"));
         task.setOutDataIdent("ch.so.agi.demo");
-        task.setOutWriteToThisLocalFolderOnly(new File("build/local-publication"));
-        task.setOutFormats(List.of("xtf", OutputFormat.SHP));
+        task.setOutWriteMetadata(false);
+        task.setOutFormats(List.of("xtf", "itf", OutputFormat.SHP, "gpkg"));
 
         assertEquals("jdbc:postgresql://source/db", task.getDbDatabase().getDbUri());
         assertEquals(List.of("2401", "2402"), task.getDbIliIdent_Values().get());
-        assertEquals("/publication-root", task.getOutBasePath().getUrl());
-        assertEquals(List.of(OutputFormat.XTF, OutputFormat.SHP), task.getOutFormats().get());
+        assertEquals("/publication-root", task.getOutFolderPath().getUrl());
+        assertEquals(List.of(OutputFormat.XTF, OutputFormat.ITF, OutputFormat.SHP, OutputFormat.GPKG),
+                task.getOutFormats().get());
+        assertEquals(Boolean.FALSE, task.getOutWriteMetadata());
+    }
+
+    @Test
+    void acceptsAFileAsLocalOutputFolder() {
+        Project project = ProjectBuilder.builder().build();
+        Publisher task = project.getTasks().create("publish", Publisher.class);
+
+        task.setOutFolderPath(new java.io.File("build/local-publication"));
+
         assertEquals(project.file("build/local-publication").toPath().toAbsolutePath().normalize().toString(),
-                task.getOutWriteToThisLocalFolderOnly());
+                task.getOutFolderPath().getUrl());
     }
 
     @Test

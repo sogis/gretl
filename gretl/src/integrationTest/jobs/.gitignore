@@ -5,3 +5,5 @@ build
 XslTransformerFile/*.xtf
 DatabaseDocumentExport/*.pdf
 Csv2Excel/*.xlsx
+Publisher*/*.ili
+Publisher*/*.xtf

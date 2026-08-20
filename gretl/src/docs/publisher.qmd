@@ -58,6 +58,26 @@ tasks.register('publishTransferAndGpkg', Publisher) {
 }
 ```
 
+## Ziel und Metadaten
+
+Standardmässig schreibt `Publisher` Metadaten in die Publikationsdatenbank und erzeugt `meta/metainfo.json`.
+Die globalen Publisher-Einstellungen, einschliesslich `pupFolderPath`, bleiben dafür erforderlich. Mit
+`outFolderPath` kann der Zielordner für einen einzelnen Task überschrieben werden.
+
+Für eine rein lokale Ausgabe ohne Metadaten sind keine globalen Publisher-Einstellungen nötig:
+
+```groovy
+tasks.register('publishLocal', Publisher) {
+    // ... source configuration ...
+    outFolderPath = file("$buildDir/local")
+    outWriteMetadata = false
+    outFormats = ["xtf"]
+}
+```
+
+In diesem Modus werden die aufgelösten `.ili`-Modelle nach `meta/` kopiert, aber weder `meta/metainfo.json` noch
+Publikationsdatenbank-Zeilen geschrieben.
+
 ## Parameter
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Publisher.md >}}

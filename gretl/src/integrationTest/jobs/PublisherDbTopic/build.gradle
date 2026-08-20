@@ -1,0 +1,40 @@
+import ch.so.agi.gretl.tasks.Ili2pgImport
+import ch.so.agi.gretl.tasks.Ili2pgImportSchema
+import ch.so.agi.gretl.tasks.Publisher
+
+apply plugin: 'ch.so.agi.gretl'
+
+def dbUri = findProperty('gretltest_dburi_pg') ?: 'jdbc:postgresql://localhost:5432/gretl'
+
+tasks.register('setupSchema', Ili2pgImportSchema) {
+    database = [dbUri, 'ddluser', 'ddluser']
+    models = 'Beispiel2'
+    modeldir = file('.').absolutePath
+    defaultSrsCode = '2056'
+    dbschema = 'Beispiel2'
+    createBasketCol = true
+    createTidCol = true
+    importTid = true
+}
+
+tasks.register('setupData', Ili2pgImport) {
+    dependsOn 'setupSchema'
+    database = [dbUri, 'ddluser', 'ddluser']
+    dbschema = 'Beispiel2'
+    dataFile = files('Beispiel2a.xtf', 'Beispiel2b.xtf')
+    dataset = ['DatasetA', 'DatasetB']
+}
+
+tasks.register('publish', Publisher) {
+    dependsOn 'setupData'
+    outDataIdent = 'ch.so.agi.publisher.db-topic'
+    outFolderPath = file("$buildDir/local")
+    outWriteMetadata = false
+    dbDatabase = [dbUri, 'ddluser', 'ddluser']
+    dbSchema = 'Beispiel2'
+    dbIliIdent_Type = 'topic'
+    dbIliIdent_Values = ['Beispiel2.Bodenbedeckung']
+    dbMergeToSingleXtf = false
+    customModelDir = file('.').absolutePath
+    outFormats = ['xtf']
+}

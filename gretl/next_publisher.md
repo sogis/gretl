@@ -75,10 +75,11 @@ Alle mit der Ablage im Zielverzeichnis verbundenen Eigenschaften erhalten den Pr
 
 |Neu|Alt|
 |---|---|
-|outBasePath|target|
+|outFolderPath|target|
+|outWriteMetadata|-|Default `true`; disable metadata database rows and `meta/metainfo.json` for local output.|
 |outDataIdent|dataIdent|
 |outWriteUserFormats|isUserFormats|
-|outGroomingConf|grooming|
+|outGroomingConfigFilePath|grooming|
 |outValidationConfig|validationConfig| 
 |outPublishedRegions|publishedRegions| 
 
@@ -92,6 +93,7 @@ Alle globalen Eigenschaften erhalten den Präfix "glob" für global.
 |globProxy|proxy|
 |globProxyPort|proxyPort|
 
+
 #### Deprecated Eigenschaften
 
 Dies werden noch "mitgezogen", gelten aber als deprecated.
@@ -99,7 +101,6 @@ Dies werden noch "mitgezogen", gelten aber als deprecated.
 |Neu|Alt|
 |---|---|
 |depExportModels|exportModels|
-|depVersion|version|
 
 ## Fragen
 
@@ -116,5 +117,3 @@ Bei nicht vom Publisher publizierten Daten wird manuell der Publikationsstand no
 ### Vertiefte Validierung
 
 Die vertieften Validierungen sollen dem Themenintegrator in der lokalen Umgebung zur Verfügung stehen (Kurzer Feedbackloop)
-
-

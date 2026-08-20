@@ -1,0 +1,36 @@
+import ch.so.agi.gretl.tasks.Ili2pgImport
+import ch.so.agi.gretl.tasks.Ili2pgImportSchema
+import ch.so.agi.gretl.tasks.Publisher
+
+apply plugin: 'ch.so.agi.gretl'
+
+def dbUri = findProperty('gretltest_dburi_pg') ?: 'jdbc:postgresql://localhost:5432/gretl'
+
+tasks.register('setupSchema', Ili2pgImportSchema) {
+    database = [dbUri, 'ddluser', 'ddluser']
+    models = 'SimpleCoord23'
+    modeldir = file('.').absolutePath
+    defaultSrsCode = '2056'
+    dbschema = 'SimpleCoord23'
+}
+
+tasks.register('setupData', Ili2pgImport) {
+    dependsOn 'setupSchema'
+    database = [dbUri, 'ddluser', 'ddluser']
+    dbschema = 'SimpleCoord23'
+    dataFile = files('SimpleCoord23a.xtf')
+}
+
+tasks.register('publish', Publisher) {
+    dependsOn 'setupData'
+    outDataIdent = 'ch.so.agi.publisher.db-model'
+    outFolderPath = file("$buildDir/local")
+    outWriteMetadata = false
+    dbDatabase = [dbUri, 'ddluser', 'ddluser']
+    dbSchema = 'SimpleCoord23'
+    dbIliIdent_Type = 'model'
+    dbIliIdent_Values = ['SimpleCoord23']
+    dbMergeToSingleXtf = false
+    customModelDir = file('.').absolutePath
+    outFormats = ['xtf']
+}

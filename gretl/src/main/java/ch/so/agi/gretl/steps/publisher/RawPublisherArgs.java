@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.so.agi.gretl.api.Endpoint;
-import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
 import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 
 /**
@@ -24,16 +23,14 @@ public class RawPublisherArgs {
     private final String xtfFile_FolderPath;
     private final String xtfFilename_Regex;
     private final List<String> xtfFilename_List;
-    private final Endpoint outBasePath;
+    private final Endpoint outFolderPath;
     private final String outDataIdent;
-    private final Boolean outIsolatedMode;
-    private final String outWriteToThisLocalFolderOnly;
-    private final String outCustomGroomingConfFilePath;
+    private final Boolean outWriteMetadata;
+    private final String outGroomingConfigFilePath;
     private final String outValidationConfigFilePath;
     private final String customModelDir;
-    private final List<DerivedFormat> outDerivedFormats;
     private final List<OutputFormat> outFormats;
-    private final Date depVersion;
+    private final Date publicationTimestamp;
 
     private PublishMode publishMode;
     private IliIdentType dbIliIdent_TypeEnum;
@@ -56,35 +53,6 @@ public class RawPublisherArgs {
         return new Builder();
     }
 
-    RawPublisherArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
-            ArrayList<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
-            String xtfFile_FolderPath, String xtfFilename_Regex, ArrayList<String> xtfFilename_List) {
-        this(canonicalArgs(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx,
-                dbMergeToSingleXtf, xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, null, null, null, null,
-                null, null, null, null, null));
-    }
-
-    RawPublisherArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
-            ArrayList<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
-            String xtfFile_FolderPath, String xtfFilename_Regex, ArrayList<String> xtfFilename_List,
-            List<DerivedFormat> outDerivedFormats) {
-        this(canonicalArgs(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx,
-                dbMergeToSingleXtf, xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, null, null, null, null,
-                null, null, null, outDerivedFormats, null));
-    }
-
-    RawPublisherArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
-            ArrayList<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
-            String xtfFile_FolderPath, String xtfFilename_Regex, ArrayList<String> xtfFilename_List,
-            Endpoint outBasePath, String outDataIdent, Boolean outIsolatedMode, String outWriteToThisLocalFolderOnly,
-            String outCustomGroomingConfFilePath, String outValidationConfigFilePath, String customModelDir,
-            List<DerivedFormat> outDerivedFormats, Date depVersion) {
-        this(canonicalArgs(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx,
-                dbMergeToSingleXtf, xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, outBasePath,
-                outDataIdent, outIsolatedMode, outWriteToThisLocalFolderOnly, outCustomGroomingConfFilePath,
-                outValidationConfigFilePath, customModelDir, outDerivedFormats, depVersion));
-    }
-
     private RawPublisherArgs(CanonicalArgs args) {
         this.dbDatabase = normalize(args.dbDatabase);
         this.dbSchema = normalize(args.dbSchema);
@@ -95,17 +63,15 @@ public class RawPublisherArgs {
         this.xtfFile_FolderPath = normalize(args.xtfFile_FolderPath);
         this.xtfFilename_Regex = normalize(args.xtfFilename_Regex);
         this.xtfFilename_List = copyNormalized(args.xtfFilename_List);
-        this.outBasePath = args.outBasePath;
+        this.outFolderPath = args.outFolderPath;
         this.outDataIdent = normalize(args.outDataIdent);
-        this.outIsolatedMode = args.outIsolatedMode;
-        this.outWriteToThisLocalFolderOnly = normalize(args.outWriteToThisLocalFolderOnly);
-        this.outCustomGroomingConfFilePath = normalize(args.outCustomGroomingConfFilePath);
+        this.outWriteMetadata = args.outWriteMetadata == null ? true : args.outWriteMetadata;
+        this.outGroomingConfigFilePath = normalize(args.outGroomingConfigFilePath);
         this.outValidationConfigFilePath = normalize(args.outValidationConfigFilePath);
         this.customModelDir = normalize(args.customModelDir);
-        List<DerivedFormat> legacyDerivedFormats = normalizeDerivedFormats(args.outDerivedFormats);
-        this.outFormats = normalizeOutputFormats(args.outFormats, legacyDerivedFormats);
-        this.outDerivedFormats = derivedFormatsFor(this.outFormats);
-        this.depVersion = args.depVersion != null ? new Date(args.depVersion.getTime()) : new Date();
+        this.outFormats = normalizeOutputFormats(args.outFormats);
+        this.publicationTimestamp = args.publicationTimestamp == null ? null
+                : new Date(args.publicationTimestamp.getTime());
 
         validateArgumentCombination();
     }
@@ -127,8 +93,8 @@ public class RawPublisherArgs {
 
     private void validateOutputArgs() {
         List<String> missingArgs = new ArrayList<>();
-        if (outBasePath == null) {
-            missingArgs.add("outBasePath");
+        if (!outWriteMetadata && outFolderPath == null) {
+            missingArgs.add("outFolderPath when outWriteMetadata is false");
         }
         if (outDataIdent == null) {
             missingArgs.add("outDataIdent");
@@ -293,24 +259,20 @@ public class RawPublisherArgs {
         return xtfFilename_List;
     }
 
-    public Endpoint getOutBasePath() {
-        return outBasePath;
+    public Endpoint getOutFolderPath() {
+        return outFolderPath;
     }
 
     public String getOutDataIdent() {
         return outDataIdent;
     }
 
-    public Boolean getOutIsolatedMode() {
-        return outIsolatedMode;
+    public Boolean getOutWriteMetadata() {
+        return outWriteMetadata;
     }
 
-    public String getOutWriteToThisLocalFolderOnly() {
-        return outWriteToThisLocalFolderOnly;
-    }
-
-    public String getOutCustomGroomingConfFilePath() {
-        return outCustomGroomingConfFilePath;
+    public String getOutGroomingConfigFilePath() {
+        return outGroomingConfigFilePath;
     }
 
     public String getOutValidationConfigFilePath() {
@@ -321,14 +283,10 @@ public class RawPublisherArgs {
         return customModelDir;
     }
 
-    public List<DerivedFormat> getOutDerivedFormats() {
-        return outDerivedFormats;
-    }
-
     public List<OutputFormat> getOutFormats() { return outFormats; }
 
-    public Date getDepVersion() {
-        return new Date(depVersion.getTime());
+    Date getPublicationTimestamp() {
+        return publicationTimestamp == null ? null : new Date(publicationTimestamp.getTime());
     }
 
     public PublishMode getPublishMode() {
@@ -336,13 +294,30 @@ public class RawPublisherArgs {
     }
 
     RawPublisherArgs withEffectiveOutput(Endpoint effectiveOutput, String effectiveGrooming, String effectiveModelDir,
-            Date effectiveDate) {
-        CanonicalArgs args = canonicalArgs(dbDatabase, dbSchema, dbIliIdent_Type, dbIliIdent_Values, dbIliIdent_RegEx,
-                dbMergeToSingleXtf, xtfFile_FolderPath, xtfFilename_Regex, xtfFilename_List, effectiveOutput,
-                outDataIdent, outIsolatedMode, outWriteToThisLocalFolderOnly, effectiveGrooming,
-                outValidationConfigFilePath, effectiveModelDir, outDerivedFormats, effectiveDate);
+            Date publicationTimestamp) {
+        CanonicalArgs args = new CanonicalArgs();
+        args.dbDatabase = dbDatabase;
+        args.dbSchema = dbSchema;
+        args.dbIliIdent_Type = dbIliIdent_Type;
+        args.dbIliIdent_Values = dbIliIdent_Values;
+        args.dbIliIdent_RegEx = dbIliIdent_RegEx;
+        args.dbMergeToSingleXtf = dbMergeToSingleXtf;
+        args.xtfFile_FolderPath = xtfFile_FolderPath;
+        args.xtfFilename_Regex = xtfFilename_Regex;
+        args.xtfFilename_List = xtfFilename_List;
+        args.outFolderPath = effectiveOutput;
+        args.outDataIdent = outDataIdent;
+        args.outWriteMetadata = outWriteMetadata;
+        args.outGroomingConfigFilePath = effectiveGrooming;
+        args.outValidationConfigFilePath = outValidationConfigFilePath;
+        args.customModelDir = effectiveModelDir;
         args.outFormats = outFormats;
+        args.publicationTimestamp = publicationTimestamp;
         return new RawPublisherArgs(args);
+    }
+
+    RawPublisherArgs withPublicationTimestamp(Date timestamp) {
+        return withEffectiveOutput(outFolderPath, outGroomingConfigFilePath, customModelDir, timestamp);
     }
 
     private static String normalize(String value) {
@@ -367,32 +342,7 @@ public class RawPublisherArgs {
         return Collections.unmodifiableList(normalized);
     }
 
-    private static List<DerivedFormat> normalizeDerivedFormats(List<DerivedFormat> derivedFormats) {
-        if (derivedFormats == null || derivedFormats.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<DerivedFormat> normalized = new ArrayList<>();
-        for (DerivedFormat derivedFormat : derivedFormats) {
-            if (derivedFormat == null) {
-                throw new IllegalArgumentException("outDerivedFormats must not contain null values");
-            }
-            if (!normalized.contains(derivedFormat)) {
-                normalized.add(derivedFormat);
-            }
-        }
-        return Collections.unmodifiableList(normalized);
-    }
-
-    private static List<OutputFormat> normalizeOutputFormats(List<OutputFormat> outputFormats,
-            List<DerivedFormat> legacyDerivedFormats) {
-        List<OutputFormat> values = outputFormats;
-        if (values == null && !legacyDerivedFormats.isEmpty()) {
-            values = new ArrayList<OutputFormat>();
-            values.add(OutputFormat.XTF);
-            for (DerivedFormat format : legacyDerivedFormats) {
-                values.add(outputFormatFor(format));
-            }
-        }
+    private static List<OutputFormat> normalizeOutputFormats(List<OutputFormat> values) {
         if (values == null || values.isEmpty()) {
             return Collections.emptyList();
         }
@@ -408,62 +358,6 @@ public class RawPublisherArgs {
         return Collections.unmodifiableList(normalized);
     }
 
-    private static OutputFormat outputFormatFor(DerivedFormat format) {
-        for (OutputFormat outputFormat : OutputFormat.values()) {
-            if (format == outputFormat.getDerivedFormat()) {
-                return outputFormat;
-            }
-        }
-        throw new IllegalArgumentException("Unsupported derived format: " + format);
-    }
-
-    private static List<DerivedFormat> derivedFormatsFor(List<OutputFormat> outputFormats) {
-        List<DerivedFormat> result = new ArrayList<DerivedFormat>();
-        for (OutputFormat outputFormat : outputFormats) {
-            DerivedFormat derivedFormat = outputFormat.getDerivedFormat();
-            if (derivedFormat != null) {
-                result.add(derivedFormat);
-            }
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-    private static CanonicalArgs canonicalArgs(String dbDatabase, String dbSchema, String dbIliIdent_Type,
-            List<String> dbIliIdent_Values, String dbIliIdent_RegEx, Boolean dbMergeToSingleXtf,
-            String xtfFile_FolderPath, String xtfFilename_Regex, List<String> xtfFilename_List, Endpoint outBasePath,
-            String outDataIdent, Boolean outIsolatedMode, String outWriteToThisLocalFolderOnly,
-            String outCustomGroomingConfFilePath, String outValidationConfigFilePath, String customModelDir,
-            List<DerivedFormat> outDerivedFormats, Date depVersion) {
-        CanonicalArgs args = new CanonicalArgs();
-        args.dbDatabase = dbDatabase;
-        args.dbSchema = dbSchema;
-        args.dbIliIdent_Type = dbIliIdent_Type;
-        args.dbIliIdent_Values = dbIliIdent_Values;
-        args.dbIliIdent_RegEx = dbIliIdent_RegEx;
-        args.dbMergeToSingleXtf = dbMergeToSingleXtf;
-        args.xtfFile_FolderPath = xtfFile_FolderPath;
-        args.xtfFilename_Regex = xtfFilename_Regex;
-        args.xtfFilename_List = xtfFilename_List;
-        args.outBasePath = outBasePath;
-        args.outDataIdent = outDataIdent;
-        args.outIsolatedMode = outIsolatedMode;
-        args.outWriteToThisLocalFolderOnly = outWriteToThisLocalFolderOnly;
-        args.outCustomGroomingConfFilePath = outCustomGroomingConfFilePath;
-        args.outValidationConfigFilePath = outValidationConfigFilePath;
-        args.customModelDir = customModelDir;
-        args.outDerivedFormats = outDerivedFormats;
-        // These constructors predate outFormats; retain their historical transfer-file default.
-        args.outFormats = new ArrayList<OutputFormat>();
-        args.outFormats.add(OutputFormat.XTF);
-        if (outDerivedFormats != null) {
-            for (DerivedFormat format : outDerivedFormats) {
-                args.outFormats.add(outputFormatFor(format));
-            }
-        }
-        args.depVersion = depVersion;
-        return args;
-    }
-
     private static final class CanonicalArgs {
         private String dbDatabase;
         private String dbSchema;
@@ -474,16 +368,14 @@ public class RawPublisherArgs {
         private String xtfFile_FolderPath;
         private String xtfFilename_Regex;
         private List<String> xtfFilename_List;
-        private Endpoint outBasePath;
+        private Endpoint outFolderPath;
         private String outDataIdent;
-        private Boolean outIsolatedMode;
-        private String outWriteToThisLocalFolderOnly;
-        private String outCustomGroomingConfFilePath;
+        private Boolean outWriteMetadata;
+        private String outGroomingConfigFilePath;
         private String outValidationConfigFilePath;
         private String customModelDir;
-        private List<DerivedFormat> outDerivedFormats;
         private List<OutputFormat> outFormats;
-        private Date depVersion;
+        private Date publicationTimestamp;
     }
 
     public static final class Builder {
@@ -529,24 +421,19 @@ public class RawPublisherArgs {
             return this;
         }
 
-        public Builder output(Endpoint outBasePath, String outDataIdent) {
-            args.outBasePath = outBasePath;
+        public Builder output(Endpoint outFolderPath, String outDataIdent) {
+            args.outFolderPath = outFolderPath;
             args.outDataIdent = outDataIdent;
             return this;
         }
 
-        public Builder isolatedMode(Boolean outIsolatedMode) {
-            args.outIsolatedMode = outIsolatedMode;
+        public Builder writeMetadata(Boolean outWriteMetadata) {
+            args.outWriteMetadata = outWriteMetadata;
             return this;
         }
 
-        public Builder localFolderOnly(String outWriteToThisLocalFolderOnly) {
-            args.outWriteToThisLocalFolderOnly = outWriteToThisLocalFolderOnly;
-            return this;
-        }
-
-        public Builder groomingConfig(String outCustomGroomingConfFilePath) {
-            args.outCustomGroomingConfFilePath = outCustomGroomingConfFilePath;
+        public Builder groomingConfig(String outGroomingConfigFilePath) {
+            args.outGroomingConfigFilePath = outGroomingConfigFilePath;
             return this;
         }
 
@@ -560,26 +447,8 @@ public class RawPublisherArgs {
             return this;
         }
 
-        public Builder derivedFormats(List<DerivedFormat> outDerivedFormats) {
-            args.outDerivedFormats = outDerivedFormats;
-            List<OutputFormat> formats = new ArrayList<OutputFormat>();
-            formats.add(OutputFormat.XTF);
-            if (outDerivedFormats != null) {
-                for (DerivedFormat format : outDerivedFormats) {
-                    formats.add(outputFormatFor(format));
-                }
-            }
-            args.outFormats = formats;
-            return this;
-        }
-
         public Builder outFormats(List<OutputFormat> outFormats) {
             args.outFormats = outFormats;
-            return this;
-        }
-
-        public Builder depVersion(Date depVersion) {
-            args.depVersion = depVersion;
             return this;
         }
 

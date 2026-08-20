@@ -32,20 +32,20 @@ public class PublisherStep {
         this.opSequenceRunner = Objects.requireNonNull(opSequenceRunner, "opSequenceRunner must not be null");
     }
 
-    public void publish(Date date, RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
+    public void publish(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
             Connection publicationDbConnection, Path cacheRoot) throws Exception {
-        publish(date, rawPublisherArgs, publisherEnv, publicationDbConnection, publicationDbConnection, cacheRoot);
+        publish(rawPublisherArgs, publisherEnv, publicationDbConnection, publicationDbConnection, cacheRoot);
     }
 
     /** Runs a publication with distinct source and publication-metadata connections. */
-    public void publish(Date date, RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
+    public void publish(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
             Connection sourceDbConnection, Connection publicationDbConnection, Path cacheRoot) throws Exception {
-        publish(date, rawPublisherArgs, publisherEnv, sourceDbConnection, publicationDbConnection, "public", true,
+        publish(rawPublisherArgs, publisherEnv, sourceDbConnection, publicationDbConnection, "public", true,
                 cacheRoot);
     }
 
     /** Runs a publication with optional post-promotion metadata persistence. */
-    public void publish(Date date, RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
+    public void publish(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
             Connection sourceDbConnection, Connection publicationDbConnection, String metadataSchema, boolean writeMetadata,
             Path cacheRoot) throws Exception {
         Objects.requireNonNull(rawPublisherArgs, "rawPublisherArgs must not be null");
@@ -58,10 +58,10 @@ public class PublisherStep {
         }
         Objects.requireNonNull(cacheRoot, "cacheRoot must not be null");
 
-        Date effectiveDate = date != null ? new Date(date.getTime()) : new Date();
+        Date publicationTimestamp = new Date();
         log.lifecycle(taskName + ": Start PublisherStep");
 
-        RawPublisherArgs effectiveArgs = buildEffectiveArgs(rawPublisherArgs, publisherEnv, effectiveDate);
+        RawPublisherArgs effectiveArgs = buildEffectiveArgs(rawPublisherArgs, publisherEnv, publicationTimestamp);
         logOverrideMessages(rawPublisherArgs, publisherEnv);
         logModeDetails(effectiveArgs);
 
@@ -73,9 +73,10 @@ public class PublisherStep {
         log.lifecycle(taskName + ": End PublisherStep (successful)");
     }
 
-    private RawPublisherArgs buildEffectiveArgs(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv, Date effectiveDate) {
+    private RawPublisherArgs buildEffectiveArgs(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
+            Date publicationTimestamp) {
         Endpoint effectiveOutput = resolveOutputEndpoint(rawPublisherArgs, publisherEnv);
-        String effectiveGrooming = rawPublisherArgs.getOutCustomGroomingConfFilePath();
+        String effectiveGrooming = rawPublisherArgs.getOutGroomingConfigFilePath();
         if (effectiveGrooming == null && publisherEnv.getGroomingConfigFilePath() != null) {
             effectiveGrooming = publisherEnv.getGroomingConfigFilePath().toString();
         }
@@ -84,15 +85,16 @@ public class PublisherStep {
             effectiveModelDir = publisherEnv.getModeldir();
         }
 
-        return rawPublisherArgs.withEffectiveOutput(effectiveOutput, effectiveGrooming, effectiveModelDir, effectiveDate);
+        return rawPublisherArgs.withEffectiveOutput(effectiveOutput, effectiveGrooming, effectiveModelDir,
+                publicationTimestamp);
     }
 
     private Endpoint resolveOutputEndpoint(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv) {
-        if (rawPublisherArgs.getOutWriteToThisLocalFolderOnly() != null) {
-            return new Endpoint(rawPublisherArgs.getOutWriteToThisLocalFolderOnly());
+        if (rawPublisherArgs.getOutFolderPath() != null) {
+            return rawPublisherArgs.getOutFolderPath();
         }
         if (publisherEnv.getPubFolderEnv() == null) {
-            return rawPublisherArgs.getOutBasePath();
+            throw new IllegalArgumentException("outFolderPath must be set when Publisher global settings are unavailable");
         }
         return new Endpoint(
                 publisherEnv.getPubFolderEnv().getPath(),
@@ -101,14 +103,14 @@ public class PublisherStep {
     }
 
     private void logOverrideMessages(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv) {
-        if (rawPublisherArgs.getOutWriteToThisLocalFolderOnly() != null && publisherEnv.getPubFolderEnv() != null
+        if (rawPublisherArgs.getOutFolderPath() != null && publisherEnv.getPubFolderEnv() != null
                 && publisherEnv.getPubFolderEnv().getPath() != null) {
-            log.info("Global publisher setting pubFolder.path overridden by RawPublisherArgs.outWriteToThisLocalFolderOnly: "
-                    + rawPublisherArgs.getOutWriteToThisLocalFolderOnly());
+            log.info("Global publisher setting pubFolder.path overridden by RawPublisherArgs.outFolderPath: "
+                    + rawPublisherArgs.getOutFolderPath().getUrl());
         }
-        if (rawPublisherArgs.getOutCustomGroomingConfFilePath() != null && publisherEnv.getGroomingConfigFilePath() != null) {
-            log.info("Global publisher setting groomingConfigFilePath overridden by RawPublisherArgs.outCustomGroomingConfFilePath: "
-                    + rawPublisherArgs.getOutCustomGroomingConfFilePath());
+        if (rawPublisherArgs.getOutGroomingConfigFilePath() != null && publisherEnv.getGroomingConfigFilePath() != null) {
+            log.info("Global publisher setting groomingConfigFilePath overridden by RawPublisherArgs.outGroomingConfigFilePath: "
+                    + rawPublisherArgs.getOutGroomingConfigFilePath());
         }
         if (rawPublisherArgs.getCustomModelDir() != null && publisherEnv.getModeldir() != null) {
             log.info("Global publisher setting modeldir overridden by RawPublisherArgs.customModelDir: "
@@ -125,9 +127,9 @@ public class PublisherStep {
                     + ", dbIliIdent_Values=" + effectiveArgs.getDbIliIdent_Values()
                     + ", dbMergeToSingleXtf=" + effectiveArgs.getDbMergeToSingleXtf()
                     + ", outDataIdent=" + effectiveArgs.getOutDataIdent()
-                    + ", outBasePath=" + effectiveArgs.getOutBasePath().getUrl()
+                    + ", outFolderPath=" + effectiveArgs.getOutFolderPath().getUrl()
                     + ", modeldir=" + effectiveArgs.getCustomModelDir()
-                    + ", groomingConfig=" + effectiveArgs.getOutCustomGroomingConfFilePath());
+                    + ", groomingConfig=" + effectiveArgs.getOutGroomingConfigFilePath());
             break;
         case dbIdentvaluesRegex:
             log.debug("Publisher mode args: dbSchema=" + effectiveArgs.getDbSchema()
@@ -135,25 +137,25 @@ public class PublisherStep {
                     + ", dbIliIdent_RegEx=" + effectiveArgs.getDbIliIdent_RegEx()
                     + ", dbMergeToSingleXtf=" + effectiveArgs.getDbMergeToSingleXtf()
                     + ", outDataIdent=" + effectiveArgs.getOutDataIdent()
-                    + ", outBasePath=" + effectiveArgs.getOutBasePath().getUrl()
+                    + ", outFolderPath=" + effectiveArgs.getOutFolderPath().getUrl()
                     + ", modeldir=" + effectiveArgs.getCustomModelDir()
-                    + ", groomingConfig=" + effectiveArgs.getOutCustomGroomingConfFilePath());
+                    + ", groomingConfig=" + effectiveArgs.getOutGroomingConfigFilePath());
             break;
         case xtfFilesList:
             log.debug("Publisher mode args: xtfFile_FolderPath=" + effectiveArgs.getXtfFile_FolderPath()
                     + ", xtfFilename_List=" + effectiveArgs.getXtfFilename_List()
                     + ", outDataIdent=" + effectiveArgs.getOutDataIdent()
-                    + ", outBasePath=" + effectiveArgs.getOutBasePath().getUrl()
+                    + ", outFolderPath=" + effectiveArgs.getOutFolderPath().getUrl()
                     + ", modeldir=" + effectiveArgs.getCustomModelDir()
-                    + ", groomingConfig=" + effectiveArgs.getOutCustomGroomingConfFilePath());
+                    + ", groomingConfig=" + effectiveArgs.getOutGroomingConfigFilePath());
             break;
         case xtfFilesRegex:
             log.debug("Publisher mode args: xtfFile_FolderPath=" + effectiveArgs.getXtfFile_FolderPath()
                     + ", xtfFilename_Regex=" + effectiveArgs.getXtfFilename_Regex()
                     + ", outDataIdent=" + effectiveArgs.getOutDataIdent()
-                    + ", outBasePath=" + effectiveArgs.getOutBasePath().getUrl()
+                    + ", outFolderPath=" + effectiveArgs.getOutFolderPath().getUrl()
                     + ", modeldir=" + effectiveArgs.getCustomModelDir()
-                    + ", groomingConfig=" + effectiveArgs.getOutCustomGroomingConfFilePath());
+                    + ", groomingConfig=" + effectiveArgs.getOutGroomingConfigFilePath());
             break;
         default:
             throw new IllegalArgumentException("unsupported publishMode <" + effectiveArgs.getPublishMode() + ">");

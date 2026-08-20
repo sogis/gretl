@@ -10,7 +10,6 @@ import java.lang.reflect.Proxy;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,7 @@ class PublisherStepTest {
         RecordingBuilder builder = new RecordingBuilder();
         RecordingRunner runner = new RecordingRunner();
         PublisherStep step = new PublisherStep("publishDemo", logger, builder, runner);
-        RawPublisherArgs rawArgs = publisherArgs()
+        RawPublisherArgs rawArgs = RawPublisherArgs.builder().output(null, "ch.so.agi.demo")
                 .xtfRegexSource(tempDir.resolve("incoming").toString(), ".*\\.xtf$")
                 .outFormats(List.of(OutputFormat.SHP))
                 .build();
@@ -43,14 +42,14 @@ class PublisherStepTest {
         Path cacheRoot = tempDir.resolve("cache");
 
         long before = System.currentTimeMillis();
-        step.publish(null, rawArgs, publisherEnv, sourceConnection, publicationConnection, cacheRoot);
+        step.publish(rawArgs, publisherEnv, sourceConnection, publicationConnection, cacheRoot);
         long after = System.currentTimeMillis();
 
         assertNotNull(builder.capturedArgs);
-        assertTrue(builder.capturedArgs.getDepVersion().getTime() >= before);
-        assertTrue(builder.capturedArgs.getDepVersion().getTime() <= after);
-        assertEquals("sftp://host/data", builder.capturedArgs.getOutBasePath().getUrl());
-        assertEquals("/env/grooming.json", builder.capturedArgs.getOutCustomGroomingConfFilePath());
+        assertTrue(builder.capturedArgs.getPublicationTimestamp().getTime() >= before);
+        assertTrue(builder.capturedArgs.getPublicationTimestamp().getTime() <= after);
+        assertEquals("sftp://host/data", builder.capturedArgs.getOutFolderPath().getUrl());
+        assertEquals("/env/grooming.json", builder.capturedArgs.getOutGroomingConfigFilePath());
         assertEquals("/env/models", builder.capturedArgs.getCustomModelDir());
         assertEquals(List.of(OutputFormat.SHP), builder.capturedArgs.getOutFormats());
         assertSame(sourceConnection, builder.capturedSourceConnection);
@@ -67,27 +66,28 @@ class PublisherStepTest {
     }
 
     @Test
-    void rawArgsOverridesEnvAndLogsEachOverride() throws Exception {
+    void usesAutomaticTimestampAndLogsEachOverride() throws Exception {
         RecordingLogger logger = new RecordingLogger();
         RecordingBuilder builder = new RecordingBuilder();
         RecordingRunner runner = new RecordingRunner();
         PublisherStep step = new PublisherStep(null, logger, builder, runner);
-        Date version = new Date(1234L);
         RawPublisherArgs rawArgs = publisherArgs()
                 .dbValuesSource("edit-db", "live", RawPublisherArgs.IliIdentType.dataset, true, List.of("2401"))
-                .localFolderOnly(tempDir.resolve("local-out").toString())
+                .output(new Endpoint(tempDir.resolve("local-out").toString()), "ch.so.agi.demo")
                 .groomingConfig(tempDir.resolve("custom-grooming.json").toString())
                 .customModelDir("/custom/models")
-                .depVersion(new Date(1L))
                 .build();
 
-        step.publish(version, rawArgs, publisherEnv(), fakeConnection(), fakeConnection(), tempDir.resolve("cache"));
+        long before = System.currentTimeMillis();
+        step.publish(rawArgs, publisherEnv(), fakeConnection(), fakeConnection(), tempDir.resolve("cache"));
+        long after = System.currentTimeMillis();
 
-        assertEquals(tempDir.resolve("local-out").toString(), builder.capturedArgs.getOutBasePath().getUrl());
+        assertEquals(tempDir.resolve("local-out").toString(), builder.capturedArgs.getOutFolderPath().getUrl());
         assertEquals(tempDir.resolve("custom-grooming.json").toString(),
-                builder.capturedArgs.getOutCustomGroomingConfFilePath());
+                builder.capturedArgs.getOutGroomingConfigFilePath());
         assertEquals("/custom/models", builder.capturedArgs.getCustomModelDir());
-        assertEquals(1234L, builder.capturedArgs.getDepVersion().getTime());
+        assertTrue(builder.capturedArgs.getPublicationTimestamp().getTime() >= before);
+        assertTrue(builder.capturedArgs.getPublicationTimestamp().getTime() <= after);
         assertTrue(logger.infoMessages.stream().anyMatch(message -> message.contains("pubFolder.path overridden")));
         assertTrue(logger.infoMessages.stream().anyMatch(message -> message.contains("groomingConfigFilePath overridden")));
         assertTrue(logger.infoMessages.stream().anyMatch(message -> message.contains("modeldir overridden")));

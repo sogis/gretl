@@ -22,7 +22,7 @@ public class PublisherTestOld {
 
     @Test
     public void regions() throws Exception {
-        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PublisherRegionsOld");
+        File projectDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PublisherOldRegions");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "av_test.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "2501.itf");
         copyFileFromResourcesToJob(projectDirectory.getPath(), "files", "2502.itf");

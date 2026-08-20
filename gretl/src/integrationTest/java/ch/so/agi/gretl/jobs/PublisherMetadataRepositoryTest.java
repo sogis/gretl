@@ -2,13 +2,14 @@ package ch.so.agi.gretl.jobs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.gradle.api.Project;
+import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -17,8 +18,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import ch.so.agi.gretl.steps.publisher.out.metainfo.table.Mapper;
 import ch.so.agi.gretl.steps.publisher.out.metainfo.table.Repository;
-import ch.so.agi.gretl.util.GradleVariable;
-import ch.so.agi.gretl.util.IntegrationTestUtil;
+import ch.so.agi.gretl.tasks.Ili2pgImportSchema;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 
 /** Verifies the writer against the ili2pg schema downloaded from the versioned model URL. */
@@ -35,10 +35,7 @@ public class PublisherMetadataRepositoryTest {
 
     @Test
     public void replacesSameDaySnapshotInDownloadedModelSchema() throws Exception {
-        File jobDirectory = new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/PublisherMetadataSchema");
-        IntegrationTestUtil.executeTestRunner(jobDirectory,
-                new GradleVariable[] { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI,
-                        postgres.getJdbcUrl()) });
+        importMetadataSchema();
 
         try (Connection connection = IntegrationTestUtilSql.connectPG(postgres)) {
             Repository repository = new Repository();
@@ -55,6 +52,16 @@ public class PublisherMetadataRepositoryTest {
             assertEquals(1, count(connection, MODEL_PREFIX + "Part"));
             assertEquals(2, count(connection, MODEL_PREFIX + "ExportedFormat"));
         }
+    }
+
+    private void importMetadataSchema() {
+        Project project = ProjectBuilder.builder().build();
+        Ili2pgImportSchema task = project.getTasks().create("importMetadataSchema", Ili2pgImportSchema.class);
+        task.getDatabase().set(List.of(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword()));
+        task.getDbschema().set(SCHEMA);
+        task.getModels().set("SO_AGI_Publisher_Meta_20260623");
+        task.getCreateBasketCol().set(true);
+        task.importSchema();
     }
 
     private static int count(Connection connection, String iliClassName) throws Exception {

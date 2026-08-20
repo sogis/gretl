@@ -1,0 +1,17 @@
+import ch.so.agi.gretl.tasks.Publisher
+
+apply plugin: 'ch.so.agi.gretl'
+
+tasks.register('publish', Publisher) {
+    outDataIdent = 'ch.so.agi.publisher.remote'
+    xtfFile_FolderPath = file('.').absolutePath
+    xtfFilename_Regex = 'SimpleCoord23[ab]\\.xtf'
+    customModelDir = file('.').absolutePath
+    outFormats = ['xtf', 'gpkg']
+    doFirst {
+        copy {
+            from 'SimpleCoord23.ili'
+            into "$buildDir/publish"
+        }
+    }
+}

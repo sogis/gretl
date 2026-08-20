@@ -1,0 +1,13 @@
+import ch.so.agi.gretl.tasks.Publisher
+
+apply plugin: 'ch.so.agi.gretl'
+
+tasks.register('publish', Publisher) {
+    outDataIdent = 'ch.so.agi.publisher.xtf-list'
+    outFolderPath = file("$buildDir/local")
+    outWriteMetadata = false
+    xtfFile_FolderPath = file('.').absolutePath
+    xtfFilename_List = ['SimpleCoord23a.xtf']
+    customModelDir = file('.').absolutePath
+    outFormats = ['xtf']
+}

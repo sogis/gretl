@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -34,10 +35,12 @@ import ch.so.agi.gretl.steps.publisher.out.updateremote.RemoteUpdater;
 import ch.so.agi.gretl.steps.publisher.out.updateremote.RemoteUpdaterParameters;
 import ch.so.agi.gretl.steps.publisher.stage.derivedformats.Derivator;
 import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivatorParameters;
+import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
 import ch.so.agi.gretl.steps.publisher.stage.mergestages.MergeStages;
 import ch.so.agi.gretl.steps.publisher.stage.mergestages.MergeStagesParameters;
 import ch.so.agi.gretl.steps.publisher.stage.pack.Packer;
 import ch.so.agi.gretl.steps.publisher.stage.pack.PackerParameters;
+import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 import ch.so.agi.gretl.steps.publisher.stage.validation.CacheValidator;
 import ch.so.agi.gretl.steps.publisher.stage.validation.CacheValidatorParameters;
 import ch.so.agi.gretl.steps.publisher.stage.validation.ValidationConfigSeeder;
@@ -85,6 +88,10 @@ public class OpSequenceBuilder {
             Connection publicationDbConnection, String metadataSchema, boolean writeMetadata, String jsonmetaAddress,
             String jsonmetaBucket, String jsonmetaFileName, Path cacheRoot) throws Exception {
         Objects.requireNonNull(rawPublisherArgs, "rawPublisherArgs must not be null");
+        if (rawPublisherArgs.getPublicationTimestamp() == null) {
+            rawPublisherArgs = rawPublisherArgs.withPublicationTimestamp(new Date());
+        }
+        final RawPublisherArgs sequenceArgs = rawPublisherArgs;
         if (writeMetadata) {
             Objects.requireNonNull(publicationDbConnection, "publicationDbConnection must not be null when writing metadata");
             requireText(metadataSchema, "metadataSchema");
@@ -109,9 +116,10 @@ public class OpSequenceBuilder {
                     constant(CacheValidatorParameters.of(normalizedCacheRoot, true, true))));
         }
 
-        if (!rawPublisherArgs.getOutDerivedFormats().isEmpty()) {
+        List<DerivedFormat> derivedFormats = selectedDerivedFormats(rawPublisherArgs.getOutFormats());
+        if (!derivedFormats.isEmpty()) {
             steps.add(OpSequenceStep.of(new Derivator(),
-                    constant(DerivatorParameters.of(normalizedCacheRoot, rawPublisherArgs.getOutDerivedFormats()))));
+                    constant(DerivatorParameters.of(normalizedCacheRoot, derivedFormats))));
         }
 
         steps.add(OpSequenceStep.of(new MetafolderWriter(), constant(MetafolderWriterParameters.of(normalizedCacheRoot,
@@ -122,20 +130,31 @@ public class OpSequenceBuilder {
                 constant(PackerParameters.of(normalizedCacheRoot, rawPublisherArgs.getOutDataIdent(),
                         rawPublisherArgs.getOutFormats()))));
         steps.add(OpSequenceStep.of(new RemoteUpdater(),
-                constant(RemoteUpdaterParameters.of(normalizedCacheRoot, endpointToPath(rawPublisherArgs.getOutBasePath()),
-                        rawPublisherArgs.getOutDataIdent(), rawPublisherArgs.getDepVersion()))));
+                constant(RemoteUpdaterParameters.of(normalizedCacheRoot, endpointToPath(rawPublisherArgs.getOutFolderPath()),
+                        rawPublisherArgs.getOutDataIdent(), rawPublisherArgs.getPublicationTimestamp()))));
         if (writeMetadata) {
             steps.add(OpSequenceStep.of(new Writer(), new Supplier<WriterParameters>() {
                 @Override
                 public WriterParameters get() {
-                    return WriterParameters.of(publicationDbConnection, metadataSchema, rawPublisherArgs.getOutDataIdent(),
-                            publicationDate(rawPublisherArgs), sourcePlan.getPartIdentifiers(),
-                            discoverPublishedFormats(normalizedCacheRoot), rawPublisherArgs.getOutDerivedFormats());
+                    return WriterParameters.of(publicationDbConnection, metadataSchema, sequenceArgs.getOutDataIdent(),
+                            publicationDate(sequenceArgs), sourcePlan.getPartIdentifiers(),
+                            discoverPublishedFormats(normalizedCacheRoot));
                 }
             }));
         }
 
         return Collections.unmodifiableList(steps);
+    }
+
+    private List<DerivedFormat> selectedDerivedFormats(List<OutputFormat> outputFormats) {
+        List<DerivedFormat> formats = new ArrayList<DerivedFormat>();
+        for (OutputFormat outputFormat : outputFormats) {
+            DerivedFormat derivedFormat = outputFormat.getDerivedFormat();
+            if (derivedFormat != null) {
+                formats.add(derivedFormat);
+            }
+        }
+        return formats;
     }
 
     private SourcePlan buildSourcePlan(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection, Path cacheRoot)
@@ -320,7 +339,7 @@ public class OpSequenceBuilder {
     }
 
     private static LocalDate publicationDate(RawPublisherArgs rawPublisherArgs) {
-        return rawPublisherArgs.getDepVersion().toInstant().atZone(PUBLICATION_ZONE).toLocalDate();
+        return rawPublisherArgs.getPublicationTimestamp().toInstant().atZone(PUBLICATION_ZONE).toLocalDate();
     }
 
     private static List<String> discoverRegexPartIdentifiers(Path sourceDir, String regex) {
@@ -353,8 +372,8 @@ public class OpSequenceBuilder {
     }
 
     private static Path endpointToPath(Endpoint endpoint) {
-        Objects.requireNonNull(endpoint, "outBasePath must not be null");
-        return normalizePath(Path.of(requireText(endpoint.getUrl(), "outBasePath.url")), "outBasePath");
+        Objects.requireNonNull(endpoint, "outFolderPath must not be null");
+        return normalizePath(Path.of(requireText(endpoint.getUrl(), "outFolderPath.url")), "outFolderPath");
     }
 
     private static Path siblingStageRoot(Path cacheRoot) {

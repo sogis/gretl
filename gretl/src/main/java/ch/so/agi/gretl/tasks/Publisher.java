@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.gradle.api.DefaultTask;
@@ -42,15 +41,13 @@ public class Publisher extends DefaultTask {
     private String xtfFilename_Regex;
     private final ListProperty<String> xtfFilename_List = getProject().getObjects().listProperty(String.class);
 
-    private Endpoint outBasePath;
+    private Endpoint outFolderPath;
     private String outDataIdent;
-    private Boolean outIsolatedMode;
-    private String outWriteToThisLocalFolderOnly;
-    private String outCustomGroomingConfFilePath;
+    private Boolean outWriteMetadata = true;
+    private String outGroomingConfigFilePath;
     private String outValidationConfigFilePath;
     private String customModelDir;
     private final ListProperty<OutputFormat> outFormats = getProject().getObjects().listProperty(OutputFormat.class);
-    private Date depVersion;
 
     @Input @Optional public Connector getDbDatabase() { return dbDatabase; }
     @Input @Optional public String getDbSchema() { return dbSchema; }
@@ -61,15 +58,13 @@ public class Publisher extends DefaultTask {
     @Input @Optional public String getXtfFile_FolderPath() { return xtfFile_FolderPath; }
     @Input @Optional public String getXtfFilename_Regex() { return xtfFilename_Regex; }
     @Input @Optional public ListProperty<String> getXtfFilename_List() { return xtfFilename_List; }
-    @Input @Optional public Endpoint getOutBasePath() { return outBasePath; }
+    @Input @Optional public Endpoint getOutFolderPath() { return outFolderPath; }
     @Input public String getOutDataIdent() { return outDataIdent; }
-    @Input @Optional public Boolean getOutIsolatedMode() { return outIsolatedMode; }
-    @Input @Optional public String getOutWriteToThisLocalFolderOnly() { return outWriteToThisLocalFolderOnly; }
-    @Input @Optional public String getOutCustomGroomingConfFilePath() { return outCustomGroomingConfFilePath; }
+    @Input public Boolean getOutWriteMetadata() { return outWriteMetadata; }
+    @Input @Optional public String getOutGroomingConfigFilePath() { return outGroomingConfigFilePath; }
     @Input @Optional public String getOutValidationConfigFilePath() { return outValidationConfigFilePath; }
     @Input @Optional public String getCustomModelDir() { return customModelDir; }
     @Input public ListProperty<OutputFormat> getOutFormats() { return outFormats; }
-    @Input @Optional public Date getDepVersion() { return depVersion; }
 
     public void setDbDatabase(List<?> details) { dbDatabase = connector(details, "dbDatabase"); }
     public void setDbDatabase(Connector database) { dbDatabase = database; }
@@ -81,24 +76,23 @@ public class Publisher extends DefaultTask {
     public void setXtfFile_FolderPath(Object value) { xtfFile_FolderPath = path(value); }
     public void setXtfFilename_Regex(String value) { xtfFilename_Regex = value; }
     public void setXtfFilename_List(List<String> values) { xtfFilename_List.set(values); }
-    public void setOutBasePath(List<?> details) { outBasePath = endpoint(details, "outBasePath"); }
-    public void setOutBasePath(Endpoint value) { outBasePath = value; }
+    public void setOutFolderPath(List<?> details) { outFolderPath = endpoint(details, "outFolderPath"); }
+    public void setOutFolderPath(Endpoint value) { outFolderPath = value; }
+    public void setOutFolderPath(Object value) { outFolderPath = value == null ? null : new Endpoint(path(value)); }
     public void setOutDataIdent(String value) { outDataIdent = value; }
-    public void setOutIsolatedMode(Boolean value) { outIsolatedMode = value; }
-    public void setOutWriteToThisLocalFolderOnly(Object value) { outWriteToThisLocalFolderOnly = path(value); }
-    public void setOutCustomGroomingConfFilePath(Object value) { outCustomGroomingConfFilePath = path(value); }
+    public void setOutWriteMetadata(Boolean value) { outWriteMetadata = value == null ? true : value; }
+    public void setOutGroomingConfigFilePath(Object value) { outGroomingConfigFilePath = path(value); }
     public void setOutValidationConfigFilePath(Object value) { outValidationConfigFilePath = path(value); }
     public void setCustomModelDir(String value) { customModelDir = value; }
     public void setOutFormats(List<?> values) { outFormats.set(parseFormats(values)); }
-    public void setDepVersion(Date value) { depVersion = value == null ? null : new Date(value.getTime()); }
 
     @TaskAction
     public void publishAll() {
-        boolean writeMetadata = outWriteToThisLocalFolderOnly == null;
+        RawPublisherArgs rawArgs = buildRawArgs();
+        boolean writeMetadata = rawArgs.getOutWriteMetadata();
         PublisherEnv publisherEnv = writeMetadata
                 ? new PropertiesReader(getProject()).readProperties()
                 : new PublisherEnv(null, null, null, null, null, null, null);
-        RawPublisherArgs rawArgs = buildRawArgs();
         Connector publicationDatabase = writeMetadata
                 ? new Connector(publisherEnv.getPupDateEnv().getConnectionUrl(), publisherEnv.getPupDateEnv().getUser(),
                         publisherEnv.getPupDateEnv().getPassword())
@@ -116,7 +110,7 @@ public class Publisher extends DefaultTask {
             }
             Path cacheRoot = getProject().getBuildDir().toPath().resolve(getName());
             Files.createDirectories(cacheRoot);
-            new PublisherStep(getName()).publish(depVersion, rawArgs, publisherEnv, sourceConnection,
+            new PublisherStep(getName()).publish(rawArgs, publisherEnv, sourceConnection,
                     publicationConnection, writeMetadata ? publisherEnv.getPupDateEnv().getDbSchema() : null,
                     writeMetadata, cacheRoot);
             if (writeMetadata) {
@@ -133,19 +127,13 @@ public class Publisher extends DefaultTask {
     }
 
     private RawPublisherArgs buildRawArgs() {
-        Endpoint effectiveOutBasePath = outBasePath;
-        if (effectiveOutBasePath == null && outWriteToThisLocalFolderOnly != null) {
-            effectiveOutBasePath = new Endpoint(outWriteToThisLocalFolderOnly);
-        }
         RawPublisherArgs.Builder builder = RawPublisherArgs.builder()
-                .output(effectiveOutBasePath, outDataIdent)
-                .isolatedMode(outIsolatedMode)
-                .localFolderOnly(outWriteToThisLocalFolderOnly)
-                .groomingConfig(outCustomGroomingConfFilePath)
+                .output(outFolderPath, outDataIdent)
+                .writeMetadata(outWriteMetadata)
+                .groomingConfig(outGroomingConfigFilePath)
                 .validationConfig(outValidationConfigFilePath)
                 .customModelDir(customModelDir)
-                .outFormats(outFormats.getOrElse(List.of()))
-                .depVersion(depVersion);
+                .outFormats(outFormats.getOrElse(List.of()));
 
         if (dbDatabase != null) {
             IliIdentType identType = IliIdentType.valueOf(required(dbIliIdent_Type, "dbIliIdent_Type"));

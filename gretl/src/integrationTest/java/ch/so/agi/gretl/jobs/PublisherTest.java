@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import org.gradle.api.Project;
+import org.gradle.testfixtures.ProjectBuilder;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -29,6 +30,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.so.agi.gretl.tasks.Ili2pgImportSchema;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
@@ -44,6 +46,9 @@ class PublisherTest {
     private static final String SIMPLE_SOURCE_SCHEMA = "SimpleCoord23";
     private static final String METADATA_SCHEMA = "publisher_meta";
     private static final String METADATA_MODEL_PREFIX = "SO_AGI_Publisher_Meta_20260623.Publisher.";
+    private static final List<String> PUBLISHER_JOBS = List.of("PublisherXtfList", "PublisherXtfRegex",
+            "PublisherDbModel", "PublisherDbTopic", "PublisherDbBasket", "PublisherDbDataset",
+            "PublisherDbDatasetRegex", "PublisherXtfRegexRemote");
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = (PostgreSQLContainer<?>) new PostgisContainerProvider().newInstance()
@@ -51,17 +56,20 @@ class PublisherTest {
             .withUsername(IntegrationTestUtilSql.PG_CON_DDLUSER)
             .withPassword(IntegrationTestUtilSql.PG_CON_DDLPASS);
 
-    private final Path jobDirectory = Path.of(System.getProperty("user.dir"), "src", "integrationTest", "jobs", "Publisher");
+    private final Path jobsDirectory = Path.of(System.getProperty("user.dir"), "src", "integrationTest", "jobs");
 
     @BeforeEach
-    void prepareJob() throws Exception {
-        deleteTree(jobDirectory.resolve("build"));
-        copyFixture("integrationTest/jobs/Ili2pgExportDatasets/Beispiel2.ili", "Beispiel2.ili");
-        copyFixture("integrationTest/jobs/Ili2pgExportDatasets/Beispiel2a.xtf", "Beispiel2a.xtf");
-        copyFixture("integrationTest/jobs/Ili2pgExportDatasets/Beispiel2b.xtf", "Beispiel2b.xtf");
-        copyFixture("test/resources/data/publisher/ili/SimpleCoord23.ili", "SimpleCoord23.ili");
-        copyFixture("test/resources/data/publisher/files/SimpleCoord23a.xtf", "SimpleCoord23a.xtf");
-        copyFixture("test/resources/data/publisher/files/SimpleCoord23b.xtf", "SimpleCoord23b.xtf");
+    void prepareJobs() throws Exception {
+        for (String jobName : PUBLISHER_JOBS) {
+            Path jobDirectory = jobDirectory(jobName);
+            deleteTree(jobDirectory.resolve("build"));
+            copyFixture(jobDirectory, "integrationTest/jobs/Ili2pgExportDatasets/Beispiel2.ili", "Beispiel2.ili");
+            copyFixture(jobDirectory, "integrationTest/jobs/Ili2pgExportDatasets/Beispiel2a.xtf", "Beispiel2a.xtf");
+            copyFixture(jobDirectory, "integrationTest/jobs/Ili2pgExportDatasets/Beispiel2b.xtf", "Beispiel2b.xtf");
+            copyFixture(jobDirectory, "test/resources/data/publisher/ili/SimpleCoord23.ili", "SimpleCoord23.ili");
+            copyFixture(jobDirectory, "test/resources/data/publisher/files/SimpleCoord23a.xtf", "SimpleCoord23a.xtf");
+            copyFixture(jobDirectory, "test/resources/data/publisher/files/SimpleCoord23b.xtf", "SimpleCoord23b.xtf");
+        }
         dropSchema(SOURCE_SCHEMA);
         dropSchema(SIMPLE_SOURCE_SCHEMA);
         dropSchema(METADATA_SCHEMA);
@@ -69,53 +77,53 @@ class PublisherTest {
 
     @Test
     void xtfListPublishesOneTransferToLocalFolder() throws Exception {
-        run("publishXtfList");
+        run("PublisherXtfList", "publish", null);
 
-        Path publication = localPublication("publishXtfList");
+        Path publication = localPublication("PublisherXtfList", "ch.so.agi.publisher.xtf-list");
         assertArchives(publication, 1, ".xtf.zip");
         assertLocalMetadata(publication);
     }
 
     @Test
     void xtfRegexPublishesMatchingTransfersToLocalFolder() throws Exception {
-        run("publishXtfRegex");
+        run("PublisherXtfRegex", "publish", null);
 
-        Path publication = localPublication("publishXtfRegex");
+        Path publication = localPublication("PublisherXtfRegex", "ch.so.agi.publisher.xtf-regex");
         assertArchives(publication, 2, ".xtf.zip");
         assertLocalMetadata(publication);
     }
 
     @Test
     void dbValuesModelPublishesToLocalFolder() throws Exception {
-        assertDbValuesPublication("publishDbModel");
+        assertDbValuesPublication("PublisherDbModel", "ch.so.agi.publisher.db-model");
     }
 
     @Test
     void dbValuesTopicPublishesToLocalFolder() throws Exception {
-        assertDbValuesPublication("publishDbTopic");
+        assertDbValuesPublication("PublisherDbTopic", "ch.so.agi.publisher.db-topic");
     }
 
     @Test
     void dbValuesBasketPublishesToLocalFolder() throws Exception {
-        run("setupSourceData", databaseVariables());
+        run("PublisherDbBasket", "setupData", databaseVariables());
         assignBasketIdentifiers();
-        run("publishDbBasket", concat(databaseVariables(), new GradleVariable[] {
+        run("PublisherDbBasket", "publish", concat(databaseVariables(), new GradleVariable[] {
                 GradleVariable.newGradleProperty("publisherBasket", firstBasketIdentifier()) }));
-        Path publication = localPublication("publishDbBasket");
+        Path publication = localPublication("PublisherDbBasket", "ch.so.agi.publisher.db-basket");
         assertArchives(publication, 1, ".xtf.zip");
         assertLocalMetadata(publication);
     }
 
     @Test
     void dbValuesDatasetPublishesToLocalFolder() throws Exception {
-        assertDbValuesPublication("publishDbDataset");
+        assertDbValuesPublication("PublisherDbDataset", "ch.so.agi.publisher.db-dataset");
     }
 
     @Test
     void dbRegexDatasetPublishesMatchingDatasetsToLocalFolder() throws Exception {
-        run("publishDbDatasetRegex", databaseVariables());
+        run("PublisherDbDatasetRegex", "publish", databaseVariables());
 
-        Path publication = localPublication("publishDbDatasetRegex");
+        Path publication = localPublication("PublisherDbDatasetRegex", "ch.so.agi.publisher.db-dataset-regex");
         assertArchives(publication, 2, ".xtf.zip");
         assertLocalMetadata(publication);
     }
@@ -127,6 +135,7 @@ class PublisherTest {
             jsonServer.start();
             jsonServer.enqueue(new MockResponse().setResponseCode(200)
                     .setBody("[{\"ident\":\"ch.so.agi.publisher.remote\",\"title\":\"Publisher integration\"}]"));
+            Path jobDirectory = jobDirectory("PublisherXtfRegexRemote");
             Path remoteRoot = jobDirectory.resolve("build/remote-target");
             GradleVariable[] variables = concat(databaseVariables(), new GradleVariable[] {
                     GradleVariable.newGradleProperty("pubDateDbUrl", POSTGRES.getJdbcUrl()),
@@ -141,7 +150,7 @@ class PublisherTest {
                     GradleVariable.newGradleProperty("jsonmetaFileName", "metadata.json"),
                     GradleVariable.newGradleProperty("modelDir", jobDirectory.toString()),
                     GradleVariable.newGradleProperty("groomingConfigFilePath", jobDirectory.resolve("unused.json").toString()) });
-            run("publishXtfRegexRemote", variables);
+            run("PublisherXtfRegexRemote", "publish", variables);
 
             Path publication = remoteRoot.resolve("ch.so.agi.publisher.remote/aktuell");
             assertArchives(publication, 2, ".xtf.zip");
@@ -158,9 +167,9 @@ class PublisherTest {
         }
     }
 
-    private void assertDbValuesPublication(String taskName) throws Exception {
-        run(taskName, databaseVariables());
-        Path publication = localPublication(taskName);
+    private void assertDbValuesPublication(String jobName, String dataIdent) throws Exception {
+        run(jobName, "publish", databaseVariables());
+        Path publication = localPublication(jobName, dataIdent);
         assertArchives(publication, 1, ".xtf.zip");
         assertLocalMetadata(publication);
     }
@@ -174,9 +183,8 @@ class PublisherTest {
         assertFalse(Files.exists(meta.resolve("datenbeschreibung.html")));
     }
 
-    private Path localPublication(String taskName) {
-        return jobDirectory.resolve("build/local").resolve(taskName).resolve("ch.so.agi.publisher." + taskName)
-                .resolve("aktuell");
+    private Path localPublication(String jobName, String dataIdent) {
+        return jobDirectory(jobName).resolve("build/local").resolve(dataIdent).resolve("aktuell");
     }
 
     private void assertArchives(Path publication, int expectedCount, String suffix) throws IOException {
@@ -186,11 +194,13 @@ class PublisherTest {
     }
 
     private void importMetadataSchema() throws IOException {
-        File metadataJob = Path.of(System.getProperty("user.dir"), "src", "integrationTest", "jobs",
-                "PublisherMetadataSchema").toFile();
-        IntegrationTestUtil.executeTestRunner(metadataJob,
-                new GradleVariable[] { GradleVariable.newGradleProperty(IntegrationTestUtilSql.VARNAME_PG_CON_URI,
-                        POSTGRES.getJdbcUrl()) });
+        Project project = ProjectBuilder.builder().build();
+        Ili2pgImportSchema task = project.getTasks().create("importMetadataSchema", Ili2pgImportSchema.class);
+        task.getDatabase().set(List.of(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()));
+        task.getDbschema().set(METADATA_SCHEMA);
+        task.getModels().set("SO_AGI_Publisher_Meta_20260623");
+        task.getCreateBasketCol().set(true);
+        task.importSchema();
     }
 
     private GradleVariable[] databaseVariables() {
@@ -239,15 +249,15 @@ class PublisherTest {
         }
     }
 
-    private void run(String taskName) throws IOException {
-        run(taskName, null);
+    private void run(String jobName, String taskName, GradleVariable[] variables) throws IOException {
+        IntegrationTestUtil.executeTestRunner(jobDirectory(jobName).toFile(), variables, taskName);
     }
 
-    private void run(String taskName, GradleVariable[] variables) throws IOException {
-        IntegrationTestUtil.executeTestRunner(jobDirectory.toFile(), variables, taskName);
+    private Path jobDirectory(String jobName) {
+        return jobsDirectory.resolve(jobName);
     }
 
-    private void copyFixture(String relativeSource, String targetName) throws IOException {
+    private void copyFixture(Path jobDirectory, String relativeSource, String targetName) throws IOException {
         Path source = Path.of(System.getProperty("GRETL_PROJECT_ABS_PATH"), "src").resolve(relativeSource);
         Files.copy(source, jobDirectory.resolve(targetName), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
