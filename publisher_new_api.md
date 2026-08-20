@@ -9,9 +9,46 @@ Der Publisher ist sehr mächtig, was ihn in der Verwendung nicht gerade einfach 
 * Wo in der Referenzdokumentation die alte Task-Konfigurationsweise verwendet wird, wurde dies übernommen. Meist verwendet die Referenzdokumentation die neue Task-Konfigurationsweise (tasks.register(...))
 * Zu Nachführung der Pendenzenliste sind in dieser Doku mit $jek beginnende breadcrumbs enthalten. Diese bitte überlesen.
 * Bitte die Besprechungsresultate gleich "inline" ins markdown einpflegen und commiten. Beispielsweise mittels Prefix "$rev" für Review.
-* Der Publisher legt im Ordner `meta/` die für die Transferdateien aufgelösten, nicht vordefinierten `.ili`-Modelle sowie `metainfo.json` ab. Bei `outWriteToThisLocalFolderOnly` werden nur die `.ili`-Modelle geschrieben.
+* Der Publisher legt im Ordner `meta/` die für die Transferdateien aufgelösten, nicht vordefinierten `.ili`-Modelle sowie bei `outWriteMetadata = true` auch `metainfo.json` ab. Bei `outWriteMetadata = false` werden nur die `.ili`-Modelle geschrieben und keine Publikationsmetadaten in die Datenbank geschrieben.
 
-## Übersicht der Parameter der neuen API
+## Übersicht der Konfiguration der neuen API
+
+### Umgebungsvariablen und Task-Eigenschaften
+
+`PBL_…`-Umgebungsvariablen liefern globale Standardwerte. Eine Task-Eigenschaft überschreibt den
+entsprechenden globalen Wert.
+
+|Bereich|Beschreibung|Task-Eigenschaft|Umgebungsvariable|
+|---|---|---|---|
+|Metadaten|URL der Publikationsmetadaten-Datenbank||`PBL_META_DB_URL`|
+|Metadaten|Schema der Publikationsmetadaten-Datenbank||`PBL_META_DB_SCHEMA`|
+|Metadaten|Benutzer der Publikationsmetadaten-Datenbank||`PBL_META_DB_USER`|
+|Metadaten|Passwort der Publikationsmetadaten-Datenbank||`PBL_META_DB_PASSWORD`|
+|Metadaten|Adresse des JSON-Metadaten-Service||`PBL_META_JSON_ADDRESS`|
+|Metadaten|Bucket der JSON-Metadaten||`PBL_META_JSON_BUCKET`|
+|Metadaten|Dateiname der JSON-Metadaten||`PBL_META_JSON_FILE_NAME`|
+|Ausgabe|Standardpfad des Ausgabeordners|`outFolderPath`|`PBL_OUT_FOLDER_PATH`|
+|Ausgabe|Benutzer des Standard-Ausgabeordners|`outFolderPath`|`PBL_OUT_FOLDER_USER`|
+|Ausgabe|Passwort des Standard-Ausgabeordners|`outFolderPath`|`PBL_OUT_FOLDER_PASSWORD`|
+|Ausgabe|Kennung der Publikation|`outDataIdent`||
+|Ausgabe|Zu publizierende Formate|`outFormats`||
+|Ausgabe|Publikationsmetadaten persistieren (Default: `true`)|`outWriteMetadata`||
+|Ausgabe|Grooming-Konfigurationsdatei|`outGroomingConfigFilePath`|`PBL_OUT_GROOMING_CONFIG_FILE_PATH`|
+|Ausgabe|Validierungs-Konfigurationsdatei|`outValidationConfigFilePath`||
+|DB-Eingabe|Quell-Datenbank-Endpunkt|`dbDatabase`||
+|DB-Eingabe|Quell-Datenbank-Schema|`dbSchema`||
+|DB-Eingabe|Typ der INTERLIS-Kennung|`dbIliIdent_Type`||
+|DB-Eingabe|Werte der INTERLIS-Kennung|`dbIliIdent_Values`||
+|DB-Eingabe|Regulärer Ausdruck für die INTERLIS-Kennung|`dbIliIdent_RegEx`||
+|DB-Eingabe|Ausgewählte Daten in eine Transferdatei zusammenführen|`dbMergeToSingleXtf`||
+|XTF-Eingabe|Quellordner|`xtfFile_FolderPath`||
+|XTF-Eingabe|Liste der Quell-Dateinamen|`xtfFilename_List`||
+|XTF-Eingabe|Regulärer Ausdruck für Quell-Dateinamen|`xtfFilename_Regex`||
+|Eingabe/Ausgabe|Model-Verzeichnis|`ioModelDir`|`PBL_IO_MODEL_DIR`|
+|Eingabe/Ausgabe|Publikationsdatum (Default: Zeitpunkt der Ausführung)|`ioPublicationDate`||
+
+`outFolderPath` ist eine Endpunkt-Eigenschaft (`[Pfad, Benutzer, Passwort]`). Die drei
+`PBL_OUT_FOLDER_*`-Variablen liefern die Komponenten des globalen Standard-Endpunkts.
 
 ### Vom Themenintegrator im build.gradle zu konfigurieren:
 
@@ -46,24 +83,13 @@ Zusätzliche Regeln:
 
 |Name|Zwingend?|Beschreibung|Bemerkungen|
 |---|---|---|-|
-<<<<<<< HEAD
-out|dataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.||
-out|writeMetadata|nein|Bestimmt, ob die Publikationsdatums-Metadaten und das Datenblatt geschrieben werden. Default: true|obsolet|
-out|pubFolder_LocalPath|nein|Schreibt den output in den hier konfigurierten Ordner, und nicht in den Ordner gemäss der env PUPFOLDER_PATH|$jek outWriteToThisFolderOnly |
-glb|modelDir|nein|Von den Defaults abweichende Modeldir-Definition||
-dep|publishedPartIdentifiers|/|Liste der von einem Publisher-Task effektiv publizierten Kennungen| $jek klären: Braucht es das noch?|
-in/out?|validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei||
-out|formats|ja|Liste der zu exportierenden Dateiformate. Formate: xtf, gpkg, shp, ...||
-outGroomingConfFilePath
-=======
-|dataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.||
-|writeMetadata|nein|Bestimmt, ob die Publikationsdatums-Metadaten und das Datenblatt geschrieben werden. Default: true||
-|pubFolder_LocalPath|nein|Schreibt den output in den hier konfigurierten Ordner, und nicht in den Ordner gemäss der env PUPFOLDER_PATH|$jek outWriteToThisFolderOnly |
-|modelDir|nein|Von den Defaults abweichende Modeldir-Definition||
-|publishedPartIdentifiers|/|Liste der von einem Publisher-Task effektiv publizierten Kennungen| $jek klären: Braucht es das noch?|
-|validationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfigurationsdatei||
-|outFormats|ja|Liste der zu exportierenden Dateiformate. Formate: xtf, itf, gpkg, shp, dxf, dxf_geobau. Nur diese Formate werden publiziert.||
->>>>>>> pbl-formats
+|outDataIdent|ja|Identifier der Themenbereitstellung, für welche Daten publiziert werden.||
+|outFolderPath|nein|Optionaler Zielordner bzw. Endpoint; überschreibt `pupFolderPath`.|Bei `outWriteMetadata = false` zwingend.|
+|outWriteMetadata|nein|Schreibt Metadaten in die Publikationsdatenbank und `meta/metainfo.json`.|Default: `true`. Bei `false` werden keine globalen Publisher-Einstellungen gelesen.|
+|outGroomingConfigFilePath|nein|Voll qualifizierter Pfad zur Grooming-Konfiguration.||
+|outValidationConfigFilePath|nein|Voll qualifizierter Pfad zur Validierungs-Konfiguration.||
+|customModelDir|nein|Von den globalen Einstellungen abweichendes Modeldir.||
+|outFormats|ja|Liste der zu exportierenden Dateiformate: `xtf`, `itf`, `gpkg`, `shp`, `dxf`, `dxf_geobau`.||
 
 ### Env-Variablen (Muss einmalig für die lokale Umgebung in gretljobs.properties konfiguriert werden)
 
@@ -124,7 +150,8 @@ neu:
         dataIdent = "ch.so.agi.vermessung.edit"
         xtfFile_FolderPath = file("/path")
         xtfFilename_List = ["file"]
-        pubFolder_LocalPath = file("$buildDir/publisher_local")
+        outFolderPath = file("$buildDir/publisher_local")
+        outWriteMetadata = false
     }
 
 ### DB -> XTF
@@ -242,14 +269,16 @@ neu:
         dataIdent = "ch.so.agi.vermessung.edit"
         xtfFile_FolderPath = file("../../../../src/test/resources/data/publisher/files/")
         xtfFilename_RegEx = "[0-9][0-9][0-9][0-9]"
-        pubFolder_LocalPath = file("$buildDir")
+        outFolderPath = file("$buildDir")
+        outWriteMetadata = false
     }
 
     tasks.register('publishFile1', Publisher) {
         dataIdent = "ch.so.agi.vermessung.pub"
         xtfFile_FolderPath = file("../../../../src/test/resources/data/publisher/files/")
         xtfFilename_List = publishFile0.publishedRegions
-        pubFolder_LocalPath = file("$buildDir")
+        outFolderPath = file("$buildDir")
+        outWriteMetadata = false
     }
 
 ### Validierung
