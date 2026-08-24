@@ -56,6 +56,19 @@ public class CacheValidatorTest {
     }
 
     @Test
+    public void validatesWithConfiguredCustomModelDirectory() throws Exception {
+        Path cacheRoot = tempDir.resolve("cache");
+        Files.createDirectories(cacheRoot);
+        copyFixture("SimpleCoord23a.xtf", cacheRoot.resolve("SimpleCoord23a.xtf"));
+
+        CacheValidator validator = new CacheValidator();
+
+        assertDoesNotThrow(() -> validator.execute(CacheValidatorParameters.of(cacheRoot, true, true,
+                TEST_ILI_DIR.toString())));
+        assertTrue(Files.exists(cacheRoot.resolve("SimpleCoord23a.log")));
+    }
+
+    @Test
     public void validateFailsWhenLogExistsAndOverwriteIsDisabled() throws Exception {
         Path cacheRoot = tempDir.resolve("cache");
         Files.createDirectories(cacheRoot);

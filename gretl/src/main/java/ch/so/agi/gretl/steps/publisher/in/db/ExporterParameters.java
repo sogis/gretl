@@ -12,19 +12,28 @@ public final class ExporterParameters implements OperationParameters {
     private final String dbSchema;
     private final boolean mergeToSingleXtf;
     private final Path exportDirectory;
+    private final Path ili2dbWorkDirectory;
 
     private ExporterParameters(DataSelection selectionToExport, Connection connection, String dbSchema,
-            boolean mergeToSingleXtf, Path exportDirectory) {
+            boolean mergeToSingleXtf, Path exportDirectory, Path ili2dbWorkDirectory) {
         this.selectionToExport = Objects.requireNonNull(selectionToExport, "selectionToExport must not be null");
         this.connection = Objects.requireNonNull(connection, "connection must not be null");
         this.dbSchema = requireText(dbSchema, "dbSchema");
         this.mergeToSingleXtf = mergeToSingleXtf;
         this.exportDirectory = Objects.requireNonNull(exportDirectory, "exportDirectory must not be null");
+        this.ili2dbWorkDirectory = Objects.requireNonNull(ili2dbWorkDirectory, "ili2dbWorkDirectory must not be null");
     }
 
     public static ExporterParameters of(DataSelection selectionToExport, Connection connection, String dbSchema,
             boolean mergeToSingleXtf, Path exportDirectory) {
-        return new ExporterParameters(selectionToExport, connection, dbSchema, mergeToSingleXtf, exportDirectory);
+        return new ExporterParameters(selectionToExport, connection, dbSchema, mergeToSingleXtf, exportDirectory,
+                exportDirectory.resolveSibling(".work"));
+    }
+
+    public static ExporterParameters of(DataSelection selectionToExport, Connection connection, String dbSchema,
+            boolean mergeToSingleXtf, Path exportDirectory, Path ili2dbWorkDirectory) {
+        return new ExporterParameters(selectionToExport, connection, dbSchema, mergeToSingleXtf, exportDirectory,
+                ili2dbWorkDirectory);
     }
 
     public DataSelection getSelectionToExport() {
@@ -45,6 +54,10 @@ public final class ExporterParameters implements OperationParameters {
 
     public Path getExportDirectory() {
         return exportDirectory;
+    }
+
+    public Path getIli2dbWorkDirectory() {
+        return ili2dbWorkDirectory;
     }
 
     private static String requireText(String value, String fieldName) {

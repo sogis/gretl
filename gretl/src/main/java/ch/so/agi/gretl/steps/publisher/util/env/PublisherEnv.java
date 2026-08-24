@@ -22,6 +22,10 @@ public final class PublisherEnv {
         this.groomingConfigFilePath = groomingConfigFilePath;
     }
 
+    public static PublisherEnv empty() {
+        return new PublisherEnv(null, null, null, null, null, null, null);
+    }
+
     public PupDateEnv getPupDateEnv() {
         return pupDateEnv;
     }

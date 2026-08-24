@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-class MetafolderWriterTest {
+class MetaFolderWriterTest {
     @TempDir
     Path tempDir;
 
@@ -26,7 +26,7 @@ class MetafolderWriterTest {
         Files.copy(fixtureRoot.resolve("files/SimpleCoord23a.xtf"), cache.resolve("first.xtf"));
         Files.copy(fixtureRoot.resolve("files/SimpleCoord23b.xtf"), cache.resolve("second.xtf"));
 
-        new MetafolderWriter().execute(MetafolderWriterParameters.of(cache, "ch.so.agi.demo",
+        new MetaFolderWriter().execute(MetaFolderWriterParameters.of(cache, "ch.so.agi.demo",
                 fixtureRoot.resolve("ili").toString(), null, null, null, null));
 
         Path copiedModel = cache.resolve("meta/SimpleCoord23.ili");
@@ -44,7 +44,7 @@ class MetafolderWriterTest {
         Files.writeString(cache.resolve("broken.xtf"), "<TRANSFER>not a valid transfer</TRANSFER>");
 
         try {
-            new MetafolderWriter().execute(MetafolderWriterParameters.of(cache, "ch.so.agi.demo", null,
+            new MetaFolderWriter().execute(MetaFolderWriterParameters.of(cache, "ch.so.agi.demo", null,
                     null, null, null, null));
         } catch (IllegalStateException expected) {
             assertFalse(Files.exists(cache.resolve("meta")));
@@ -61,7 +61,7 @@ class MetafolderWriterTest {
             server.enqueue(new MockResponse().setResponseCode(200)
                     .setBody("[{\"ident\":\"other\"},{\"ident\":\"ch.so.agi.demo\",\"title\":\"Demo\"}]"));
 
-            new MetafolderWriter().execute(MetafolderWriterParameters.of(cache, "ch.so.agi.demo", null, null,
+            new MetaFolderWriter().execute(MetaFolderWriterParameters.of(cache, "ch.so.agi.demo", null, null,
                     server.url("/").toString(), "bucket", "publication.json"));
 
             assertTrue(Files.isDirectory(cache.resolve("meta")));

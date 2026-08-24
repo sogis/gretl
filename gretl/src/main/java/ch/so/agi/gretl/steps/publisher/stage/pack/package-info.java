@@ -1,6 +1,2 @@
-/**
- * Renames the publication transfer files according to the naming convention and
- * packs the files and validation artifacts into the zips that will be
- * published.
- */
+/** Packages publication artifacts. */
 package ch.so.agi.gretl.steps.publisher.stage.pack;

@@ -3,7 +3,6 @@ package ch.so.agi.gretl.steps.publisher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +13,7 @@ import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
  * DTO representing the flat publisher inputs exactly as provided.
  */
 public class RawPublisherArgs {
-    private final String dbDatabase;
+    private final DatabaseConfig dbDatabase;
     private final String dbSchema;
     private final String dbIliIdent_Type;
     private final List<String> dbIliIdent_Values;
@@ -30,7 +29,6 @@ public class RawPublisherArgs {
     private final String outValidationConfigFilePath;
     private final String customModelDir;
     private final List<OutputFormat> outFormats;
-    private final Date publicationTimestamp;
 
     private PublishMode publishMode;
     private IliIdentType dbIliIdent_TypeEnum;
@@ -54,7 +52,7 @@ public class RawPublisherArgs {
     }
 
     private RawPublisherArgs(CanonicalArgs args) {
-        this.dbDatabase = normalize(args.dbDatabase);
+        this.dbDatabase = args.dbDatabase;
         this.dbSchema = normalize(args.dbSchema);
         this.dbIliIdent_Type = normalize(args.dbIliIdent_Type);
         this.dbIliIdent_Values = copyNormalized(args.dbIliIdent_Values);
@@ -70,9 +68,6 @@ public class RawPublisherArgs {
         this.outValidationConfigFilePath = normalize(args.outValidationConfigFilePath);
         this.customModelDir = normalize(args.customModelDir);
         this.outFormats = normalizeOutputFormats(args.outFormats);
-        this.publicationTimestamp = args.publicationTimestamp == null ? null
-                : new Date(args.publicationTimestamp.getTime());
-
         validateArgumentCombination();
     }
 
@@ -117,7 +112,7 @@ public class RawPublisherArgs {
 
     private void assertValidDbArgs() {
         List<String> missingArgs = new ArrayList<>();
-        if (dbDatabase == null) {
+        if (dbDatabase == null || dbDatabase.getUrl() == null) {
             missingArgs.add("dbDatabase");
         }
         if (dbSchema == null) {
@@ -219,7 +214,7 @@ public class RawPublisherArgs {
         }
     }
 
-    public String getDbDatabase() {
+    public DatabaseConfig getDbDatabase() {
         return dbDatabase;
     }
 
@@ -285,39 +280,8 @@ public class RawPublisherArgs {
 
     public List<OutputFormat> getOutFormats() { return outFormats; }
 
-    Date getPublicationTimestamp() {
-        return publicationTimestamp == null ? null : new Date(publicationTimestamp.getTime());
-    }
-
     public PublishMode getPublishMode() {
         return publishMode;
-    }
-
-    RawPublisherArgs withEffectiveOutput(Endpoint effectiveOutput, String effectiveGrooming, String effectiveModelDir,
-            Date publicationTimestamp) {
-        CanonicalArgs args = new CanonicalArgs();
-        args.dbDatabase = dbDatabase;
-        args.dbSchema = dbSchema;
-        args.dbIliIdent_Type = dbIliIdent_Type;
-        args.dbIliIdent_Values = dbIliIdent_Values;
-        args.dbIliIdent_RegEx = dbIliIdent_RegEx;
-        args.dbMergeToSingleXtf = dbMergeToSingleXtf;
-        args.xtfFile_FolderPath = xtfFile_FolderPath;
-        args.xtfFilename_Regex = xtfFilename_Regex;
-        args.xtfFilename_List = xtfFilename_List;
-        args.outFolderPath = effectiveOutput;
-        args.outDataIdent = outDataIdent;
-        args.outWriteMetadata = outWriteMetadata;
-        args.outGroomingConfigFilePath = effectiveGrooming;
-        args.outValidationConfigFilePath = outValidationConfigFilePath;
-        args.customModelDir = effectiveModelDir;
-        args.outFormats = outFormats;
-        args.publicationTimestamp = publicationTimestamp;
-        return new RawPublisherArgs(args);
-    }
-
-    RawPublisherArgs withPublicationTimestamp(Date timestamp) {
-        return withEffectiveOutput(outFolderPath, outGroomingConfigFilePath, customModelDir, timestamp);
     }
 
     private static String normalize(String value) {
@@ -359,7 +323,7 @@ public class RawPublisherArgs {
     }
 
     private static final class CanonicalArgs {
-        private String dbDatabase;
+        private DatabaseConfig dbDatabase;
         private String dbSchema;
         private String dbIliIdent_Type;
         private List<String> dbIliIdent_Values;
@@ -375,13 +339,12 @@ public class RawPublisherArgs {
         private String outValidationConfigFilePath;
         private String customModelDir;
         private List<OutputFormat> outFormats;
-        private Date publicationTimestamp;
     }
 
     public static final class Builder {
         private final CanonicalArgs args = new CanonicalArgs();
 
-        public Builder dbValuesSource(String dbDatabase, String dbSchema, IliIdentType dbIliIdentType,
+        public Builder dbValuesSource(DatabaseConfig dbDatabase, String dbSchema, IliIdentType dbIliIdentType,
                 Boolean dbMergeToSingleXtf, List<String> dbIliIdentValues) {
             clearXtfSource();
             args.dbDatabase = dbDatabase;
@@ -393,7 +356,13 @@ public class RawPublisherArgs {
             return this;
         }
 
-        public Builder dbRegexSource(String dbDatabase, String dbSchema, IliIdentType dbIliIdentType,
+        public Builder dbValuesSource(String dbDatabase, String dbSchema, IliIdentType dbIliIdentType,
+                Boolean dbMergeToSingleXtf, List<String> dbIliIdentValues) {
+            return dbValuesSource(new DatabaseConfig(dbDatabase, null, null), dbSchema, dbIliIdentType,
+                    dbMergeToSingleXtf, dbIliIdentValues);
+        }
+
+        public Builder dbRegexSource(DatabaseConfig dbDatabase, String dbSchema, IliIdentType dbIliIdentType,
                 Boolean dbMergeToSingleXtf, String dbIliIdentRegEx) {
             clearXtfSource();
             args.dbDatabase = dbDatabase;
@@ -403,6 +372,12 @@ public class RawPublisherArgs {
             args.dbIliIdent_RegEx = dbIliIdentRegEx;
             args.dbMergeToSingleXtf = dbMergeToSingleXtf;
             return this;
+        }
+
+        public Builder dbRegexSource(String dbDatabase, String dbSchema, IliIdentType dbIliIdentType,
+                Boolean dbMergeToSingleXtf, String dbIliIdentRegEx) {
+            return dbRegexSource(new DatabaseConfig(dbDatabase, null, null), dbSchema, dbIliIdentType,
+                    dbMergeToSingleXtf, dbIliIdentRegEx);
         }
 
         public Builder xtfListSource(String xtfFileFolderPath, List<String> xtfFilenameList) {

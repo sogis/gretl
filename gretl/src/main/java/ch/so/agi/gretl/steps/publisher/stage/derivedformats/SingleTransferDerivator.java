@@ -1,8 +1,8 @@
 package ch.so.agi.gretl.steps.publisher.stage.derivedformats;
 
 import ch.ehi.basics.settings.Settings;
-import ch.ehi.ili2db.base.Ili2db;
 import ch.ehi.ili2db.gui.Config;
+import ch.so.agi.gretl.steps.publisher.PublisherIli2dbRunner;
 import ch.so.agi.gretl.steps.Gpkg2DxfStep;
 import ch.so.agi.gretl.steps.Gpkg2ShpStep;
 
@@ -18,8 +18,19 @@ import java.util.stream.Stream;
 public final class SingleTransferDerivator {
     private final Path transferFile;
     private final EnumSet<DerivedFormat> requestedFormats;
+    private final String customModelDir;
+    private final Path ili2dbWorkDirectory;
 
     public SingleTransferDerivator(Path transferFile, List<DerivedFormat> requestedFormats) {
+        this(transferFile, requestedFormats, null, null);
+    }
+
+    public SingleTransferDerivator(Path transferFile, List<DerivedFormat> requestedFormats, String customModelDir) {
+        this(transferFile, requestedFormats, customModelDir, null);
+    }
+
+    public SingleTransferDerivator(Path transferFile, List<DerivedFormat> requestedFormats, String customModelDir,
+            Path ili2dbWorkDirectory) {
         this.transferFile = Objects.requireNonNull(transferFile, "transferFile must not be null").toAbsolutePath().normalize();
         Objects.requireNonNull(requestedFormats, "requestedFormats must not be null");
         this.requestedFormats = EnumSet.noneOf(DerivedFormat.class);
@@ -29,42 +40,33 @@ public final class SingleTransferDerivator {
         if (this.requestedFormats.isEmpty()) {
             throw new IllegalArgumentException("requestedFormats must not be empty");
         }
+        this.customModelDir = customModelDir;
+        this.ili2dbWorkDirectory = ili2dbWorkDirectory == null
+                ? this.transferFile.getParent().resolveSibling(".work") : ili2dbWorkDirectory;
     }
 
     public void derive() {
-        Path transferRoot = transferFile.getParent();
-        if (transferRoot == null) {
-            throw new IllegalArgumentException("transferFile must have a parent directory");
-        }
+        Path transferDirectory = transferFile.getParent();
+        if (transferDirectory == null) throw new IllegalArgumentException("transferFile must have a parent directory");
+        Path partRoot = "xtf".equals(transferDirectory.getFileName().toString()) && transferDirectory.getParent() != null
+                ? transferDirectory.getParent() : transferDirectory;
 
-        Path intermediatesDir = transferRoot.resolve("derivation_intermediates");
-        try {
-            prepareCleanDirectory(intermediatesDir);
-            deriveRequestedFormats(transferRoot, intermediatesDir);
-        } finally {
-            deleteRecursively(intermediatesDir);
-        }
+        deriveRequestedFormats(partRoot);
     }
 
-    private void deriveRequestedFormats(Path transferRoot, Path intermediatesDir) {
+    private void deriveRequestedFormats(Path transferRoot) {
         try {
             String baseName = stripExtension(transferFile.getFileName().toString());
 
-            boolean gpkgRequested = requestedFormats.contains(DerivedFormat.GPKG);
-            boolean needsGpkg = gpkgRequested
+            boolean needsGpkg = requestedFormats.contains(DerivedFormat.GPKG)
                     || requestedFormats.contains(DerivedFormat.SHP)
                     || requestedFormats.contains(DerivedFormat.DXF);
 
             Path gpkgFile = null;
             if (needsGpkg) {
-                Path gpkgRoot = gpkgRequested ? transferRoot.resolve(DerivedFormat.GPKG.getDirectoryName())
-                        : intermediatesDir.resolve(DerivedFormat.GPKG.getDirectoryName());
-                gpkgFile = gpkgRoot.resolve(baseName + ".gpkg");
+                gpkgFile = transferRoot.resolve(DerivedFormat.GPKG.getDirectoryName()).resolve(baseName + ".gpkg");
             }
 
-            if (gpkgRequested) {
-                prepareCleanDirectory(gpkgFile.getParent());
-            }
             if (requestedFormats.contains(DerivedFormat.SHP)) {
                 prepareCleanDirectory(transferRoot.resolve(DerivedFormat.SHP.getDirectoryName()));
             }
@@ -75,7 +77,7 @@ public final class SingleTransferDerivator {
                 prepareCleanDirectory(transferRoot.resolve(DerivedFormat.GEOBAU_DXF.getDirectoryName()));
             }
 
-            if (gpkgFile != null) {
+            if (gpkgFile != null && !Files.exists(gpkgFile)) {
                 deriveGpkg(gpkgFile);
             }
             if (requestedFormats.contains(DerivedFormat.SHP)) {
@@ -94,7 +96,6 @@ public final class SingleTransferDerivator {
 
     private void deriveGpkg(Path gpkgFile) throws Exception {
         Files.createDirectories(gpkgFile.getParent());
-        Files.deleteIfExists(gpkgFile);
 
         Config config = new Config();
         new ch.ehi.ili2gpkg.GpkgMain().initConfig(config);
@@ -109,7 +110,7 @@ public final class SingleTransferDerivator {
         config.setValue(Config.CREATE_GEOM_INDEX, Config.TRUE);
         config.setCreateMetaInfo(true);
         config.setItfTransferfile(transferFile.getFileName().toString().toLowerCase().endsWith(".itf"));
-        Ili2db.run(config, null);
+        PublisherIli2dbRunner.run(config, ili2dbWorkDirectory);
     }
 
     private void deriveShp(Path gpkgFile, Path outputDir) throws Exception {
@@ -137,19 +138,18 @@ public final class SingleTransferDerivator {
     }
 
     private String buildModeldir() {
-        Path parent = transferFile.getParent();
-        if (parent == null) {
-            return ch.interlis.ili2c.gui.UserSettings.DEFAULT_ILIDIRS;
-        }
-        return parent.toAbsolutePath().normalize() + ";" + ch.interlis.ili2c.gui.UserSettings.DEFAULT_ILIDIRS;
+        return combineModeldirs(ch.interlis.ili2c.gui.UserSettings.DEFAULT_ILIDIRS);
     }
 
     private String buildGeobauModeldir() {
+        return combineModeldirs(org.interlis2.av2geobau.Av2geobau.SETTING_DEFAULT_ILIDIRS);
+    }
+
+    private String combineModeldirs(String defaultModeldir) {
         Path parent = transferFile.getParent();
-        if (parent == null) {
-            return org.interlis2.av2geobau.Av2geobau.SETTING_DEFAULT_ILIDIRS;
-        }
-        return parent.toAbsolutePath().normalize() + ";" + org.interlis2.av2geobau.Av2geobau.SETTING_DEFAULT_ILIDIRS;
+        String localAndDefault = parent == null ? defaultModeldir
+                : parent.toAbsolutePath().normalize() + ";" + defaultModeldir;
+        return customModelDir == null ? localAndDefault : customModelDir + ";" + localAndDefault;
     }
 
     private void prepareCleanDirectory(Path directory) {

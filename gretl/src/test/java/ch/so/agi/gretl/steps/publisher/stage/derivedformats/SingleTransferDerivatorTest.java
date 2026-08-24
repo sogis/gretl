@@ -5,41 +5,42 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SingleTransferDerivatorTest {
     @Test
-    void removesIntermediatesAfterSuccessfulDerivation() throws IOException {
+    void reusesExistingGpkgForDownstreamDerivation() throws IOException {
         Path cacheDir = Files.createTempDirectory("single-transfer");
         Path transferDir = Files.createDirectories(cacheDir.resolve("nested"));
         copyJobInput(transferDir);
 
-        new SingleTransferDerivator(
-                transferDir.resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.xtf"),
-                List.of(DerivedFormat.GPKG)).derive();
+        Path transferFile = transferDir.resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.xtf");
+        new SingleTransferDerivator(transferFile, List.of(DerivedFormat.GPKG)).derive();
 
-        assertTrue(Files.isRegularFile(transferDir.resolve("gpkg").resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")));
-        assertFalse(Files.exists(transferDir.resolve("derivation_intermediates")));
+        Path gpkg = transferDir.resolve("gpkg").resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg");
+        FileTime expectedTimestamp = FileTime.fromMillis(946684800000L);
+        Files.setLastModifiedTime(gpkg, expectedTimestamp);
+
+        new SingleTransferDerivator(transferFile, List.of(DerivedFormat.SHP)).derive();
+
+        assertTrue(Files.isRegularFile(gpkg));
+        assertEquals(expectedTimestamp, Files.getLastModifiedTime(gpkg));
+        assertTrue(Files.isRegularFile(transferDir.resolve("shp").resolve("gemeinde.shp")));
     }
 
     @Test
-    void removesIntermediatesAfterFailedDerivation() throws IOException {
+    void reportsFailedDerivation() throws IOException {
         Path cacheDir = Files.createTempDirectory("single-transfer");
         Path transferDir = Files.createDirectories(cacheDir.resolve("nested"));
         Files.writeString(transferDir.resolve("broken.xtf"), "<TRANSFER />");
 
-        try {
-            new SingleTransferDerivator(
-                    transferDir.resolve("broken.xtf"),
-                    List.of(DerivedFormat.SHP)).derive();
-        } catch (IllegalStateException expected) {
-            // expected
-        }
-
-        assertFalse(Files.exists(transferDir.resolve("derivation_intermediates")));
+        assertThrows(IllegalStateException.class, () -> new SingleTransferDerivator(
+                transferDir.resolve("broken.xtf"), List.of(DerivedFormat.SHP)).derive());
     }
 
     private void copyJobInput(Path targetDir) throws IOException {

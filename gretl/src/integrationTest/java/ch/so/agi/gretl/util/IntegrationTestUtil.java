@@ -25,6 +25,8 @@ public class IntegrationTestUtil {
     private static final String TEST_TYPE = System.getProperty("GRETL_TESTTYPE");
     private static final String GRETL_PROJECT_ABSOLUTE_PATH = System.getProperty("GRETL_PROJECT_ABS_PATH");
     private static final String ROOT_PROJECT_ABSOLUTE_PATH = System.getProperty("ROOT_PROJECT_ABS_PATH");
+    private static final String INTEGRATION_LOG_LEVEL = System.getProperty("GRETL_INTEGRATION_LOG_LEVEL",
+            "LIFECYCLE");
 
     public static void executeTestRunner(File projectDirectory) throws IOException {
         executeTestRunner(projectDirectory, null, null);
@@ -38,18 +40,29 @@ public class IntegrationTestUtil {
         if (TestType.IMAGE.equals(TEST_TYPE)) {
             executeDockerRunCommand(projectDirectory, variables);
         } else if(TestType.JAR.equals(TEST_TYPE)) {
-            executeGradleRunner(projectDirectory, taskName, variables);
+            System.out.print(executeGradleRunner(projectDirectory, taskName, variables, INTEGRATION_LOG_LEVEL));
         } else {
             throw new GretlException("Unknown test type: " + TEST_TYPE);
         }
     }
 
-    private static void executeGradleRunner(File projectDirectory, String taskName, GradleVariable[] variables) throws IOException {
-        List<String> arguments = getRunnerArguments(taskName, variables);
+    /** Runs a TestKit job at the requested Gradle log level and returns its complete output. */
+    public static String executeTestRunnerAndCaptureOutput(File projectDirectory, GradleVariable[] variables, String taskName,
+            String logLevel) throws IOException {
+        if (!TestType.JAR.equals(TEST_TYPE)) {
+            throw new GretlException("Capturing Gradle output requires GRETL_TESTTYPE=JAR");
+        }
+        return executeGradleRunner(projectDirectory, taskName, variables, logLevel);
+    }
+
+    private static String executeGradleRunner(File projectDirectory, String taskName, GradleVariable[] variables,
+            String logLevel) throws IOException {
+        List<String> arguments = getRunnerArguments(taskName, variables, logLevel);
         BuildResult result = GradleRunner.create()
                 .withProjectDir(projectDirectory)
                 .withArguments(arguments)
-                .forwardOutput().build();
+                .build();
+        return result.getOutput();
         //TaskOutcome outcome = Objects.requireNonNull(result.task(":" + taskName)).getOutcome();
     }
 
@@ -87,7 +100,9 @@ public class IntegrationTestUtil {
         String jobDirectoryOption = buildJobDirectoryOptionString(jobPath);
         String gradleVariablesString = buildOptionString(variables);
 
-        return String.format("%s %s %s", pathToRunCommandExecutionFile, jobDirectoryOption, gradleVariablesString);
+        String logLevelOption = getLogLevelOption(INTEGRATION_LOG_LEVEL);
+        return String.format("%s %s%s %s", pathToRunCommandExecutionFile, jobDirectoryOption, logLevelOption,
+                gradleVariablesString);
     }
 
     private static String buildOptionString(GradleVariable[] variables) {
@@ -105,8 +120,12 @@ public class IntegrationTestUtil {
         return "--job_directory " + Paths.get(GRETL_PROJECT_ABSOLUTE_PATH).resolve(relativeJobPath).toString();
     }
 
-    private static List<String> getRunnerArguments(String taskName, GradleVariable[] variables) {
+    private static List<String> getRunnerArguments(String taskName, GradleVariable[] variables, String logLevel) {
         List<String> arguments = new ArrayList<>();
+        String logLevelOption = getLogLevelOption(logLevel);
+        if (!logLevelOption.isEmpty()) {
+            arguments.add(logLevelOption.trim());
+        }
         arguments.add("--init-script");
         arguments.add(IntegrationTestUtil.getPathToInitScript());
         if (taskName != null) {
@@ -136,6 +155,16 @@ public class IntegrationTestUtil {
         return new File(System.getProperty("user.dir") + "/src/integrationTest/jobs/init.gradle").getAbsolutePath();
     }
 
+    static String getLogLevelOption(String logLevel) {
+        if ("INFO".equalsIgnoreCase(logLevel)) {
+            return " --info";
+        }
+        if ("DEBUG".equalsIgnoreCase(logLevel)) {
+            return " --debug";
+        }
+        return "";
+    }
+
     private static void appendProcessOutputToStdStreams(Process p, StringBuffer stderr, StringBuffer stdout) {
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -145,7 +174,7 @@ public class IntegrationTestUtil {
                 String s;
                 while ((s = stdInput.readLine()) != null) {
                     System.out.println(s);
-                    if(stdout!=null) {
+                    if(stdout != null) {
                         stdout.append(s);
                         stdout.append(newline);
                     }
@@ -167,4 +196,5 @@ public class IntegrationTestUtil {
             }
         }).start();
     }
+
 }

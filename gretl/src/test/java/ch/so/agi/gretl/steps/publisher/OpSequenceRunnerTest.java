@@ -6,171 +6,49 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.steps.publisher.operation.Operation;
-import ch.so.agi.gretl.steps.publisher.operation.OperationParameters;
 
 class OpSequenceRunnerTest {
     @Test
-    void runsStepsInOrderAndLogsSummaryAndCompletion() throws Exception {
+    void runsOperationsInOrderAndPrefixesTheirSuccessDetails() throws Exception {
         RecordingLogger logger = new RecordingLogger();
-        List<String> executionOrder = new ArrayList<>();
-        TestParameters firstParameters = new TestParameters("first");
-        TestParameters secondParameters = new TestParameters("second");
-
-        OpSequenceStep firstStep = OpSequenceStep.of(
-                new RecordingOperation("Exporter", executionOrder, "exported"),
-                () -> firstParameters);
-        OpSequenceStep secondStep = OpSequenceStep.of(
-                new RecordingOperation("Packer", executionOrder, "packed"),
-                () -> secondParameters);
-
-        new OpSequenceRunner(logger).run(List.of(firstStep, secondStep));
-
-        assertEquals(List.of("Exporter", "Packer"), executionOrder);
-        assertEquals(List.of("Publication will perform these steps: Exporter, Packer"), logger.lifecycleMessages);
-        assertEquals(List.of("exported", "packed"), logger.infoMessages);
+        List<String> executed = new ArrayList<>();
+        new OpSequenceRunner(logger).run(List.of(new RecordingOperation("Export", "exported 3 objects", executed),
+                new RecordingOperation("Package", "created 1 archive", executed)));
+        assertEquals(List.of("Export", "Package"), executed);
+        assertEquals(List.of("Publication plan: Export, Package", "Export: exported 3 objects", "Package: created 1 archive"), logger.info);
     }
 
     @Test
-    void resolvesParametersLazilyDuringExecution() throws Exception {
+    void doesNotLogCompletionForFailingOperation() {
         RecordingLogger logger = new RecordingLogger();
-        AtomicInteger supplierCalls = new AtomicInteger();
-        List<OperationParameters> seenParameters = new ArrayList<>();
-        TestParameters parameters = new TestParameters("lazy");
-        OpSequenceStep step = OpSequenceStep.of(new ParameterCapturingOperation(seenParameters), () -> {
-            supplierCalls.incrementAndGet();
-            return parameters;
-        });
-
-        assertEquals(0, supplierCalls.get());
-
-        new OpSequenceRunner(logger).run(List.of(step));
-
-        assertEquals(1, supplierCalls.get());
-        assertEquals(1, seenParameters.size());
-        assertSame(parameters, seenParameters.get(0));
+        RuntimeException failure = new RuntimeException("boom");
+        RuntimeException actual = assertThrows(RuntimeException.class, () -> new OpSequenceRunner(logger).run(List.of(
+                new RecordingOperation("Export", "exported", new ArrayList<>()), new FailingOperation(failure))));
+        assertSame(failure, actual);
+        assertEquals(List.of("Publication plan: Export, Package", "Export: exported"), logger.info);
     }
 
-    @Test
-    void stopsAfterFirstFailureWithoutLoggingCompletionForFailingStep() {
-        RecordingLogger logger = new RecordingLogger();
-        List<String> executionOrder = new ArrayList<>();
-        RuntimeException expected = new RuntimeException("boom");
-        OpSequenceStep firstStep = OpSequenceStep.of(
-                new RecordingOperation("Exporter", executionOrder, "exported"),
-                () -> new TestParameters("first"));
-        OpSequenceStep failingStep = OpSequenceStep.of(
-                new FailingOperation("Packer", executionOrder, expected),
-                () -> new TestParameters("second"));
-        OpSequenceStep skippedStep = OpSequenceStep.of(
-                new RecordingOperation("Writer", executionOrder, "written"),
-                () -> new TestParameters("third"));
-
-        RuntimeException actual = assertThrows(RuntimeException.class,
-                () -> new OpSequenceRunner(logger).run(List.of(firstStep, failingStep, skippedStep)));
-
-        assertSame(expected, actual);
-        assertEquals(List.of("Exporter", "Packer"), executionOrder);
-        assertEquals(List.of("Publication will perform these steps: Exporter, Packer, Writer"), logger.lifecycleMessages);
-        assertEquals(List.of("exported"), logger.infoMessages);
+    private static final class RecordingOperation implements Operation {
+        private final String name, detail; private final List<String> executed;
+        RecordingOperation(String name, String detail, List<String> executed) { this.name = name; this.detail = detail; this.executed = executed; }
+        public String getHumanReadableName() { return name; }
+        public String getSuccessLogDetail() { return detail; }
+        public void execute() { executed.add(name); }
     }
-
-    private static final class TestParameters implements OperationParameters {
-        private final String name;
-
-        private TestParameters(String name) {
-            this.name = name;
-        }
+    private static final class FailingOperation implements Operation {
+        private final RuntimeException failure; FailingOperation(RuntimeException failure) { this.failure = failure; }
+        public String getHumanReadableName() { return "Package"; }
+        public String getSuccessLogDetail() { return "packaged"; }
+        public void execute() { throw failure; }
     }
-
-    private static final class RecordingOperation implements Operation<TestParameters> {
-        private final String name;
-        private final List<String> executionOrder;
-        private final String successMessage;
-
-        private RecordingOperation(String name, List<String> executionOrder, String successMessage) {
-            this.name = name;
-            this.executionOrder = executionOrder;
-            this.successMessage = successMessage;
-        }
-
-        @Override
-        public String getHumanReadableName() {
-            return name;
-        }
-
-        @Override
-        public String getSuccessLogMessage() {
-            return successMessage;
-        }
-
-        @Override
-        public void execute(TestParameters operationParameters) {
-            executionOrder.add(name);
-        }
-    }
-
-    private static final class ParameterCapturingOperation implements Operation<TestParameters> {
-        private final List<OperationParameters> seenParameters;
-
-        private ParameterCapturingOperation(List<OperationParameters> seenParameters) {
-            this.seenParameters = seenParameters;
-        }
-
-        @Override
-        public void execute(TestParameters operationParameters) {
-            seenParameters.add(operationParameters);
-        }
-    }
-
-    private static final class FailingOperation implements Operation<TestParameters> {
-        private final String name;
-        private final List<String> executionOrder;
-        private final RuntimeException exception;
-
-        private FailingOperation(String name, List<String> executionOrder, RuntimeException exception) {
-            this.name = name;
-            this.executionOrder = executionOrder;
-            this.exception = exception;
-        }
-
-        @Override
-        public String getHumanReadableName() {
-            return name;
-        }
-
-        @Override
-        public void execute(TestParameters operationParameters) {
-            executionOrder.add(name);
-            throw exception;
-        }
-    }
-
     private static final class RecordingLogger implements GretlLogger {
-        private final List<String> infoMessages = new ArrayList<>();
-        private final List<String> lifecycleMessages = new ArrayList<>();
-
-        @Override
-        public void info(String msg) {
-            infoMessages.add(msg);
-        }
-
-        @Override
-        public void debug(String msg) {
-        }
-
-        @Override
-        public void error(String msg, Throwable thrown) {
-        }
-
-        @Override
-        public void lifecycle(String msg) {
-            lifecycleMessages.add(msg);
-        }
+        final List<String> info = new ArrayList<>();
+        public void info(String msg) { info.add(msg); } public void debug(String msg) { } public void lifecycle(String msg) { }
+        public void error(String msg, Throwable thrown) { }
     }
 }

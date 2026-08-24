@@ -11,11 +11,25 @@ import ch.so.agi.gretl.steps.publisher.operation.Operation;
 /**
  * Copies an external validation config into the cache root where {@link CacheValidator} expects it.
  */
-public final class ValidationConfigSeeder implements Operation<ValidationConfigSeederParameters> {
-    @Override
-    public void execute(ValidationConfigSeederParameters operationParameters) throws IOException {
-        seed(operationParameters);
+public final class ValidationConfigSeeder implements Operation {
+    private ValidationConfigSeederParameters parameters;
+
+    public ValidationConfigSeeder(ValidationConfigSeederParameters parameters) {
+        this.parameters = Objects.requireNonNull(parameters, "parameters must not be null");
     }
+    @Deprecated public ValidationConfigSeeder() { }
+    @Deprecated public void execute(ValidationConfigSeederParameters parameters) throws IOException { this.parameters = parameters; execute(); }
+
+    @Override
+    public void execute() throws IOException {
+        seed(parameters);
+    }
+
+    @Override
+    public String getHumanReadableName() { return "Seeding validation configuration"; }
+
+    @Override
+    public String getSuccessLogDetail() { return "applied " + parameters.getValidationConfig(); }
 
     void seed(ValidationConfigSeederParameters operationParameters) throws IOException {
         Objects.requireNonNull(operationParameters, "operationParameters must not be null");

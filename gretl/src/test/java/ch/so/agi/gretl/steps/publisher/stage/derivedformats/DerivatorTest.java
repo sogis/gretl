@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DerivatorTest {
@@ -24,8 +23,6 @@ class DerivatorTest {
 
         assertTrue(Files.isRegularFile(nested1.resolve("gpkg").resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")));
         assertTrue(Files.isRegularFile(nested2.resolve("gpkg").resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")));
-        assertFalse(Files.exists(nested1.resolve("derivation_intermediates")));
-        assertFalse(Files.exists(nested2.resolve("derivation_intermediates")));
     }
 
     @Test
@@ -37,9 +34,9 @@ class DerivatorTest {
         Derivator derivator = new Derivator();
         derivator.execute(DerivatorParameters.of(cacheDir, List.of(DerivedFormat.SHP)));
 
+        assertTrue(Files.isRegularFile(nested.resolve("gpkg").resolve("ch.so.agi.av_gb_admin_einteilung_edit_2020-08-20.gpkg")));
         assertTrue(Files.isRegularFile(nested.resolve("shp").resolve("gemeinde.shp")));
         assertTrue(Files.isRegularFile(nested.resolve("shp").resolve("grundbuchkreis.shp")));
-        assertFalse(Files.exists(nested.resolve("derivation_intermediates")));
     }
 
     private void copyJobInput(Path targetDir) throws IOException {

@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import ch.ehi.basics.settings.Settings;
@@ -22,56 +23,81 @@ import ch.so.agi.gretl.steps.publisher.stage.validation.CacheValidator;
 import org.interlis2.validator.Validator;
 
 /** Recreates the legacy publication {@code meta/} folder from staged transfer files. */
-public final class MetafolderWriter implements Operation<MetafolderWriterParameters> {
+public final class MetaFolderWriter implements Operation {
     static final String META_DIR = "meta";
     static final String METAINFO_FILE = "metainfo.json";
+    private MetaFolderWriterParameters parameters;
+    private int modelFileCount;
+
+    public MetaFolderWriter(MetaFolderWriterParameters parameters) {
+        this.parameters = java.util.Objects.requireNonNull(parameters, "parameters must not be null");
+    }
+    @Deprecated public MetaFolderWriter() { }
+    @Deprecated public void execute(MetaFolderWriterParameters parameters) throws Exception { this.parameters = parameters; execute(); }
 
     @Override
-    public void execute(MetafolderWriterParameters parameters) throws Exception {
+    public void execute() throws Exception {
         List<Path> modelFiles = resolveModelFiles(parameters);
-        Path metaDir = parameters.getCacheRoot().resolve(META_DIR);
+        modelFileCount = modelFiles.size();
+        Path metaDir = parameters.getPublicationRoot().resolve(META_DIR);
         prepareMetaDirectory(metaDir);
         for (Path modelFile : modelFiles) {
             Files.copy(modelFile, metaDir.resolve(modelFile.getFileName()), StandardCopyOption.REPLACE_EXISTING);
         }
         if (parameters.shouldWriteJson()) {
-            new JsonSectionWriter().execute(JsonSectionWriterParameters.of(parameters.getJsonmetaAddress(),
+            new JsonSectionWriter(JsonSectionWriterParameters.of(parameters.getJsonmetaAddress(),
                     parameters.getJsonmetaBucket(), parameters.getJsonmetaFileName(), parameters.getIdent(),
-                    metaDir.resolve(METAINFO_FILE)));
+                    metaDir.resolve(METAINFO_FILE))).execute();
         }
     }
 
-    private List<Path> resolveModelFiles(MetafolderWriterParameters parameters) throws IOException {
-        List<Path> transferFiles = discoverTransferFiles(parameters.getCacheRoot());
+    @Override
+    public String getHumanReadableName() { return "Metadata folder writer (meta/)"; }
+
+    @Override
+    public String getSuccessLogDetail() {
+        return "built metadata folder with " + modelFileCount + " model file(s)"
+                + (parameters.shouldWriteJson() ? " and JSON metadata" : "");
+    }
+
+    private List<Path> resolveModelFiles(MetaFolderWriterParameters parameters) throws IOException {
         Set<Path> modelFiles = new LinkedHashSet<>();
-        for (Path transferFile : transferFiles) {
-            Validator validator = new Validator();
-            if (!validator.validate(new String[] { transferFile.toAbsolutePath().toString() }, settings(parameters))) {
-                throw new IllegalStateException("validation failed while resolving models for " + transferFile);
+        for (Path transferFile : discoverTransferFiles(parameters.getRawRoot())) {
+            Path transferDir = transferFile.getParent();
+            if (transferDir == null || !"xtf".equals(transferDir.getFileName().toString())) {
+                modelFiles.addAll(resolveLegacyModelFiles(transferFile, parameters));
+                continue;
             }
-            for (Iterator<Model> iterator = validator.getModel().iterator(); iterator.hasNext();) {
-                Model model = iterator.next();
-                if (!(model instanceof PredefinedModel) && model.getFileName() != null) {
-                    modelFiles.add(Path.of(model.getFileName()).toAbsolutePath().normalize());
-                }
+            Path manifest = transferDir.getParent().resolve("ilimeta").resolve(CacheValidator.MODEL_MANIFEST_FILENAME);
+            if (!Files.isRegularFile(manifest)) {
+                throw new IllegalStateException("missing validation model manifest " + manifest);
+            }
+            for (String value : Files.readAllLines(manifest, StandardCharsets.UTF_8)) {
+                if (!value.trim().isEmpty()) modelFiles.add(Path.of(value).toAbsolutePath().normalize());
             }
         }
         return new ArrayList<>(modelFiles);
     }
 
-    private Settings settings(MetafolderWriterParameters parameters) throws IOException {
+    private Set<Path> resolveLegacyModelFiles(Path transferFile, MetaFolderWriterParameters parameters) throws IOException {
+        Validator validator = new Validator();
+        if (!validator.validate(new String[] { transferFile.toAbsolutePath().toString() }, settings(parameters))) {
+            throw new IllegalStateException("validation failed while resolving models for " + transferFile);
+        }
+        Set<Path> models = new LinkedHashSet<>();
+        for (Iterator<Model> iterator = validator.getModel().iterator(); iterator.hasNext();) {
+            Model model = iterator.next();
+            if (!(model instanceof PredefinedModel) && model.getFileName() != null) models.add(Path.of(model.getFileName()).toAbsolutePath().normalize());
+        }
+        return models;
+    }
+
+    private Settings settings(MetaFolderWriterParameters parameters) throws IOException {
         Settings settings = new Settings();
         settings.setValue(Validator.SETTING_DISABLE_STD_LOGGER, Validator.TRUE);
         Path validationConfig = parameters.getValidationConfig();
-        if (validationConfig != null) {
-            if (!Files.isRegularFile(validationConfig)) {
-                throw new IllegalArgumentException("validation config must be a file: " + validationConfig);
-            }
-            settings.setValue(Validator.SETTING_CONFIGFILE, validationConfig.toString());
-        }
-        if (parameters.getCustomModelDir() != null) {
-            settings.setValue(Validator.SETTING_ILIDIRS, parameters.getCustomModelDir());
-        }
+        if (validationConfig != null) settings.setValue(Validator.SETTING_CONFIGFILE, validationConfig.toString());
+        if (parameters.getCustomModelDir() != null) settings.setValue(Validator.SETTING_ILIDIRS, parameters.getCustomModelDir());
         return settings;
     }
 

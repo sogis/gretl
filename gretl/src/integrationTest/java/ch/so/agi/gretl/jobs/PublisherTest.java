@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -104,6 +105,20 @@ class PublisherTest {
     }
 
     @Test
+    @Disabled("Won't fix: third-party ili2db/ilivalidator INFO logging is not controlled by Publisher.")
+    void dbTopicPublisherInfoOutputContainsOnlyPublisherProgressSummaries() throws Exception {
+        String output = IntegrationTestUtil.executeTestRunnerAndCaptureOutput(jobDirectory("PublisherDbTopic").toFile(),
+                databaseVariables(), "publish", "INFO");
+        String publishOutput = output.substring(output.indexOf("> Task :publish"));
+
+        assertTrue(publishOutput.contains("Database selection export: exported 10 object(s)"));
+        assertFalse(publishOutput.contains("Info: ili2pg-"));
+        assertFalse(publishOutput.contains("Info: compile models..."));
+        assertFalse(publishOutput.contains("Info: ...export done"));
+        assertFalse(publishOutput.contains("Info: ilivalidator-"));
+    }
+
+    @Test
     void dbValuesBasketPublishesToLocalFolder() throws Exception {
         run("PublisherDbBasket", "setupData", databaseVariables());
         assignBasketIdentifiers();
@@ -154,7 +169,7 @@ class PublisherTest {
 
             Path publication = remoteRoot.resolve("ch.so.agi.publisher.remote/aktuell");
             assertArchives(publication, 2, ".xtf.zip");
-            assertArchives(publication, 1, "gpkg.zip");
+            assertArchives(publication, 2, "gpkg.zip");
             Path meta = publication.resolve("meta");
             assertTrue(Files.isRegularFile(meta.resolve("SimpleCoord23.ili")));
             JsonNode json = new ObjectMapper().readTree(Files.readString(meta.resolve("metainfo.json")));

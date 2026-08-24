@@ -2,8 +2,6 @@ package ch.so.agi.gretl.tasks;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +13,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.api.Endpoint;
+import ch.so.agi.gretl.steps.publisher.DatabaseConfig;
 import ch.so.agi.gretl.steps.publisher.PublisherStep;
 import ch.so.agi.gretl.steps.publisher.RawPublisherArgs;
 import ch.so.agi.gretl.steps.publisher.RawPublisherArgs.IliIdentType;
@@ -89,40 +88,16 @@ public class Publisher extends DefaultTask {
     @TaskAction
     public void publishAll() {
         RawPublisherArgs rawArgs = buildRawArgs();
-        boolean writeMetadata = rawArgs.getOutWriteMetadata();
-        PublisherEnv publisherEnv = writeMetadata
+        PublisherEnv publisherEnv = rawArgs.getOutWriteMetadata()
                 ? new PropertiesReader(getProject()).readProperties()
-                : new PublisherEnv(null, null, null, null, null, null, null);
-        Connector publicationDatabase = writeMetadata
-                ? new Connector(publisherEnv.getPupDateEnv().getConnectionUrl(), publisherEnv.getPupDateEnv().getUser(),
-                        publisherEnv.getPupDateEnv().getPassword())
-                : null;
-        Connector sourceDatabase = dbDatabase;
-        Connection sourceConnection = null;
-        Connection publicationConnection = null;
+                : PublisherEnv.empty();
 
         try {
-            if (writeMetadata) {
-                publicationConnection = publicationDatabase.connect();
-            }
-            if (sourceDatabase != null) {
-                sourceConnection = sourceDatabase.connect();
-            }
             Path cacheRoot = getProject().getBuildDir().toPath().resolve(getName());
             Files.createDirectories(cacheRoot);
-            new PublisherStep(getName()).publish(rawArgs, publisherEnv, sourceConnection,
-                    publicationConnection, writeMetadata ? publisherEnv.getPupDateEnv().getDbSchema() : null,
-                    writeMetadata, cacheRoot);
-            if (writeMetadata) {
-                publicationConnection.commit();
-            }
+            new PublisherStep(getName()).publish(rawArgs, publisherEnv, cacheRoot);
         } catch (Exception e) {
-            rollbackQuietly(publicationConnection);
             throw TaskUtil.toGradleException(e);
-        } finally {
-            rollbackQuietly(sourceConnection);
-            closeQuietly(sourceDatabase);
-            closeQuietly(publicationDatabase);
         }
     }
 
@@ -138,10 +113,10 @@ public class Publisher extends DefaultTask {
         if (dbDatabase != null) {
             IliIdentType identType = IliIdentType.valueOf(required(dbIliIdent_Type, "dbIliIdent_Type"));
             if (dbIliIdent_RegEx != null) {
-                return builder.dbRegexSource(dbDatabase.getDbUri(), dbSchema, identType, dbMergeToSingleXtf,
+                return builder.dbRegexSource(DatabaseConfig.from(dbDatabase), dbSchema, identType, dbMergeToSingleXtf,
                         dbIliIdent_RegEx).build();
             }
-            return builder.dbValuesSource(dbDatabase.getDbUri(), dbSchema, identType, dbMergeToSingleXtf,
+            return builder.dbValuesSource(DatabaseConfig.from(dbDatabase), dbSchema, identType, dbMergeToSingleXtf,
                     dbIliIdent_Values.getOrElse(List.of())).build();
         }
         if (xtfFilename_Regex != null) {
@@ -189,15 +164,4 @@ public class Publisher extends DefaultTask {
         return value;
     }
 
-    private static void rollbackQuietly(Connection connection) {
-        if (connection != null) {
-            try { connection.rollback(); } catch (SQLException ignored) { }
-        }
-    }
-
-    private static void closeQuietly(Connector connector) {
-        if (connector != null) {
-            try { connector.close(); } catch (SQLException ignored) { }
-        }
-    }
 }

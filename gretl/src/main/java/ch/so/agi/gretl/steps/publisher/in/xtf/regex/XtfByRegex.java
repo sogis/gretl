@@ -16,20 +16,34 @@ import ch.so.agi.gretl.steps.publisher.util.BatchFileCopier;
  * Selects direct-child transfer files from a source directory by regular
  * expression and copies the matches to a target directory.
  */
-public final class XtfByRegex implements Operation<XtfByRegexParams> {
+public final class XtfByRegex implements Operation {
+    private XtfByRegexParams parameters;
     private final BatchFileCopier batchFileCopier;
+    private List<Path> copiedFiles = List.of();
 
-    public XtfByRegex() {
-        this(new BatchFileCopier());
+    public XtfByRegex(XtfByRegexParams parameters) {
+        this(parameters, new BatchFileCopier());
     }
 
-    XtfByRegex(BatchFileCopier batchFileCopier) {
+    @Deprecated public XtfByRegex() { this.batchFileCopier = new BatchFileCopier(); }
+    @Deprecated public void execute(XtfByRegexParams parameters) throws IOException { this.parameters = parameters; execute(); }
+
+    XtfByRegex(XtfByRegexParams parameters, BatchFileCopier batchFileCopier) {
+        this.parameters = Objects.requireNonNull(parameters, "parameters must not be null");
         this.batchFileCopier = Objects.requireNonNull(batchFileCopier, "batchFileCopier must not be null");
     }
 
     @Override
-    public void execute(XtfByRegexParams operationParameters) throws IOException {
-        copyFiles(operationParameters);
+    public void execute() throws IOException {
+        copiedFiles = copyFiles(parameters);
+    }
+
+    @Override
+    public String getHumanReadableName() { return "Source xtf/itf regex copy"; }
+
+    @Override
+    public String getSuccessLogDetail() {
+        return "copied " + copiedFiles.size() + " source file(s) matching " + parameters.getFileNameRegex();
     }
 
     List<Path> copyFiles(XtfByRegexParams operationParameters) throws IOException {

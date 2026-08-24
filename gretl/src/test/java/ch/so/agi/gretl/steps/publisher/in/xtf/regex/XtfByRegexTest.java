@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -45,6 +46,22 @@ class XtfByRegexTest {
         new XtfByRegex().execute(XtfByRegexParams.of(sourceDir, targetDir, ".*\\.xtf$"));
 
         assertTrue(Files.exists(targetDir.resolve("only.xtf")));
+    }
+
+    @Test
+    void copiesOnlyTheExactEscapedFilename() throws Exception {
+        Path sourceDir = Files.createDirectory(tempDir.resolve("source"));
+        Path targetDir = tempDir.resolve("target");
+        String filename = "a+b.XTF";
+        Files.writeString(sourceDir.resolve(filename), "selected", StandardCharsets.UTF_8);
+        Files.writeString(sourceDir.resolve("ab.XTF"), "not selected", StandardCharsets.UTF_8);
+
+        List<Path> copiedFiles = new XtfByRegex().copyFiles(
+                XtfByRegexParams.of(sourceDir, targetDir, Pattern.quote(filename)));
+
+        assertEquals(List.of(targetDir.resolve(filename)), copiedFiles);
+        assertEquals("selected", Files.readString(targetDir.resolve(filename)));
+        assertTrue(Files.notExists(targetDir.resolve("ab.XTF")));
     }
 
     @Test

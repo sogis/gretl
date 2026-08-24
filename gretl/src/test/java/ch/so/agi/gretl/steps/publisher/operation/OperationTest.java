@@ -6,13 +6,18 @@ import org.junit.jupiter.api.Test;
 
 class OperationTest {
     @Test
-    void defaultSuccessLogMessageUsesHumanReadableName() {
-        assertEquals("TestOperation completed successfully", new TestOperation().getSuccessLogMessage());
+    void successDetailDoesNotRepeatHumanReadableName() {
+        TestOperation operation = new TestOperation();
+        assertEquals("Test operation", operation.getHumanReadableName());
+        assertEquals("completed its work", operation.getSuccessLogDetail());
     }
 
-    private static final class TestOperation implements Operation<OperationParameters> {
+    private static final class TestOperation implements Operation {
         @Override
-        public void execute(OperationParameters operationParameters) {
-        }
+        public String getHumanReadableName() { return "Test operation"; }
+        @Override
+        public String getSuccessLogDetail() { return "completed its work"; }
+        @Override
+        public void execute() { }
     }
 }

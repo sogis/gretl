@@ -20,16 +20,41 @@ import ch.interlis.iox.IoxReader;
 import ch.interlis.iox.ObjectEvent;
 import ch.interlis.ilirepository.IliFiles;
 import ch.so.agi.gretl.steps.publisher.operation.Operation;
+import ch.so.agi.gretl.steps.publisher.PublisherIli2dbRunner;
 
 /**
  * Responsibility: encapsulate ili2db export configuration and execution when a
  * database publication part is exported as an XTF or ITF transfer file
  * and exported to the cache.
  */
-public class Exporter implements Operation<ExporterParameters> {
+public class Exporter implements Operation {
+    private ExporterParameters parameters;
+    private int exportedObjectCount;
+
+    public Exporter(ExporterParameters parameters) {
+        this.parameters = java.util.Objects.requireNonNull(parameters, "parameters must not be null");
+    }
+
+    /** @deprecated Use {@link #Exporter(ExporterParameters)}. */
+    @Deprecated protected Exporter() { }
+
+    /** @deprecated Use constructor-owned parameters and {@link #execute()}. */
+    @Deprecated public void execute(ExporterParameters parameters) throws Exception { this.parameters = parameters; execute(); }
+
     @Override
-    public void execute(ExporterParameters operationParameters) throws Exception {
-        export(operationParameters);
+    public void execute() throws Exception {
+        exportedObjectCount = export(parameters);
+    }
+
+    @Override
+    public String getHumanReadableName() {
+        return "Database selection export";
+    }
+
+    @Override
+    public String getSuccessLogDetail() {
+        return "exported " + exportedObjectCount + " object(s) for "
+                + parameters.getSelectionToExport().getKeyValues() + " from schema " + parameters.getDbSchema();
     }
 
     /**
@@ -70,7 +95,7 @@ public class Exporter implements Operation<ExporterParameters> {
         applySelection(operationParameters, config, keyValues);
         readSettingsFromDb(operationParameters, config);
         validateConfig(operationParameters, config);
-        runIli2db(config);
+        runIli2db(config, operationParameters.getIli2dbWorkDirectory());
         return countExportedObjects(exportFile, itfTransferFile);
     }
 
@@ -99,12 +124,14 @@ public class Exporter implements Operation<ExporterParameters> {
         return String.join(String.valueOf(ch.interlis.ili2c.Main.MODELS_SEPARATOR), keyValues);
     }
 
-    private void validateExportInputs(ExporterParameters operationParameters) {
+    private void validateExportInputs(ExporterParameters operationParameters) throws java.io.IOException {
         operationParameters.getSelectionToExport().validateResolved();
-        if (!Files.isDirectory(operationParameters.getExportDirectory())) {
+        Path exportDirectory = operationParameters.getExportDirectory();
+        if (Files.exists(exportDirectory) && !Files.isDirectory(exportDirectory)) {
             throw new IllegalArgumentException(
-                    "exportDirectory <" + operationParameters.getExportDirectory() + "> must be an existing directory");
+                    "exportDirectory <" + exportDirectory + "> must be an existing directory");
         }
+        Files.createDirectories(exportDirectory);
     }
 
     private void validateConfig(ExporterParameters operationParameters, Config config) {
@@ -143,8 +170,8 @@ public class Exporter implements Operation<ExporterParameters> {
         Ili2db.readSettingsFromDb(config);
     }
 
-    void runIli2db(Config config) throws Exception {
-        Ili2db.run(config, null);
+    void runIli2db(Config config, Path workDirectory) throws Exception {
+        PublisherIli2dbRunner.run(config, workDirectory);
     }
 
     int countExportedObjects(Path exportFile, boolean itfTransferFile) throws Exception {

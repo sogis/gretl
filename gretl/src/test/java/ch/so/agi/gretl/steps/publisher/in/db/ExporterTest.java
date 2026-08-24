@@ -2,6 +2,7 @@ package ch.so.agi.gretl.steps.publisher.in.db;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +45,17 @@ class ExporterTest {
                 () -> new TestExporter().export(params));
 
         assertEquals("exportDirectory <" + exportFile + "> must be an existing directory", exception.getMessage());
+    }
+
+    @Test
+    void createsMissingExportDirectory() throws Exception {
+        Path exportDirectory = tempDir.resolve("raw").resolve("xtf");
+        ExporterParameters params = ExporterParameters.of(selection(DataSelection.KeyType.dataset, "2501"), connection(),
+                "schema", true, exportDirectory);
+
+        new TestExporter().export(params);
+
+        assertTrue(Files.isDirectory(exportDirectory));
     }
 
     @Test
@@ -184,7 +196,7 @@ class ExporterTest {
         }
 
         @Override
-        void runIli2db(Config config) {
+        void runIli2db(Config config, Path workDirectory) {
             runCount++;
         }
 

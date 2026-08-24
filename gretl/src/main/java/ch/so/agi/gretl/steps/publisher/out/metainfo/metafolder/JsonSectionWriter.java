@@ -21,23 +21,43 @@ import ch.so.agi.gretl.steps.publisher.operation.Operation;
 /**
  * Writes the first JSON array element with a matching {@code ident} field.
  */
-public final class JsonSectionWriter implements Operation<JsonSectionWriterParameters> {
+public final class JsonSectionWriter implements Operation {
+    private JsonSectionWriterParameters parameters;
     private final GretlLogger log;
     private final ObjectMapper objectMapper;
 
-    public JsonSectionWriter() {
-        this(LogEnvironment.getLogger(JsonSectionWriter.class), new ObjectMapper());
+    public JsonSectionWriter(JsonSectionWriterParameters parameters) {
+        this(parameters, LogEnvironment.getLogger(JsonSectionWriter.class), new ObjectMapper());
     }
 
-    JsonSectionWriter(GretlLogger log, ObjectMapper objectMapper) {
+    @Deprecated public JsonSectionWriter() {
+        this.log = LogEnvironment.getLogger(JsonSectionWriter.class);
+        this.objectMapper = new ObjectMapper();
+    }
+
+    @Deprecated JsonSectionWriter(GretlLogger log, ObjectMapper objectMapper) {
+        this.log = Objects.requireNonNull(log, "log must not be null");
+        this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
+    }
+
+    @Deprecated public void execute(JsonSectionWriterParameters parameters) throws Exception { this.parameters = parameters; execute(); }
+
+    JsonSectionWriter(JsonSectionWriterParameters parameters, GretlLogger log, ObjectMapper objectMapper) {
+        this.parameters = Objects.requireNonNull(parameters, "parameters must not be null");
         this.log = Objects.requireNonNull(log, "log must not be null");
         this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
     }
 
     @Override
-    public void execute(JsonSectionWriterParameters operationParameters) throws Exception {
-        write(operationParameters);
+    public void execute() throws Exception {
+        write(parameters);
     }
+
+    @Override
+    public String getHumanReadableName() { return "JSON metadata writer"; }
+
+    @Override
+    public String getSuccessLogDetail() { return "wrote metadata section " + parameters.getIdent(); }
 
     void write(JsonSectionWriterParameters operationParameters) throws IOException {
         Objects.requireNonNull(operationParameters, "operationParameters must not be null");

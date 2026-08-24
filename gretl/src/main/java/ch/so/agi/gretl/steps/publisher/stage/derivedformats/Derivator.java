@@ -11,17 +11,39 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import ch.so.agi.gretl.steps.publisher.operation.Operation;
+import ch.so.agi.gretl.steps.publisher.PartWorkspace;
 
-public final class Derivator implements Operation<DerivatorParameters> {
+public final class Derivator implements Operation {
+    private DerivatorParameters parameters;
+    private int derivedTransferFileCount;
+
+    public Derivator(DerivatorParameters parameters) {
+        this.parameters = Objects.requireNonNull(parameters, "parameters must not be null");
+    }
+    @Deprecated public Derivator() { }
+    @Deprecated public void execute(DerivatorParameters parameters) { this.parameters = parameters; execute(); }
+
     @Override
-    public void execute(DerivatorParameters operationParameters) {
-        deriveAllTransferFiles(operationParameters);
+    public void execute() {
+        derivedTransferFileCount = deriveAllTransferFiles(parameters);
     }
 
-    void deriveAllTransferFiles(DerivatorParameters operationParameters) {
-        for (Path transferFile : findTransferFiles(operationParameters)) {
-            new SingleTransferDerivator(transferFile, operationParameters.getRequestedFormats()).derive();
+    @Override
+    public String getHumanReadableName() { return "Format Derivator (from xtf/itf)"; }
+
+    @Override
+    public String getSuccessLogDetail() {
+        return "created " + parameters.getRequestedFormats() + " for " + derivedTransferFileCount + " transfer file(s)";
+    }
+
+    int deriveAllTransferFiles(DerivatorParameters operationParameters) {
+        List<Path> transferFiles = findTransferFiles(operationParameters);
+        for (Path transferFile : transferFiles) {
+            new SingleTransferDerivator(transferFile, operationParameters.getRequestedFormats(),
+                    operationParameters.getCustomModelDir(),
+                    PartWorkspace.workRoot(operationParameters.getCacheDir().getParent())).derive();
         }
+        return transferFiles.size();
     }
 
     private List<Path> findTransferFiles(DerivatorParameters operationParameters) {

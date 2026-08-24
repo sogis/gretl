@@ -1,5 +1,11 @@
 # Neue API des Publishers (Nach Einführung Themenbezug)
 
+## Scratch (Temp)
+
+Integrationstests starten
+
+        ./gradlew gretl:jarTest --tests ch.so.agi.gretl.jobs.PublisherTest
+
 ## Motivation
 
 Der Publisher ist sehr mächtig, was ihn in der Verwendung nicht gerade einfach macht. Durch eine Kombination von Namenskonventionen, klaren Fehlermeldlungen und verbesserter Dokumentation soll die Verwendung einfacher gemacht werden.

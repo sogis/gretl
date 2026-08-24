@@ -2,9 +2,9 @@ package ch.so.agi.gretl.steps.publisher;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.Ehi2GretlAdapter;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.publisher.operation.Operation;
 import ch.so.agi.gretl.steps.publisher.operation.OperationParameters;
@@ -14,6 +14,7 @@ import ch.so.agi.gretl.steps.publisher.operation.OperationParameters;
  */
 public class OpSequenceRunner {
     private final GretlLogger log;
+    private final PublisherLogFormatter logFormatter;
 
     public OpSequenceRunner() {
         this(LogEnvironment.getLogger(OpSequenceRunner.class));
@@ -21,34 +22,25 @@ public class OpSequenceRunner {
 
     public OpSequenceRunner(GretlLogger log) {
         this.log = Objects.requireNonNull(log, "log must not be null");
+        this.logFormatter = new PublisherLogFormatter();
     }
 
-    public void run(List<OpSequenceStep> steps) throws Exception {
-        Objects.requireNonNull(steps, "steps must not be null");
+    public void run(List<? extends Operation> operations) throws Exception {
+        Objects.requireNonNull(operations, "operations must not be null");
 
-        log.lifecycle(buildSummary(steps));
-        for (OpSequenceStep step : steps) {
-            runStep(step);
+        log.info(logFormatter.plan(operations));
+        for (Operation operation : operations) {
+            runOperation(operation);
         }
     }
 
-    private String buildSummary(List<OpSequenceStep> steps) {
-        String summary = steps.stream()
-                .map(step -> step.getOperation().getHumanReadableName())
-                .collect(Collectors.joining(", "));
-        return "Publication will perform these steps: " + summary;
-    }
-
-    private void runStep(OpSequenceStep step) throws Exception {
-        Objects.requireNonNull(step, "step must not be null");
-        Operation<? extends OperationParameters> operation = step.getOperation();
-        OperationParameters parameters = step.resolveParameters();
-        executeOperation(operation, parameters);
-        log.info(operation.getSuccessLogMessage());
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static void executeOperation(Operation operation, OperationParameters parameters) throws Exception {
-        operation.execute(parameters);
+    private void runOperation(Operation operation) throws Exception {
+        Objects.requireNonNull(operation, "operation must not be null");
+        // Validation and other EHI tools can restore the standard console
+        // listener. Keep the configured bridge active for every Publisher
+        // operation; ili2db's own temporary logger is handled separately.
+        Ehi2GretlAdapter.init();
+        operation.execute();
+        log.info(operation.getHumanReadableName() + ": " + operation.getSuccessLogDetail());
     }
 }

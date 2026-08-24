@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import ch.interlis.ili2c.metamodel.Model;
+import ch.interlis.ili2c.metamodel.PredefinedModel;
 
 import ch.so.agi.gretl.steps.publisher.operation.Operation;
 
@@ -21,16 +25,32 @@ import ch.so.agi.gretl.steps.publisher.operation.Operation;
  *  The optional validation configuration is expected at the cache root as validation.ini.
  *  Each transfer file writes its validation log into the same folder as the transfer file itself.
  */
-public class CacheValidator implements Operation<CacheValidatorParameters> {
+public class CacheValidator implements Operation {
     public static final String VALIDATION_CONFIG_FILENAME = "validation.ini";
     public static final String VALIDATION_LOG_EXTENSION = "log";
+    public static final String MODEL_MANIFEST_FILENAME = "models.list";
+
+    private CacheValidatorParameters parameters;
+    private int validatedFileCount;
+
+    public CacheValidator(CacheValidatorParameters parameters) {
+        this.parameters = Objects.requireNonNull(parameters, "parameters must not be null");
+    }
+    @Deprecated public CacheValidator() { }
+    @Deprecated public void execute(CacheValidatorParameters parameters) { this.parameters = parameters; execute(); }
 
     @Override
-    public void execute(CacheValidatorParameters operationParameters) {
-        validate(operationParameters);
+    public void execute() {
+        validatedFileCount = validate(parameters);
     }
 
-    void validate(CacheValidatorParameters operationParameters) {
+    @Override
+    public String getHumanReadableName() { return "Validation"; }
+
+    @Override
+    public String getSuccessLogDetail() { return "validated " + validatedFileCount + " transfer file(s)"; }
+
+    int validate(CacheValidatorParameters operationParameters) {
         Objects.requireNonNull(operationParameters, "operationParameters must not be null");
         Path cachePath = operationParameters.getCachePath();
         if (!Files.exists(cachePath)) {
@@ -64,6 +84,7 @@ public class CacheValidator implements Operation<CacheValidatorParameters> {
         for (Path transferFile : transferFiles) {
             validateTransferFile(operationParameters, transferFile, validationConfig);
         }
+        return transferFiles.size();
     }
 
     private void validateTransferFile(CacheValidatorParameters operationParameters, Path transferFile,
@@ -85,11 +106,16 @@ public class CacheValidator implements Operation<CacheValidatorParameters> {
                 throw new IllegalStateException("failed to read validation config " + validationConfig, e);
             }
         }
+        if (operationParameters.getCustomModelDir() != null) {
+            settings.setValue(Validator.SETTING_ILIDIRS, operationParameters.getCustomModelDir());
+        }
 
-        boolean validationOk = new Validator().validate(new String[] {transferFile.toAbsolutePath().toString()}, settings);
+        Validator validator = new Validator();
+        boolean validationOk = validator.validate(new String[] {transferFile.toAbsolutePath().toString()}, settings);
         if (!validationOk && operationParameters.isThrowOnValidationError()) {
             throw new IllegalStateException("validation failed for " + transferFile);
         }
+        if (validationOk) writeModelManifest(validator, transferFile);
     }
 
     private void copySettings(Settings source, Settings target) {
@@ -127,6 +153,34 @@ public class CacheValidator implements Operation<CacheValidatorParameters> {
         int extensionIndex = filename.lastIndexOf('.');
         String logFilename = (extensionIndex > 0 ? filename.substring(0, extensionIndex) : filename)
                 + "." + VALIDATION_LOG_EXTENSION;
-        return transferFile.getParent() == null ? Path.of(logFilename) : transferFile.getParent().resolve(logFilename);
+        Path transferDir = transferFile.getParent();
+        if (transferDir == null || !"xtf".equals(transferDir.getFileName().toString())) {
+            return transferDir == null ? Path.of(logFilename) : transferDir.resolve(logFilename);
+        }
+        Path partDir = transferDir.getParent();
+        if (partDir == null) return transferDir.resolve(logFilename);
+        Path iliMetaDir = partDir.resolve("ilimeta");
+        try {
+            Files.createDirectories(iliMetaDir);
+        } catch (IOException e) {
+            throw new IllegalStateException("failed to create validation metadata directory " + iliMetaDir, e);
+        }
+        return iliMetaDir.resolve(logFilename);
+    }
+
+    private void writeModelManifest(Validator validator, Path transferFile) {
+        Path transferDir = transferFile.getParent();
+        if (transferDir == null || !"xtf".equals(transferDir.getFileName().toString()) || transferDir.getParent() == null) return;
+        Path manifest = transferDir.getParent().resolve("ilimeta").resolve(MODEL_MANIFEST_FILENAME);
+        List<String> models = new ArrayList<String>();
+        for (java.util.Iterator<Model> iterator = validator.getModel().iterator(); iterator.hasNext();) {
+            Model model = iterator.next();
+            if (!(model instanceof PredefinedModel) && model.getFileName() != null) models.add(model.getFileName());
+        }
+        try {
+            Files.write(manifest, models.stream().distinct().sorted().collect(Collectors.toList()));
+        } catch (IOException e) {
+            throw new IllegalStateException("failed to write model manifest " + manifest, e);
+        }
     }
 }

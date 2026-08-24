@@ -33,7 +33,7 @@ class RawPublisherArgsTest {
                         list("ch.so.agi.alpha", "ch.so.agi.beta"))
                 .build();
 
-        assertEquals("edit", args.getDbDatabase());
+        assertEquals("edit", args.getDbDatabase().getUrl());
         assertEquals("live", args.getDbSchema());
         assertEquals(RawPublisherArgs.IliIdentType.dataset, args.getDbIliIdentType());
         assertEquals(List.of("ch.so.agi.alpha", "ch.so.agi.beta"), args.getDbIliIdent_Values());
@@ -159,7 +159,7 @@ class RawPublisherArgsTest {
     @Test
     void rejectsDbSourceMissingMandatoryArgs() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> publisherArgs()
-                .dbValuesSource(null, null, null, null, list("ch.so.agi.alpha"))
+                .dbValuesSource((DatabaseConfig) null, null, null, null, list("ch.so.agi.alpha"))
                 .build());
 
         assertContains(exception, "dbDatabase");

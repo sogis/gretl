@@ -6,8 +6,9 @@ import java.util.Objects;
 import ch.so.agi.gretl.steps.publisher.operation.OperationParameters;
 
 /** Input for recreating a publication's legacy {@code meta} folder. */
-public final class MetafolderWriterParameters implements OperationParameters {
-    private final Path cacheRoot;
+public final class MetaFolderWriterParameters implements OperationParameters {
+    private final Path rawRoot;
+    private final Path publicationRoot;
     private final String ident;
     private final String customModelDir;
     private final Path validationConfig;
@@ -15,9 +16,10 @@ public final class MetafolderWriterParameters implements OperationParameters {
     private final String jsonmetaBucket;
     private final String jsonmetaFileName;
 
-    private MetafolderWriterParameters(Path cacheRoot, String ident, String customModelDir, Path validationConfig,
+    private MetaFolderWriterParameters(Path rawRoot, Path publicationRoot, String ident, String customModelDir, Path validationConfig,
             String jsonmetaAddress, String jsonmetaBucket, String jsonmetaFileName) {
-        this.cacheRoot = Objects.requireNonNull(cacheRoot, "cacheRoot must not be null");
+        this.rawRoot = Objects.requireNonNull(rawRoot, "rawRoot must not be null");
+        this.publicationRoot = Objects.requireNonNull(publicationRoot, "publicationRoot must not be null");
         this.ident = requireText(ident, "ident");
         this.customModelDir = customModelDir;
         this.validationConfig = validationConfig;
@@ -30,13 +32,22 @@ public final class MetafolderWriterParameters implements OperationParameters {
         }
     }
 
-    public static MetafolderWriterParameters of(Path cacheRoot, String ident, String customModelDir,
+    public static MetaFolderWriterParameters of(Path rawRoot, Path publicationRoot, String ident, String customModelDir,
             Path validationConfig, String jsonmetaAddress, String jsonmetaBucket, String jsonmetaFileName) {
-        return new MetafolderWriterParameters(cacheRoot, ident, customModelDir, validationConfig, jsonmetaAddress,
+        return new MetaFolderWriterParameters(rawRoot, publicationRoot, ident, customModelDir, validationConfig, jsonmetaAddress,
                 jsonmetaBucket, jsonmetaFileName);
     }
 
-    public Path getCacheRoot() { return cacheRoot; }
+    /** @deprecated Use the explicit raw and publication roots overload. */
+    @Deprecated
+    public static MetaFolderWriterParameters of(Path cacheRoot, String ident, String customModelDir,
+            Path validationConfig, String jsonmetaAddress, String jsonmetaBucket, String jsonmetaFileName) {
+        return of(cacheRoot, cacheRoot, ident, customModelDir, validationConfig, jsonmetaAddress, jsonmetaBucket,
+                jsonmetaFileName);
+    }
+
+    public Path getRawRoot() { return rawRoot; }
+    public Path getPublicationRoot() { return publicationRoot; }
     public String getIdent() { return ident; }
     public String getCustomModelDir() { return customModelDir; }
     public Path getValidationConfig() { return validationConfig; }

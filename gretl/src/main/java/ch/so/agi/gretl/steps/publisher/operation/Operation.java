@@ -3,18 +3,21 @@ package ch.so.agi.gretl.steps.publisher.operation;
 /**
  * Common contract for publisher operations.
  */
-public interface Operation<P extends OperationParameters> {
-    default String getFullyQualifiedClassName() {
-        return getClass().getName();
-    }
-
+public interface Operation {
     default String getHumanReadableName() {
         return getClass().getSimpleName();
     }
 
-    default String getSuccessLogMessage() {
-        return getHumanReadableName() + " completed successfully";
-    }
+    /**
+     * Returns the result detail for the success log line.
+     *
+     * <p>{@code OpSequenceRunner} combines this with {@link #getHumanReadableName()}
+     * as {@code "&lt;name&gt;: &lt;detail&gt;"}. Implementations must therefore describe
+     * the completed work without repeating their human-readable name. This method is
+     * called only after {@link #execute()} completed successfully.</p>
+     */
+    String getSuccessLogDetail();
 
-    void execute(P operationParameters) throws Exception;
+    /** Executes this single-use operation with the inputs supplied at construction time. */
+    void execute() throws Exception;
 }

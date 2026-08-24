@@ -7,12 +7,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,20 +24,18 @@ import ch.so.agi.gretl.steps.publisher.in.xtf.list.XtfCopy;
 import ch.so.agi.gretl.steps.publisher.in.xtf.list.XtfCopyParams;
 import ch.so.agi.gretl.steps.publisher.in.xtf.regex.XtfByRegex;
 import ch.so.agi.gretl.steps.publisher.in.xtf.regex.XtfByRegexParams;
-import ch.so.agi.gretl.steps.publisher.operation.OperationParameters;
-import ch.so.agi.gretl.steps.publisher.out.metainfo.table.Writer;
-import ch.so.agi.gretl.steps.publisher.out.metainfo.table.WriterParameters;
-import ch.so.agi.gretl.steps.publisher.out.metainfo.metafolder.MetafolderWriter;
-import ch.so.agi.gretl.steps.publisher.out.metainfo.metafolder.MetafolderWriterParameters;
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
+import ch.so.agi.gretl.steps.publisher.out.metainfo.table.MetaTableWriter;
+import ch.so.agi.gretl.steps.publisher.out.metainfo.table.MetaTableWriterParameters;
+import ch.so.agi.gretl.steps.publisher.out.metainfo.metafolder.MetaFolderWriter;
+import ch.so.agi.gretl.steps.publisher.out.metainfo.metafolder.MetaFolderWriterParameters;
 import ch.so.agi.gretl.steps.publisher.out.updateremote.RemoteUpdater;
 import ch.so.agi.gretl.steps.publisher.out.updateremote.RemoteUpdaterParameters;
 import ch.so.agi.gretl.steps.publisher.stage.derivedformats.Derivator;
 import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivatorParameters;
 import ch.so.agi.gretl.steps.publisher.stage.derivedformats.DerivedFormat;
-import ch.so.agi.gretl.steps.publisher.stage.mergestages.MergeStages;
-import ch.so.agi.gretl.steps.publisher.stage.mergestages.MergeStagesParameters;
-import ch.so.agi.gretl.steps.publisher.stage.pack.Packer;
-import ch.so.agi.gretl.steps.publisher.stage.pack.PackerParameters;
+import ch.so.agi.gretl.steps.publisher.stage.pack.PublicationArtifactPackager;
+import ch.so.agi.gretl.steps.publisher.stage.pack.PublicationArtifactPackagerParameters;
 import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 import ch.so.agi.gretl.steps.publisher.stage.validation.CacheValidator;
 import ch.so.agi.gretl.steps.publisher.stage.validation.CacheValidatorParameters;
@@ -64,84 +60,46 @@ public class OpSequenceBuilder {
         this.dbSelectionResolver = Objects.requireNonNull(dbSelectionResolver, "dbSelectionResolver must not be null");
     }
 
-    public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection publicationDbConnection,
-            Path cacheRoot) throws Exception {
-        return buildSequence(rawPublisherArgs, publicationDbConnection, publicationDbConnection, "public", true,
-                cacheRoot);
-    }
-
-    /** Builds a sequence with separate source and publication-metadata connections. */
-    public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection,
+    /** Builds the executable sequence from resolved arguments and opened connections. */
+    public List<Operation> buildSequence(ResolvedPublisherArgs publisherArgs, Connection sourceDbConnection,
             Connection publicationDbConnection, Path cacheRoot) throws Exception {
-        return buildSequence(rawPublisherArgs, sourceDbConnection, publicationDbConnection, "public", true, cacheRoot);
-    }
-
-    /** Builds a sequence that optionally writes metadata after remote promotion. */
-    public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection,
-            Connection publicationDbConnection, String metadataSchema, boolean writeMetadata, Path cacheRoot) throws Exception {
-        return buildSequence(rawPublisherArgs, sourceDbConnection, publicationDbConnection, metadataSchema, writeMetadata,
-                null, null, null, cacheRoot);
-    }
-
-    /** Builds a sequence with optional JSON metadata source configuration. */
-    public List<OpSequenceStep> buildSequence(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection,
-            Connection publicationDbConnection, String metadataSchema, boolean writeMetadata, String jsonmetaAddress,
-            String jsonmetaBucket, String jsonmetaFileName, Path cacheRoot) throws Exception {
-        Objects.requireNonNull(rawPublisherArgs, "rawPublisherArgs must not be null");
-        if (rawPublisherArgs.getPublicationTimestamp() == null) {
-            rawPublisherArgs = rawPublisherArgs.withPublicationTimestamp(new Date());
-        }
-        final RawPublisherArgs sequenceArgs = rawPublisherArgs;
+        Objects.requireNonNull(publisherArgs, "publisherArgs must not be null");
+        boolean writeMetadata = publisherArgs.getOutWriteMetadata();
         if (writeMetadata) {
             Objects.requireNonNull(publicationDbConnection, "publicationDbConnection must not be null when writing metadata");
-            requireText(metadataSchema, "metadataSchema");
+            requireText(publisherArgs.getMetadataSchema(), "metadataSchema");
         }
         Path normalizedCacheRoot = normalizePath(cacheRoot, "cacheRoot");
 
-        List<OpSequenceStep> steps = new ArrayList<>();
-        SourcePlan sourcePlan = buildSourcePlan(rawPublisherArgs, sourceDbConnection, normalizedCacheRoot);
+        List<Operation> steps = new ArrayList<>();
+        Path rawRoot = PartWorkspace.rawRoot(normalizedCacheRoot);
+        Path publicationRoot = PartWorkspace.publicationRoot(normalizedCacheRoot);
+        SourcePlan sourcePlan = buildSourcePlan(publisherArgs, sourceDbConnection, rawRoot);
         steps.addAll(sourcePlan.getSteps());
 
-        if (sourcePlan.requiresMerge()) {
-            steps.add(OpSequenceStep.of(new MergeStages(),
-                    constant(MergeStagesParameters.of(sourcePlan.getStageDirs(), normalizedCacheRoot))));
-        }
-
-        Path validationConfig = coerceOptionalPath(rawPublisherArgs.getOutValidationConfigFilePath(),
+        Path validationConfig = coerceOptionalPath(publisherArgs.getOutValidationConfigFilePath(),
                 "outValidationConfigFilePath");
         if (validationConfig != null) {
-            steps.add(OpSequenceStep.of(new ValidationConfigSeeder(),
-                    constant(ValidationConfigSeederParameters.of(validationConfig, normalizedCacheRoot))));
-            steps.add(OpSequenceStep.of(new CacheValidator(),
-                    constant(CacheValidatorParameters.of(normalizedCacheRoot, true, true))));
+            steps.add(new ValidationConfigSeeder(ValidationConfigSeederParameters.of(validationConfig, rawRoot)));
         }
+        steps.add(new CacheValidator(CacheValidatorParameters.of(rawRoot, true, true, publisherArgs.getCustomModelDir())));
 
-        List<DerivedFormat> derivedFormats = selectedDerivedFormats(rawPublisherArgs.getOutFormats());
+        List<DerivedFormat> derivedFormats = selectedDerivedFormats(publisherArgs.getOutFormats());
         if (!derivedFormats.isEmpty()) {
-            steps.add(OpSequenceStep.of(new Derivator(),
-                    constant(DerivatorParameters.of(normalizedCacheRoot, derivedFormats))));
+            steps.add(new Derivator(DerivatorParameters.of(rawRoot, derivedFormats, publisherArgs.getCustomModelDir())));
         }
 
-        steps.add(OpSequenceStep.of(new MetafolderWriter(), constant(MetafolderWriterParameters.of(normalizedCacheRoot,
-                rawPublisherArgs.getOutDataIdent(), rawPublisherArgs.getCustomModelDir(), validationConfig,
-                jsonmetaAddress, jsonmetaBucket, jsonmetaFileName))));
-
-        steps.add(OpSequenceStep.of(new Packer(),
-                constant(PackerParameters.of(normalizedCacheRoot, rawPublisherArgs.getOutDataIdent(),
-                        rawPublisherArgs.getOutFormats()))));
-        steps.add(OpSequenceStep.of(new RemoteUpdater(),
-                constant(RemoteUpdaterParameters.of(normalizedCacheRoot, endpointToPath(rawPublisherArgs.getOutFolderPath()),
-                        rawPublisherArgs.getOutDataIdent(), rawPublisherArgs.getPublicationTimestamp()))));
+        steps.add(new PublicationArtifactPackager(PublicationArtifactPackagerParameters.of(rawRoot, publicationRoot,
+                publisherArgs.getOutFormats())));
+        steps.add(new MetaFolderWriter(MetaFolderWriterParameters.of(rawRoot, publicationRoot,
+                publisherArgs.getOutDataIdent(), publisherArgs.getCustomModelDir(), validationConfig,
+                publisherArgs.getJsonmetaAddress(), publisherArgs.getJsonmetaBucket(), publisherArgs.getJsonmetaFileName())));
         if (writeMetadata) {
-            steps.add(OpSequenceStep.of(new Writer(), new Supplier<WriterParameters>() {
-                @Override
-                public WriterParameters get() {
-                    return WriterParameters.of(publicationDbConnection, metadataSchema, sequenceArgs.getOutDataIdent(),
-                            publicationDate(sequenceArgs), sourcePlan.getPartIdentifiers(),
-                            discoverPublishedFormats(normalizedCacheRoot));
-                }
-            }));
+            steps.add(new MetaTableWriter(MetaTableWriterParameters.of(publicationDbConnection, publisherArgs.getMetadataSchema(),
+                    publisherArgs.getOutDataIdent(), publicationDate(publisherArgs), rawRoot, publicationRoot)));
         }
+        steps.add(new RemoteUpdater(RemoteUpdaterParameters.of(publicationRoot,
+                endpointToPath(publisherArgs.getOutFolderPath()), publisherArgs.getOutDataIdent(), publisherArgs.getPublicationTimestamp())));
 
         return Collections.unmodifiableList(steps);
     }
@@ -157,99 +115,96 @@ public class OpSequenceBuilder {
         return formats;
     }
 
-    private SourcePlan buildSourcePlan(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection, Path cacheRoot)
+    private SourcePlan buildSourcePlan(ResolvedPublisherArgs publisherArgs, Connection sourceDbConnection, Path cacheRoot)
             throws Exception {
-        switch (rawPublisherArgs.getPublishMode()) {
+        switch (publisherArgs.getPublishMode()) {
         case dbIdentvaluesList:
         case dbIdentvaluesRegex:
-            return buildDbSourcePlan(rawPublisherArgs, sourceDbConnection, cacheRoot);
+            return buildDbSourcePlan(publisherArgs, sourceDbConnection, cacheRoot);
         case xtfFilesList:
-            return buildXtfListSourcePlan(rawPublisherArgs, cacheRoot);
+            return buildXtfListSourcePlan(publisherArgs, cacheRoot);
         case xtfFilesRegex:
-            return buildXtfRegexSourcePlan(rawPublisherArgs, cacheRoot);
+            return buildXtfRegexSourcePlan(publisherArgs, cacheRoot);
         default:
-            throw new IllegalArgumentException("unsupported publishMode <" + rawPublisherArgs.getPublishMode() + ">");
+            throw new IllegalArgumentException("unsupported publishMode <" + publisherArgs.getPublishMode() + ">");
         }
     }
 
-    private SourcePlan buildDbSourcePlan(RawPublisherArgs rawPublisherArgs, Connection sourceDbConnection,
+    private SourcePlan buildDbSourcePlan(ResolvedPublisherArgs publisherArgs, Connection sourceDbConnection,
             Path cacheRoot) throws Exception {
         Objects.requireNonNull(sourceDbConnection, "sourceDbConnection must not be null in db mode");
-        DataSelection requestedSelection = createRequestedSelection(rawPublisherArgs);
-        DataSelection resolvedSelection = dbSelectionResolver.resolve(sourceDbConnection, rawPublisherArgs.getDbSchema(),
+        DataSelection requestedSelection = createRequestedSelection(publisherArgs);
+        DataSelection resolvedSelection = dbSelectionResolver.resolve(sourceDbConnection, publisherArgs.getDbSchema(),
                 requestedSelection);
         List<String> keyValues = resolvedSelection.getKeyValues();
-        List<String> partIdentifiers = rawPublisherArgs.getDbIliIdent_Values().size() == 1
+        List<String> partIdentifiers = publisherArgs.getDbIliIdent_Values().size() == 1
                 ? Collections.singletonList(ALL_PARTS)
                 : new ArrayList<String>(keyValues);
 
-        if (Boolean.TRUE.equals(rawPublisherArgs.getDbMergeToSingleXtf()) || keyValues.size() <= 1) {
-            return SourcePlan.singleStage(OpSequenceStep.of(new Exporter(),
-                    constant(ExporterParameters.of(resolvedSelection, sourceDbConnection, rawPublisherArgs.getDbSchema(),
-                            Boolean.TRUE.equals(rawPublisherArgs.getDbMergeToSingleXtf()), cacheRoot))), partIdentifiers);
+        if (Boolean.TRUE.equals(publisherArgs.getDbMergeToSingleXtf()) || keyValues.size() <= 1) {
+            return SourcePlan.singleStage(new Exporter(ExporterParameters.of(resolvedSelection, sourceDbConnection,
+                    publisherArgs.getDbSchema(), Boolean.TRUE.equals(publisherArgs.getDbMergeToSingleXtf()),
+                    PartWorkspace.transferRoot(cacheRoot, partIdentifiers.get(0)),
+                    PartWorkspace.workRoot(cacheRoot.getParent()))), partIdentifiers);
         }
 
-        List<OpSequenceStep> steps = new ArrayList<>();
-        List<Path> stageDirs = new ArrayList<>();
-        Path stageRoot = siblingStageRoot(cacheRoot);
+        List<Operation> steps = new ArrayList<>();
         for (int i = 0; i < keyValues.size(); i++) {
             String keyValue = keyValues.get(i);
-            Path stageDir = stageRoot.resolve(String.format(Locale.ROOT, "%02d-%s", Integer.valueOf(i),
-                    sanitizeForPathSegment(keyValue)));
-            Files.createDirectories(stageDir);
             DataSelection singleSelection = new DataSelection();
             singleSelection.setKeyType(resolvedSelection.getKeyType());
             singleSelection.setKeyValues(Collections.singletonList(keyValue));
-            stageDirs.add(stageDir);
-            steps.add(OpSequenceStep.of(new Exporter(), constant(
-                    ExporterParameters.of(singleSelection, sourceDbConnection, rawPublisherArgs.getDbSchema(), false,
-                            stageDir))));
+            steps.add(new Exporter(ExporterParameters.of(singleSelection, sourceDbConnection, publisherArgs.getDbSchema(), false,
+                    PartWorkspace.transferRoot(cacheRoot, keyValue), PartWorkspace.workRoot(cacheRoot.getParent()))));
         }
-        return SourcePlan.multiStage(steps, stageDirs, partIdentifiers);
+        return SourcePlan.of(steps, partIdentifiers);
     }
 
-    private SourcePlan buildXtfRegexSourcePlan(RawPublisherArgs rawPublisherArgs, Path cacheRoot) {
-        Path sourceDir = coercePath(rawPublisherArgs.getXtfFile_FolderPath(), "xtfFile_FolderPath");
-        List<String> partIdentifiers = discoverRegexPartIdentifiers(sourceDir, rawPublisherArgs.getXtfFilename_Regex());
-        return SourcePlan.singleStage(OpSequenceStep.of(new XtfByRegex(),
-                constant(XtfByRegexParams.of(sourceDir, cacheRoot, rawPublisherArgs.getXtfFilename_Regex()))), partIdentifiers);
+    private SourcePlan buildXtfRegexSourcePlan(ResolvedPublisherArgs publisherArgs, Path cacheRoot) {
+        Path sourceDir = coercePath(publisherArgs.getXtfFile_FolderPath(), "xtfFile_FolderPath");
+        List<RegexTransferFile> matchingFiles = discoverRegexTransferFiles(sourceDir,
+                publisherArgs.getXtfFilename_Regex());
+        List<Operation> steps = new ArrayList<>();
+        List<String> partIdentifiers = new ArrayList<>();
+        for (RegexTransferFile matchingFile : matchingFiles) {
+            partIdentifiers.add(matchingFile.getPartIdentifier());
+            steps.add(new XtfByRegex(XtfByRegexParams.of(sourceDir,
+                    PartWorkspace.transferRoot(cacheRoot, matchingFile.getPartIdentifier()),
+                    Pattern.quote(matchingFile.getFilename()))));
+        }
+        return SourcePlan.of(steps, partIdentifiers);
     }
 
-    private SourcePlan buildXtfListSourcePlan(RawPublisherArgs rawPublisherArgs, Path cacheRoot) {
-        Path sourceDir = coercePath(rawPublisherArgs.getXtfFile_FolderPath(), "xtfFile_FolderPath");
-        ParsedTransferSelection parsedSelection = parseTransferSelection(rawPublisherArgs.getXtfFilename_List());
+    private SourcePlan buildXtfListSourcePlan(ResolvedPublisherArgs publisherArgs, Path cacheRoot) {
+        Path sourceDir = coercePath(publisherArgs.getXtfFile_FolderPath(), "xtfFile_FolderPath");
+        ParsedTransferSelection parsedSelection = parseTransferSelection(publisherArgs.getXtfFilename_List());
         List<String> partIdentifiers = parsedSelection.getBasenames().size() == 1
                 ? Collections.singletonList(ALL_PARTS)
                 : parsedSelection.getBasenames();
         if (parsedSelection.getBasenames().size() <= 1) {
-            return SourcePlan.singleStage(OpSequenceStep.of(new XtfCopy(),
-                    constant(XtfCopyParams.of(sourceDir, cacheRoot, parsedSelection.getTransferFileType(),
-                            TransferFileList.of(parsedSelection.getBasenames())))), partIdentifiers);
+            String partIdentifier = partIdentifiers.get(0);
+            return SourcePlan.singleStage(new XtfCopy(XtfCopyParams.of(sourceDir,
+                    PartWorkspace.transferRoot(cacheRoot, partIdentifier), parsedSelection.getTransferFileType(),
+                    TransferFileList.of(parsedSelection.getBasenames()))), partIdentifiers);
         }
 
-        List<OpSequenceStep> steps = new ArrayList<>();
-        List<Path> stageDirs = new ArrayList<>();
-        Path stageRoot = siblingStageRoot(cacheRoot);
+        List<Operation> steps = new ArrayList<>();
         for (int i = 0; i < parsedSelection.getBasenames().size(); i++) {
             String basename = parsedSelection.getBasenames().get(i);
-            Path stageDir = stageRoot.resolve(String.format(Locale.ROOT, "%02d-%s", Integer.valueOf(i),
-                    sanitizeForPathSegment(basename)));
-            stageDirs.add(stageDir);
-            steps.add(OpSequenceStep.of(new XtfCopy(),
-                    constant(XtfCopyParams.of(sourceDir, stageDir, parsedSelection.getTransferFileType(),
-                            TransferFileList.of(Collections.singletonList(basename))))));
+            steps.add(new XtfCopy(XtfCopyParams.of(sourceDir, PartWorkspace.transferRoot(cacheRoot, basename), parsedSelection.getTransferFileType(),
+                    TransferFileList.of(Collections.singletonList(basename)))));
         }
-        return SourcePlan.multiStage(steps, stageDirs, partIdentifiers);
+        return SourcePlan.of(steps, partIdentifiers);
     }
 
-    private DataSelection createRequestedSelection(RawPublisherArgs rawPublisherArgs) {
+    private DataSelection createRequestedSelection(ResolvedPublisherArgs publisherArgs) {
         DataSelection selection = new DataSelection();
-        selection.setKeyType(DataSelection.KeyType.valueOf(rawPublisherArgs.getDbIliIdentType().name()));
-        if (!rawPublisherArgs.getDbIliIdent_Values().isEmpty()) {
-            selection.setKeyValues(rawPublisherArgs.getDbIliIdent_Values());
+        selection.setKeyType(DataSelection.KeyType.valueOf(publisherArgs.getDbIliIdentType().name()));
+        if (!publisherArgs.getDbIliIdent_Values().isEmpty()) {
+            selection.setKeyValues(publisherArgs.getDbIliIdent_Values());
         }
-        if (rawPublisherArgs.getDbIliIdent_RegEx() != null) {
-            selection.setKeyRegEx(rawPublisherArgs.getDbIliIdent_RegEx());
+        if (publisherArgs.getDbIliIdent_RegEx() != null) {
+            selection.setKeyRegEx(publisherArgs.getDbIliIdent_RegEx());
         }
         return selection;
     }
@@ -338,29 +293,46 @@ public class OpSequenceBuilder {
         }
     }
 
-    private static LocalDate publicationDate(RawPublisherArgs rawPublisherArgs) {
-        return rawPublisherArgs.getPublicationTimestamp().toInstant().atZone(PUBLICATION_ZONE).toLocalDate();
+    private static LocalDate publicationDate(ResolvedPublisherArgs publisherArgs) {
+        return publisherArgs.getPublicationTimestamp().toInstant().atZone(PUBLICATION_ZONE).toLocalDate();
     }
 
-    private static List<String> discoverRegexPartIdentifiers(Path sourceDir, String regex) {
+    private static List<RegexTransferFile> discoverRegexTransferFiles(Path sourceDir, String regex) {
         if (!Files.isDirectory(sourceDir)) {
             throw new IllegalArgumentException("sourceDir <" + sourceDir + "> must be an existing directory");
         }
         Pattern pattern = Pattern.compile(regex);
         try (Stream<Path> stream = Files.list(sourceDir)) {
-            List<String> identifiers = stream.filter(Files::isRegularFile)
+            List<String> filenames = stream.filter(Files::isRegularFile)
                     .map(path -> path.getFileName().toString())
                     .filter(filename -> pattern.matcher(filename).matches())
                     .sorted()
-                    .map(OpSequenceBuilder::transferBasename)
                     .collect(Collectors.toList());
-            if (identifiers.isEmpty()) {
+            if (filenames.isEmpty()) {
                 throw new IllegalArgumentException("regex <" + regex + "> did not match any files");
             }
-            return identifiers;
+            List<RegexTransferFile> transferFiles = new ArrayList<>();
+            for (String filename : filenames) {
+                if (!isTransferFilename(filename)) {
+                    throw new IllegalArgumentException("regex <" + regex + "> matched non-transfer file <" + filename
+                            + ">; Publisher input files must use the .xtf or .itf extension");
+                }
+                String partIdentifier = transferBasename(filename);
+                if (transferFiles.stream().anyMatch(file -> file.getPartIdentifier().equals(partIdentifier))) {
+                    throw new IllegalArgumentException("regex <" + regex + "> matched multiple transfer files for publication part <"
+                            + partIdentifier + ">");
+                }
+                transferFiles.add(new RegexTransferFile(filename, partIdentifier));
+            }
+            return transferFiles;
         } catch (java.io.IOException e) {
             throw new IllegalStateException("failed to inspect sourceDir " + sourceDir, e);
         }
+    }
+
+    private static boolean isTransferFilename(String filename) {
+        String lower = filename.toLowerCase(Locale.ROOT);
+        return lower.endsWith(".xtf") || lower.endsWith(".itf");
     }
 
     private static String transferBasename(String filename) {
@@ -411,15 +383,6 @@ public class OpSequenceBuilder {
         return trimmed;
     }
 
-    private static <P extends OperationParameters> Supplier<P> constant(P parameters) {
-        return new Supplier<P>() {
-            @Override
-            public P get() {
-                return parameters;
-            }
-        };
-    }
-
     interface DbSelectionResolver {
         DataSelection resolve(Connection publicationDbConnection, String dbSchema, DataSelection requestedSelection)
                 throws Exception;
@@ -451,40 +414,48 @@ public class OpSequenceBuilder {
         }
     }
 
+    private static final class RegexTransferFile {
+        private final String filename;
+        private final String partIdentifier;
+
+        private RegexTransferFile(String filename, String partIdentifier) {
+            this.filename = filename;
+            this.partIdentifier = partIdentifier;
+        }
+
+        private String getFilename() {
+            return filename;
+        }
+
+        private String getPartIdentifier() {
+            return partIdentifier;
+        }
+    }
+
     private static final class SourcePlan {
-        private final List<OpSequenceStep> steps;
-        private final List<Path> stageDirs;
+        private final List<Operation> steps;
         private final List<String> partIdentifiers;
 
-        private SourcePlan(List<OpSequenceStep> steps, List<Path> stageDirs, List<String> partIdentifiers) {
+        private SourcePlan(List<Operation> steps, List<String> partIdentifiers) {
             this.steps = Collections.unmodifiableList(new ArrayList<>(steps));
-            this.stageDirs = Collections.unmodifiableList(new ArrayList<>(stageDirs));
             this.partIdentifiers = Collections.unmodifiableList(new ArrayList<>(partIdentifiers));
         }
 
-        private static SourcePlan singleStage(OpSequenceStep step, List<String> partIdentifiers) {
-            return new SourcePlan(Collections.singletonList(step), Collections.emptyList(), partIdentifiers);
+        private static SourcePlan singleStage(Operation step, List<String> partIdentifiers) {
+            return new SourcePlan(Collections.singletonList(step), partIdentifiers);
         }
 
-        private static SourcePlan multiStage(List<OpSequenceStep> steps, List<Path> stageDirs,
-                List<String> partIdentifiers) {
-            return new SourcePlan(steps, stageDirs, partIdentifiers);
+        private static SourcePlan of(List<Operation> steps, List<String> partIdentifiers) {
+            if (steps.isEmpty()) throw new IllegalArgumentException("source plan requires operations");
+            return new SourcePlan(steps, partIdentifiers);
         }
 
-        private List<OpSequenceStep> getSteps() {
+        private List<Operation> getSteps() {
             return steps;
-        }
-
-        private List<Path> getStageDirs() {
-            return stageDirs;
         }
 
         private List<String> getPartIdentifiers() {
             return partIdentifiers;
-        }
-
-        private boolean requiresMerge() {
-            return !stageDirs.isEmpty();
         }
     }
 }

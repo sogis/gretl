@@ -2,163 +2,122 @@ package ch.so.agi.gretl.steps.publisher;
 
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
-import ch.so.agi.gretl.api.Endpoint;
+import ch.so.agi.gretl.api.Connector;
+import ch.so.agi.gretl.logging.Ehi2GretlAdapter;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.publisher.util.env.PublisherEnv;
+import ch.so.agi.gretl.steps.publisher.operation.Operation;
 
 public class PublisherStep {
     private final GretlLogger log;
     private final String taskName;
     private final OpSequenceBuilder opSequenceBuilder;
     private final OpSequenceRunner opSequenceRunner;
+    private final Function<DatabaseConfig, Connector> connectorFactory;
+    private final PublisherLogFormatter logFormatter;
 
     public PublisherStep() {
         this(null);
     }
 
     public PublisherStep(String taskName) {
-        this(taskName, LogEnvironment.getLogger(PublisherStep.class), new OpSequenceBuilder(), new OpSequenceRunner());
+        this(taskName, LogEnvironment.getLogger(PublisherStep.class), new OpSequenceBuilder(), new OpSequenceRunner(),
+                DatabaseConfig::createConnector);
     }
 
-    PublisherStep(String taskName, GretlLogger log, OpSequenceBuilder opSequenceBuilder, OpSequenceRunner opSequenceRunner) {
+    PublisherStep(String taskName, GretlLogger log, OpSequenceBuilder opSequenceBuilder, OpSequenceRunner opSequenceRunner,
+            Function<DatabaseConfig, Connector> connectorFactory) {
         this.taskName = taskName == null ? PublisherStep.class.getSimpleName() : taskName;
         this.log = Objects.requireNonNull(log, "log must not be null");
         this.opSequenceBuilder = Objects.requireNonNull(opSequenceBuilder, "opSequenceBuilder must not be null");
         this.opSequenceRunner = Objects.requireNonNull(opSequenceRunner, "opSequenceRunner must not be null");
+        this.connectorFactory = Objects.requireNonNull(connectorFactory, "connectorFactory must not be null");
+        this.logFormatter = new PublisherLogFormatter();
     }
 
-    public void publish(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
-            Connection publicationDbConnection, Path cacheRoot) throws Exception {
-        publish(rawPublisherArgs, publisherEnv, publicationDbConnection, publicationDbConnection, cacheRoot);
-    }
-
-    /** Runs a publication with distinct source and publication-metadata connections. */
-    public void publish(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
-            Connection sourceDbConnection, Connection publicationDbConnection, Path cacheRoot) throws Exception {
-        publish(rawPublisherArgs, publisherEnv, sourceDbConnection, publicationDbConnection, "public", true,
-                cacheRoot);
-    }
-
-    /** Runs a publication with optional post-promotion metadata persistence. */
-    public void publish(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
-            Connection sourceDbConnection, Connection publicationDbConnection, String metadataSchema, boolean writeMetadata,
-            Path cacheRoot) throws Exception {
+    /** Runs a complete publication, including its database connection lifecycle. */
+    public void publish(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv, Path cacheRoot) throws Exception {
         Objects.requireNonNull(rawPublisherArgs, "rawPublisherArgs must not be null");
         Objects.requireNonNull(publisherEnv, "publisherEnv must not be null");
-        if (writeMetadata) {
-            Objects.requireNonNull(publicationDbConnection, "publicationDbConnection must not be null when writing metadata");
-        }
-        if (rawPublisherArgs.getXtfFile_FolderPath() == null) {
-            Objects.requireNonNull(sourceDbConnection, "sourceDbConnection must not be null in db mode");
-        }
         Objects.requireNonNull(cacheRoot, "cacheRoot must not be null");
 
-        Date publicationTimestamp = new Date();
-        log.lifecycle(taskName + ": Start PublisherStep");
-
-        RawPublisherArgs effectiveArgs = buildEffectiveArgs(rawPublisherArgs, publisherEnv, publicationTimestamp);
+        ResolvedPublisherArgs resolvedArgs = new ResolvedPublisherArgs(rawPublisherArgs, publisherEnv, new Date());
+        long startedAt = System.nanoTime();
+        log.lifecycle(logFormatter.start(taskName, resolvedArgs));
         logOverrideMessages(rawPublisherArgs, publisherEnv);
-        logModeDetails(effectiveArgs);
 
-        List<OpSequenceStep> steps = opSequenceBuilder.buildSequence(effectiveArgs, sourceDbConnection,
-                publicationDbConnection, metadataSchema, writeMetadata, publisherEnv.getJsonmetaAddress(),
-                publisherEnv.getJsonmetaBucket(), publisherEnv.getJsonmetaFileName(), cacheRoot);
-        opSequenceRunner.run(steps);
+        Connector sourceConnector = null;
+        Connector publicationConnector = null;
+        Connection sourceConnection = null;
+        Connection publicationConnection = null;
+        try {
+            if (rawPublisherArgs.getXtfFile_FolderPath() == null) {
+                sourceConnector = connectorFactory.apply(resolvedArgs.getDbDatabase());
+                sourceConnection = sourceConnector.connect();
+            }
+            if (resolvedArgs.getOutWriteMetadata()) {
+                publicationConnector = connectorFactory.apply(resolvedArgs.getPublicationDatabase());
+                publicationConnection = publicationConnector.connect();
+            }
 
-        log.lifecycle(taskName + ": End PublisherStep (successful)");
-    }
-
-    private RawPublisherArgs buildEffectiveArgs(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv,
-            Date publicationTimestamp) {
-        Endpoint effectiveOutput = resolveOutputEndpoint(rawPublisherArgs, publisherEnv);
-        String effectiveGrooming = rawPublisherArgs.getOutGroomingConfigFilePath();
-        if (effectiveGrooming == null && publisherEnv.getGroomingConfigFilePath() != null) {
-            effectiveGrooming = publisherEnv.getGroomingConfigFilePath().toString();
+            List<Operation> steps = opSequenceBuilder.buildSequence(resolvedArgs, sourceConnection,
+                    publicationConnection, cacheRoot);
+            // A preceding non-Publisher ili2db task may have restored the EHI
+            // console listener. Set up the bridge once for this publication;
+            // PublisherIli2dbRunner prevents ili2db from adding its own logger.
+            Ehi2GretlAdapter.init();
+            try (AutoCloseable ignored = Ehi2GretlAdapter.beginPublisherLogging()) {
+                opSequenceRunner.run(steps);
+            }
+            if (publicationConnection != null) {
+                publicationConnection.commit();
+            }
+        } catch (Exception e) {
+            rollbackQuietly(publicationConnection);
+            throw e;
+        } finally {
+            rollbackQuietly(sourceConnection);
+            closeQuietly(sourceConnector);
+            closeQuietly(publicationConnector);
         }
-        String effectiveModelDir = rawPublisherArgs.getCustomModelDir();
-        if (effectiveModelDir == null) {
-            effectiveModelDir = publisherEnv.getModeldir();
-        }
 
-        return rawPublisherArgs.withEffectiveOutput(effectiveOutput, effectiveGrooming, effectiveModelDir,
-                publicationTimestamp);
-    }
-
-    private Endpoint resolveOutputEndpoint(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv) {
-        if (rawPublisherArgs.getOutFolderPath() != null) {
-            return rawPublisherArgs.getOutFolderPath();
-        }
-        if (publisherEnv.getPubFolderEnv() == null) {
-            throw new IllegalArgumentException("outFolderPath must be set when Publisher global settings are unavailable");
-        }
-        return new Endpoint(
-                publisherEnv.getPubFolderEnv().getPath(),
-                publisherEnv.getPubFolderEnv().getUser(),
-                publisherEnv.getPubFolderEnv().getPassword());
+        log.lifecycle(logFormatter.success(taskName, resolvedArgs, Duration.ofNanos(System.nanoTime() - startedAt)));
     }
 
     private void logOverrideMessages(RawPublisherArgs rawPublisherArgs, PublisherEnv publisherEnv) {
+        java.util.List<String> overrides = new java.util.ArrayList<>();
         if (rawPublisherArgs.getOutFolderPath() != null && publisherEnv.getPubFolderEnv() != null
                 && publisherEnv.getPubFolderEnv().getPath() != null) {
-            log.info("Global publisher setting pubFolder.path overridden by RawPublisherArgs.outFolderPath: "
-                    + rawPublisherArgs.getOutFolderPath().getUrl());
+            overrides.add("output target");
         }
         if (rawPublisherArgs.getOutGroomingConfigFilePath() != null && publisherEnv.getGroomingConfigFilePath() != null) {
-            log.info("Global publisher setting groomingConfigFilePath overridden by RawPublisherArgs.outGroomingConfigFilePath: "
-                    + rawPublisherArgs.getOutGroomingConfigFilePath());
+            overrides.add("grooming configuration");
         }
         if (rawPublisherArgs.getCustomModelDir() != null && publisherEnv.getModeldir() != null) {
-            log.info("Global publisher setting modeldir overridden by RawPublisherArgs.customModelDir: "
-                    + rawPublisherArgs.getCustomModelDir());
+            overrides.add("model directory");
+        }
+        if (!overrides.isEmpty()) {
+            log.info("Publisher overrides: " + String.join(", ", overrides));
         }
     }
 
-    private void logModeDetails(RawPublisherArgs effectiveArgs) {
-        log.debug("Publisher mode: " + effectiveArgs.getPublishMode());
-        switch (effectiveArgs.getPublishMode()) {
-        case dbIdentvaluesList:
-            log.debug("Publisher mode args: dbSchema=" + effectiveArgs.getDbSchema()
-                    + ", dbIliIdent_Type=" + effectiveArgs.getDbIliIdent_Type()
-                    + ", dbIliIdent_Values=" + effectiveArgs.getDbIliIdent_Values()
-                    + ", dbMergeToSingleXtf=" + effectiveArgs.getDbMergeToSingleXtf()
-                    + ", outDataIdent=" + effectiveArgs.getOutDataIdent()
-                    + ", outFolderPath=" + effectiveArgs.getOutFolderPath().getUrl()
-                    + ", modeldir=" + effectiveArgs.getCustomModelDir()
-                    + ", groomingConfig=" + effectiveArgs.getOutGroomingConfigFilePath());
-            break;
-        case dbIdentvaluesRegex:
-            log.debug("Publisher mode args: dbSchema=" + effectiveArgs.getDbSchema()
-                    + ", dbIliIdent_Type=" + effectiveArgs.getDbIliIdent_Type()
-                    + ", dbIliIdent_RegEx=" + effectiveArgs.getDbIliIdent_RegEx()
-                    + ", dbMergeToSingleXtf=" + effectiveArgs.getDbMergeToSingleXtf()
-                    + ", outDataIdent=" + effectiveArgs.getOutDataIdent()
-                    + ", outFolderPath=" + effectiveArgs.getOutFolderPath().getUrl()
-                    + ", modeldir=" + effectiveArgs.getCustomModelDir()
-                    + ", groomingConfig=" + effectiveArgs.getOutGroomingConfigFilePath());
-            break;
-        case xtfFilesList:
-            log.debug("Publisher mode args: xtfFile_FolderPath=" + effectiveArgs.getXtfFile_FolderPath()
-                    + ", xtfFilename_List=" + effectiveArgs.getXtfFilename_List()
-                    + ", outDataIdent=" + effectiveArgs.getOutDataIdent()
-                    + ", outFolderPath=" + effectiveArgs.getOutFolderPath().getUrl()
-                    + ", modeldir=" + effectiveArgs.getCustomModelDir()
-                    + ", groomingConfig=" + effectiveArgs.getOutGroomingConfigFilePath());
-            break;
-        case xtfFilesRegex:
-            log.debug("Publisher mode args: xtfFile_FolderPath=" + effectiveArgs.getXtfFile_FolderPath()
-                    + ", xtfFilename_Regex=" + effectiveArgs.getXtfFilename_Regex()
-                    + ", outDataIdent=" + effectiveArgs.getOutDataIdent()
-                    + ", outFolderPath=" + effectiveArgs.getOutFolderPath().getUrl()
-                    + ", modeldir=" + effectiveArgs.getCustomModelDir()
-                    + ", groomingConfig=" + effectiveArgs.getOutGroomingConfigFilePath());
-            break;
-        default:
-            throw new IllegalArgumentException("unsupported publishMode <" + effectiveArgs.getPublishMode() + ">");
+    private static void rollbackQuietly(Connection connection) {
+        if (connection != null) {
+            try { connection.rollback(); } catch (SQLException ignored) { }
+        }
+    }
+
+    private static void closeQuietly(Connector connector) {
+        if (connector != null) {
+            try { connector.close(); } catch (SQLException ignored) { }
         }
     }
 

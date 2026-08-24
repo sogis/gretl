@@ -48,6 +48,7 @@ tasks.register('jarTest', Test) {
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
+    systemProperty('GRETL_INTEGRATION_LOG_LEVEL', gradle.startParameter.logLevel.name())
 
     testLogging.showStandardStreams = true
 
@@ -67,6 +68,7 @@ tasks.register('jarS3Test', Test) {
     }
 
     systemProperty('GRETL_TESTTYPE', 'jar')
+    systemProperty('GRETL_INTEGRATION_LOG_LEVEL', gradle.startParameter.logLevel.name())
 
     testLogging.showStandardStreams = true
 
@@ -84,6 +86,7 @@ tasks.register('imageTest', Test) {
     }
 
     systemProperty('GRETL_TESTTYPE', 'image')
+    systemProperty('GRETL_INTEGRATION_LOG_LEVEL', gradle.startParameter.logLevel.name())
 
     testLogging.showStandardStreams = true
 
@@ -100,6 +103,7 @@ tasks.register('imageS3Test', Test) {
     }
 
     systemProperty('GRETL_TESTTYPE', 'image')
+    systemProperty('GRETL_INTEGRATION_LOG_LEVEL', gradle.startParameter.logLevel.name())
 
     testLogging.showStandardStreams = true
 

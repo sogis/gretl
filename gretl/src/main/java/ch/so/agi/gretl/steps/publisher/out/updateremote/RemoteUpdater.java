@@ -20,19 +20,27 @@ import java.util.Objects;
  * Coordinates the remote update flow while keeping filesystem details in the
  * responsibility-specific packages.
  */
-public final class RemoteUpdater implements Operation<RemoteUpdaterParameters> {
+public final class RemoteUpdater implements Operation {
+    private RemoteUpdaterParameters parameters;
     private final TargetResolver targetResolver;
     private final StagePreparer stagePreparer;
     private final StageSeeder stageSeeder;
     private final LocalToRemotePusher localToRemotePusher;
     private final LatestRotator latestRotator;
 
-    public RemoteUpdater() {
-        this(new TargetResolver(), new StagePreparer(), new StageSeeder(), new LocalToRemotePusher(), new LatestRotator());
+    public RemoteUpdater(RemoteUpdaterParameters parameters) {
+        this(parameters, new TargetResolver(), new StagePreparer(), new StageSeeder(), new LocalToRemotePusher(), new LatestRotator());
     }
 
-    RemoteUpdater(TargetResolver targetResolver, StagePreparer stagePreparer, StageSeeder stageSeeder,
+    @Deprecated public RemoteUpdater() {
+        this.targetResolver = new TargetResolver(); this.stagePreparer = new StagePreparer(); this.stageSeeder = new StageSeeder();
+        this.localToRemotePusher = new LocalToRemotePusher(); this.latestRotator = new LatestRotator();
+    }
+    @Deprecated public void execute(RemoteUpdaterParameters parameters) throws Exception { this.parameters = parameters; execute(); }
+
+    RemoteUpdater(RemoteUpdaterParameters parameters, TargetResolver targetResolver, StagePreparer stagePreparer, StageSeeder stageSeeder,
             LocalToRemotePusher localToRemotePusher, LatestRotator latestRotator) {
+        this.parameters = Objects.requireNonNull(parameters, "parameters");
         this.targetResolver = Objects.requireNonNull(targetResolver, "targetResolver");
         this.stagePreparer = Objects.requireNonNull(stagePreparer, "stagePreparer");
         this.stageSeeder = Objects.requireNonNull(stageSeeder, "stageSeeder");
@@ -41,8 +49,16 @@ public final class RemoteUpdater implements Operation<RemoteUpdaterParameters> {
     }
 
     @Override
-    public void execute(RemoteUpdaterParameters operationParameters) throws Exception {
-        update(operationParameters);
+    public void execute() throws Exception {
+        update(parameters);
+    }
+
+    @Override
+    public String getHumanReadableName() { return "Target (remote) repo updater"; }
+
+    @Override
+    public String getSuccessLogDetail() {
+        return "promoted publication to " + parameters.getRemoteTargetRoot().resolve(parameters.getDataIdent()).normalize();
     }
 
     void update(RemoteUpdaterParameters operationParameters) throws Exception {

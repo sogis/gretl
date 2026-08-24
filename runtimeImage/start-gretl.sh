@@ -4,18 +4,30 @@
 # start-gretl.sh --job_directory /home/gretl --task_name gradleTaskName -Pparam1=1 -Pparam2=2
 
 task_parameter=()
+log_level=""
 
 while [ $# -gt 0 ]; do
-    if [[ $1 == *"--"* ]]; then
-        v="${1/--/}"
-        declare $v="$2"
-   elif [[ "$1" =~ ^"-P" ]]; then
-        task_parameter+=($1)
-   fi
-  shift
+    case "$1" in
+        --job_directory|--task_name)
+            v="${1#--}"
+            declare "$v=$2"
+            shift 2
+            ;;
+        --info|--debug)
+            log_level="$1"
+            shift
+            ;;
+        -P*)
+            task_parameter+=("$1")
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
 done
 
-declare gretl_cmd="gretl $task_name ${task_parameter[@]}"
+declare gretl_cmd="gretl $log_level $task_name ${task_parameter[@]}"
 
 echo "===================================================================================="
 echo "Starts the GRETL runtime to execute the given GRETL job"
