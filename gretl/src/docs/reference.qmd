@@ -491,30 +491,42 @@ tasks.register('transferSomeData', Db2Db) {
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Db2Db.md >}}
 
-Eine `TransferSet` ist 
+### SchemaCopy
 
-- eine SQL-Datei (mit SQL-Anweisungen zum Lesen der Daten aus der sourceDb), 
-- dem Namen der Ziel-Tabelle in der targetDb, und 
-- der Angabe ob in der Ziel-Tabelle vor dem INSERT zuerst alle Records gelöscht werden sollen.
-- einem optionalen vierten Parameter, der verwendet werden kann um den zu erzeugenden SQL-Insert-String
-  zu beeinflussen, u.a. um einen WKT-Geometrie-String in eine PostGIS-Geometrie umzuwandeln
+Kopiert mehrere Tabellen innerhalb derselben Datenbank aus einem Quell-Schema in gleichnamige
+Tabellen eines oder mehrerer Ziel-Schemas mit gleichem oder reduziertem Attributumfang. 
+Die zu übertragenden Attribute werden automatisch aus der jeweiligen Zieltabelle ermittelt.
+Die Zeilen in den Zieltabellen werden vor dem Kopieren automatisch gelöscht. 
+Der Task kopiert auch die Baskets und Datasets der ili2db Metatabellen und referenziert den
+entsprechenden Basket in der Zieltabelle. 
 
-Beispiel, Umwandlung Rechtswert/Hochwertspalten in eine PostGIS-Geometrie
-(siehe auch GRETL-Job [afu_onlinerisk_transfer](https://github.com/sogis/gretljobs/tree/main/afu_onlinerisk_transfer) der eine Punktgeometriespalten aus einer Nicht-Postgis-DB übernimmt):
+#### Verwendungsbeispiel
 
 ```groovy
-new TransferSet('untersuchungseinheit.sql', 'afu_qrcat_v1.onlinerisk_untersuchungseinheit', true, (String[])["geom:wkt:2056"])
+tasks.register('publishData', SchemaCopy) {
+    database = [db_uri, db_user, db_pass]
+    sourceSchema = 'afu_kbs_private_v1'
+    targetSchema = 'afu_kbs_open_v2'
+
+    tables = ['parcels', 'roads']
+    filteredTables = [
+        'buildings', "status = 'PUBLIC'",
+        'addresses', "municipality = 'Olten'"
+    ]
+}
 ```
 
-`geom` ist der Geometrie-Spalten-Name der verwendet wird.
+** Alternativkonfiguration zum Kopieren in mehrere Schemen über 'targetSchemas': **
 
-Dazugehöriger Auszug aus SQL-Datei zur Erzeugung des WKT-Strings mit Hilfe von concatenation:
+```groovy
+tasks.register('publishData', SchemaCopy) {
 
-```sql
-'Point(' || ue.koordinate_x::text || ' ' || ue.koordinate_y::text || ')' AS geom
+    targetSchemas = ['afu_kbs_open_v2', 'afu_kbs_internal_v1']
+}
 ```
 
-Unterstützte Datenbanken: PostgreSQL, SQLite, Oracle, Derby und DuckDB.
+{{< include ./tasks/_ch.so.agi.gretl.tasks.SchemaCopy.md >}}
+
 
 ### FtpDelete
 

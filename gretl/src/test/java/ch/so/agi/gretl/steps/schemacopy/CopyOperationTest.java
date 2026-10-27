@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.steps.schemacopy;
 
 import ch.ehi.ili2db.base.DbNames;
+import ch.so.agi.gretl.api.Connector;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -13,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CopyOperationTest {
+    private static final ThreadLocal<String> databaseUrls = new ThreadLocal<>();
+
     @Test
     public void copiesTargetColumnsInCatalogOrderToMultipleTargetSchemas() throws Exception {
         try (Connection connection = openDatabase(); Statement statement = connection.createStatement()) {
@@ -29,7 +32,7 @@ public class CopyOperationTest {
                             .build())
                     .build();
 
-            int copyCount = new CopyOperation(connection, request).execute();
+            int copyCount = execute(request);
 
             assertEquals(4, copyCount);
             assertTargetRows(statement, "PUB_A");
@@ -51,7 +54,7 @@ public class CopyOperationTest {
                             .build())
                     .build();
 
-            int copyCount = new CopyOperation(connection, request).execute();
+            int copyCount = execute(request);
 
             assertEquals(2, copyCount);
             assertSingleValue(statement, "SELECT COUNT(*) FROM PUB." + DbNames.DATASETS_TAB, 2);
@@ -78,7 +81,7 @@ public class CopyOperationTest {
                             .build())
                     .build();
 
-            int copyCount = new CopyOperation(connection, request).execute();
+            int copyCount = execute(request);
 
             assertEquals(2, copyCount);
             assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.PARCELS", 2);
@@ -99,7 +102,7 @@ public class CopyOperationTest {
                     .table(TableCopySpecification.builder("PARCELS").build())
                     .build();
 
-            assertThrows(IllegalArgumentException.class, () -> new CopyOperation(connection, request).execute());
+            assertThrows(IllegalArgumentException.class, () -> execute(request));
             assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.PARCELS", 1);
             assertSingleValue(statement, "SELECT COUNT(*) FROM PUB." + DbNames.BASKETS_TAB, 1);
             assertSingleValue(statement, "SELECT COUNT(*) FROM PUB." + DbNames.DATASETS_TAB, 1);
@@ -107,7 +110,7 @@ public class CopyOperationTest {
     }
 
     @Test
-    public void mixedBasketReferenceModesFailBeforeMutation() throws Exception {
+    public void mixedBasketReferenceModesCopyDataAndMetadata() throws Exception {
         try (Connection connection = openDatabase(); Statement statement = connection.createStatement()) {
             createMixedBasketModeSourceTables(statement);
             createMixedBasketModeTargetTables(statement, "PUB");
@@ -120,9 +123,16 @@ public class CopyOperationTest {
                     .table(TableCopySpecification.builder("OWNERS").build())
                     .build();
 
-            assertThrows(IllegalArgumentException.class, () -> new CopyOperation(connection, request).execute());
-            assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.PARCELS", 1);
+            int copyCount = execute(request);
+
+            assertEquals(4, copyCount);
+            assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.PARCELS", 3);
             assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.OWNERS", 1);
+            assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.OWNERS WHERE ID = 999", 0);
+            assertSingleValue(statement, "SELECT COUNT(*) FROM PUB." + DbNames.DATASETS_TAB, 2);
+            assertSingleValue(statement, "SELECT COUNT(*) FROM PUB." + DbNames.BASKETS_TAB, 2);
+            assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.PARCELS p JOIN PUB." + DbNames.BASKETS_TAB
+                    + " b ON p.T_BASKET = b.T_ID", 3);
         }
     }
 
@@ -137,7 +147,7 @@ public class CopyOperationTest {
                     .table(TableCopySpecification.builder("PARCELS").build())
                     .build();
 
-            assertThrows(RuntimeException.class, () -> new CopyOperation(connection, request).execute());
+            assertThrows(RuntimeException.class, () -> execute(request));
         }
     }
 
@@ -152,7 +162,29 @@ public class CopyOperationTest {
                     .table(TableCopySpecification.builder("PARCELS").build())
                     .build();
 
-            assertThrows(RuntimeException.class, () -> new CopyOperation(connection, request).execute());
+            assertThrows(RuntimeException.class, () -> execute(request));
+        }
+    }
+
+    @Test
+    public void rollsBackEarlierTablesWhenALaterTableCopyFails() throws Exception {
+        try (Connection connection = openDatabase(); Statement statement = connection.createStatement()) {
+            createSourceTables(statement);
+            statement.execute("CREATE TABLE SRC.ROADS (ID INTEGER, NAME VARCHAR(50))");
+            statement.execute("INSERT INTO SRC.ROADS VALUES (1, 'source-road')");
+            createTargetTablesWithUnknownColumn(statement, "PUB");
+            statement.execute("CREATE TABLE PUB.ROADS (ID INTEGER, NAME VARCHAR(50))");
+            statement.execute("INSERT INTO PUB.ROADS VALUES (999, 'stale-road')");
+
+            Request request = Request.builder("SRC")
+                    .targetSchema("PUB")
+                    .table(TableCopySpecification.builder("ROADS").build())
+                    .table(TableCopySpecification.builder("PARCELS").build())
+                    .build();
+
+            assertThrows(RuntimeException.class, () -> execute(request));
+            assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.ROADS WHERE ID = 999", 1);
+            assertSingleValue(statement, "SELECT COUNT(*) FROM PUB.ROADS WHERE ID = 1", 0);
         }
     }
 
@@ -166,7 +198,7 @@ public class CopyOperationTest {
                     .table(TableCopySpecification.builder("PARCELS").build())
                     .build();
 
-            assertThrows(IllegalArgumentException.class, () -> new CopyOperation(connection, request).execute());
+            assertThrows(IllegalArgumentException.class, () -> execute(request));
         }
     }
 
@@ -180,7 +212,7 @@ public class CopyOperationTest {
                     .table(TableCopySpecification.builder("PARCELS").rowFilter("wHERe").build())
                     .build();
 
-            assertThrows(IllegalArgumentException.class, () -> new CopyOperation(connection, withWhere).execute());
+            assertThrows(IllegalArgumentException.class, () -> execute(withWhere));
 
 
             Request withDelim = Request.builder("SRC")
@@ -188,7 +220,7 @@ public class CopyOperationTest {
                     .table(TableCopySpecification.builder("PARCELS").rowFilter(";").build())
                     .build();
 
-            assertThrows(IllegalArgumentException.class, () -> new CopyOperation(connection, withDelim).execute());
+            assertThrows(IllegalArgumentException.class, () -> execute(withDelim));
         }
     }
 
@@ -202,12 +234,18 @@ public class CopyOperationTest {
                     .table(TableCopySpecification.builder("PARCELS").rowFilter(";").build())
                     .build();
 
-            assertThrows(IllegalArgumentException.class, () -> new CopyOperation(connection, withDelim).execute());
+            assertThrows(IllegalArgumentException.class, () -> execute(withDelim));
         }
     }
 
     private Connection openDatabase() throws Exception {
-        return DriverManager.getConnection("jdbc:derby:memory:db_copy_" + System.nanoTime() + ";create=true");
+        String databaseUrl = "jdbc:derby:memory:db_copy_" + System.nanoTime() + ";create=true";
+        databaseUrls.set(databaseUrl);
+        return DriverManager.getConnection(databaseUrl);
+    }
+
+    private static int execute(Request request) throws Exception {
+        return new CopyOperation(new Connector(databaseUrls.get())).execute(request);
     }
 
     private void createSourceTables(Statement statement) throws Exception {

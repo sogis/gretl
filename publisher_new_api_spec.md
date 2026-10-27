@@ -132,9 +132,10 @@ Beispiel: 2504.xtf (.xtf wird nicht mit der Expression verglichen).
         dbIliIdent_RegEx = "[0-9][0-9][0-9][0-9]"
     }
 
-Exportiert alle Datasets deren Name auf die Expression "[0-9][0-9][0-9][0-9]" matcht.
+Exportiert alle Datasets deren Name auf die Expression "[0-9][0-9][0-9][0-9]" matcht. 
+Beispiele: 2504 wird exportiert, bfs_2504 oder 2504.xtf jedoch nicht.
 
-### Validierung
+### Validierung mit angepassten Validierungsregeln
 
     tasks.register('publishFile', Publisher) {
         outDataIdent = "ch.so.agi.vermessung.edit"
