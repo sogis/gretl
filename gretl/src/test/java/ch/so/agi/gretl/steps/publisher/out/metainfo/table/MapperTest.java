@@ -27,7 +27,7 @@ public class MapperTest {
     }
 
     @Test
-    public void map_globalPublication_usesAllParts() {
+    public void map_singlePiecePublication_hasNoParts() {
         Mapper mapper = new Mapper();
         Mapper.PublicationTree publicationTree = mapper.map(
                 "mypublication",
@@ -35,8 +35,7 @@ public class MapperTest {
         );
 
         assertEquals("mypublication", publicationTree.getPublicationIdent());
-        assertEquals(1, publicationTree.getParts().size());
-        assertEquals(Mapper.ALL_PARTS, publicationTree.getParts().get(0).getPartIdent());
+        assertTrue(publicationTree.getParts().isEmpty());
         assertEquals(List.of("xtf"), publicationTree.getArtifactTypes());
         assertEquals("xtf", publicationTree.getFiles().get(0).getArtifactType());
     }

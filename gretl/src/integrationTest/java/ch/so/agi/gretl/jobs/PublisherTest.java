@@ -13,6 +13,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -31,7 +30,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.so.agi.gretl.tasks.Ili2pgImportSchema;
 import ch.so.agi.gretl.util.GradleVariable;
 import ch.so.agi.gretl.util.IntegrationTestUtil;
 import ch.so.agi.gretl.util.IntegrationTestUtilSql;
@@ -46,7 +44,6 @@ class PublisherTest {
     private static final String SOURCE_SCHEMA = "Beispiel2";
     private static final String SIMPLE_SOURCE_SCHEMA = "SimpleCoord23";
     private static final String METADATA_SCHEMA = "publisher_meta";
-    private static final String METADATA_MODEL_PREFIX = "SO_AGI_Publisher_Meta_20260623.Publisher.";
     private static final List<String> PUBLISHER_JOBS = List.of("PublisherXtfList", "PublisherXtfRegex",
             "PublisherDbModel", "PublisherDbTopic", "PublisherDbBasket", "PublisherDbDataset",
             "PublisherDbDatasetRegex", "PublisherXtfRegexRemote");
@@ -145,7 +142,7 @@ class PublisherTest {
 
     @Test
     void xtfRegexRemotePublicationWritesGpkgAndMetadata() throws Exception {
-        importMetadataSchema();
+        createMetadataSchema();
         try (MockWebServer jsonServer = new MockWebServer()) {
             jsonServer.start();
             jsonServer.enqueue(new MockResponse().setResponseCode(200)
@@ -176,9 +173,9 @@ class PublisherTest {
             assertEquals("Publisher integration", json.path("title").asText());
             assertFalse(Files.exists(meta.resolve("publishdate.json")));
             assertFalse(Files.exists(meta.resolve("datenbeschreibung.html")));
-            assertEquals(1, metadataCount("Publication"));
-            assertEquals(2, metadataCount("Part"));
-            assertEquals(2, metadataCount("ExportedFormat"));
+            assertEquals(1, metadataCount("publicationrun"));
+            assertEquals(2, metadataCount("part"));
+            assertEquals(2, metadataCount("exportedformat"));
         }
     }
 
@@ -208,14 +205,20 @@ class PublisherTest {
         }
     }
 
-    private void importMetadataSchema() throws IOException {
-        Project project = ProjectBuilder.builder().build();
-        Ili2pgImportSchema task = project.getTasks().create("importMetadataSchema", Ili2pgImportSchema.class);
-        task.getDatabase().set(List.of(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword()));
-        task.getDbschema().set(METADATA_SCHEMA);
-        task.getModels().set("SO_AGI_Publisher_Meta_20260623");
-        task.getCreateBasketCol().set(true);
-        task.importSchema();
+    private void createMetadataSchema() throws Exception {
+        try (Connection connection = IntegrationTestUtilSql.connectPG(POSTGRES); Statement statement = connection.createStatement()) {
+            statement.execute("CREATE SCHEMA " + METADATA_SCHEMA);
+            statement.execute("CREATE SEQUENCE " + METADATA_SCHEMA + ".t_ili2db_seq");
+            statement.execute("CREATE TABLE " + METADATA_SCHEMA + ".publicationrun (t_id int8 DEFAULT nextval('" + METADATA_SCHEMA
+                    + ".t_ili2db_seq'::regclass) PRIMARY KEY, dataident varchar(256) NOT NULL, pubdate date NOT NULL)");
+            statement.execute("CREATE TABLE " + METADATA_SCHEMA + ".part (t_id int8 DEFAULT nextval('" + METADATA_SCHEMA
+                    + ".t_ili2db_seq'::regclass) PRIMARY KEY, partident varchar(256) NOT NULL, publication_r int8 NOT NULL REFERENCES "
+                    + METADATA_SCHEMA + ".publicationrun(t_id) DEFERRABLE INITIALLY DEFERRED)");
+            statement.execute("CREATE TABLE " + METADATA_SCHEMA + ".exportedformat (t_id int8 DEFAULT nextval('" + METADATA_SCHEMA
+                    + ".t_ili2db_seq'::regclass) PRIMARY KEY, aformat varchar(255) NOT NULL, publication_r int8 NOT NULL REFERENCES "
+                    + METADATA_SCHEMA + ".publicationrun(t_id) DEFERRABLE INITIALLY DEFERRED)");
+            connection.commit();
+        }
     }
 
     private GradleVariable[] databaseVariables() {
@@ -226,7 +229,7 @@ class PublisherTest {
     private int metadataCount(String classSuffix) throws Exception {
         try (Connection connection = IntegrationTestUtilSql.connectPG(POSTGRES);
                 PreparedStatement statement = connection.prepareStatement("SELECT count(*) FROM \"" + METADATA_SCHEMA
-                        + "\".\"" + tableName(connection, METADATA_MODEL_PREFIX + classSuffix) + "\"")) {
+                        + "\".\"" + classSuffix.replace("\"", "\"\"") + "\"")) {
             try (ResultSet result = statement.executeQuery()) {
                 result.next();
                 return result.getInt(1);
@@ -250,17 +253,6 @@ class PublisherTest {
                         + ".t_ili2db_basket SET t_ili_tid='basket-' || t_id WHERE t_ili_tid IS NULL")) {
             statement.executeUpdate();
             connection.commit();
-        }
-    }
-
-    private String tableName(Connection connection, String iliClassName) throws Exception {
-        try (PreparedStatement statement = connection.prepareStatement("SELECT sqlname FROM \"" + METADATA_SCHEMA
-                + "\".\"t_ili2db_classname\" WHERE iliname=?")) {
-            statement.setString(1, iliClassName);
-            try (ResultSet result = statement.executeQuery()) {
-                result.next();
-                return result.getString(1).replace("\"", "\"\"");
-            }
         }
     }
 

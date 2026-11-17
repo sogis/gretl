@@ -47,7 +47,7 @@ import ch.so.agi.gretl.steps.publisher.stage.validation.ValidationConfigSeederPa
  */
 public class OpSequenceBuilder {
     private static final String STAGE_ROOT_SUFFIX = ".source-stages";
-    private static final String ALL_PARTS = "allparts";
+    private static final String SINGLE_PART_WORKSPACE = "allparts";
     private static final ZoneId PUBLICATION_ZONE = ZoneId.of("Europe/Zurich");
 
     private final DbSelectionResolver dbSelectionResolver;
@@ -138,7 +138,7 @@ public class OpSequenceBuilder {
                 requestedSelection);
         List<String> keyValues = resolvedSelection.getKeyValues();
         List<String> partIdentifiers = publisherArgs.getDbIliIdent_Values().size() == 1
-                ? Collections.singletonList(ALL_PARTS)
+                ? Collections.singletonList(SINGLE_PART_WORKSPACE)
                 : new ArrayList<String>(keyValues);
 
         if (Boolean.TRUE.equals(publisherArgs.getDbMergeToSingleXtf()) || keyValues.size() <= 1) {
@@ -179,7 +179,7 @@ public class OpSequenceBuilder {
         Path sourceDir = coercePath(publisherArgs.getXtfFile_FolderPath(), "xtfFile_FolderPath");
         ParsedTransferSelection parsedSelection = parseTransferSelection(publisherArgs.getXtfFilename_List());
         List<String> partIdentifiers = parsedSelection.getBasenames().size() == 1
-                ? Collections.singletonList(ALL_PARTS)
+                ? Collections.singletonList(SINGLE_PART_WORKSPACE)
                 : parsedSelection.getBasenames();
         if (parsedSelection.getBasenames().size() <= 1) {
             String partIdentifier = partIdentifiers.get(0);

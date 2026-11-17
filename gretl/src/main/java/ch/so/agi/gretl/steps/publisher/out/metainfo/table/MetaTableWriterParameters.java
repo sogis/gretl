@@ -68,9 +68,6 @@ public final class MetaTableWriterParameters implements OperationParameters {
 
     private static List<String> immutableRequiredValues(List<String> values, String fieldName) {
         Objects.requireNonNull(values, fieldName + " must not be null");
-        if (values.isEmpty()) {
-            throw new IllegalArgumentException(fieldName + " must not be empty");
-        }
         List<String> result = new ArrayList<String>();
         for (String value : values) {
             result.add(requireText(value, fieldName + " entry"));

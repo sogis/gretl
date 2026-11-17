@@ -16,12 +16,9 @@ import java.util.Objects;
  *
  * <p>The mapper normalizes the file names that were written into the cache
  * temp folder and derives the publication parts plus the artifact kinds from
- * them. Global publications are normalized to the canonical part identifier
- * {@value #ALL_PARTS}.</p>
+ * them. A publication with one part has no part row.</p>
  */
 public class Mapper {
-    public static final String ALL_PARTS = "allparts";
-
     /**
      * Converts cached transfer files into a normalized publication tree.
      *
@@ -49,6 +46,9 @@ public class Mapper {
             files.add(new FileRow(transferFile, fileName, partIdent, artifactType));
         }
 
+        if (parts.size() == 1) {
+            parts.clear();
+        }
         return new PublicationTree(
                 publicationIdent,
                 null,
@@ -71,6 +71,9 @@ public class Mapper {
             String checkedPartIdentifier = requireText(partIdentifier, "partIdentifier");
             parts.computeIfAbsent(checkedPartIdentifier, PartRow::new);
         }
+        if (parts.size() == 1) {
+            parts.clear();
+        }
         LinkedHashSet<String> formats = new LinkedHashSet<>();
         for (String exportedFormat : exportedFormats) {
             formats.add(requireText(exportedFormat, "exportedFormat").toLowerCase(Locale.ROOT));
@@ -87,11 +90,11 @@ public class Mapper {
         String stem = stripLastExtension(baseName);
         int dotIndex = stem.indexOf('.');
         if (dotIndex < 0) {
-            return stem.equals(publicationIdent) ? ALL_PARTS : stem;
+            return stem;
         }
 
         String candidate = stem.substring(0, dotIndex);
-        return candidate.equals(publicationIdent) ? ALL_PARTS : candidate;
+        return candidate;
     }
 
     /**

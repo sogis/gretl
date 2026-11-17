@@ -64,6 +64,10 @@ Standardmässig schreibt `Publisher` Metadaten in die Publikationsdatenbank und 
 Die globalen Publisher-Einstellungen, einschliesslich `pupFolderPath`, bleiben dafür erforderlich. Mit
 `outFolderPath` kann der Zielordner für einen einzelnen Task überschrieben werden.
 
+Die globale Gradle-Eigenschaft `pubDateDbSchema` bestimmt das Schema der Metadatentabellen. Der Publisher erwartet
+darin die Tabellen `publicationrun`, `part` und `exportedformat`; die Formate sind auf `xtf`, `itf`, `gpkg`, `shp`,
+`dxf` und `dxf_geobau` beschränkt.
+
 Für eine rein lokale Ausgabe ohne Metadaten sind keine globalen Publisher-Einstellungen nötig:
 
 ```groovy
