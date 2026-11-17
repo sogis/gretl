@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 
 import ch.so.agi.gretl.steps.publisher.stage.pack.OutputFormat;
 
-class PublisherTest {
+class NextPublisherTest {
     @Test
     void acceptsCanonicalDbAndOutputDslValues() {
         Project project = ProjectBuilder.builder().build();
-        Publisher task = project.getTasks().create("publish", Publisher.class);
+        NextPublisher task = project.getTasks().create("publish", NextPublisher.class);
 
         task.setDbDatabase(List.of("jdbc:postgresql://source/db", "source_user", "source_pass"));
         task.setDbSchema("live");
@@ -38,7 +38,7 @@ class PublisherTest {
     @Test
     void acceptsAFileAsLocalOutputFolder() {
         Project project = ProjectBuilder.builder().build();
-        Publisher task = project.getTasks().create("publish", Publisher.class);
+        NextPublisher task = project.getTasks().create("publish", NextPublisher.class);
 
         task.setOutFolderPath(new java.io.File("build/local-publication"));
 
@@ -47,11 +47,11 @@ class PublisherTest {
     }
 
     @Test
-    void keepsLegacyTaskAsAnExplicitSeparateType() {
+    void keepsLegacyPublisherAsAnExplicitSeparateType() {
         Project project = ProjectBuilder.builder().build();
 
-        Object oldTask = project.getTasks().create("publishOld", PublisherOld.class);
+        Object oldTask = project.getTasks().create("publishOld", Publisher.class);
 
-        assertInstanceOf(PublisherOld.class, oldTask);
+        assertInstanceOf(Publisher.class, oldTask);
     }
 }

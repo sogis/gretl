@@ -1,5 +1,5 @@
 ---
-title: "Publisher"
+title: "Publisher tasks"
 order: 2
 search: false
 format: 
@@ -7,10 +7,15 @@ format:
     self-contained: true
 ---
 
-GRETL-Task, welcher für Vektordaten die aktuellen Geodaten-Dateien 
-bereitstellt und das Archiv der vorherigen Zeitstände pflegt.
+Die Publisher-Tasks stellen für Vektordaten die aktuellen Geodaten-Dateien
+bereit und pflegen das Archiv der vorherigen Zeitstände.
 
-## Einbindung in einen typischen GRETL-Publikationsjob
+## NextPublisher
+
+`NextPublisher` ist die neue Publisher-Pipeline. Bestehende Jobs verwenden weiterhin den
+Legacy-Task `Publisher`.
+
+### Einbindung in einen typischen GRETL-Publikationsjob
 
 In den heute vorliegenden Publikationsjobs werden häufig die Daten vom relational aufgebauten Edit-Schema 
 mittels SQL-Queries "flachgewalzt" und ins Pub-Schema kopiert. Die Schema-Struktur
@@ -21,7 +26,7 @@ Für den Datenbezug wird das build.gradle mit zwei Aufrufen des Publisher-Task e
 ```groovy
 defaultTasks 'pubProduct'
 
-tasks.register('pubEdit', Publisher) {
+tasks.register('pubEdit', NextPublisher) {
     dataIdent = "ch.so.avt.verkehrszaehlstellen.edit"
     ...
 }
@@ -31,7 +36,7 @@ tasks.register('transferVZS', Db2Db) {
     ...
 }
 
-tasks.register('pubProduct', Publisher) {
+tasks.register('pubProduct', NextPublisher) {
     dependsOn 'transferDenkmal'
     dataIdent = "ch.so.avt.verkehrszaehlstellen"
     ...
@@ -42,17 +47,17 @@ Bei Problemen mit der Datenqualität der Originaldaten schlägt der Task "pubEdi
 
 ## Ausgabeformate
 
-Der neue `Publisher` publiziert nur die explizit mit `outFormats` angeforderten Formate. Die Angabe ist zwingend;
+`NextPublisher` publiziert nur die explizit mit `outFormats` angeforderten Formate. Die Angabe ist zwingend;
 die Transferdatei wird nicht automatisch beigepackt. Unterstützte Werte sind `xtf`, `itf`, `gpkg`, `shp`, `dxf`
 und `dxf_geobau`. `xtf` und `itf` müssen zur Erweiterung der Quelle passen.
 
 ```groovy
-tasks.register('publishShapefile', Publisher) {
+tasks.register('publishShapefile', NextPublisher) {
     // ... source and output configuration ...
     outFormats = ["shp"]
 }
 
-tasks.register('publishTransferAndGpkg', Publisher) {
+tasks.register('publishTransferAndGpkg', NextPublisher) {
     // ... source and output configuration ...
     outFormats = ["xtf", "gpkg"]
 }
@@ -60,7 +65,7 @@ tasks.register('publishTransferAndGpkg', Publisher) {
 
 ## Ziel und Metadaten
 
-Standardmässig schreibt `Publisher` Metadaten in die Publikationsdatenbank und erzeugt `meta/metainfo.json`.
+Standardmässig schreibt `NextPublisher` Metadaten in die Publikationsdatenbank und erzeugt `meta/metainfo.json`.
 Die globalen Publisher-Einstellungen, einschliesslich `pupFolderPath`, bleiben dafür erforderlich. Mit
 `outFolderPath` kann der Zielordner für einen einzelnen Task überschrieben werden.
 
@@ -71,7 +76,7 @@ darin die Tabellen `publicationrun`, `part` und `exportedformat`; die Formate si
 Für eine rein lokale Ausgabe ohne Metadaten sind keine globalen Publisher-Einstellungen nötig:
 
 ```groovy
-tasks.register('publishLocal', Publisher) {
+tasks.register('publishLocal', NextPublisher) {
     // ... source configuration ...
     outFolderPath = file("$buildDir/local")
     outWriteMetadata = false
@@ -83,6 +88,14 @@ In diesem Modus werden die aufgelösten `.ili`-Modelle nach `meta/` kopiert, abe
 Publikationsdatenbank-Zeilen geschrieben.
 
 ## Parameter
+
+{{< include ./tasks/_ch.so.agi.gretl.tasks.NextPublisher.md >}}
+
+## Publisher (legacy)
+
+Der Task `Publisher` behält die bisherige DSL für bestehende Publikationsjobs bei.
+
+### Parameter
 
 {{< include ./tasks/_ch.so.agi.gretl.tasks.Publisher.md >}}
 

@@ -4,7 +4,7 @@ apply plugin: 'ch.so.agi.gretl'
 
 defaultTasks 'publishFile'
 
-task publishFile(type: PublisherOld){
+task publishFile(type: Publisher){
       dataIdent = "ch.so.agi.vermessung.edit"
       target = [project.buildDir]
       sourcePath = file("av_test.itf")

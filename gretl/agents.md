@@ -48,16 +48,18 @@ This repository is a Java 11 Gradle plugin project. Main code lives under
 
 For Publisher-related work, central files include:
 
-- `src/main/java/ch/so/agi/gretl/tasks/Publisher.java`: Gradle task API,
+- `src/main/java/ch/so/agi/gretl/tasks/NextPublisher.java`: new Gradle task API,
   task properties, validation, and delegation into the implementation.
+- `src/main/java/ch/so/agi/gretl/tasks/Publisher.java`: backwards-compatible
+  legacy Gradle task API.
 - `src/main/java/ch/so/agi/gretl/steps/PublisherStepOld.java`: core Publisher
   implementation for DB/file publication, validation, packaging, metadata,
   history, and grooming.
 - `src/main/java/ch/so/agi/gretl/util/publisher/*.java`: publication payload
   model classes.
 - `src/docs/publisher.qmd`: user-facing Publisher documentation.
-- `src/docs/tasks/_ch.so.agi.gretl.tasks.Publisher.md`: generated/current
-  Publisher parameter reference.
+- `src/docs/tasks/_ch.so.agi.gretl.tasks.NextPublisher.md`: generated
+  next-pipeline task parameter reference.
 - `src/test/java/ch/so/agi/gretl/steps/*Publisher*`: focused Publisher tests.
 - `src/integrationTest/java/ch/so/agi/gretl/jobs/PublisherTestOld.java` and
   `src/integrationTest/jobs/Publisher*`: Gradle-level Publisher integration

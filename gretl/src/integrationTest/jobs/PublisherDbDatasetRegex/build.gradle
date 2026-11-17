@@ -1,6 +1,6 @@
 import ch.so.agi.gretl.tasks.Ili2pgImport
 import ch.so.agi.gretl.tasks.Ili2pgImportSchema
-import ch.so.agi.gretl.tasks.Publisher
+import ch.so.agi.gretl.tasks.NextPublisher
 
 apply plugin: 'ch.so.agi.gretl'
 
@@ -25,7 +25,7 @@ tasks.register('setupData', Ili2pgImport) {
     dataset = ['DatasetA', 'DatasetB']
 }
 
-tasks.register('publish', Publisher) {
+tasks.register('publish', NextPublisher) {
     dependsOn 'setupData'
     outDataIdent = 'ch.so.agi.publisher.db-dataset-regex'
     outFolderPath = file("$buildDir/local")

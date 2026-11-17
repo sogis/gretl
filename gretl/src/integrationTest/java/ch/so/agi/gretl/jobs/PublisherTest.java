@@ -36,7 +36,7 @@ import ch.so.agi.gretl.util.IntegrationTestUtilSql;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-/** End-to-end coverage of the canonical Publisher task's selectable source modes. */
+/** End-to-end coverage of the NextPublisher task's selectable source modes. */
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
 @ResourceLock("publisher-integration-postgres")
